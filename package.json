@@ -1,0 +1,16 @@
+{
+  "name": "papbotts",
+  "version": "1.0.0",
+  "description": "PAPbot",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Papageorgiadis Savvas",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "inversify": "^5.0.5",
+    "reflect-metadata": "^0.1.13"
+  }
+}
