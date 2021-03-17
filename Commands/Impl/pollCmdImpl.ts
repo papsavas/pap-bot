@@ -5,13 +5,12 @@ import { GsimplePoll } from '../guides.json';
 import { pollCmd } from "../Interf/pollCmd";
 import { injectable } from "inversify";
 import "reflect-metadata";
-import { commandType } from "../../Entities/CommandType";
-import Bundle from "../../Bundle";
+import Bundle from "../../EntitiesBundle/Bundle";
 
 @injectable()
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
     private readonly aliases = ['poll', 'πολλ'];
-    execute(bundle : Bundle) {
+    execute(bundle: Bundle) {
         (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send(
             new Discord.MessageEmbed(
                 {
