@@ -13,7 +13,7 @@ export class HelpCmdImpl extends AbstractCommand implements helpCmd {
     private readonly aliases = ['help', 'h', 'halp'];
 
     execute(bundle: Bundle) {
-        (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send('help is here');
+        return (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send('help is here');
     }
 
     getKeyword(): string {

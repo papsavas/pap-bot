@@ -6,7 +6,7 @@ import Bundle from "../EntitiesBundle/Bundle";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {
-    abstract execute(bundle: Bundle): void;
+    abstract execute(bundle: Bundle): Promise<any>;
     abstract getKeyword(): string;
     abstract getAliases(): string[];
     abstract getGuide(): string;

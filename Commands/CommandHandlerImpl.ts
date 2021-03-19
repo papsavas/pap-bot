@@ -5,6 +5,7 @@ import {TYPES} from '../Inversify/Types';
 import {GenericCommand} from './GenericCommand';
 import {helpCmd} from './Interf/helpCmd';
 import {pollCmd} from './Interf/pollCmd';
+import {dmMember} from './Interf/dmMemberCmd'
 import "reflect-metadata";
 import {CommandHandler} from "./CommandHandler";
 import * as Discord from 'discord.js';
@@ -16,12 +17,13 @@ export default class CommandHandlerImpl implements CommandHandler {
     constructor(
         @inject(TYPES.HelpCmd) helpCmd: helpCmd,
         @inject(TYPES.PollCmd) pollCmd: pollCmd,
+        @inject(TYPES.DmMemberCmd) dmMemberCmd: dmMember
     ) {
-        this.commands = [helpCmd, pollCmd];
+        this.commands = [helpCmd, pollCmd, dmMemberCmd];
     }
 
     public onCommand() {
-        const candidateCommand = this.returnCommand(Bundle.getMessage().content);
+        const candidateCommand = CommandHandlerImpl.returnCommand(Bundle.getMessage().content);
         Bundle.setCommand(candidateCommand);
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
         if (commandImpl)
@@ -35,9 +37,9 @@ export default class CommandHandlerImpl implements CommandHandler {
             }
     }
 
-    private returnCommand(messageContent: String): commandType {
-        const prefix: string = messageContent.charAt(0);
-        const fullCommand: string = messageContent.substr(1); // Remove the prefix ($/?);
+    private static returnCommand(receivedMessage: String): commandType {
+        const prefix: string = receivedMessage.charAt(0);
+        const fullCommand: string = receivedMessage.substr(1); // Remove the prefix ($/?);
         const splitCommand: string[] = fullCommand.split(/(\s+)/).filter(e => e.trim().length > 0) //split command from space(s);
         return {
             prefix,

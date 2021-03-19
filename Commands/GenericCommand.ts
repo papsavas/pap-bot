@@ -3,7 +3,7 @@ import BundleImpl from "../EntitiesBundle/BundleImpl";
 import { commandType } from "../Entities/CommandType";
 
 export interface GenericCommand {
-    execute(bundle : Bundle): void;
+    execute(bundle : Bundle): Promise<any>;
     getGuide(): string;
     getKeyword(): string;
     matchAliases(possibleCommand: string): boolean;
