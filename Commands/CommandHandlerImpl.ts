@@ -1,6 +1,6 @@
 import {inject, injectable} from 'inversify';
 import {commandType} from '../Entities/CommandType';
-import {Bundle} from '../index'
+import {bundle} from '../index'
 import {TYPES} from '../Inversify/Types';
 import {GenericCommand} from './GenericCommand';
 import {helpCmd} from './Interf/helpCmd';
@@ -22,21 +22,6 @@ export default class CommandHandlerImpl implements CommandHandler {
         this.commands = [helpCmd, pollCmd, dmMemberCmd];
     }
 
-    public onCommand() {
-        const candidateCommand = CommandHandlerImpl.returnCommand(Bundle.getMessage().content);
-        Bundle.setCommand(candidateCommand);
-        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
-        if (commandImpl)
-            switch (candidateCommand.prefix) {
-                case '$':
-                    commandImpl.execute(Bundle);
-                    break;
-                case '?':
-                    (Bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide());
-                    break;
-            }
-    }
-
     private static returnCommand(receivedMessage: String): commandType {
         const prefix: string = receivedMessage.charAt(0);
         const fullCommand: string = receivedMessage.substr(1); // Remove the prefix ($/?);
@@ -53,5 +38,22 @@ export default class CommandHandlerImpl implements CommandHandler {
             commandless2: splitCommand.slice(2).join(' '),
             commandless3: splitCommand.slice(3).join(' ')
         }
+    }
+
+    public onCommand() {
+        const candidateCommand = CommandHandlerImpl.returnCommand(bundle.getMessage().content);
+        bundle.setCommand(candidateCommand);
+        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
+        if (commandImpl)
+            switch (candidateCommand.prefix) {
+                case '$':
+                    commandImpl.execute(bundle)
+                        .catch(err => console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.toString()}`));
+                    break;
+                case '?':
+                    (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
+                        .catch(err => `Error on Guide sending\n${err.toString()}`);
+                    break;
+            }
     }
 }

@@ -2,9 +2,10 @@ import {of} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 import * as Discord from 'discord.js';
 import {onMessage, onMessageDelete} from './EventHandler';
-import BundleModule from './Bundle';
+import BundleModule from './EntitiesBundle/BundleImpl';
+import Bundle from "./EntitiesBundle/Bundle";
 
-export const Bundle = new BundleModule();
+export const bundle :Bundle = new BundleModule();
 
 const PAP = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
@@ -27,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
 console.log("running in " + process.env.NODE_ENV + " mode\n");
 
 PAP.on('ready', () => {
-    Bundle.setClient(PAP);
+    bundle.setClient(PAP);
     PAP.user.setActivity('over you', {type: 'WATCHING'});
     console.log(`___Initiated___`);
     const initLogs = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746310338215018546');
