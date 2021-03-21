@@ -5,10 +5,11 @@ import {TYPES} from '../Inversify/Types';
 import {GenericCommand} from './GenericCommand';
 import {helpCmd} from './Interf/helpCmd';
 import {pollCmd} from './Interf/pollCmd';
-import {dmMember} from './Interf/dmMemberCmd'
+import {dmMemberCmd} from './Interf/dmMemberCmd'
 import "reflect-metadata";
 import {CommandHandler} from "./CommandHandler";
 import * as Discord from 'discord.js';
+import {messageChannelCmd} from "./Interf/messageChannelCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -17,9 +18,10 @@ export default class CommandHandlerImpl implements CommandHandler {
     constructor(
         @inject(TYPES.HelpCmd) helpCmd: helpCmd,
         @inject(TYPES.PollCmd) pollCmd: pollCmd,
-        @inject(TYPES.DmMemberCmd) dmMemberCmd: dmMember
+        @inject(TYPES.DmMemberCmd) dmMemberCmd: dmMemberCmd,
+        @inject(TYPES.MessageChannelCmd) messageChannelCmd: messageChannelCmd
     ) {
-        this.commands = [helpCmd, pollCmd, dmMemberCmd];
+        this.commands = [helpCmd, pollCmd, dmMemberCmd, messageChannelCmd];
     }
 
     private static returnCommand(receivedMessage: String): commandType {
@@ -55,5 +57,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                         .catch(err => `Error on Guide sending\n${err.toString()}`);
                     break;
             }
+        else
+            (bundle.getMessage() as Discord.Message).react('❔').catch();
     }
 }

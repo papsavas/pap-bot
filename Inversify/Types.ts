@@ -1,8 +1,9 @@
 export const TYPES = {
     HelpCmd : Symbol.for('HelpCmd'),
     PollCmd : Symbol.for('PollCmd'),
-    DmMemberCmd : Symbol.for('DmMember'),
-    CommandHandler : Symbol.for('CommandHandler')
+    DmMemberCmd : Symbol.for('DmMemberCmd'),
+    MessageChannelCmd : Symbol.for('MessageChannelCmd'),
 
+    CommandHandler : Symbol.for('CommandHandler')
 }
 

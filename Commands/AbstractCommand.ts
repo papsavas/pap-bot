@@ -10,6 +10,10 @@ export abstract class AbstractCommand implements GenericCommand {
     abstract getKeyword(): string;
     abstract getAliases(): string[];
     abstract getGuide(): string;
+    constructor(aliases: string[], keyword: string) {
+        if(aliases.every(alias => alias !== keyword))
+            aliases.push(keyword)
+    }
     matchAliases(possibleCommand: string): boolean {
         return !!this.getAliases()
             .find((alias: string) => alias === possibleCommand.toLowerCase());

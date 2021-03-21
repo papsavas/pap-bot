@@ -1,5 +1,5 @@
 import { GenericCommand } from "../GenericCommand";
 
-export interface dmMember extends GenericCommand{
+export interface dmMemberCmd extends GenericCommand{
 
 }

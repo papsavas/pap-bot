@@ -1,7 +1,7 @@
 import {AbstractCommand} from "../AbstractCommand";
 import * as Discord from 'discord.js';
-import {simplePoll as pollKeyword} from '../keywords.json';
-import {GsimplePoll} from '../guides.json';
+import {simplePoll as _keyword} from '../keywords.json';
+import {GsimplePoll as _guide} from '../guides.json';
 import {pollCmd} from "../Interf/pollCmd";
 import {injectable} from "inversify";
 import "reflect-metadata";
@@ -9,7 +9,7 @@ import Bundle from "../../EntitiesBundle/Bundle";
 
 @injectable()
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
-    private readonly aliases = ['poll', 'πολλ'];
+    private readonly _aliases = ['poll', 'πολλ'];
 
     execute(bundle: Bundle) {
         (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send(
@@ -51,14 +51,14 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
     }
 
     getKeyword(): string {
-        return pollKeyword
+        return _keyword
     }
 
     getAliases(): string[] {
-        return this.aliases
+        return this._aliases
     }
 
     getGuide(): string {
-        return GsimplePoll;
+        return _guide;
     }
 }
