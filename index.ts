@@ -4,8 +4,12 @@ import * as Discord from 'discord.js';
 import {onMessage, onMessageDelete} from './EventHandler';
 import BundleModule from './EntitiesBundle/BundleImpl';
 import Bundle from "./EntitiesBundle/Bundle";
+import {guildID} from '@root/botconfig.json'
 
 export const bundle :Bundle = new BundleModule();
+
+export let bugsChannel :Discord.TextChannel;
+export let logsChannel :Discord.TextChannel;
 
 const PAP = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
@@ -27,18 +31,26 @@ if (process.env.NODE_ENV === 'development') {
 }
 console.log("running in " + process.env.NODE_ENV + " mode\n");
 
+PAP.on('guildUnavailable', (guild) => {
+    if(guild.id !== guildID)
+        logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`);
+});
+
 PAP.on('ready', () => {
     bundle.setClient(PAP);
-    PAP.user.setActivity('over you', {type: 'WATCHING'});
-    console.log(`___Initiated___`);
+    PAP.user.setActivity('over you', {type: 'WATCHING'})
+        .then(r => console.log(r))
+        .catch(err=> console.log(err));
     const initLogs = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746310338215018546');
+    bugsChannel = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746696214103326841') as Discord.TextChannel;
+    logsChannel = PAP.guilds.cache.get('746309734851674122').channels.cache.get('815602459372027914') as Discord.TextChannel
     if (initLogs.type === 'text')
         (initLogs as Discord.TextChannel).send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+    console.log(`___Initiated___`);
 });
 
 
-PAP.on('message', receivedMessage => {
-
+PAP.on('message', (receivedMessage) => {
     of(receivedMessage).pipe(
         filter(receivedMessage =>
             receivedMessage.author == PAP.user
@@ -55,7 +67,7 @@ PAP.on('message', receivedMessage => {
 })
 
 
-PAP.on('messageDelete', deletedMessage => {
+PAP.on('messageDelete', (deletedMessage) => {
     of(deletedMessage).pipe(
         filter(deletedMessage =>
             deletedMessage.author == PAP.user

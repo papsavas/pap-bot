@@ -1,15 +1,15 @@
 import {inject, injectable} from 'inversify';
-import {commandType} from '../Entities/CommandType';
-import {bundle} from '../index'
-import {TYPES} from '../Inversify/Types';
-import {GenericCommand} from './GenericCommand';
-import {helpCmd} from './Interf/helpCmd';
-import {pollCmd} from './Interf/pollCmd';
-import {dmMemberCmd} from './Interf/dmMemberCmd'
+import {commandType} from '@root/Entities/CommandType';
+import {bundle} from '@root/index'
+import {TYPES} from '@Inversify/Types';
+import {GenericCommand} from '@Commands/GenericCommand';
+import {helpCmd} from '@cmdInterfaces/helpCmd';
+import {pollCmd} from '@cmdInterfaces/pollCmd';
+import {dmMemberCmd} from '@cmdInterfaces/dmMemberCmd'
+import {messageChannelCmd} from "@cmdInterfaces/messageChannelCmd";
 import "reflect-metadata";
-import {CommandHandler} from "./CommandHandler";
+import {CommandHandler} from "@Commands/CommandHandler";
 import * as Discord from 'discord.js';
-import {messageChannelCmd} from "./Interf/messageChannelCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {

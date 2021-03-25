@@ -1,10 +1,10 @@
 import {injectable} from "inversify";
 import * as Discord from 'discord.js';
-import {AbstractCommand} from "../AbstractCommand";
-import {messageChannelCmd} from "../Interf/messageChannelCmd";
-import Bundle from "../../EntitiesBundle/Bundle";
-import { messageChannel as _keyword } from '../keywords.json';
-import { GmessageChannel as _guide } from '../guides.json';
+import {AbstractCommand} from "@Commands/AbstractCommand";
+import {messageChannelCmd} from "@cmdInterfaces/messageChannelCmd";
+import Bundle from "@root/EntitiesBundle/Bundle";
+import { messageChannel as _keyword } from '@Commands/keywords.json';
+import { GmessageChannel as _guide } from '@Commands/guides.json';
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {

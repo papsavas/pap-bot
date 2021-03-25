@@ -5,6 +5,14 @@
     "module": "commonjs",
     "strict": false,
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "@root/*" : ["./*"],
+      "@cmdInterfaces/*" : ["./Commands/Interf/*"],
+      "@cmdImplementations/*" : ["./Commands/Impl/*"],
+      "@Commands/*" : ["./Commands/*"],
+      "@Inversify/*" : ["./Inversify/*"]
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { GenericCommand } from "../GenericCommand";
+import { GenericCommand } from "@Commands/GenericCommand";
 
 export interface helpCmd extends GenericCommand{
 

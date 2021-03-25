@@ -1,5 +1,4 @@
-import Bundle from "../EntitiesBundle/Bundle";
-import BundleImpl from "../EntitiesBundle/BundleImpl";
+import Bundle from "@root/EntitiesBundle/Bundle";
 import { commandType } from "../Entities/CommandType";
 
 export interface GenericCommand {
@@ -8,4 +7,5 @@ export interface GenericCommand {
     //getKeyword(): string;
     //getAliases(): string[];
     matchAliases(possibleCommand: string): boolean;
+    handleError(err : Error, bundle :Bundle): void;
 }

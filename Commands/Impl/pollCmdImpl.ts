@@ -33,7 +33,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                bundle.getMessage().delete().catch(err => console.log(err));
+                bundle.getMessage().delete().catch(err => this.handleError(err, bundle));
 
                 return new Promise((resolve) => {
                     resolve('poll cmd executed');
@@ -42,6 +42,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             }).catch(err => {
             return new Promise((resolve, reject) => {
                 reject(`poll cmd failed:\n${err}`);
+                this.handleError(err, bundle);
             });
         });
 

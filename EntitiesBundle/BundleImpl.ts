@@ -1,11 +1,9 @@
 import * as Discord from 'discord.js';
-import { commandType } from '../Entities/CommandType';
-import Bundle  from './Bundle';
+import {commandType} from '../Entities/CommandType';
+import Bundle from './Bundle';
 
 
 export default class BundleImpl implements Bundle {
-    constructor() { }
-
     private client: Discord.Client;
     private guild: Discord.Guild | undefined;
     private message: Discord.Message | undefined;
@@ -13,7 +11,10 @@ export default class BundleImpl implements Bundle {
     private member: Discord.GuildMember | undefined;
     private user: Discord.User | undefined;
     private command: commandType | undefined;
+    private logs: Map<Discord.Snowflake, string[]> = new Map();
 
+    constructor() {
+    }
 
     getClient(): Discord.Client {
         return this.client;
@@ -43,8 +44,15 @@ export default class BundleImpl implements Bundle {
         return this.command;
     }
 
+    getLogs(): string[] {
+        return this.logs.get(this.guild.id);
+    }
+
     setClient(client: Discord.Client) {
         this.client = client;
+        //create log arrays
+        this.client.guilds.cache
+            .forEach((guild) => this.logs[guild.id] = []);
     }
 
     setGuild(guild: Discord.Guild) {
@@ -74,5 +82,20 @@ export default class BundleImpl implements Bundle {
     setCommand(candidateCommand: commandType) {
         this.command = candidateCommand;
     }
+
+    addLog(log: string): void {
+        const logArr: string[] = this.logs.get(this.guild.id);
+        logArr.push(log);
+        this.logs.set(this.guild.id, logArr);
+    }
+
+    extractId(s:string): Discord.Snowflake {
+        if (s.includes('/')) { //extract id from msg link
+            const linkContents = s.split('/');
+            s = linkContents[linkContents.length - 1];
+        }
+        return s;
+    }
+
 
 }
