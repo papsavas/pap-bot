@@ -8,7 +8,13 @@ import { GmessageChannel as _guide } from '@Commands/guides.json';
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
-    private readonly  _aliases :string[] = ['send', 'msgchannel', 'messagechannel', 'message_channel'];
+    private _aliases :string[];
+
+    public constructor() {
+        super(['send', 'msgchannel', 'messagechannel', 'message_channel'],
+            _keyword);
+    }
+
 
     execute(bundle: Bundle){
         if (bundle.getChannel().type == 'text') {
@@ -19,6 +25,10 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
                 return sendChannel.send(bundle.getCommand().commandless2);
         } else
             return new Promise((res, rej) => rej('cannot perform messaging on a non text channel'))
+    }
+
+    setAliases(aliases: string[]) {
+        this._aliases = aliases;
     }
 
     getAliases(): string[] {

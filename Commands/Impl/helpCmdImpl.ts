@@ -10,10 +10,19 @@ import Bundle from "../../EntitiesBundle/Bundle";
 
 @injectable()
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {
-    private readonly _aliases = ['help', 'h', 'halp'];
+    private _aliases;
+
+    public constructor() {
+        super(['help', 'h', 'halp'],
+            _keyword);
+    }
 
     execute(bundle: Bundle) {
         return (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send('help is here');
+    }
+
+    setAliases(aliases: string[]) {
+        this._aliases = aliases;
     }
 
     getKeyword(): string {

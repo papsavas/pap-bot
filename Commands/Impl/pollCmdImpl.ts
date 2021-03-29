@@ -9,7 +9,12 @@ import Bundle from "../../EntitiesBundle/Bundle";
 
 @injectable()
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
-    private readonly _aliases = ['poll', 'πολλ'];
+    private _aliases;
+
+    public constructor() {
+        super(['poll', 'πολλ'],
+            _keyword);
+    }
 
     execute(bundle: Bundle) {
         (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send(
@@ -49,6 +54,10 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
         return new Promise((resolve, reject) => {
             reject(`poll sent but didn't received promise from sent message`)
         });
+    }
+
+    setAliases(aliases: string[]) {
+        this._aliases = aliases;
     }
 
     getKeyword(): string {

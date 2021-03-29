@@ -9,7 +9,12 @@ import {logsChannel} from "@root/index";
 
 injectable()
 export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
-    private readonly _aliases: string[] = ['unpin', 'ανπιν'];
+    private _aliases: string[];
+
+    public constructor() {
+        super(['unpin', 'ανπιν'],
+            _keyword);
+    }
 
     execute(bundle: Bundle): Promise<any> {
         let unpinReason = bundle.getCommand().commandless2 ? bundle.getCommand().commandless2 : `undefined`;
@@ -25,6 +30,10 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                             bundle.getMessage().delete({timeout:5000}).catch(err => this.handleError(err, bundle));
                     });
             })
+    }
+
+    setAliases(aliases: string[]) {
+        this._aliases = aliases;
     }
 
     getAliases(): string[] {

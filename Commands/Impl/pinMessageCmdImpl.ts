@@ -9,7 +9,13 @@ import Bundle from "@root/EntitiesBundle/Bundle";
 
 @injectable()
 export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd {
-    private readonly _aliases: string[] = ['pin', 'πιν'];
+    private _aliases: string[];
+
+    public constructor() {
+        super( ['pin', 'πιν'],
+            _keyword);
+    }
+
 
     execute(bundle: Bundle): Promise<any> {
         let pinReason = bundle.getCommand().commandless2 ? bundle.getCommand().commandless2 : ``;
@@ -25,6 +31,10 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                             bundle.getMessage().delete({timeout:5000}).catch(err => this.handleError(err, bundle));
                     });
             })
+    }
+
+    setAliases(aliases: string[]) {
+        this._aliases = aliases;
     }
 
     getAliases(): string[] {

@@ -7,9 +7,15 @@ import {bugsChannel, logsChannel} from "@root/index";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {
-    constructor(aliases: string[], keyword: string) {
-        if (aliases.every(alias => alias !== keyword))
-            aliases.push(keyword)
+
+    public constructor(aliases:string [], keyword: string) {
+        this.setAliases(this.addKeywordToAliases(aliases, keyword));
+    }
+
+    private addKeywordToAliases(aliases: string[], keyword: string): string[] {
+        return aliases.includes(keyword)
+            ? [...aliases, keyword]
+            : aliases
     }
 
     abstract execute(bundle: Bundle): Promise<any>;

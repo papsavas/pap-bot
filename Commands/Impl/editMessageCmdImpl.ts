@@ -43,6 +43,10 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
         return new Promise((res, rej) => rej('edit message failed'));
     }
 
+    public setAliases(aliases: string[]) {
+        this._aliases = aliases;
+    }
+
     getAliases(): string[] {
         return this._aliases;
     }
