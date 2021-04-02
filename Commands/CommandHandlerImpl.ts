@@ -32,21 +32,21 @@ export default class CommandHandlerImpl implements CommandHandler {
 
     public onCommand() {
         const candidateCommand = this.returnCommand(bundle.getMessage().content);
+        const commandMessage = bundle.getMessage();
         bundle.setCommand(candidateCommand);
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
-        if (typeof commandImpl !== "undefined"){
+        if (typeof commandImpl !== "undefined") {
             switch (candidateCommand.prefix) {
                 case prefix:
                     commandImpl.execute(bundle)
-                        .catch(err => this.invalidCommand(err));
+                        .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
                     break;
                 case qprefix:
                     (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
                         .catch(err => `Error on Guide sending\n${err.toString()}`);
                     break;
             }
-        }
-        else
+        } else
             (bundle.getMessage() as Discord.Message).react('❔').catch();
     }
 
@@ -68,21 +68,32 @@ export default class CommandHandlerImpl implements CommandHandler {
         }
     }
 
-    private invalidCommand(err: Error) {
+    private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand) {
         const emb = new Discord.MessageEmbed({
             author: {
                 name: bundle.getGuild().name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
-            thumbnail:{
-                proxy_url: bundle.getGuild().iconURL({format:"png", size:512})
+            thumbnail: {
+                proxy_url: bundle.getGuild().iconURL({format: "png", size: 512})
             },
             title: bundle.getCommand().primaryCommand,
             color: "DARK_RED",
-            timestamp : new Date()
+            timestamp: new Date()
         });
-        emb.setDescription(`\`\`\`${err}\`\`\``);
-        bugsChannel.send(emb).catch(internalErr => console.log("internal error\n",internalErr));
+        emb.setDescription(err);
+        bugsChannel.send(emb).catch(internalErr => console.log("internal error\n", internalErr));
+
+        commandMessage.channel.send(new Discord.MessageEmbed({
+            author: {
+                name: `Error on Command 💥`,
+                icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
+            },
+            title: prefix + commandImpl.getKeyword(),
+            description: commandImpl.getGuide(),
+            footer: {text: commandImpl.getAliases().toString()},
+            color: "RED"
+        })).then(msg => msg.delete({timeout: 20000}));
         console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.toString()}`)
     }
 }

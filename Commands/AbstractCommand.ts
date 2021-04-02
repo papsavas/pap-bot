@@ -27,7 +27,7 @@ export abstract class AbstractCommand implements GenericCommand {
             .find((alias: string) => alias === possibleCommand.toLowerCase());
     }
 
-    handleError(err: Error, bundle: Bundle) {
+    logErrorOnBugsChannel(err: Error, bundle: Bundle) {
         const emb = new Discord.MessageEmbed({
             author: {
                 name: bundle.getGuild().name,

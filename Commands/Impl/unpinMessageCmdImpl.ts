@@ -24,9 +24,9 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                 msg.unpin({reason: unpinReason})
                     .then((msg) => {
                         bundle.addLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
-                        bundle.getMessage().react('👌').catch(err => this.handleError(err, bundle));
+                        bundle.getMessage().react('👌').catch(err => this.logErrorOnBugsChannel(err, bundle));
                         if (bundle.getMessage().deletable)
-                            bundle.getMessage().delete({timeout: 5000}).catch(err => this.handleError(err, bundle));
+                            bundle.getMessage().delete({timeout: 5000}).catch(err => this.logErrorOnBugsChannel(err, bundle));
                     });
             })
     }

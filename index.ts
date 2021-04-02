@@ -39,13 +39,11 @@ PAP.on('guildUnavailable', (guild) => {
 PAP.on('ready', () => {
     bundle.setClient(PAP);
     PAP.user.setActivity('over you', {type: 'WATCHING'})
-        .then(r => console.log(r))
         .catch(err=> console.log(err));
-    const initLogs = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746310338215018546');
+    const initLogs = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746310338215018546') as Discord.TextChannel;
     bugsChannel = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746696214103326841') as Discord.TextChannel;
     logsChannel = PAP.guilds.cache.get('746309734851674122').channels.cache.get('815602459372027914') as Discord.TextChannel
-    if (initLogs.type === 'text')
-        (initLogs as Discord.TextChannel).send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+    initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
     console.log(`___Initiated___`);
 });
 

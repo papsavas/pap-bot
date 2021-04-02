@@ -24,9 +24,9 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                 msg.pin({reason: pinReason})
                     .then((msg) => {
                         bundle.addLog(`message pinned:\n${msg.url} with reason ${pinReason}`);
-                        bundle.getMessage().react('👌').catch(err => this.handleError(err, bundle));
+                        bundle.getMessage().react('👌').catch(err => this.logErrorOnBugsChannel(err, bundle));
                         if(bundle.getMessage().deletable)
-                            bundle.getMessage().delete({timeout:5000}).catch(err => this.handleError(err, bundle));
+                            bundle.getMessage().delete({timeout:5000}).catch(err => this.logErrorOnBugsChannel(err, bundle));
                     });
             })
     }

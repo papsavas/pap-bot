@@ -16,36 +16,43 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
         _keyword
     );
 
-    execute(bundle: Bundle): Promise<any> {
+    async execute(bundle: Bundle): Promise<any> {
+        const message: Discord.Message = bundle.getMessage();
+        const channel: Discord.TextChannel = bundle.getChannel() as Discord.TextChannel;
         try {
-            const channel: Discord.TextChannel = bundle.getChannel() as Discord.TextChannel;
-            (bundle.getChannel() as Discord.TextChannel).messages.fetch(bundle.getCommand().arg1)
-                .then(message => message
-                    .edit(bundle.getCommand().commandless2)
-                    .then(editedMessage => channel.send({embed: {description: `[edited message](${editedMessage.url})`}}))
-                )
-                .catch(async err => {
-                    if (err.code == e["Unknown message"]) {
-                        try {
-                            const targetChannel : Discord.GuildChannel = bundle.getGuild().channels.cache
-                                .find(c => c.id === bundle.getMessage().mentions.channels.first().id)
-                            const targetMessage = await (targetChannel as Discord.TextChannel).messages.cache
-                                .find(m => m.id === bundle.getCommand().arg2);
-                            const editedMessage = await targetMessage
-                                .edit(bundle.getCommand().commandless3);
-                            return (bundle.getChannel() as Discord.TextChannel)
-                                .send(new Discord.MessageEmbed({description: `[edited message](${editedMessage.url})`}));
-                        } catch (err) {
-                            console.log(err);
-                            this.handleError(err, bundle);
-                        }
-                    }
-                })
-        } catch (err) {
-            console.log(err);
-            this.handleError(err, bundle);
+            const fetchedMessage = await channel.messages.fetch(bundle.getCommand().arg1)
+            const editedMessage = await fetchedMessage
+                .edit(bundle.getCommand().commandless2)
+            await channel.send({
+                embed: {
+                    description: `[edited message](${editedMessage.url})`
+                }
+            });
+            return new Promise((res, rej) => res('edit message success'));
         }
-        return new Promise((res, rej) => rej('edit message failed'));
+        catch (err) {
+            if (err.code == e["Unknown message"] || err.code == e["Invalid form body"]) {
+                try {
+                    const targetChannel : Discord.GuildChannel = message.guild.channels.cache
+                        .find(c => c.id == message.mentions.channels?.firstKey())
+
+                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(bundle.getCommand().arg2);
+
+                    const editedMessage = await targetMessage?.edit(bundle.getCommand().commandless3);
+                    const sendLinkMessage = await channel.send(new Discord.MessageEmbed(
+                        {description: `[edited message](${editedMessage.url})`}
+                        ));
+                    return new Promise((res, rej) => res('edit message success'));
+                } catch (err) {
+                    return new Promise((res, rej) => rej(`edit message failed\n${message.url}`));
+                }
+            }
+
+            else{
+                return new Promise((res, rej) => rej(`edit message failed\nreason:${err.toString()}`));
+            }
+        }
+
     }
 
     getAliases(): string[] {

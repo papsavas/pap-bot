@@ -42,7 +42,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                 if(commandMsg.deletable)
                     commandMsg.delete()
                     .catch(err =>{
-                        this.handleError(err, bundle);
+                        this.logErrorOnBugsChannel(err, bundle);
                     });
                 return new Promise((resolve) => {
                     resolve('poll cmd executed');
@@ -51,7 +51,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             }).catch(err => {
             return new Promise((resolve, reject) => {
                 reject(`poll cmd failed:\n${err}`);
-                this.handleError(err, bundle);
+                this.logErrorOnBugsChannel(err, bundle);
             });
         });
 
