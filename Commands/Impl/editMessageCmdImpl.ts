@@ -10,15 +10,20 @@ import * as e from '../../errorCodes.json'
 
 @injectable()
 export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
-    private readonly _aliases: string[] = ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'];
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
+        _keyword
+    );
 
     execute(bundle: Bundle): Promise<any> {
         try {
+            const channel: Discord.TextChannel = bundle.getChannel() as Discord.TextChannel;
             (bundle.getChannel() as Discord.TextChannel).messages.fetch(bundle.getCommand().arg1)
-                .then(message => {
-                    return message.edit(bundle.getCommand().commandless2)
-                        .then(editedMessage => (bundle.getChannel() as Discord.TextChannel).send({embed: {description: `[edited message](${editedMessage.url})`}}))
-                })
+                .then(message => message
+                    .edit(bundle.getCommand().commandless2)
+                    .then(editedMessage => channel.send({embed: {description: `[edited message](${editedMessage.url})`}}))
+                )
                 .catch(async err => {
                     if (err.code == e["Unknown message"]) {
                         try {

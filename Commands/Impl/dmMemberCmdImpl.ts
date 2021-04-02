@@ -9,9 +9,14 @@ import {dmMemberCmd} from "../Interf/dmMemberCmd";
 
 @injectable()
 export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
-    private readonly _aliases = ['directmessage', 'message', 'dm'];
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['directmessage', 'message', 'dm'],
+        _keyword
+    );
 
-    execute(bundle: Bundle) {
+
+    public execute(bundle: Bundle) {
         return (bundle.getMessage().mentions.members.first() as Discord.GuildMember).send(bundle.getCommand().commandless2);
     }
 
@@ -26,6 +31,4 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     getGuide(): string {
         return _guide;
     }
-
-
 }
