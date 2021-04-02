@@ -1,18 +1,18 @@
 import {inject, injectable} from 'inversify';
-import {commandType} from '@root/Entities/CommandType';
-import {bundle} from '@root/index'
-import {TYPES} from '@Inversify/Types';
-import {GenericCommand} from '@Commands/GenericCommand';
-import {helpCmd} from '@cmdInterfaces/helpCmd';
-import {pollCmd} from '@cmdInterfaces/pollCmd';
-import {dmMemberCmd} from '@cmdInterfaces/dmMemberCmd'
-import {messageChannelCmd} from "@cmdInterfaces/messageChannelCmd";
-import "reflect-metadata";
-import {CommandHandler} from "@Commands/CommandHandler";
 import * as Discord from 'discord.js';
-import {pinMessageCmd} from "@cmdInterfaces/pinMessageCmd";
-import {unpinMessageCmd} from "@cmdInterfaces/unpinMessageCmd";
-import {bugsChannel} from '@root/index'
+import {prefix, qprefix} from '../botconfig.json'
+import {TYPES} from "../Inversify/Types";
+import {commandType} from "../Entities/CommandType";
+import {bugsChannel, bundle} from "../index";
+import {pinMessageCmd} from "./Interf/pinMessageCmd";
+import {GenericCommand} from "./GenericCommand";
+import {messageChannelCmd} from "./Interf/messageChannelCmd";
+import {dmMemberCmd} from "./Interf/dmMemberCmd";
+import {CommandHandler} from "./CommandHandler";
+import {pollCmd} from "./Interf/pollCmd";
+import {unpinMessageCmd} from "./Interf/unpinMessageCmd";
+import {helpCmd} from "./Interf/helpCmd";
+import {editMessageCmd} from "./Interf/editMessageCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -25,25 +25,27 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.MessageChannelCmd) messageChannelCmd: messageChannelCmd,
         @inject(TYPES.PinMessageCmd) pinMessageCmd: pinMessageCmd,
         @inject(TYPES.UnpinMessageCmd) unpinMessageCmd: unpinMessageCmd,
+        @inject(TYPES.EditMessageCmd) editMessageCmd: editMessageCmd,
     ) {
-        this.commands = [helpCmd, pollCmd, dmMemberCmd, messageChannelCmd, pinMessageCmd, unpinMessageCmd];
+        this.commands = [helpCmd, pollCmd, dmMemberCmd, messageChannelCmd, pinMessageCmd, unpinMessageCmd, editMessageCmd];
     }
 
     public onCommand() {
         const candidateCommand = this.returnCommand(bundle.getMessage().content);
         bundle.setCommand(candidateCommand);
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
-        if (commandImpl)
+        if (typeof commandImpl !== "undefined"){
             switch (candidateCommand.prefix) {
-                case '$':
+                case prefix:
                     commandImpl.execute(bundle)
                         .catch(err => this.invalidCommand(err));
                     break;
-                case '?':
+                case qprefix:
                     (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
                         .catch(err => `Error on Guide sending\n${err.toString()}`);
                     break;
             }
+        }
         else
             (bundle.getMessage() as Discord.Message).react('❔').catch();
     }

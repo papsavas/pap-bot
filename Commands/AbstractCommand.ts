@@ -1,18 +1,14 @@
 import {injectable} from "inversify";
 import {GenericCommand} from "./GenericCommand";
 import "reflect-metadata";
-import Bundle from "@root/EntitiesBundle/Bundle";
 import * as Discord from 'discord.js';
-import {bugsChannel, logsChannel} from "@root/index";
+import {bugsChannel} from '../index';
+import Bundle from "../EntitiesBundle/Bundle";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {
 
-    public constructor(aliases:string [], keyword: string) {
-        this.setAliases(this.addKeywordToAliases(aliases, keyword));
-    }
-
-    private addKeywordToAliases(aliases: string[], keyword: string): string[] {
+    protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
         return aliases.includes(keyword)
             ? [...aliases, keyword]
             : aliases

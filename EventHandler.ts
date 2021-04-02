@@ -1,19 +1,21 @@
 import {of} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 import * as Discord from 'discord.js';
-import {bundle} from '@root/index'
-import container from '@Inversify/inversify.config';
-import {CommandHandler} from '@Commands/CommandHandler';
-import {TYPES} from '@Inversify/Types';
-import {mentionRegex, prefix, qprefix} from '@root/botconfig.json'
+import {bundle} from './index'
+import container from './Inversify/inversify.config';
+import {CommandHandler} from './Commands/CommandHandler';
+import {mentionRegex, prefix, qprefix} from './botconfig.json'
+import {TYPES} from "./Inversify/Types";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler)
 
 
 export function onMessage(message: Discord.Message) {
     bundle.setMessage(message);
-    if (([prefix, qprefix].some((pr :string) => message.content.startsWith(pr))))
+
+    if ( [prefix, qprefix].some((pr :string) => message.content.startsWith(pr)) ){
         commandHandler.onCommand();
+    }
 
     if(message.content.match(mentionRegex)){
         //call mentionHandler

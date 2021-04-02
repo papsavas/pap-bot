@@ -1,20 +1,19 @@
-import {injectable} from "inversify";
-import {AbstractCommand} from "@Commands/AbstractCommand";
-import {unpinMessageCmd} from "@cmdInterfaces/unpinMessageCmd";
-import {GunpinMessage as _guide} from "@Commands/guides.json";
-import {unpinMessage as _keyword} from "@Commands/keywords.json";
-import Bundle from "@root/EntitiesBundle/Bundle";
+import {GunpinMessage as _guide} from "../guides.json";
+import {unpinMessage as _keyword} from "../keywords.json";
 import * as Discord from "discord.js";
-import {logsChannel} from "@root/index";
+import {injectable} from "inversify";
+import Bundle from "../../EntitiesBundle/Bundle";
+import {AbstractCommand} from "../AbstractCommand";
+import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
 
 injectable()
-export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
-    private _aliases: string[];
 
-    public constructor() {
-        super(['unpin', 'ανπιν'],
-            _keyword);
-    }
+export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['unpin', 'ανπιν'],
+        _keyword
+    );
 
     execute(bundle: Bundle): Promise<any> {
         let unpinReason = bundle.getCommand().commandless2 ? bundle.getCommand().commandless2 : `undefined`;
@@ -26,14 +25,10 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                     .then((msg) => {
                         bundle.addLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
                         bundle.getMessage().react('👌').catch(err => this.handleError(err, bundle));
-                        if(bundle.getMessage().deletable)
-                            bundle.getMessage().delete({timeout:5000}).catch(err => this.handleError(err, bundle));
+                        if (bundle.getMessage().deletable)
+                            bundle.getMessage().delete({timeout: 5000}).catch(err => this.handleError(err, bundle));
                     });
             })
-    }
-
-    setAliases(aliases: string[]) {
-        this._aliases = aliases;
     }
 
     getAliases(): string[] {

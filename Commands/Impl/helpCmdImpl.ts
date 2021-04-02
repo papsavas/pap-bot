@@ -1,29 +1,25 @@
-import { AbstractCommand } from "../AbstractCommand";
+import {AbstractCommand} from "../AbstractCommand";
 import * as Discord from 'discord.js';
-import { help as _keyword } from '../keywords.json';
-import { Ghelp as _guide } from '../guides.json';
-import { helpCmd } from "../Interf/helpCmd";
-import { injectable } from "inversify";
+import {help as _keyword} from '../keywords.json';
+import {Ghelp as _guide} from '../guides.json';
+import {helpCmd} from "../Interf/helpCmd";
+import {injectable} from "inversify";
 import "reflect-metadata";
-import { commandType } from "../../Entities/CommandType";
-import Bundle from "../../EntitiesBundle/Bundle";
+import Bundle from "EntitiesBundle/Bundle";
 
 @injectable()
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {
-    private _aliases;
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['help, halp, h'],
+        _keyword
+    );
 
-    public constructor() {
-        super(['help', 'h', 'halp'],
-            _keyword);
-    }
 
     execute(bundle: Bundle) {
         return (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send('help is here');
     }
 
-    setAliases(aliases: string[]) {
-        this._aliases = aliases;
-    }
 
     getKeyword(): string {
         return _keyword;

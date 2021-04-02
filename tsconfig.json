@@ -7,12 +7,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "baseUrl": "./",
+    /*
     "paths": {
       "@root/*" : ["./*"],
       "@cmdInterfaces/*" : ["./Commands/Interf/*"],
       "@cmdImplementations/*" : ["./Commands/Impl/*"],
       "@Commands/*" : ["./Commands/*"],
       "@Inversify/*" : ["./Inversify/*"]
-    }
+    }*/
   }
 }

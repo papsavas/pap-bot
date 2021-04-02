@@ -2,11 +2,11 @@ import {of} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 import * as Discord from 'discord.js';
 import {onMessage, onMessageDelete} from './EventHandler';
-import BundleModule from './EntitiesBundle/BundleImpl';
+import {guildID} from './botconfig.json'
 import Bundle from "./EntitiesBundle/Bundle";
-import {guildID} from '@root/botconfig.json'
+import BundleImpl from "./EntitiesBundle/BundleImpl";
 
-export const bundle :Bundle = new BundleModule();
+export const bundle :Bundle = new BundleImpl();
 
 export let bugsChannel :Discord.TextChannel;
 export let logsChannel :Discord.TextChannel;

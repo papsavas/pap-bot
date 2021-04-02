@@ -5,6 +5,7 @@ export const TYPES = {
     MessageChannelCmd : Symbol.for('MessageChannelCmd'),
     PinMessageCmd : Symbol.for('PinMessageCmd'),
     UnpinMessageCmd : Symbol.for('UnpinMessageCmd'),
+    EditMessageCmd : Symbol.for('EditMessageCmd'),
 
     CommandHandler : Symbol.for('CommandHandler')
 }

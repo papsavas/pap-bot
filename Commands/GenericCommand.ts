@@ -1,5 +1,4 @@
-import Bundle from "@root/EntitiesBundle/Bundle";
-import { commandType } from "../Entities/CommandType";
+import Bundle from "../EntitiesBundle/Bundle";
 
 export interface GenericCommand {
     execute(bundle : Bundle): Promise<any>;

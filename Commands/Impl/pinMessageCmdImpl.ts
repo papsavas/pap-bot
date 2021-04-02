@@ -1,21 +1,19 @@
 import * as Discord from 'discord.js';
+import {GunpinMessage as _guide} from "../guides.json";
+import {pinMessage as _keyword} from "../keywords.json";
 import {injectable} from "inversify";
-import {AbstractCommand} from "@Commands/AbstractCommand";
-import {pinMessageCmd} from "@cmdInterfaces/pinMessageCmd";
-import {GunpinMessage as _guide} from "@Commands/guides.json";
-import {pinMessage as _keyword} from "@Commands/keywords.json";
-import {logsChannel} from "@root/index";
-import Bundle from "@root/EntitiesBundle/Bundle";
+import Bundle from "../../EntitiesBundle/Bundle";
+import {pinMessageCmd} from "../Interf/pinMessageCmd";
+import {AbstractCommand} from "../AbstractCommand";
+
 
 @injectable()
 export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd {
-    private _aliases: string[];
-
-    public constructor() {
-        super( ['pin', 'πιν'],
-            _keyword);
-    }
-
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['pin', 'πιν'],
+        _keyword
+    );
 
     execute(bundle: Bundle): Promise<any> {
         let pinReason = bundle.getCommand().commandless2 ? bundle.getCommand().commandless2 : ``;
@@ -31,10 +29,6 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                             bundle.getMessage().delete({timeout:5000}).catch(err => this.handleError(err, bundle));
                     });
             })
-    }
-
-    setAliases(aliases: string[]) {
-        this._aliases = aliases;
     }
 
     getAliases(): string[] {

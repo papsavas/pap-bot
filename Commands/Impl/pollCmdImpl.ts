@@ -2,30 +2,31 @@ import {AbstractCommand} from "../AbstractCommand";
 import * as Discord from 'discord.js';
 import {simplePoll as _keyword} from '../keywords.json';
 import {GsimplePoll as _guide} from '../guides.json';
-import {pollCmd} from "../Interf/pollCmd";
 import {injectable} from "inversify";
-import "reflect-metadata";
 import Bundle from "../../EntitiesBundle/Bundle";
+import {pollCmd} from "../Interf/pollCmd";
+
 
 @injectable()
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
-    private _aliases;
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['poll', 'πολλ'],
+        _keyword
+    );
 
-    public constructor() {
-        super(['poll', 'πολλ'],
-            _keyword);
-    }
 
     execute(bundle: Bundle) {
-        (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send(
+        const commandMsg = bundle.getMessage();
+        return (commandMsg.channel as Discord.TextChannel | Discord.DMChannel).send(
             new Discord.MessageEmbed(
                 {
                     title: `Ψηφίστε`,
                     color: '#D8F612',
                     description: bundle.getCommand().commandless1,
                     author: {
-                        name: bundle.getMember().displayName,
-                        icon_url: bundle.getUser().avatarURL({format: 'png'})
+                        name: commandMsg.member.displayName,
+                        icon_url: commandMsg.member.user.avatarURL({format: 'png'})
                     },
                     //add blank
                     fields: [{
@@ -38,8 +39,11 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                bundle.getMessage().delete().catch(err => this.handleError(err, bundle));
-
+                if(commandMsg.deletable)
+                    commandMsg.delete()
+                    .catch(err =>{
+                        this.handleError(err, bundle);
+                    });
                 return new Promise((resolve) => {
                     resolve('poll cmd executed');
                 });
@@ -51,13 +55,6 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             });
         });
 
-        return new Promise((resolve, reject) => {
-            reject(`poll sent but didn't received promise from sent message`)
-        });
-    }
-
-    setAliases(aliases: string[]) {
-        this._aliases = aliases;
     }
 
     getKeyword(): string {

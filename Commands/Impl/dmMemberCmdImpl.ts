@@ -1,11 +1,11 @@
-import {AbstractCommand} from "@Commands/AbstractCommand";
 import * as Discord from 'discord.js';
-import {dmMember as _keyword} from '@Commands/keywords.json';
-import {GdmMember as _guide} from '@Commands/guides.json';
-import {dmMemberCmd} from '@cmdInterfaces/dmMemberCmd';
+import {dmMember as _keyword} from '../keywords.json';
+import {GdmMember as _guide} from '../guides.json';
 import {injectable} from "inversify";
-import "reflect-metadata";
-import Bundle from "@root/EntitiesBundle/Bundle";
+import Bundle from "../../EntitiesBundle/Bundle";
+import {AbstractCommand} from "../AbstractCommand";
+import {dmMemberCmd} from "../Interf/dmMemberCmd";
+
 
 @injectable()
 export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {

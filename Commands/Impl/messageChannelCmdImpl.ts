@@ -1,22 +1,20 @@
-import {injectable} from "inversify";
 import * as Discord from 'discord.js';
-import {AbstractCommand} from "@Commands/AbstractCommand";
-import {messageChannelCmd} from "@cmdInterfaces/messageChannelCmd";
-import Bundle from "@root/EntitiesBundle/Bundle";
-import { messageChannel as _keyword } from '@Commands/keywords.json';
-import { GmessageChannel as _guide } from '@Commands/guides.json';
+import {messageChannel as _keyword} from '../keywords.json';
+import {GmessageChannel as _guide} from '../guides.json';
+import {injectable} from "inversify";
+import Bundle from "../../EntitiesBundle/Bundle";
+import {AbstractCommand} from "../AbstractCommand";
+import {messageChannelCmd} from "../Interf/messageChannelCmd";
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
-    private _aliases :string[];
+    private readonly _aliases = this.addKeywordToAliases
+    (
+        ['send', 'msgchannel', 'messagechannel', 'message_channel'],
+        _keyword
+    );
 
-    public constructor() {
-        super(['send', 'msgchannel', 'messagechannel', 'message_channel'],
-            _keyword);
-    }
-
-
-    execute(bundle: Bundle){
+    execute(bundle: Bundle) {
         if (bundle.getChannel().type == 'text') {
             const sendChannel: Discord.TextChannel | undefined = bundle.getMessage().mentions.channels.first();
             if (typeof sendChannel == 'undefined')
@@ -25,10 +23,6 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
                 return sendChannel.send(bundle.getCommand().commandless2);
         } else
             return new Promise((res, rej) => rej('cannot perform messaging on a non text channel'))
-    }
-
-    setAliases(aliases: string[]) {
-        this._aliases = aliases;
     }
 
     getAliases(): string[] {
