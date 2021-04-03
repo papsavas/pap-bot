@@ -16,17 +16,19 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
     );
 
     execute(bundle: Bundle): Promise<any> {
+        const message = bundle.getMessage();
+        const channel = message.channel;
         let pinReason = bundle.getCommand().commandless2 ? bundle.getCommand().commandless2 : ``;
         pinReason += `\nby ${bundle.getMember().displayName}`;
-        let arg1 = bundle.extractId(bundle.getCommand().arg1);
-        return (bundle.getChannel() as Discord.TextChannel).messages.fetch(arg1)
-            .then((msg) => {
-                msg.pin({reason: pinReason})
-                    .then((msg) => {
-                        bundle.addLog(`message pinned:\n${msg.url} with reason ${pinReason}`);
-                        bundle.getMessage().react('👌').catch(err => this.logErrorOnBugsChannel(err, bundle));
-                        if(bundle.getMessage().deletable)
-                            bundle.getMessage().delete({timeout:5000}).catch(err => this.logErrorOnBugsChannel(err, bundle));
+        let pinningMessageID = bundle.extractId(bundle.getCommand().arg1);
+        return channel.messages.fetch(pinningMessageID)
+            .then((fetchedMessage) => {
+                fetchedMessage.pin({reason: pinReason})
+                    .then((pinnedMessage) => {
+                        bundle.addLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                        message.react('👌').catch();
+                        if(message.deletable)
+                            message.delete({timeout:5000}).catch();
                     });
             })
     }

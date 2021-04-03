@@ -39,6 +39,7 @@ export default class CommandHandlerImpl implements CommandHandler {
             switch (candidateCommand.prefix) {
                 case prefix:
                     commandImpl.execute(bundle)
+                        .then(execution => commandMessage.react('✅').catch())
                         .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
                     break;
                 case qprefix:
@@ -69,7 +70,7 @@ export default class CommandHandlerImpl implements CommandHandler {
     }
 
     private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand) {
-        const emb = new Discord.MessageEmbed({
+        const bugsChannelEmbed = new Discord.MessageEmbed({
             author: {
                 name: bundle.getGuild().name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
@@ -81,19 +82,24 @@ export default class CommandHandlerImpl implements CommandHandler {
             color: "DARK_RED",
             timestamp: new Date()
         });
-        emb.setDescription(err);
-        bugsChannel.send(emb).catch(internalErr => console.log("internal error\n", internalErr));
+        bugsChannelEmbed.setDescription(err);
+        bugsChannelEmbed.addField(`caused by`, commandMessage.url);
+        bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
 
-        commandMessage.channel.send(new Discord.MessageEmbed({
-            author: {
-                name: `Error on Command 💥`,
-                icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
-            },
-            title: prefix + commandImpl.getKeyword(),
-            description: commandImpl.getGuide(),
-            footer: {text: commandImpl.getAliases().toString()},
-            color: "RED"
-        })).then(msg => msg.delete({timeout: 20000}));
+        //send feedback to member
+        commandMessage.reply(new Discord.MessageEmbed(
+            {
+                author: {
+                    name: `Error on Command`,
+                    icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
+                },
+                title: prefix + commandImpl.getKeyword(),
+                description: commandImpl.getGuide(),
+                fields: [{name: `Specified error  💥`, value: `• ${err}`}],
+                footer: {text: commandImpl.getAliases().toString()},
+                color: "RED"
+            })
+        ).then(msg => msg.delete({timeout: 20000}));
         console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.toString()}`)
     }
 }

@@ -68,12 +68,13 @@ PAP.on('message', (receivedMessage) => {
 PAP.on('messageDelete', (deletedMessage) => {
     of(deletedMessage).pipe(
         filter(deletedMessage =>
-            deletedMessage.author == PAP.user
-            || !deletedMessage.author.bot),
+            !!deletedMessage &&
+            deletedMessage.author?.id != PAP.user.id
+            || !deletedMessage?.author.bot),
 
         tap(deletedMessage => {
             if (deletedMessage.channel.type === "dm") {
-                console.log(deletedMessage.content)
+                //console.log(deletedMessage.content)
             } else if (deletedMessage.channel.type === "text") {
                 onMessageDelete(deletedMessage);
             }
