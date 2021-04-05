@@ -17,22 +17,28 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     );
 
 
-    public execute(bundle: Bundle) {
+    public async execute(bundle: Bundle) {
         const message = bundle.getMessage();
+        const attachments = message.attachments?.first();
         const guild = message.guild;
         const user = message.mentions.users.first();
         const text = bundle.getCommand().commandless2;
+        if(!text && !attachments)
+            throw new Error('Cannot send empty message');
+
         const sendEmb = new Discord.MessageEmbed({
-            author:{
+            author: {
                 name: guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
-            title:`You have a message ${user.username}`,
-            thumbnail: {url:guild.iconURL({format:"png", size:128})},
-            color:"NAVY",
+            title: `You have a message ${user.username}`,
+            thumbnail: {url: guild.iconURL({format: "png", size: 128})},
+            image: {url: attachments?.proxyURL},
+            color: "NAVY",
             description: text,
-            timestamp : new Date()
+            //video: { url: attachments?.proxyURL}, cannot send video via rich embed
+            timestamp: new Date()
         })
         return user.send(sendEmb)
             .catch(err => {
