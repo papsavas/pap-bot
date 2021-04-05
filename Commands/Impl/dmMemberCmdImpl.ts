@@ -35,12 +35,13 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
             title: `You have a message ${user.username}`,
             thumbnail: {url: guild.iconURL({format: "png", size: 128})},
             image: {url: attachments?.proxyURL},
-            color: "NAVY",
+            color: "AQUA",
             description: text,
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
             timestamp: new Date()
         })
         return user.send(sendEmb)
+            .then((smsg) => bundle.addLog(`sent "${text}" to ${user.username}`))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
                     throw new Error(`Could not dm ${user.username}`);

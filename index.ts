@@ -40,9 +40,10 @@ PAP.on('ready', () => {
     bundle.setClient(PAP);
     PAP.user.setActivity('over you', {type: 'WATCHING'})
         .catch(err=> console.log(err));
-    const initLogs = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746310338215018546') as Discord.TextChannel;
-    bugsChannel = PAP.guilds.cache.get('746309734851674122').channels.cache.get('746696214103326841') as Discord.TextChannel;
-    logsChannel = PAP.guilds.cache.get('746309734851674122').channels.cache.get('815602459372027914') as Discord.TextChannel
+    const PAPGuildChannels : Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
+    const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
+    bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
+    logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
     initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
     console.log(`___Initiated___`);
 });

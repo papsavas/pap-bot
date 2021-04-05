@@ -14,15 +14,15 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
         _keyword
     );
 
-    execute(bundle: Bundle) {
-        if (bundle.getChannel().type == 'text') {
-            const sendChannel: Discord.TextChannel | undefined = bundle.getMessage().mentions.channels.first();
-            if (typeof sendChannel == 'undefined')
-                return new Promise((res, rej) => rej('Channel not found'));
-            else
-                return sendChannel.send(bundle.getCommand().commandless2);
-        } else
-            return new Promise((res, rej) => rej('cannot perform messaging on a non text channel'))
+    async execute(bundle: Bundle) {
+        const command = bundle.getCommand();
+        const message = bundle.getMessage();
+        const sendChannel: Discord.TextChannel | undefined = message.mentions.channels.first();
+        if(message.guild.channels.cache.has(sendChannel.id) && sendChannel?.type === 'text')
+            return sendChannel.send(command.commandless2)
+                .then((msg) => bundle.addLog(`sent ${command.commandless2} to ${sendChannel.name}`));
+        else
+            throw new Error(`Channel not found`);
     }
 
     getAliases(): string[] {
