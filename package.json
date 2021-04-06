@@ -10,7 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
     "inversify": "^5.0.5",
+    "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/pg": "^7.14.11"
   }
 }
