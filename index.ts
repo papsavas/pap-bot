@@ -1,4 +1,3 @@
-require('dotenv').config();
 import {of} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 import * as Discord from 'discord.js';
@@ -13,6 +12,14 @@ export const bundle: Bundle = new BundleImpl();
 export let bugsChannel: Discord.TextChannel;
 export let logsChannel: Discord.TextChannel;
 
+export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
+
+if (inDevelopment)
+    require('dotenv').config();  //load env variables
+
+
+console.log("running in " + process.env.NODE_ENV + " mode\n");
+
 const PAP = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
     ws: {
@@ -25,21 +32,13 @@ const PAP = new Discord.Client({
 });
 
 
-let inDevelopment: boolean = false;
-
-if (process.env.NODE_ENV === 'development') {
-    //require('dotenv').config();  //load env variables
-    inDevelopment = true;
-}
-console.log("running in " + process.env.NODE_ENV + " mode\n");
-
 PAP.on('guildUnavailable', (guild) => {
     if (guild.id !== guildID)
         logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`);
 });
 
-PAP.on('ready', () => {
-    try{
+PAP.on('ready', async () => {
+    try {
         bundle.setClient(PAP);
         PAP.user.setActivity('over you', {type: 'WATCHING'})
             .catch(err => console.log(err));
@@ -47,12 +46,11 @@ PAP.on('ready', () => {
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
         logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
-        initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
-        logToDB();
+        await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+        await logToDB();
         console.log('smooth init')
-    }
-    catch (err){
-        console.log('ERROR\n',err);
+    } catch (err) {
+        console.log('ERROR\n', err);
     }
 
     console.log(`___Initiated___`);

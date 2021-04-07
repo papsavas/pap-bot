@@ -12,6 +12,7 @@
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "inversify": "^5.0.5",
+    "knex": "^0.95.4",
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13"
   },
