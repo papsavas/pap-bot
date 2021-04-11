@@ -2,7 +2,7 @@ import {GunpinMessage as _guide} from "../guides.json";
 import {unpinMessage as _keyword} from "../keywords.json";
 import * as Discord from "discord.js";
 import {injectable} from "inversify";
-import Bundle from "../../EntitiesBundle/Bundle";
+import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
 

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "target": "ES2015",
+    "target": "ESNext",
     "module": "commonjs",
     "strict": false,
     "moduleResolution": "node",

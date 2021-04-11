@@ -2,7 +2,7 @@ import * as Discord from 'discord.js';
 import {editMessage as _keyword} from '../keywords.json';
 import {GeditMessage as _guide} from '../guides.json';
 import {injectable} from "inversify";
-import Bundle from "../../EntitiesBundle/Bundle";
+import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {editMessageCmd} from "../Interf/editMessageCmd";
 import * as e from '../../errorCodes.json'

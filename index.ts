@@ -1,11 +1,13 @@
-import {of} from 'rxjs';
-import {filter, tap} from 'rxjs/operators';
 import * as Discord from 'discord.js';
 import {onMessage, onMessageDelete} from './EventHandler';
-import {guildID} from './botconfig.json'
-import Bundle from "./EntitiesBundle/Bundle";
-import BundleImpl from "./EntitiesBundle/BundleImpl";
-import {logToDB} from "./DB/server";
+import {guildID as botGuildID} from './botconfig.json'
+import Bundle from "./BundlePackage/Bundle";
+import BundleImpl from "./BundlePackage/BundleImpl";
+import {returnTable} from "./DB/dbRepo";
+import {GenericCommand} from "./Commands/GenericCommand";
+import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
+import {GenericGuild} from "./Guilds/GenericGuild";
+import {GuildMember, Message, User} from "discord.js";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -31,10 +33,14 @@ const PAP = new Discord.Client({
     }
 });
 
+const guildMap: Map<Discord.Snowflake, GenericGuild> = new Map<Discord.Snowflake, GenericGuild>();
+
+
 
 PAP.on('guildUnavailable', (guild) => {
-    if (guild.id !== guildID)
-        logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`);
+    if (guild.id !== botGuildID)
+        logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`)
+            .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
 PAP.on('ready', async () => {
@@ -47,7 +53,18 @@ PAP.on('ready', async () => {
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
         logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
         await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
-        await logToDB();
+
+        PAP.guilds.cache.forEach((guild) => {
+            switch (guild.id){
+                case '0000': //kep.id:
+                    //guildMap.set(guild.id, new KEPGuild(guild.id));
+                    break;
+                default:
+                    guildMap.set(guild.id, new DefaultGuild(guild.id));
+            }
+        })
+        const table = await returnTable('person', ['name']);
+        console.table(table);
         console.log('smooth init')
     } catch (err) {
         console.log('ERROR\n', err);
@@ -58,38 +75,84 @@ PAP.on('ready', async () => {
 
 
 PAP.on('message', (receivedMessage) => {
-    of(receivedMessage).pipe(
-        filter(receivedMessage =>
-            receivedMessage.author == PAP.user
-            || !receivedMessage.author.bot),
+    if (receivedMessage.author == PAP.user || receivedMessage.author.bot)
+        return
+    switch (receivedMessage.channel.type) {
+        case 'dm':
+            break;
 
-        tap(receivedMessage => {
-            if (receivedMessage.channel.type === "dm") {
-                console.log(receivedMessage.content)
-            } else if (receivedMessage.channel.type === "text") {
-                onMessage(receivedMessage);
-            }
-        })
-    ).subscribe();
+        case 'text':
+            guildMap.get(receivedMessage.guild.id).onMessage(receivedMessage)
+                .catch(err => console.log(err));
+            break;
+    }
 })
 
 
-PAP.on('messageDelete', (deletedMessage) => {
-    of(deletedMessage).pipe(
-        filter(deletedMessage =>
-            !!deletedMessage &&
-            deletedMessage.author?.id != PAP.user.id
-            || !deletedMessage?.author.bot),
+PAP.on('messageDelete', async (deletedMessage) => {
+    if (deletedMessage.partial) return; //cannot fetch deleted data
 
-        tap(deletedMessage => {
-            if (deletedMessage.channel.type === "dm") {
-                //console.log(deletedMessage.content)
-            } else if (deletedMessage.channel.type === "text") {
-                onMessageDelete(deletedMessage);
-            }
-        })
-    ).subscribe();
+    if (deletedMessage.author == PAP.user || deletedMessage.author.bot)
+        return
+
+    switch (deletedMessage.channel.type) {
+        case 'dm':
+            break;
+
+        case 'text':
+            guildMap.get(deletedMessage.guild.id).onMessageDelete(deletedMessage as Message)
+                .catch(err => console.log(err));
+            break;
+    }
+
 })
+
+PAP.on('messageReactionAdd', async (messageReaction, user) => {
+    try {
+        if (messageReaction.partial) await messageReaction.fetch();
+        if (user.partial) await user.fetch();
+    } catch (err) {
+        console.error(err)
+    }
+    guildMap.get(messageReaction.message.guild.id).onMessageReactionAdd(messageReaction, user as User)
+        .catch(err => console.log(err));
+
+});
+
+PAP.on('messageReactionRemove', async (messageReaction, user) => {
+    try {
+        if (messageReaction.partial) await messageReaction.fetch();
+        if (user.partial) await user.fetch();
+    } catch (err) {
+        console.error(err)
+    }
+    guildMap.get(messageReaction.message.guild.id).onMessageReactionRemove(messageReaction, user as User)
+        .catch(err => console.log(err));
+});
+
+PAP.on('guildMemberAdd', (member) => {
+    guildMap.get(member.guild.id).onGuildMemberAdd(member)
+        .catch(err => console.log(err));
+});
+
+PAP.on('guildMemberRemove', async (member) => {
+    if (member.partial) await member.fetch().catch(console.error);
+    guildMap.get(member.guild.id).onGuildMemberRemove(member as GuildMember)
+        .catch(err => console.log(err));
+
+});
+
+PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
+    if (oldMember.partial) await oldMember.fetch().catch(console.error);
+    guildMap.get(newMember.guild.id).onGuildMemberUpdate(oldMember as GuildMember, newMember)
+        .catch(err => console.log(err));
+
+});
+
+PAP.on('error', (error) => {
+    console.error(error);
+});
+
 
 PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in`))

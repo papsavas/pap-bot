@@ -1,7 +1,7 @@
 import {dmMember as _keyword} from '../keywords.json';
 import {GdmMember as _guide} from '../guides.json';
 import {injectable} from "inversify";
-import Bundle from "../../EntitiesBundle/Bundle";
+import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {dmMemberCmd} from "../Interf/dmMemberCmd";
 import * as e from '../../errorCodes.json'

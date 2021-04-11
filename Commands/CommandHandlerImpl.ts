@@ -38,17 +38,16 @@ export default class CommandHandlerImpl implements CommandHandler {
         if (typeof commandImpl !== "undefined") {
             switch (candidateCommand.prefix) {
                 case prefix:
-                    commandImpl.execute(bundle)
+                    return commandImpl.execute(bundle)
                         .then(execution => commandMessage.react('✅').catch())
                         .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
-                    break;
+
                 case qprefix:
-                    (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
+                    return (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
                         .catch(err => `Error on Guide sending\n${err.toString()}`);
-                    break;
             }
         } else
-            (bundle.getMessage() as Discord.Message).react('❔').catch();
+           return (bundle.getMessage() as Discord.Message).react('❔').catch();
     }
 
     private returnCommand(receivedMessage: String): commandType {

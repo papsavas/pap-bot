@@ -3,7 +3,7 @@ import {GenericCommand} from "./GenericCommand";
 import "reflect-metadata";
 import * as Discord from 'discord.js';
 import {bugsChannel} from '../index';
-import Bundle from "../EntitiesBundle/Bundle";
+import Bundle from "../BundlePackage/Bundle";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {

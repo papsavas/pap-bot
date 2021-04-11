@@ -1,3 +1,3 @@
 export interface CommandHandler{
-    onCommand():void;
+    onCommand():Promise<any>;
 }

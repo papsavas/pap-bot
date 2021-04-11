@@ -2,7 +2,7 @@ import * as Discord from 'discord.js';
 import {messageChannel as _keyword} from '../keywords.json';
 import {GmessageChannel as _guide} from '../guides.json';
 import {injectable} from "inversify";
-import Bundle from "../../EntitiesBundle/Bundle";
+import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {messageChannelCmd} from "../Interf/messageChannelCmd";
 

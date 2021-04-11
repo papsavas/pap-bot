@@ -5,7 +5,7 @@ import {Ghelp as _guide} from '../guides.json';
 import {helpCmd} from "../Interf/helpCmd";
 import {injectable} from "inversify";
 import "reflect-metadata";
-import Bundle from "EntitiesBundle/Bundle";
+import Bundle from "BundlePackage/Bundle";
 
 @injectable()
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {
