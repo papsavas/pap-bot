@@ -44,17 +44,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                     .catch(err =>{
                         this.logErrorOnBugsChannel(err, bundle);
                     });
-                return new Promise((resolve) => {
-                    resolve('poll cmd executed');
-                });
-
-            }).catch(err => {
-            return new Promise((resolve, reject) => {
-                reject(`poll cmd failed:\n${err}`);
-                this.logErrorOnBugsChannel(err, bundle);
-            });
-        });
-
+            })
     }
 
     getKeyword(): string {

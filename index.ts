@@ -1,13 +1,11 @@
 import * as Discord from 'discord.js';
-import {onMessage, onMessageDelete} from './EventHandler';
+import {GuildMember, Message, User} from 'discord.js';
 import {guildID as botGuildID} from './botconfig.json'
 import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {returnTable} from "./DB/dbRepo";
-import {GenericCommand} from "./Commands/GenericCommand";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
-import {GuildMember, Message, User} from "discord.js";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -22,7 +20,7 @@ if (inDevelopment)
 
 console.log("running in " + process.env.NODE_ENV + " mode\n");
 
-const PAP = new Discord.Client({
+export const PAP = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
     ws: {
         intents: [
@@ -33,8 +31,7 @@ const PAP = new Discord.Client({
     }
 });
 
-const guildMap: Map<Discord.Snowflake, GenericGuild> = new Map<Discord.Snowflake, GenericGuild>();
-
+const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
 
 PAP.on('guildUnavailable', (guild) => {
@@ -46,28 +43,24 @@ PAP.on('guildUnavailable', (guild) => {
 PAP.on('ready', async () => {
     try {
         bundle.setClient(PAP);
-        PAP.user.setActivity('over you', {type: 'WATCHING'})
-            .catch(err => console.log(err));
+        await PAP.user.setActivity('over you', {type: 'WATCHING'})
+            //.catch(err => console.log(err));
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
         logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
         await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
-        PAP.guilds.cache.forEach((guild) => {
-            switch (guild.id){
-                case '0000': //kep.id:
-                    //guildMap.set(guild.id, new KEPGuild(guild.id));
-                    break;
-                default:
-                    guildMap.set(guild.id, new DefaultGuild(guild.id));
-            }
-        })
-        const table = await returnTable('person', ['name']);
-        console.table(table);
+        /*PAP.guilds.cache.keyArray()*/[botGuildID].forEach((guildID) => {
+            if(!guildMap.has(guildID))
+                guildMap.set(guildID, new DefaultGuild(guildID));
+        });
+        //const table = await returnTable('person', ['name']);
+        console.log(guildMap);
         console.log('smooth init')
-    } catch (err) {
-        console.log('ERROR\n', err);
+    }
+    catch (err) {
+        console.log('ERROR\n'+err);
     }
 
     console.log(`___Initiated___`);
@@ -75,14 +68,15 @@ PAP.on('ready', async () => {
 
 
 PAP.on('message', (receivedMessage) => {
-    if (receivedMessage.author == PAP.user || receivedMessage.author.bot)
+    if (receivedMessage.author.bot)
         return
     switch (receivedMessage.channel.type) {
         case 'dm':
             break;
 
         case 'text':
-            guildMap.get(receivedMessage.guild.id).onMessage(receivedMessage)
+            guildMap.get(receivedMessage.guild.id)
+                .onMessage(receivedMessage)
                 .catch(err => console.log(err));
             break;
     }
