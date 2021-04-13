@@ -1,30 +1,53 @@
 import {GenericGuild} from "./GenericGuild";
 import * as Discord from 'discord.js';
+import {Snowflake} from 'discord.js';
 import {bundle, PAP} from "../index";
 import {mentionRegex, prefix, qprefix} from "../botconfig.json";
 import container from "../Inversify/inversify.config";
 import {CommandHandler} from "../Commands/CommandHandler";
 import {TYPES} from "../Inversify/Types";
 import {randomInt} from "crypto";
+import {readData} from "../DB/firestoreRepo";
+import {ResponsesType} from "../Entities/ResponsesType";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
 export abstract class AbstractGuild implements GenericGuild {
 
-
-    protected readonly guildID: Discord.Snowflake;
+    protected readonly guildID: Snowflake;
     protected logs: string[] = [];
+    private _lightResponses: string[];
+    private _heavyResponses: string[];
+    private _userResponses: ResponsesType;
+
 
     protected constructor(guild_id: Discord.Snowflake) {
         this.guildID = guild_id;
         this._guild = PAP.guilds.cache.get(guild_id);
+        readData('ChatUtils/genericResponses').then(resp => {
+            this._lightResponses = resp['light'];
+            this._heavyResponses = resp['heavy'];
+        });
+        readData(`responses/${guild_id}`).then(ur => {
+            this._userResponses = ur as ResponsesType;
+        });
     }
 
-    private _responses: string[]
 
-    set responses(value: string[]) {
-        this._responses = value;
+    get lightResponses(): string[] {
+        return this._lightResponses;
     }
+
+    get heavyResponses(): string[] {
+        return this._heavyResponses;
+    }
+
+    get userResponses(): ResponsesType {
+        return this._userResponses;
+    }
+
+    private _responses: string[] = this.returnResponses();
+
 
     private _guild: Discord.Guild;
 
@@ -32,6 +55,11 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._guild;
     }
 
+    set guild(value: Discord.Guild) {
+        this._guild = value;
+    }
+
+    abstract returnResponses(): string[];
 
     onGuildMemberAdd(member: Discord.GuildMember): Promise<any> {
         return Promise.resolve(this.addLog(`member ${member.displayName} joined the guild`));
@@ -79,7 +107,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
 
-    addLog(log: string) :string{
+    addLog(log: string): string {
         this.logs.push(log);
         return log
     }

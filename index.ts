@@ -76,7 +76,7 @@ PAP.on('message', (receivedMessage) => {
 
         case 'text':
             guildMap.get(receivedMessage.guild.id)
-                .onMessage(receivedMessage)
+                ?.onMessage(receivedMessage)
                 .catch(err => console.log(err));
             break;
     }
@@ -94,7 +94,8 @@ PAP.on('messageDelete', async (deletedMessage) => {
             break;
 
         case 'text':
-            guildMap.get(deletedMessage.guild.id).onMessageDelete(deletedMessage as Message)
+            guildMap.get(deletedMessage.guild.id)
+                ?.onMessageDelete(deletedMessage as Message)
                 .catch(err => console.log(err));
             break;
     }
@@ -108,7 +109,8 @@ PAP.on('messageReactionAdd', async (messageReaction, user) => {
     } catch (err) {
         console.error(err)
     }
-    guildMap.get(messageReaction.message.guild.id).onMessageReactionAdd(messageReaction, user as User)
+    guildMap.get(messageReaction.message.guild.id)
+        ?.onMessageReactionAdd(messageReaction, user as User)
         .catch(err => console.log(err));
 
 });
@@ -120,12 +122,14 @@ PAP.on('messageReactionRemove', async (messageReaction, user) => {
     } catch (err) {
         console.error(err)
     }
-    guildMap.get(messageReaction.message.guild.id).onMessageReactionRemove(messageReaction, user as User)
+    guildMap.get(messageReaction.message.guild.id)
+        ?.onMessageReactionRemove(messageReaction, user as User)
         .catch(err => console.log(err));
 });
 
 PAP.on('guildMemberAdd', (member) => {
-    guildMap.get(member.guild.id).onGuildMemberAdd(member)
+    guildMap.get(member.guild.id)
+        ?.onGuildMemberAdd(member)
         .catch(err => console.log(err));
 });
 
@@ -138,7 +142,8 @@ PAP.on('guildMemberRemove', async (member) => {
 
 PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (oldMember.partial) await oldMember.fetch().catch(console.error);
-    guildMap.get(newMember.guild.id).onGuildMemberUpdate(oldMember as GuildMember, newMember)
+    guildMap.get(newMember.guild.id)
+        ?.onGuildMemberUpdate(oldMember as GuildMember, newMember)
         .catch(err => console.log(err));
 
 });

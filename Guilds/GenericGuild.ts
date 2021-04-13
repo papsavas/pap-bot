@@ -16,4 +16,6 @@ export interface GenericGuild {
     onGuildMemberRemove(member: Discord.GuildMember): Promise<any>;
 
     onGuildMemberUpdate(oldMember: Discord.GuildMember, newMember: Discord.GuildMember): Promise<any>;
+
+    returnResponses(): string[];
 }
