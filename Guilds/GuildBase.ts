@@ -1,7 +1,6 @@
 import * as Discord from 'discord.js';
-import { GaxiosPromise } from 'gaxios';
 
- export interface CommonGuildInterface {
+export interface CommonGuildInterface {
     Discord: typeof Discord,
     PAPregex: RegExp,
     prefix: string,

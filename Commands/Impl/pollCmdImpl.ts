@@ -5,6 +5,7 @@ import {GsimplePoll as _guide} from '../guides.json';
 import {injectable} from "inversify";
 import Bundle from "../../BundlePackage/Bundle";
 import {pollCmd} from "../Interf/pollCmd";
+import {commandType, guildLoggerType} from "../../Entities";
 
 
 @injectable()
@@ -16,14 +17,14 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
     );
 
 
-    execute(bundle: Bundle) {
-        const commandMsg = bundle.getMessage();
-        return (commandMsg.channel as Discord.TextChannel | Discord.DMChannel).send(
+    execute(message, {commandless1}: commandType, addGuildLog: guildLoggerType) {
+        const commandMsg = message;
+        return (commandMsg.channel as Discord.TextChannel).send(
             new Discord.MessageEmbed(
                 {
                     title: `Ψηφίστε`,
                     color: '#D8F612',
-                    description: bundle.getCommand().commandless1,
+                    description: commandless1,
                     author: {
                         name: commandMsg.member.displayName,
                         icon_url: commandMsg.member.user.avatarURL({format: 'png'})
@@ -42,7 +43,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                 if(commandMsg.deletable)
                     commandMsg.delete()
                     .catch(err =>{
-                        this.logErrorOnBugsChannel(err, bundle);
+                        //this.logErrorOnBugsChannel(err, bundle);
                     });
             })
     }

@@ -3,7 +3,6 @@ import {GuildMember, Message, User} from 'discord.js';
 import {guildID as botGuildID} from './botconfig.json'
 import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
-import {returnTable} from "./DB/dbRepo";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 
@@ -31,7 +30,7 @@ export const PAP = new Discord.Client({
     }
 });
 
-const guildMap = new Map<Discord.Snowflake, GenericGuild>();
+export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
 
 PAP.on('guildUnavailable', (guild) => {

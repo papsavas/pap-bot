@@ -16,8 +16,8 @@ export class HelpCmdImpl extends AbstractCommand implements helpCmd {
     );
 
 
-    execute(bundle: Bundle) {
-        return (bundle.getChannel() as Discord.TextChannel | Discord.DMChannel).send('help is here');
+    execute(message, command, addGuildLog) {
+        return (message.channel).send('help is here');
     }
 
 

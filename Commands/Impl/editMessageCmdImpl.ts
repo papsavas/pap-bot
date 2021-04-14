@@ -6,6 +6,8 @@ import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {editMessageCmd} from "../Interf/editMessageCmd";
 import * as e from '../../errorCodes.json'
+import {Message} from "discord.js";
+import {commandType} from "../../Entities";
 
 
 @injectable()
@@ -16,13 +18,16 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
         _keyword
     );
 
-    async execute(bundle: Bundle): Promise<any> {
-        const message: Discord.Message = bundle.getMessage();
-        const channel: Discord.TextChannel = bundle.getChannel() as Discord.TextChannel;
+    async execute(
+        {channel, mentions, guild, url} : Message,
+        {arg1, arg2, commandless2, commandless3} : commandType,
+        addGuildLog
+    ): Promise<any> {
+
         try {
-            const fetchedMessage = await channel.messages.fetch(bundle.getCommand().arg1)
+            const fetchedMessage = await channel.messages.fetch(arg1)
             const editedMessage = await fetchedMessage
-                .edit(bundle.getCommand().commandless2)
+                .edit(commandless2)
             await channel.send({
                 embed: {
                     description: `[edited message](${editedMessage.url})`
@@ -33,18 +38,18 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
         catch (err) {
             if (err.code == e["Unknown message"] || err.code == e["Invalid form body"]) {
                 try {
-                    const targetChannel : Discord.GuildChannel = message.guild.channels.cache
-                        .find(c => c.id == message.mentions.channels?.firstKey())
+                    const targetChannel : Discord.GuildChannel = guild.channels.cache
+                        .find(c => c.id == mentions.channels?.firstKey())
 
-                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(bundle.getCommand().arg2);
+                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2);
 
-                    const editedMessage = await targetMessage?.edit(bundle.getCommand().commandless3);
+                    const editedMessage = await targetMessage?.edit(commandless3);
                     const sendLinkMessage = await channel.send(new Discord.MessageEmbed(
                         {description: `[edited message](${editedMessage.url})`}
                         ));
                     return new Promise((res, rej) => res('edit message success'));
                 } catch (err) {
-                    return new Promise((res, rej) => rej(`edit message failed\n${message.url}`));
+                    return new Promise((res, rej) => rej(`edit message failed\n${url}`));
                 }
             }
 

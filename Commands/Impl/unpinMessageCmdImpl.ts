@@ -5,6 +5,9 @@ import {injectable} from "inversify";
 import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
+import {commandType, guildLoggerType} from "../../Entities";
+import {Message} from "discord.js";
+import {extractId} from "../../toolbox";
 
 injectable()
 
@@ -15,18 +18,18 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
         _keyword
     );
 
-    execute(bundle: Bundle): Promise<any> {
-        let unpinReason = bundle.getCommand().commandless2 ? bundle.getCommand().commandless2 : `undefined`;
-        unpinReason += `\nby ${bundle.getMember().displayName}`;
-        let arg1 = bundle.extractId(bundle.getCommand().arg1);
-        return (bundle.getChannel() as Discord.TextChannel).messages.fetch(arg1)
+    execute(message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
+        const [channel, member] = [message.channel, message.member];
+        let unpinReason = commandless2 ? commandless2 : `undefined`;
+        unpinReason += `\nby ${member.displayName}`;
+        let id = extractId(arg1);
+        return (channel as Discord.TextChannel).messages.fetch(id)
             .then((msg) => {
                 msg.unpin({reason: unpinReason})
                     .then((msg) => {
-                        bundle.addLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
-                        bundle.getMessage().react('👌').catch(err => this.logErrorOnBugsChannel(err, bundle));
-                        if (bundle.getMessage().deletable)
-                            bundle.getMessage().delete({timeout: 5000}).catch(err => this.logErrorOnBugsChannel(err, bundle));
+                        addGuildLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
+                        if (message.deletable)
+                            message.delete({timeout: 5000}).catch()
                     });
             })
     }

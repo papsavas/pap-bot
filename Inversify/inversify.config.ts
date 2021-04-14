@@ -1,11 +1,11 @@
-import { Container } from "inversify";
-import { helpCmd } from "../Commands/Interf/helpCmd";
-import { HelpCmdImpl } from "../Commands/Impl/helpCmdImpl";
-import { PollCmdImpl } from "../Commands/Impl/pollCmdImpl";
-import { pollCmd } from "../Commands/Interf/pollCmd";
+import {Container} from "inversify";
+import {helpCmd} from "../Commands/Interf/helpCmd";
+import {HelpCmdImpl} from "../Commands/Impl/helpCmdImpl";
+import {PollCmdImpl} from "../Commands/Impl/pollCmdImpl";
+import {pollCmd} from "../Commands/Interf/pollCmd";
 import {messageChannelCmd} from "../Commands/Interf/messageChannelCmd"
 import {dmMemberCmd} from "../Commands/Interf/dmMemberCmd"
-import { TYPES } from "./Types";
+import {TYPES} from "./Types";
 import CommandHandlerImpl from "../Commands/CommandHandlerImpl";
 import {CommandHandler} from "../Commands/CommandHandler";
 import {DmMemberCmdImpl} from "../Commands/Impl/dmMemberCmdImpl";

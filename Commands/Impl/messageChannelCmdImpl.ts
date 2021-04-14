@@ -1,10 +1,11 @@
 import * as Discord from 'discord.js';
+import {Message} from 'discord.js';
 import {messageChannel as _keyword} from '../keywords.json';
 import {GmessageChannel as _guide} from '../guides.json';
 import {injectable} from "inversify";
-import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {messageChannelCmd} from "../Interf/messageChannelCmd";
+import {commandType, guildLoggerType} from "../../Entities";
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
@@ -14,13 +15,11 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
         _keyword
     );
 
-    async execute(bundle: Bundle) {
-        const command = bundle.getCommand();
-        const message = bundle.getMessage();
-        const sendChannel: Discord.TextChannel | undefined = message.mentions.channels.first();
-        if(message.guild.channels.cache.has(sendChannel.id) && sendChannel?.type === 'text')
-            return sendChannel.send(command.commandless2)
-                .then((msg) => bundle.addLog(`sent ${command.commandless2} to ${sendChannel.name}`));
+    async execute({guild, mentions}: Message, {commandless2}: commandType, addGuildLog: guildLoggerType) {
+        const sendChannel: Discord.TextChannel | undefined = mentions.channels.first();
+        if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
+            return sendChannel.send(commandless2)
+                .then(() => addGuildLog(`sent ${commandless2} to ${sendChannel.name}`));
         else
             throw new Error(`Channel not found`);
     }

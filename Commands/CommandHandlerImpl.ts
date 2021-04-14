@@ -1,9 +1,9 @@
 import {inject, injectable} from 'inversify';
 import * as Discord from 'discord.js';
+import {Message, Snowflake} from 'discord.js';
 import {prefix, qprefix} from '../botconfig.json'
 import {TYPES} from "../Inversify/Types";
-import {commandType} from "../Entities/CommandType";
-import {bugsChannel, bundle} from "../index";
+import {bugsChannel, bundle, guildMap} from "../index";
 import {pinMessageCmd} from "./Interf/pinMessageCmd";
 import {GenericCommand} from "./GenericCommand";
 import {messageChannelCmd} from "./Interf/messageChannelCmd";
@@ -13,11 +13,13 @@ import {pollCmd} from "./Interf/pollCmd";
 import {unpinMessageCmd} from "./Interf/unpinMessageCmd";
 import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
+import {commandType} from "../Entities";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
-    private readonly commands: GenericCommand[]
 
+    private readonly commands: GenericCommand[];
+    private _guildLogger;
     constructor(
         @inject(TYPES.HelpCmd) helpCmd: helpCmd,
         @inject(TYPES.PollCmd) pollCmd: pollCmd,
@@ -30,15 +32,24 @@ export default class CommandHandlerImpl implements CommandHandler {
         this.commands = [helpCmd, pollCmd, dmMemberCmd, messageChannelCmd, pinMessageCmd, unpinMessageCmd, editMessageCmd];
     }
 
-    public onCommand() {
-        const candidateCommand = this.returnCommand(bundle.getMessage().content);
-        const commandMessage = bundle.getMessage();
+    public getGuildLogger() {
+        return this._guildLogger;
+    }
+
+    private setGuildLogger(guildID: Snowflake) {
+        this._guildLogger = guildMap.get(guildID).addGuildLog;
+    }
+
+    public onCommand(message :Message) {
+        const commandMessage = message;
+        const candidateCommand = this.returnCommand(message.content);
+        this.setGuildLogger(message.guild.id);
         bundle.setCommand(candidateCommand);
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
         if (typeof commandImpl !== "undefined") {
             switch (candidateCommand.prefix) {
                 case prefix:
-                    return commandImpl.execute(bundle)
+                    return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
                         .then(execution => commandMessage.react('✅').catch())
                         .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
 
@@ -50,9 +61,9 @@ export default class CommandHandlerImpl implements CommandHandler {
            return (bundle.getMessage() as Discord.Message).react('❔').catch();
     }
 
-    private returnCommand(receivedMessage: String): commandType {
-        const prefix: string = receivedMessage.charAt(0);
-        const fullCommand: string = receivedMessage.substr(1); // Remove the prefix ($/?);
+    private returnCommand(receivedMessageContent: String): commandType {
+        const prefix: string = receivedMessageContent.charAt(0);
+        const fullCommand: string = receivedMessageContent.substr(1); // Remove the prefix ($/?);
         const splitCommand: string[] = fullCommand.split(/(\s+)/).filter(e => e.trim().length > 0) //split command from space(s);
         return {
             prefix,
@@ -101,4 +112,5 @@ export default class CommandHandlerImpl implements CommandHandler {
         ).then(msg => msg.delete({timeout: 20000}));
         console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.toString()}`)
     }
+
 }

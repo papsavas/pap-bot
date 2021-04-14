@@ -2,19 +2,15 @@ import {injectable} from "inversify";
 import {GenericCommand} from "./GenericCommand";
 import "reflect-metadata";
 import * as Discord from 'discord.js';
+import {Message} from 'discord.js';
 import {bugsChannel} from '../index';
 import Bundle from "../BundlePackage/Bundle";
+import {commandType, guildLoggerType} from "../Entities";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {
 
-    protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
-        return aliases.includes(keyword)
-            ? [...aliases, keyword]
-            : aliases
-    }
-
-    abstract execute(bundle: Bundle): Promise<any>;
+    abstract execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any>;
 
     abstract getKeyword(): string;
 
@@ -33,15 +29,21 @@ export abstract class AbstractCommand implements GenericCommand {
                 name: bundle.getGuild().name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
-            thumbnail:{
-                proxy_url: bundle.getGuild().iconURL({format:"png", size:512})
+            thumbnail: {
+                proxy_url: bundle.getGuild().iconURL({format: "png", size: 512})
             },
             title: bundle.getCommand().primaryCommand,
             color: "DARK_RED",
-            timestamp : new Date()
+            timestamp: new Date()
 
         })
         emb.setDescription(`\`\`\`${err}\`\`\``)
         bugsChannel.send(emb).catch(internalErr => console.log(internalErr));
+    }
+
+    protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
+        return aliases.includes(keyword)
+            ? [...aliases, keyword]
+            : aliases
     }
 }

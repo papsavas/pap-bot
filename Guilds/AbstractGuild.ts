@@ -8,18 +8,14 @@ import {CommandHandler} from "../Commands/CommandHandler";
 import {TYPES} from "../Inversify/Types";
 import {randomInt} from "crypto";
 import {readData} from "../DB/firestoreRepo";
-import {ResponsesType} from "../Entities/ResponsesType";
+import {ResponsesType} from "../Entities";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
 export abstract class AbstractGuild implements GenericGuild {
 
     protected readonly guildID: Snowflake;
-    protected logs: string[] = [];
-    private _lightResponses: string[];
-    private _heavyResponses: string[];
-    private _userResponses: ResponsesType;
-
+    private _responses: string[] = this.returnResponses();
 
     protected constructor(guild_id: Discord.Snowflake) {
         this.guildID = guild_id;
@@ -33,21 +29,29 @@ export abstract class AbstractGuild implements GenericGuild {
         });
     }
 
+    private _logs: string[] = [];
+
+    get logs(): string[] {
+        return this._logs;
+    }
+
+    private _lightResponses: string[];
 
     get lightResponses(): string[] {
         return this._lightResponses;
     }
 
+    private _heavyResponses: string[];
+
     get heavyResponses(): string[] {
         return this._heavyResponses;
     }
 
+    private _userResponses: ResponsesType;
+
     get userResponses(): ResponsesType {
         return this._userResponses;
     }
-
-    private _responses: string[] = this.returnResponses();
-
 
     private _guild: Discord.Guild;
 
@@ -62,12 +66,12 @@ export abstract class AbstractGuild implements GenericGuild {
     abstract returnResponses(): string[];
 
     onGuildMemberAdd(member: Discord.GuildMember): Promise<any> {
-        return Promise.resolve(this.addLog(`member ${member.displayName} joined the guild`));
+        return Promise.resolve(this.addGuildLog(`member ${member.displayName} joined the guild`));
 
     }
 
     onGuildMemberRemove(member: Discord.GuildMember): Promise<any> {
-        return Promise.resolve(this.addLog(`member ${member.displayName} left the guild`));
+        return Promise.resolve(this.addGuildLog(`member ${member.displayName} left the guild`));
     }
 
     onGuildMemberUpdate(oldMember: Discord.GuildMember, newMember: Discord.GuildMember): Promise<any> {
@@ -77,7 +81,7 @@ export abstract class AbstractGuild implements GenericGuild {
     onMessage(message: Discord.Message): Promise<any> {
         bundle.setMessage(message);
         if ([prefix, qprefix].some((pr: string) => message.content.startsWith(pr))) {
-            return commandHandler.onCommand();
+            return commandHandler.onCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {
@@ -91,7 +95,7 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onMessageDelete(deletedMessage: Discord.Message): Promise<any> {
-        return Promise.resolve(this.addLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
+        return Promise.resolve(this.addGuildLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
     }
 
     onMessageReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User): Promise<any> {
@@ -107,8 +111,8 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
 
-    addLog(log: string): string {
-        this.logs.push(log);
+    addGuildLog(log: string): string {
+        this._logs.push(log);
         return log
     }
 
