@@ -5,7 +5,7 @@ import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
-import {addStudent, addStudents, dropStudent, studentType} from "./Entities/KEP/Student";
+import {addStudent, addStudents, dropStudent, fetchStudent, studentType} from "./Entities/KEP/Student";
 
 export const bundle: Bundle = new BundleImpl();
 
