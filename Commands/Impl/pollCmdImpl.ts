@@ -5,7 +5,8 @@ import {GsimplePoll as _guide} from '../guides.json';
 import {injectable} from "inversify";
 import Bundle from "../../BundlePackage/Bundle";
 import {pollCmd} from "../Interf/pollCmd";
-import {commandType, guildLoggerType} from "../../Entities";
+import {commandType} from "../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 
 @injectable()

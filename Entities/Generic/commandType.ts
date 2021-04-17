@@ -1,5 +1,3 @@
-import {Snowflake} from "discord.js";
-
 export type commandType = {
     prefix: string;
     fullCommand: string;
@@ -12,19 +10,3 @@ export type commandType = {
     commandless2: string | undefined;
     commandless3: string | undefined;
 }
-
-export type guildLoggerType = (log: string) => string
-
-export type ResponsesType = {
-    user: Snowflake,
-    responses: string[]
-}
-
-export type StudentType = {
-    am: string;
-    memberID: Snowflake;
-    name: string | null;
-    email: string;
-}
-
-

@@ -19,4 +19,3 @@ export function returnTable(tableName: string, fields = ['*']) { //returns objec
 
 
 
-

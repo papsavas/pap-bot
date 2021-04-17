@@ -13,7 +13,7 @@ import {pollCmd} from "./Interf/pollCmd";
 import {unpinMessageCmd} from "./Interf/unpinMessageCmd";
 import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
-import {commandType} from "../Entities";
+import {commandType} from "../Entities/Generic/commandType";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {

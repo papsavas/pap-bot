@@ -5,7 +5,8 @@ import {GmessageChannel as _guide} from '../guides.json';
 import {injectable} from "inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {messageChannelCmd} from "../Interf/messageChannelCmd";
-import {commandType, guildLoggerType} from "../../Entities";
+import {commandType} from "../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {

@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import {commandType} from "../Entities/CommandType";
+import {commandType} from "../Entities/Generic/commandType";
 
 export default interface Bundle {
     getClient(): Discord.Client,

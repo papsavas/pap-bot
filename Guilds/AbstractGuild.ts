@@ -6,9 +6,9 @@ import {mentionRegex, prefix, qprefix} from "../botconfig.json";
 import container from "../Inversify/inversify.config";
 import {CommandHandler} from "../Commands/CommandHandler";
 import {TYPES} from "../Inversify/Types";
-import {randomInt} from "crypto";
 import {readData} from "../DB/firestoreRepo";
-import {ResponsesType} from "../Entities";
+import {randArrElement} from "../toolbox";
+import {ResponsesType} from "../Entities/Generic/ResponsesType";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
@@ -87,7 +87,7 @@ export abstract class AbstractGuild implements GenericGuild {
         if (message.content.match(mentionRegex)) {
             //implement mentionHandler
             console.log(`mentioned in ${this._guild.name}`)
-            return message.reply(this._responses[randomInt(0, this._responses.length)])
+            return message.reply(randArrElement(this._responses))
                 .catch(err => console.log(err));
         }
 

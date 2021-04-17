@@ -5,9 +5,10 @@ import {injectable} from "inversify";
 import Bundle from "../../BundlePackage/Bundle";
 import {AbstractCommand} from "../AbstractCommand";
 import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
-import {commandType, guildLoggerType} from "../../Entities";
 import {Message} from "discord.js";
 import {extractId} from "../../toolbox";
+import {commandType} from "../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 injectable()
 

@@ -6,7 +6,8 @@ import {dmMemberCmd} from "../Interf/dmMemberCmd";
 import * as e from '../../errorCodes.json'
 import * as Discord from 'discord.js';
 import {Message} from 'discord.js';
-import {commandType, guildLoggerType} from "../../Entities";
+import {commandType} from "../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 
 @injectable()

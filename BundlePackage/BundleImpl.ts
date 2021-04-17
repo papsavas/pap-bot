@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
-import {commandType} from "../Entities/CommandType";
+
 import Bundle from "./Bundle";
+import {commandType} from "../Entities/Generic/commandType";
 
 
 export default class BundleImpl implements Bundle {
