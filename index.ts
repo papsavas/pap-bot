@@ -5,8 +5,7 @@ import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
-import {studentType} from "./Entities/KEP/Student";
-import {addStudent, addStudents, dropStudent} from "./DB/dbRepo";
+import {addStudent, addStudents, dropStudent, studentType} from "./Entities/KEP/Student";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -42,15 +41,13 @@ PAP.on('guildUnavailable', (guild) => {
 });
 
 async function runScript() :Promise<void>{
-    dropStudent('am', 'dai18001')
-        .then(r => console.log(r))
-        .catch(err => console.error(err))
     return Promise.resolve()
 }
 
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
+        process.exit();
     }
     try {
         bundle.setClient(PAP);

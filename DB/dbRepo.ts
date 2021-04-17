@@ -36,14 +36,3 @@ export function dropRow(table:string , field: string, value:string):Promise<numb
         .del()
 }
 
-export function addStudents(students: studentType[], size?: number): Promise<any> {
-    return addRows('student', students)
-}
-
-export async function addStudent(student: studentType): Promise<any> {
-    return addRow('student', student, ['am, id'])
-}
-
-export async function dropStudent(field: "am" | "member_id" | "email", value: amType | Snowflake): Promise<number> {
-    return dropRow('student', field, value)
-}
