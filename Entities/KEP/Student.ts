@@ -8,7 +8,7 @@ type itType = `'it${0|1}${digit}${digit}${digit | ''}${digit | ''}`;
 type daiType = `dai${1}${6|7|8|9}${0|1|2|3}${digit}${digit}`;
 type icsType = `ics${2}${digitZeroLess}${digit}${digit}${digit}`;
 type iisType = `iis${2}${digitZeroLess}${digit}${digit}${digit}`;
-type amType = tmType | itType | daiType | icsType | iisType;
+export type amType = tmType | itType | daiType | icsType | iisType;
 
 export type studentType = {
     am: amType

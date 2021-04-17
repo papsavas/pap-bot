@@ -1,5 +1,6 @@
 import knex from "knex";
-import {studentType} from "../Entities/KEP/Student";
+import {amType, studentType} from "../Entities/KEP/Student";
+import {Snowflake} from "discord.js";
 
 require('dotenv').config();
 
@@ -25,13 +26,19 @@ export function addStudents(rows: studentType[], size?: number): Promise<any> {
         .returning('am')
 }
 
-export async function addStudent(student: studentType): Promise<any>{
+export async function addStudent(student: studentType): Promise<any> {
     return Knex('student').insert(
         {
-            "am":student.am,
+            "am": student.am,
             "member_id": student.member_id,
             "email": student.email,
             "name": student.name
         }, ['am', 'member_id']
     )
+}
+
+export async function dropStudent(field: "am" | "member_id" | "email", value: amType | Snowflake): Promise<number> {
+    return Knex('student')
+        .where(field, value)
+        .del()
 }
