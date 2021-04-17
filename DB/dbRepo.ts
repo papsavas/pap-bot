@@ -18,7 +18,7 @@ export function returnTable(tableName: string, fields = ['*']) { //returns objec
     return Knex.select(...fields).table(tableName);
 }
 
-export async function readRow(table: string, column: string, value: string): Promise<any> {
+export function readRow(table: string, column: string, value: string): Promise<any> {
     return Knex(table)
         .where(column, value)
         .first();

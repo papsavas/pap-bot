@@ -47,7 +47,7 @@ async function runScript() :Promise<void>{
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
-        process.exit();
+        //process.exit();
     }
     try {
         bundle.setClient(PAP);
