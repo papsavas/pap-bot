@@ -10,10 +10,10 @@ type icsType = `ics${2}${digitZeroLess}${digit}${digit}${digit}`;
 type iisType = `iis${2}${digitZeroLess}${digit}${digit}${digit}`;
 type amType = tmType | itType | daiType | icsType | iisType;
 
-export type StudentType = {
+export type studentType = {
     am: amType
     email: `${amType}@uom.edu.gr`;
-    memberID: Snowflake,
+    member_id: Snowflake,
     name?: string | null;
-    classes: Collection<classType['role_id'],classType[]>
+    classes?: Collection<classType['role_id'],classType[]>
 }

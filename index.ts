@@ -5,6 +5,8 @@ import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
+import {studentType} from "./Entities/KEP/Student";
+import {addStudent, addStudents} from "./DB/dbRepo";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -39,7 +41,14 @@ PAP.on('guildUnavailable', (guild) => {
             .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
+async function runScript() :Promise<void>{
+    return Promise.resolve()
+}
+
 PAP.on('ready', async () => {
+    if (inDevelopment) {
+        await runScript();
+    }
     try {
         bundle.setClient(PAP);
         await PAP.user.setActivity('over you', {type: 'WATCHING'})
@@ -55,8 +64,9 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, new DefaultGuild(guildID));
         });
         //const table = await returnTable('person', ['name']);
-        console.log(guildMap);
+        //console.log(guildMap);
         console.log('smooth init')
+
     }
     catch (err) {
         console.log('ERROR\n'+err);
