@@ -11,7 +11,7 @@ const serviceAccount: ServiceAccount =
         //"type": "service_account",
         "projectId": process.env.FS_PROJECT_ID.toString(),
         //"private_key_id": process.env.FS_PRIVATE_KEY_ID,
-        "privateKey": process.env.FS_PRIVATE_KEY.toString(),
+        "privateKey": process.env.FS_PRIVATE_KEY.toString(),//.replace(/\\n/g, '\n'),
         "clientEmail": process.env.FS_CLIENT_EMAIL.toString(),
         //"client_id": process.env.FS_CLIENT_ID,
         //"auth_uri": "https://accounts.google.com/o/oauth2/auth",
