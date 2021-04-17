@@ -20,25 +20,30 @@ export function returnTable(tableName: string, fields = ['*']) { //returns objec
     return Knex.select(...fields).table(tableName);
 }
 
+export function addRow(table, row, returnings?:string[]) :Promise<any>{
+    return Knex(table).insert(row)
+        .returning(returnings)
+}
 
-export function addStudents(rows: studentType[], size?: number): Promise<any> {
-    return Knex.batchInsert('student', rows, size)
-        .returning('am')
+export function addRows(table, rows, returning? :string, size?: number):Promise<any>{
+    return Knex.batchInsert(table, rows, size)
+        .returning(returning)
+}
+
+export function dropRow(table:string , field: string, value:string):Promise<number>{
+    return Knex(table)
+        .where(field, value)
+        .del()
+}
+
+export function addStudents(students: studentType[], size?: number): Promise<any> {
+    return addRows('student', students)
 }
 
 export async function addStudent(student: studentType): Promise<any> {
-    return Knex('student').insert(
-        {
-            "am": student.am,
-            "member_id": student.member_id,
-            "email": student.email,
-            "name": student.name
-        }, ['am', 'member_id']
-    )
+    return addRow('student', student, ['am, id'])
 }
 
 export async function dropStudent(field: "am" | "member_id" | "email", value: amType | Snowflake): Promise<number> {
-    return Knex('student')
-        .where(field, value)
-        .del()
+    return dropRow('student', field, value)
 }
