@@ -6,6 +6,8 @@ import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 import {addStudent, addStudents, dropStudent, fetchStudent, studentType} from "./Entities/KEP/Student";
+import {addRows, createTable, returnTable} from "./DB/dbRepo";
+import {readData} from "./DB/firestoreRepo";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -41,13 +43,27 @@ PAP.on('guildUnavailable', (guild) => {
 });
 
 async function runScript() :Promise<void>{
+    /*
+    const f_roles = await readData('KEP/roles');
+    const res = await createTable('roles', (tableBuilder => {
+
+        tableBuilder.string('name').notNullable();
+        tableBuilder.string('id', 18).unique().notNullable();
+    }));
+
+    const rows = []
+    for(const [name, id] of Object.entries(f_roles)){
+        rows.push({"name" : name, "id": id});
+    }
+    await addRows('roles', rows);
+    */
     return Promise.resolve()
 }
 
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
-        //process.exit();
+        process.exit();
     }
     try {
         bundle.setClient(PAP);

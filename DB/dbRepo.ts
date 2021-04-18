@@ -1,8 +1,9 @@
-import knex from "knex";
+import knex, {Knex} from "knex";
+import TableBuilder = Knex.TableBuilder;
 
 require('dotenv').config();
 
-const Knex = knex({
+const knexClient = knex({
     client: 'pg',
     connection: {
         host: process.env.DB_HOST,
@@ -14,30 +15,34 @@ const Knex = knex({
     useNullAsDefault: true
 });
 
-export function returnTable(tableName: string, fields = ['*']) { //returns object, not custom type
-    return Knex.select(...fields).table(tableName);
+export function createTable(tableName: string, callback?: (tableBuilder: TableBuilder) => any): Promise<any> {
+    return knexClient.schema.createTable(tableName, callback);
+}
+
+export function returnTable(tableName: string, fields = ['*']): Promise<{ key: any, value: any }[]> {
+    return knexClient.select(...fields).table(tableName);
 }
 
 export function readRow(table: string, column: string, value: string): Promise<any> {
-    return Knex(table)
+    return knexClient(table)
         .where(column, value)
         .first();
 
 }
 
 export function addRow(table, row, returnings?: string[]): Promise<any> {
-    return Knex(table).insert(row)
-        .returning(returnings)
+    return knexClient(table).insert(row)
+        .returning(returnings);
 }
 
 export function addRows(table, rows, returning?: string, size?: number): Promise<any> {
-    return Knex.batchInsert(table, rows, size)
-        .returning(returning)
+    return knexClient.batchInsert(table, rows, size)
+        .returning(returning);
 }
 
 export function dropRow(table: string, field: string, value: string): Promise<number> {
-    return Knex(table)
+    return knexClient(table)
         .where(field, value)
-        .del()
+        .del();
 }
 
