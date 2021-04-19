@@ -6,8 +6,9 @@ import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 import {addStudent, addStudents, dropStudent, fetchStudent, studentType} from "./Entities/KEP/Student";
-import {addRows, createTable, returnTable} from "./DB/dbRepo";
+import {addRow, addRows, createTable, returnTable} from "./DB/dbRepo";
 import {readData} from "./DB/firestoreRepo";
+import {v4 as uuidv4} from 'uuid';
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -57,6 +58,7 @@ async function runScript() :Promise<void>{
     }
     await addRows('roles', rows);
     */
+    await addRow('guild', {"guild_id": '727590756562501682'});
     return Promise.resolve()
 }
 

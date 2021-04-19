@@ -1,6 +1,7 @@
 import {Collection, Snowflake} from "discord.js";
 import {classType} from "./Class";
 import {addRow, addRows, dropRow, readRow} from "../../DB/dbRepo";
+import {v4 as UUIDv4} from 'uuid';
 
 type digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type digitZeroLess = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -12,7 +13,8 @@ type iisType = `iis${2}${digitZeroLess}${digit}${digit}${digit}`;
 export type amType = tmType | itType | daiType | icsType | iisType;
 
 export type studentType = {
-    am: amType
+    uuid?: string;
+    am: amType;
     email: `${amType}@uom.edu.gr`;
     member_id: Snowflake,
     name?: string | null;
@@ -28,7 +30,10 @@ export function addStudents(students: studentType[], returnings?: keyof studentT
 }
 
 export async function addStudent(student: studentType, returnings?: (keyof studentType)[]): Promise<any> {
-    return addRow('student', student, returnings?.length > 0 ? returnings : undefined)
+    return addRow('student',
+        student,
+        returnings?.length > 0 ? returnings : undefined
+    )
 }
 
 export async function dropStudent(field: "am" | "member_id" | "email", value: amType | Snowflake): Promise<number> {

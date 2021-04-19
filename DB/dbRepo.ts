@@ -1,5 +1,7 @@
 import knex, {Knex} from "knex";
 import TableBuilder = Knex.TableBuilder;
+import {v4} from "uuid";
+import {exists} from "fs";
 
 require('dotenv').config();
 
@@ -31,11 +33,23 @@ export function readRow(table: string, column: string, value: string): Promise<a
 }
 
 export function addRow(table, row, returnings?: string[]): Promise<any> {
+    knexClient.schema.hasColumn(table, "uuid")
+        .then((exists) => {
+            if(exists)
+                Object.assign(row, row, {"uuid": v4()});
+        })
+        .catch();
     return knexClient(table).insert(row)
         .returning(returnings);
 }
 
 export function addRows(table, rows, returning?: string, size?: number): Promise<any> {
+    knexClient.schema.hasColumn(table, "uuid")
+        .then((exists) => {
+            if(exists)
+                rows.forEach((row) => Object.assign(row, row, {"uuid": v4()}));
+        })
+        .catch();
     return knexClient.batchInsert(table, rows, size)
         .returning(returning);
 }
