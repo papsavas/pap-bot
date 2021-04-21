@@ -1,5 +1,5 @@
 export type commandType = {
-    prefix: string;
+    //prefix: string;
     fullCommand: string;
     splitCommand: string[];
     primaryCommand: string;

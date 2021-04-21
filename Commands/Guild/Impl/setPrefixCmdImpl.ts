@@ -8,21 +8,26 @@ import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {fetchGuildSettings, updateGuildSettings} from "../../../Queries/Generic/GuildSettings";
 import {addRow} from "../../../DB/dbRepo";
+import {guildMap} from "../../../index";
 
 @injectable()
 export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
     private readonly _aliases = this.addKeywordToAliases
     (
-        ['prefix', 'setprefix', 'sp'],
+        ['prefix', 'setprefix'],
         _keyword
     );
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
-        return fetchGuildSettings(receivedMessage.guild.id)
-            .then(async oldSettings => {
-                const newSettings = Object.assign(oldSettings, {'prefix': receivedCommand.arg1});
-                return updateGuildSettings(receivedMessage.guild.id, newSettings)
-            });
+        const guildHandler = guildMap.get(receivedMessage.guild.id);
+        if(receivedCommand.arg1)
+            return fetchGuildSettings(receivedMessage.guild.id)
+                .then(async oldSettings => {
+                    const newSettings = Object.assign(oldSettings, {'prefix': receivedCommand.arg1});
+                    return updateGuildSettings(receivedMessage.guild.id, newSettings).then(()=> guildHandler.setPrefix(receivedCommand.arg1))
+                });
+        else
+            return receivedMessage.reply(`Current prefix is "${guildHandler.getSettings().prefix}"`, {code:true});
 
     }
 

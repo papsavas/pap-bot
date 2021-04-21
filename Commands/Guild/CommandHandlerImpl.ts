@@ -1,7 +1,7 @@
 import {inject, injectable} from 'Inversify';
 import * as Discord from 'discord.js';
 import {Message, Snowflake} from 'discord.js';
-import {prefix, qprefix} from '../../botconfig.json'
+import {qprefix} from '../../botconfig.json'
 import {TYPES} from "../../Inversify/Types";
 import {bugsChannel, bundle, guildMap} from "../../index";
 import {pinMessageCmd} from "./Interf/pinMessageCmd";
@@ -43,23 +43,27 @@ export default class CommandHandlerImpl implements CommandHandler {
     }
 
     public onCommand(message: Message) {
+        const guildHandler = guildMap.get(message.guild.id);
+        const prefix = guildHandler.getSettings().prefix;
         const commandMessage = message;
-        const candidateCommand = this.returnCommand(message.content);
+        const candidateCommand = this.returnCommand(message);
         this.setGuildLogger(message.guild.id);
         bundle.setCommand(candidateCommand);
-        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand.primaryCommand))
+        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand))
         if (typeof commandImpl !== "undefined") {
-            switch (candidateCommand.prefix) {
+            return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
+                .then(execution => commandMessage?.react('✅').catch(err => {
+                }))
+                .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
+            /*
+            switch (prefix) {
                 case prefix:
-                    return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
-                        .then(execution => commandMessage?.react('✅').catch(err => {
-                        }))
-                        .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
+
 
                 case qprefix:
                     return (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
                         .catch(err => `Error on Guide sending\n${err.toString()}`);
-            }
+            }*/
         } else
             return (bundle.getMessage() as Discord.Message).react('❔').catch();
     }
@@ -68,12 +72,13 @@ export default class CommandHandlerImpl implements CommandHandler {
         this._guildLogger = guildMap.get(guildID).addGuildLog;
     }
 
-    private returnCommand(receivedMessageContent: String): commandType {
-        const prefix: string = receivedMessageContent.charAt(0);
-        const fullCommand: string = receivedMessageContent.substr(1); // Remove the prefix ($/?);
+    private returnCommand(receivedMessage: Message): commandType {
+        const receivedMessageContent = receivedMessage.content;
+        //const prefix: string = receivedMessageContent.charAt(0);
+        const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id).getSettings().prefix.length); // Remove the prefix;
         const splitCommand: string[] = fullCommand.split(/(\s+)/).filter(e => e.trim().length > 0) //split command from space(s);
         return {
-            prefix,
+            //prefix,
             fullCommand,
             splitCommand,
             primaryCommand: splitCommand[0], // The first word directly after the exclamation is the command
@@ -109,7 +114,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                     name: `Error on Command`,
                     icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                 },
-                title: prefix + commandImpl.getKeyword(),
+                title: guildMap.get(commandMessage.guild.id).getSettings().prefix + commandImpl.getKeyword(),
                 description: commandImpl.getGuide(),
                 fields: [{name: `Specified error  💥`, value: `• ${err}`}],
                 footer: {text: commandImpl.getAliases().toString()},
