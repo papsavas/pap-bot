@@ -20,11 +20,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     }
 
-    returnResponses(): string[] {
-        return Object.values(this.userResponses).flat(1)
-            .concat(this.lightResponses);
-    }
-
     private async loadIDs(client: Client): Promise<void> {
 
         this.channelsID = await readData('KEP/channels');

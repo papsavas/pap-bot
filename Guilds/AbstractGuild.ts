@@ -7,9 +7,11 @@ import container from "../Inversify/inversify.config";
 import {CommandHandler} from "../Commands/Guild/CommandHandler";
 import {TYPES} from "../Inversify/Types";
 import {randArrElement} from "../toolbox";
-import {fetchGuildMemberResponses, memberResponsesType} from "../Entities/Generic/MemberResponsesType";
-import {fetchGuildSettings, guildSettingsType} from "../Entities/Generic/guildSettingsType";
-import {fetchGenericGuildResponses} from "../Queries/Generic/fetchGenericGuildResponses";
+import {genericGuildResponses} from "../Queries/Generic/GenericGuildResponses";
+import {guildSettingsType} from "../Entities/Generic/guildSettingsType";
+import {fetchGuildSettings} from "../Queries/Generic/GuildSettings";
+import {memberResponsesType} from "../Entities/Generic/MemberResponsesType";
+import {fetchGuildMemberResponses} from "../Queries/Generic/MemberResponses";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
@@ -89,7 +91,7 @@ export abstract class AbstractGuild implements GenericGuild {
     async onReady(client: Discord.Client): Promise<any> {
         this._guild = client.guilds.cache.get(this.guildID);
         this._settings = await fetchGuildSettings(this.guildID);
-        const genericResponses = await fetchGenericGuildResponses(this.guildID, this._settings.nsfw_responses);
+        const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
         const memberConcatResponses: string[] = await fetchGuildMemberResponses(this.guildID);
         this._responses = memberConcatResponses.concat(genericResponses);
         return Promise.resolve(`loaded ${this.guild.name}`);

@@ -5,10 +5,11 @@ import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
-import {addStudent, addStudents, dropStudent, fetchStudent, studentType} from "./Entities/KEP/Student";
-import {addRow, addRows, createTable, fetchFirstOnCondition, fetchTable} from "./DB/dbRepo";
-import {readData} from "./DB/firestoreRepo";
-import {v4 as uuidv4} from 'uuid';
+import {addRow, addRows, fetchAllOnCondition} from "./DB/dbRepo";
+import {getCollection, readData} from "./DB/firestoreRepo";
+import {log} from "util";
+import {genericGuildResponses} from "./Queries/Generic/GenericGuildResponses";
+import {fetchGuildMemberResponses} from "./Queries/Generic/MemberResponses";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -42,41 +43,50 @@ PAP.on('guildCreate', (guild) => {
     //onGuildJoin(guild);
 })
 
+PAP.on('guildDelete', (guild) => {
+    console.log(`left ${guild.name} guild`);
+    /* implement DB writes */
+    //onGuildLeave(guild);
+})
+
 PAP.on('guildUnavailable', (guild) => {
     if (guild.id !== botGuildID)
         logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`)
             .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
-async function runScript() :Promise<void>{
+async function runScript(): Promise<void> {
+    //-----insert script--------
+
+    //-------------------------
     return Promise.resolve()
 }
 
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
-        //process.exit();
+        //process.exit(132);
     }
     try {
         bundle.setClient(PAP);
         await PAP.user.setActivity('over you', {type: 'WATCHING'})
-            //.catch(err => console.log(err));
+        //.catch(err => console.log(err));
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
         logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
         await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
-        /*PAP.guilds.cache.keyArray()*/[botGuildID].forEach((guildID) => {
-            if(!guildMap.has(guildID))
+        /*PAP.guilds.cache.keyArray()*/
+        [botGuildID].forEach((guildID) => {
+            if (!guildMap.has(guildID))
                 guildMap.set(guildID, new DefaultGuild(guildID));
             guildMap.get(guildID).onReady(PAP);
         });
         console.log('smooth init')
 
-    }
-    catch (err) {
-        console.log('ERROR\n'+err.stack);
+    } catch (err) {
+        console.log('ERROR\n' + err.stack);
     }
 
     console.log(`___Initiated___`);

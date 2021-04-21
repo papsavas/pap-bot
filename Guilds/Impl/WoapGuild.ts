@@ -7,8 +7,4 @@ export class WoapGuild extends AbstractGuild implements GenericGuild {
         super(id);
     }
 
-    returnResponses(): string[] {
-        return Object.values(this.userResponses).flat(1)
-            .concat([...this.heavyResponses, ...this.lightResponses]);
-    }
 }

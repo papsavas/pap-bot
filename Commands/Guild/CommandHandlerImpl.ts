@@ -14,6 +14,7 @@ import {unpinMessageCmd} from "./Interf/unpinMessageCmd";
 import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
 import {commandType} from "../../Entities/Generic/commandType";
+import {setPrefixCmd} from "./Interf/setPrefixCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -29,8 +30,12 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.PinMessageCmd) pinMessageCmd: pinMessageCmd,
         @inject(TYPES.UnpinMessageCmd) unpinMessageCmd: unpinMessageCmd,
         @inject(TYPES.EditMessageCmd) editMessageCmd: editMessageCmd,
+        @inject(TYPES.SetPrefixCmd) setPrefixCmd: setPrefixCmd,
     ) {
-        this.commands = [helpCmd, pollCmd, dmMemberCmd, messageChannelCmd, pinMessageCmd, unpinMessageCmd, editMessageCmd];
+        this.commands = [
+            helpCmd, pollCmd, dmMemberCmd, messageChannelCmd,
+            pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd
+        ];
     }
 
     public getGuildLogger() {

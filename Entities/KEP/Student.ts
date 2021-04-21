@@ -1,6 +1,5 @@
 import {Collection, Snowflake} from "discord.js";
 import {classType} from "./Class";
-import {addRow, addRows, dropRow, fetchFirstOnCondition, readFirstRow} from "../../DB/dbRepo";
 
 type digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type digitZeroLess = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -27,31 +26,5 @@ export type studentFineType = {
     uuid?: string;
 }
 
-export async function fetchStudent(column: keyof studentType, value: studentType[keyof studentType]): Promise<studentType> {
-    return readFirstRow('student', column, value as string);
-}
 
-export async function fetchStudentOnCondition(column: keyof studentType, value: studentType[keyof studentType], returnings?: string[]): Promise<{}> {
-    const res = await fetchFirstOnCondition('student', column, value, returnings);
-    if (res.length == 0)
-        return Promise.reject(`student with "${column} : ${value}" not found`);
-    else if (res.length > 1)
-        return Promise.reject(`found duplicate student with ${column} : ${value}`);
-    else return Promise.resolve(res[0])
-}
-
-export function addStudents(students: studentType[], returnings?: keyof studentType, size?: number): Promise<any> {
-    return addRows('student', students, returnings, size)
-}
-
-export async function addStudent(student: studentType, returnings?: (keyof studentType)[]): Promise<any> {
-    return addRow('student',
-        student,
-        returnings?.length > 0 ? returnings : undefined
-    )
-}
-
-export async function dropStudent(field: "am" | "member_id" | "email", value: amType | Snowflake): Promise<number> {
-    return dropRow('student', field, value)
-}
 

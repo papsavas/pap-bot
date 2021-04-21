@@ -49,13 +49,16 @@ export function readFirstRow(table: string, column: string, value: string): Prom
 
 }
 
-export function addRow(table, row, returnings?: string[]): Promise<any> {
-    knexClient.schema.hasColumn(table, "uuid")
-        .then((exists) => {
-            if (exists)
-                Object.assign(row, row, {"uuid": v4()});
-        })
-        .catch();
+export function updateRow(tableName: string, column:string, value: string, newRow :{},returnings?: string[]): Promise<any>{
+    return knexClient(tableName)
+        .where(column, value)
+        .update(newRow, returnings)
+}
+
+export async function addRow(table, row, returnings?: string[]): Promise<any> {
+    if (await knexClient.schema.hasColumn(table, "uuid")) {
+        Object.assign(row, row, {"uuid": v4()});
+    }
     return knexClient(table).insert(row)
         .returning(returnings);
 }
