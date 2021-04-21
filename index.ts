@@ -6,7 +6,7 @@ import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 import {addStudent, addStudents, dropStudent, fetchStudent, studentType} from "./Entities/KEP/Student";
-import {addRow, addRows, createTable, fetchFirstOnCondition, returnTable} from "./DB/dbRepo";
+import {addRow, addRows, createTable, fetchFirstOnCondition, fetchTable} from "./DB/dbRepo";
 import {readData} from "./DB/firestoreRepo";
 import {v4 as uuidv4} from 'uuid';
 

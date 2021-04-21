@@ -2,7 +2,7 @@ import {AbstractGuild} from "../AbstractGuild";
 import {GenericGuild} from "../GenericGuild";
 import {CategoryChannel, Channel, Client, Message, Role} from "discord.js";
 import {readData} from "../../DB/firestoreRepo";
-import {returnTable} from "../../DB/dbRepo";
+import {fetchTable} from "../../DB/dbRepo";
 
 export class KepGuild extends AbstractGuild implements GenericGuild {
     private readonly _roles: { name: string, role: Role };
@@ -35,7 +35,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         const channelsCache = client.channels.cache;
 
         async function initDiscordEntities(tableName, guildParameter, cache){
-            const IDs = await returnTable(tableName);
+            const IDs = await fetchTable(tableName);
             for (const obj of IDs) {
                 guildParameter[obj.key] = cache.get(obj.value);
             }

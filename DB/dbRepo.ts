@@ -21,7 +21,7 @@ export function createTable(tableName: string, callback?: (tableBuilder: TableBu
         .createTable(tableName, callback);
 }
 
-export function returnTable(tableName: string, fields = ['*']): Promise<{ key: any, value: any }[]> {
+export function fetchTable(tableName: string, fields = ['*']): Promise<{ key: any, value: any }[]> {
     return knexClient
         .select(...fields)
         .table(tableName);
@@ -34,7 +34,7 @@ export function fetchAllOnCondition(tableName: string, columnName: string, value
         .where(columnName, value);
 }
 
-export function fetchFirstOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<any[]> {
+export function fetchFirstOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<object> {
     return knexClient
         .select(...returningFields)
         .table(tableName)
