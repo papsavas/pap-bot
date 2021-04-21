@@ -17,7 +17,7 @@ const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 export abstract class AbstractGuild implements GenericGuild {
 
     protected readonly guildID: Snowflake;
-    private _responses: string[]; //= this.returnResponses();
+    private _responses: string[];
     private _settings: guildSettingsType;
 
     protected constructor(guild_id: Discord.Snowflake) {
@@ -45,20 +45,6 @@ export abstract class AbstractGuild implements GenericGuild {
     get logs(): string[] {
         return this._logs;
     }
-
-    private _lightResponses: string[];
-
-    get lightResponses(): string[] {
-        return this._lightResponses;
-    }
-
-    private _heavyResponses: string[];
-
-    get heavyResponses(): string[] {
-        return this._heavyResponses;
-    }
-
-    abstract returnResponses(): string[];
 
     onGuildMemberAdd(member: Discord.GuildMember): Promise<any> {
         return Promise.resolve(this.addGuildLog(`member ${member.displayName} joined the guild`));
