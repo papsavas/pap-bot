@@ -6,7 +6,7 @@ import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 import {addStudent, addStudents, dropStudent, fetchStudent, studentType} from "./Entities/KEP/Student";
-import {addRow, addRows, createTable, returnTable} from "./DB/dbRepo";
+import {addRow, addRows, createTable, fetchFirstOnCondition, returnTable} from "./DB/dbRepo";
 import {readData} from "./DB/firestoreRepo";
 import {v4 as uuidv4} from 'uuid';
 
@@ -44,28 +44,13 @@ PAP.on('guildUnavailable', (guild) => {
 });
 
 async function runScript() :Promise<void>{
-    /*
-    const f_roles = await readData('KEP/roles');
-    const res = await createTable('roles', (tableBuilder => {
-
-        tableBuilder.string('name').notNullable();
-        tableBuilder.string('id', 18).unique().notNullable();
-    }));
-
-    const rows = []
-    for(const [name, id] of Object.entries(f_roles)){
-        rows.push({"name" : name, "id": id});
-    }
-    await addRows('roles', rows);
-    */
-    await addRow('guild', {"guild_id": '727590756562501682'});
     return Promise.resolve()
 }
 
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
-        process.exit();
+        //process.exit();
     }
     try {
         bundle.setClient(PAP);
@@ -80,14 +65,13 @@ PAP.on('ready', async () => {
         /*PAP.guilds.cache.keyArray()*/[botGuildID].forEach((guildID) => {
             if(!guildMap.has(guildID))
                 guildMap.set(guildID, new DefaultGuild(guildID));
+            guildMap.get(guildID).onReady(PAP);
         });
-        //const table = await returnTable('person', ['name']);
-        //console.log(guildMap);
         console.log('smooth init')
 
     }
     catch (err) {
-        console.log('ERROR\n'+err);
+        console.log('ERROR\n'+err.stack);
     }
 
     console.log(`___Initiated___`);

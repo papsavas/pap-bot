@@ -50,7 +50,7 @@ export default class CommandHandlerImpl implements CommandHandler {
             switch (candidateCommand.prefix) {
                 case prefix:
                     return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
-                        .then(execution => commandMessage.react('✅').catch())
+                        .then(execution => commandMessage?.react('✅').catch(err => {}))
                         .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
 
                 case qprefix:

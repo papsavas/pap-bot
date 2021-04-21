@@ -7,7 +7,7 @@ export class DefaultGuild extends AbstractGuild implements GenericGuild {
         super(id);
     }
 
-    returnResponses(): string[] {
+    returnResponses(): string[] { //depreciated, userResponses is undefined here
         return Object.values(this.userResponses).flat(1)
             .concat(this.lightResponses);
     }

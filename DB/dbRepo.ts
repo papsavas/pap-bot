@@ -1,7 +1,6 @@
 import knex, {Knex} from "knex";
-import TableBuilder = Knex.TableBuilder;
 import {v4} from "uuid";
-import {exists} from "fs";
+import TableBuilder = Knex.TableBuilder;
 
 require('dotenv').config();
 
@@ -18,14 +17,32 @@ const knexClient = knex({
 });
 
 export function createTable(tableName: string, callback?: (tableBuilder: TableBuilder) => any): Promise<any> {
-    return knexClient.schema.createTable(tableName, callback);
+    return knexClient.schema
+        .createTable(tableName, callback);
 }
 
 export function returnTable(tableName: string, fields = ['*']): Promise<{ key: any, value: any }[]> {
-    return knexClient.select(...fields).table(tableName);
+    return knexClient
+        .select(...fields)
+        .table(tableName);
 }
 
-export function readRow(table: string, column: string, value: string): Promise<any> {
+export function fetchAllOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<any[]> {
+    return knexClient
+        .select(...returningFields)
+        .table(tableName)
+        .where(columnName, value);
+}
+
+export function fetchFirstOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<any[]> {
+    return knexClient
+        .select(...returningFields)
+        .table(tableName)
+        .where(columnName, value)
+        .first();
+}
+
+export function readFirstRow(table: string, column: string, value: string): Promise<any> {
     return knexClient(table)
         .where(column, value)
         .first();
@@ -35,7 +52,7 @@ export function readRow(table: string, column: string, value: string): Promise<a
 export function addRow(table, row, returnings?: string[]): Promise<any> {
     knexClient.schema.hasColumn(table, "uuid")
         .then((exists) => {
-            if(exists)
+            if (exists)
                 Object.assign(row, row, {"uuid": v4()});
         })
         .catch();
@@ -46,7 +63,7 @@ export function addRow(table, row, returnings?: string[]): Promise<any> {
 export function addRows(table, rows, returning?: string, size?: number): Promise<any> {
     knexClient.schema.hasColumn(table, "uuid")
         .then((exists) => {
-            if(exists)
+            if (exists)
                 rows.forEach((row) => Object.assign(row, row, {"uuid": v4()}));
         })
         .catch();
@@ -54,7 +71,7 @@ export function addRows(table, rows, returning?: string, size?: number): Promise
         .returning(returning);
 }
 
-export function dropRow(table: string, field: string, value: string): Promise<number> {
+export function dropRows(table: string, field: string, value: string): Promise<number> {
     return knexClient(table)
         .where(field, value)
         .del();
