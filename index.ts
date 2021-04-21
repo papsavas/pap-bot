@@ -36,6 +36,11 @@ export const PAP = new Discord.Client({
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
+PAP.on('guildCreate', (guild) => {
+    console.log(`joined ${guild.name} guild`);
+    /* implement DB writes */
+    //onGuildJoin(guild);
+})
 
 PAP.on('guildUnavailable', (guild) => {
     if (guild.id !== botGuildID)
