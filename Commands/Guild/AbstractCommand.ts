@@ -1,12 +1,12 @@
-import {injectable} from "inversify";
+import {injectable} from "Inversify";
 import {GenericCommand} from "./GenericCommand";
 import "reflect-metadata";
 import * as Discord from 'discord.js';
 import {Message} from 'discord.js';
-import {bugsChannel} from '../index';
-import Bundle from "../BundlePackage/Bundle";
-import {commandType} from "../Entities/Generic/commandType";
-import {guildLoggerType} from "../Entities/Generic/guildLoggerType";
+import {bugsChannel} from '../../index';
+import Bundle from "../../BundlePackage/Bundle";
+import {commandType} from "../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {

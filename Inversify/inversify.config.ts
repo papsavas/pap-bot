@@ -1,21 +1,23 @@
 import {Container} from "inversify";
-import {helpCmd} from "../Commands/Interf/helpCmd";
-import {HelpCmdImpl} from "../Commands/Impl/helpCmdImpl";
-import {PollCmdImpl} from "../Commands/Impl/pollCmdImpl";
-import {pollCmd} from "../Commands/Interf/pollCmd";
-import {messageChannelCmd} from "../Commands/Interf/messageChannelCmd"
-import {dmMemberCmd} from "../Commands/Interf/dmMemberCmd"
+import {helpCmd} from "../Commands/Guild/Interf/helpCmd";
+import {HelpCmdImpl} from "../Commands/Guild/Impl/helpCmdImpl";
+import {PollCmdImpl} from "../Commands/Guild/Impl/pollCmdImpl";
+import {pollCmd} from "../Commands/Guild/Interf/pollCmd";
+import {messageChannelCmd} from "../Commands/Guild/Interf/messageChannelCmd"
+import {dmMemberCmd} from "../Commands/Guild/Interf/dmMemberCmd"
 import {TYPES} from "./Types";
-import CommandHandlerImpl from "../Commands/CommandHandlerImpl";
-import {CommandHandler} from "../Commands/CommandHandler";
-import {DmMemberCmdImpl} from "../Commands/Impl/dmMemberCmdImpl";
-import {MessageChannelCmdImpl} from '../Commands/Impl/messageChannelCmdImpl';
-import {PinMessageCmdImpl} from "../Commands/Impl/pinMessageCmdImpl";
-import {pinMessageCmd} from "../Commands/Interf/pinMessageCmd";
-import {unpinMessageCmd} from "../Commands/Interf/unpinMessageCmd";
-import {UnpinMessageCmdImpl} from "../Commands/Impl/unpinMessageCmdImpl";
-import {EditMessageCmdImpl} from "../Commands/Impl/editMessageCmdImpl";
-import {editMessageCmd} from "../Commands/Interf/editMessageCmd";
+import CommandHandlerImpl from "../Commands/Guild/CommandHandlerImpl";
+import {CommandHandler} from "../Commands/Guild/CommandHandler";
+import {DmMemberCmdImpl} from "../Commands/Guild/Impl/dmMemberCmdImpl";
+import {MessageChannelCmdImpl} from '../Commands/Guild/Impl/messageChannelCmdImpl';
+import {PinMessageCmdImpl} from "../Commands/Guild/Impl/pinMessageCmdImpl";
+import {pinMessageCmd} from "../Commands/Guild/Interf/pinMessageCmd";
+import {unpinMessageCmd} from "../Commands/Guild/Interf/unpinMessageCmd";
+import {UnpinMessageCmdImpl} from "../Commands/Guild/Impl/unpinMessageCmdImpl";
+import {EditMessageCmdImpl} from "../Commands/Guild/Impl/editMessageCmdImpl";
+import {editMessageCmd} from "../Commands/Guild/Interf/editMessageCmd";
+import {SetPrefixCmdImpl} from "../Commands/Guild/Impl/setPrefixCmdImpl";
+import {setPrefixCmd} from "../Commands/Guild/Interf/setPrefixCmd";
 
 const container = new Container();
 container.bind<helpCmd>(TYPES.HelpCmd).to(HelpCmdImpl).inSingletonScope();
@@ -25,7 +27,7 @@ container.bind<messageChannelCmd>(TYPES.MessageChannelCmd).to(MessageChannelCmdI
 container.bind<pinMessageCmd>(TYPES.PinMessageCmd).to(PinMessageCmdImpl).inSingletonScope();
 container.bind<unpinMessageCmd>(TYPES.UnpinMessageCmd).to(UnpinMessageCmdImpl).inSingletonScope();
 container.bind<editMessageCmd>(TYPES.EditMessageCmd).to(EditMessageCmdImpl).inSingletonScope();
-
+container.bind<setPrefixCmd>(TYPES.SetPrefixCmd).to(SetPrefixCmdImpl).inSingletonScope();
 container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandlerImpl).inSingletonScope();
 
 export default container;

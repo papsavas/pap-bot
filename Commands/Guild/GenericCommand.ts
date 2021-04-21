@@ -1,7 +1,7 @@
-import Bundle from "../BundlePackage/Bundle";
+import Bundle from "../../BundlePackage/Bundle";
 import {Message} from "discord.js";
-import {commandType} from "../Entities/Generic/commandType";
-import {guildLoggerType} from "../Entities/Generic/guildLoggerType";
+import {commandType} from "../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 export interface GenericCommand {
     execute(receivedMessage: Message,

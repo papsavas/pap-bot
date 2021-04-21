@@ -1,11 +1,9 @@
 import {AbstractCommand} from "../AbstractCommand";
-import * as Discord from 'discord.js';
-import {help as _keyword} from '../keywords.json';
-import {Ghelp as _guide} from '../guides.json';
+import {help as _keyword} from '../../keywords.json';
+import {Ghelp as _guide} from '../../guides.json';
 import {helpCmd} from "../Interf/helpCmd";
-import {injectable} from "inversify";
+import {injectable} from "Inversify";
 import "reflect-metadata";
-import Bundle from "BundlePackage/Bundle";
 
 @injectable()
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {

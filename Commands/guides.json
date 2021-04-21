@@ -1,5 +1,6 @@
 {
     "Ghelp" : "Displays all available commands\n```$help```",
+    "GsetPrefix": "Changes the prefix of the bot\n```$prefix <new_prefix>",
     "GdmMember" : "Sends DM to a specific member\n```$dm member/username/nickname message```",
     "GshowPerms" : "Shows permissions of specific/all commands\n```$perms [command]```",
     "GsetPerms" : "Sets permissions for a specific command\n```$setperms command role1_id [role2_id...]```",

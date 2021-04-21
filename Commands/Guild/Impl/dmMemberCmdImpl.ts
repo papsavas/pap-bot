@@ -1,13 +1,13 @@
-import {dmMember as _keyword} from '../keywords.json';
-import {GdmMember as _guide} from '../guides.json';
-import {injectable} from "inversify";
+import {dmMember as _keyword} from '../../keywords.json';
+import {GdmMember as _guide} from '../../guides.json';
+import {injectable} from "Inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {dmMemberCmd} from "../Interf/dmMemberCmd";
-import * as e from '../../errorCodes.json'
+import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
 import {Message} from 'discord.js';
-import {commandType} from "../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
+import {commandType} from "../../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 
 
 @injectable()

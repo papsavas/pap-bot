@@ -1,11 +1,11 @@
-import {GunpinMessage as _guide} from "../guides.json";
-import {pinMessage as _keyword} from "../keywords.json";
-import {injectable} from "inversify";
+import {GunpinMessage as _guide} from "../../guides.json";
+import {pinMessage as _keyword} from "../../keywords.json";
+import {injectable} from "Inversify";
 import {pinMessageCmd} from "../Interf/pinMessageCmd";
 import {AbstractCommand} from "../AbstractCommand";
-import {extractId} from "../../toolbox";
-import {commandType} from "../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
+import {extractId} from "../../../toolbox";
+import {commandType} from "../../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 
 
 @injectable()

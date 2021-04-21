@@ -1,12 +1,12 @@
 import * as Discord from 'discord.js';
 import {Message} from 'discord.js';
-import {messageChannel as _keyword} from '../keywords.json';
-import {GmessageChannel as _guide} from '../guides.json';
-import {injectable} from "inversify";
+import {messageChannel as _keyword} from '../../keywords.json';
+import {GmessageChannel as _guide} from '../../guides.json';
+import {injectable} from "Inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {messageChannelCmd} from "../Interf/messageChannelCmd";
-import {commandType} from "../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
+import {commandType} from "../../../Entities/Generic/commandType";
+import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {

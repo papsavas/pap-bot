@@ -1,9 +1,9 @@
-import {inject, injectable} from 'inversify';
+import {inject, injectable} from 'Inversify';
 import * as Discord from 'discord.js';
 import {Message, Snowflake} from 'discord.js';
-import {prefix, qprefix} from '../botconfig.json'
-import {TYPES} from "../Inversify/Types";
-import {bugsChannel, bundle, guildMap} from "../index";
+import {prefix, qprefix} from '../../botconfig.json'
+import {TYPES} from "../../Inversify/Types";
+import {bugsChannel, bundle, guildMap} from "../../index";
 import {pinMessageCmd} from "./Interf/pinMessageCmd";
 import {GenericCommand} from "./GenericCommand";
 import {messageChannelCmd} from "./Interf/messageChannelCmd";
@@ -13,7 +13,7 @@ import {pollCmd} from "./Interf/pollCmd";
 import {unpinMessageCmd} from "./Interf/unpinMessageCmd";
 import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
-import {commandType} from "../Entities/Generic/commandType";
+import {commandType} from "../../Entities/Generic/commandType";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
