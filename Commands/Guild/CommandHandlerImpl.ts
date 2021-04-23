@@ -17,6 +17,7 @@ import {commandType} from "../../Entities/Generic/commandType";
 import {setPrefixCmd} from "./Interf/setPrefixCmd";
 import {addRow} from "../../DB/dbRepo";
 import {setPermsCmd} from "./Interf/setPermsCmd";
+import {showPermsCmd} from "./Interf/showPermsCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -34,11 +35,12 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.EditMessageCmd) editMessageCmd: editMessageCmd,
         @inject(TYPES.SetPrefixCmd) setPrefixCmd: setPrefixCmd,
         @inject(TYPES.SetPermsCmd) setPermsCmd: setPermsCmd,
+        @inject(TYPES.ShowPermsCmd) showPermsCmd: showPermsCmd,
     ) {
         this.commands = [
             helpCmd, pollCmd, dmMemberCmd, messageChannelCmd,
             pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd,
-            setPermsCmd
+            setPermsCmd, showPermsCmd
         ];
     }
 

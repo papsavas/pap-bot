@@ -22,8 +22,7 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
         if(receivedMessage.mentions.everyone)
             rolesKeyArr.push(guild_id);
         const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
-        console.log(`Inside command:\n ${guild_id}, ${command_id}, ${rolesKeyArr}`);
-        return overrideCommandPerms(guild_id, command_id, rolesKeyArr);
+        return overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
     }
 
     getKeyword(): string {

@@ -13,8 +13,7 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: stri
         "guild_id": guild_id,
         "command_id": command_id,
         "role_id": roleID
-    }))
-    console.log(`Inside query\nConstructed rows are:\n${JSON.stringify(rows)}`)
+    }));
     return addRows('command_perms', rows, '*');
 }
 

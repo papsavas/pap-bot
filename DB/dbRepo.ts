@@ -73,7 +73,6 @@ export async  function addRows(table, rows, returning?: string, size?: number): 
     if (await knexClient.schema.hasColumn(table, "uuid"))
         for(let row of rows)
             Object.assign(row, {"uuid": v4()});
-    console.log(`inside dbrepo:\nFinal rows:\n${JSON.stringify(rows)}`)
     return knexClient.batchInsert(table, rows, size)
         .returning(returning);
 }

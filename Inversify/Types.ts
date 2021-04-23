@@ -8,6 +8,7 @@ export const TYPES = {
     EditMessageCmd : Symbol.for('EditMessageCmd'),
     SetPrefixCmd : Symbol.for('SetPrefixCmd'),
     SetPermsCmd : Symbol.for('SetPermsCmd'),
+    ShowPermsCmd : Symbol.for('ShowPermsCmd'),
 
     CommandHandler : Symbol.for('CommandHandler')
 }
