@@ -27,11 +27,11 @@ export function fetchTable(tableName: string, fields = ['*']): Promise<{ key: an
         .table(tableName);
 }
 
-export function fetchAllOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<any[]> {
+export function fetchAllOnCondition(tableName: string, objClause: {}, returningFields = ['*']): Promise<any[]> {
     return knexClient
         .select(...returningFields)
         .table(tableName)
-        .where(columnName, value);
+        .where(objClause);
 }
 
 export function fetchFirstOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<object> {
@@ -69,13 +69,11 @@ export async function addRow(table, row, returnings?: string[]): Promise<any> {
         .returning(returnings);
 }
 
-export function addRows(table, rows, returning?: string, size?: number): Promise<any> {
-    knexClient.schema.hasColumn(table, "uuid")
-        .then((exists) => {
-            if (exists)
-                rows.forEach((row) => Object.assign(row, row, {"uuid": v4()}));
-        })
-        .catch();
+export async  function addRows(table, rows, returning?: string, size?: number): Promise<any> {
+    if (await knexClient.schema.hasColumn(table, "uuid"))
+        for(let row of rows)
+            Object.assign(row, {"uuid": v4()});
+    console.log(`inside dbrepo:\nFinal rows:\n${JSON.stringify(rows)}`)
     return knexClient.batchInsert(table, rows, size)
         .returning(returning);
 }

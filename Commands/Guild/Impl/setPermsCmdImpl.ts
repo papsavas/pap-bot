@@ -18,9 +18,12 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
-        const roles = receivedMessage.mentions.roles;
+        const rolesKeyArr = receivedMessage.mentions.roles.keyArray();
+        if(receivedMessage.mentions.everyone)
+            rolesKeyArr.push(guild_id);
         const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
-        return overrideCommandPerms(guild_id, command_id, roles.keyArray());
+        console.log(`Inside command:\n ${guild_id}, ${command_id}, ${rolesKeyArr}`);
+        return overrideCommandPerms(guild_id, command_id, rolesKeyArr);
     }
 
     getKeyword(): string {

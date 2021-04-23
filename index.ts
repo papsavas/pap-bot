@@ -5,11 +5,7 @@ import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
-import {addRow, addRows, fetchAllOnCondition} from "./DB/dbRepo";
-import {getCollection, readData} from "./DB/firestoreRepo";
-import {log} from "util";
-import {genericGuildResponses} from "./Queries/Generic/GenericGuildResponses";
-import {fetchGuildMemberResponses} from "./Queries/Generic/MemberResponses";
+import {fetchCommandPerms} from "./Queries/Generic/guildRolePerms";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -62,7 +58,7 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-
+    console.log(await fetchCommandPerms('746309734851674122', 'setperms'));
     //-------------------------
     return Promise.resolve()
 }

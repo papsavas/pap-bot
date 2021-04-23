@@ -16,6 +16,7 @@ import {editMessageCmd} from "./Interf/editMessageCmd";
 import {commandType} from "../../Entities/Generic/commandType";
 import {setPrefixCmd} from "./Interf/setPrefixCmd";
 import {addRow} from "../../DB/dbRepo";
+import {setPermsCmd} from "./Interf/setPermsCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -32,10 +33,12 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.UnpinMessageCmd) unpinMessageCmd: unpinMessageCmd,
         @inject(TYPES.EditMessageCmd) editMessageCmd: editMessageCmd,
         @inject(TYPES.SetPrefixCmd) setPrefixCmd: setPrefixCmd,
+        @inject(TYPES.SetPermsCmd) setPermsCmd: setPermsCmd,
     ) {
         this.commands = [
             helpCmd, pollCmd, dmMemberCmd, messageChannelCmd,
-            pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd
+            pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd,
+            setPermsCmd
         ];
     }
 
@@ -138,7 +141,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                 color: "RED"
             })
         ).then(msg => msg.delete({timeout: 20000}));
-        console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.toString()}`)
+        console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.stack}`)
     }
 
 }

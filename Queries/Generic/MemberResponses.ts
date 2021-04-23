@@ -5,8 +5,7 @@ export async function fetchGuildMemberResponses(guildID: Snowflake): Promise<str
     try {
         const raw = await fetchAllOnCondition(
             'guild_responses',
-            'guild_id',
-            guildID as string,
+            {"guild_id" : guildID},
             ['member_id', 'response']) as { member_id: Snowflake, response: string }[];
         const respArr: string [] = [];
         raw.forEach(obj => respArr.push(obj.response))
