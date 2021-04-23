@@ -55,6 +55,12 @@ export function updateRow(tableName: string, column:string, value: string, newRo
         .update(newRow, returnings)
 }
 
+export function updateRowOnMultConditions(tableName: string, objClause: {}, newRow: {}, returnings?: string[]): Promise<any>{
+    return knexClient(tableName)
+        .where(objClause)
+        .update(newRow, returnings)
+}
+
 export async function addRow(table, row, returnings?: string[]): Promise<any> {
     if (await knexClient.schema.hasColumn(table, "uuid")) {
         Object.assign(row, row, {"uuid": v4()});
@@ -74,9 +80,9 @@ export function addRows(table, rows, returning?: string, size?: number): Promise
         .returning(returning);
 }
 
-export function dropRows(table: string, field: string, value: string): Promise<number> {
+export function dropRows(table: string, objClause: {}): Promise<number> {
     return knexClient(table)
-        .where(field, value)
+        .where(objClause)
         .del();
 }
 

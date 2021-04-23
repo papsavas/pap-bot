@@ -1,4 +1,4 @@
-import {GunpinMessage as _guide} from "../../guides.json";
+import {GpinMessage as _guide} from "../../guides.json";
 import {pinMessage as _keyword} from "../../keywords.json";
 import {injectable} from "Inversify";
 import {pinMessageCmd} from "../Interf/pinMessageCmd";

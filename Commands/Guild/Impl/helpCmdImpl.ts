@@ -9,7 +9,7 @@ import "reflect-metadata";
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {
     private readonly _aliases = this.addKeywordToAliases
     (
-        ['help, halp, h'],
+        ['help', 'halp', 'h'],
         _keyword
     );
 

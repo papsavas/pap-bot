@@ -13,5 +13,6 @@ export type classType = {
     repo_link?: URL,
     day?: dayType,
     time?: timeType,
-    video_conference_link?: URL
+    video_conference_link?: URL,
+    drive_link?: string,
 }

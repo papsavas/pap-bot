@@ -18,6 +18,8 @@ import {EditMessageCmdImpl} from "../Commands/Guild/Impl/editMessageCmdImpl";
 import {editMessageCmd} from "../Commands/Guild/Interf/editMessageCmd";
 import {SetPrefixCmdImpl} from "../Commands/Guild/Impl/setPrefixCmdImpl";
 import {setPrefixCmd} from "../Commands/Guild/Interf/setPrefixCmd";
+import {SetPermsCmdImpl} from "../Commands/Guild/Impl/setPermsCmdImpl";
+import {setPermsCmd} from "../Commands/Guild/Interf/setPermsCmd";
 
 const container = new Container();
 container.bind<helpCmd>(TYPES.HelpCmd).to(HelpCmdImpl).inSingletonScope();
@@ -28,6 +30,8 @@ container.bind<pinMessageCmd>(TYPES.PinMessageCmd).to(PinMessageCmdImpl).inSingl
 container.bind<unpinMessageCmd>(TYPES.UnpinMessageCmd).to(UnpinMessageCmdImpl).inSingletonScope();
 container.bind<editMessageCmd>(TYPES.EditMessageCmd).to(EditMessageCmdImpl).inSingletonScope();
 container.bind<setPrefixCmd>(TYPES.SetPrefixCmd).to(SetPrefixCmdImpl).inSingletonScope();
+container.bind<setPermsCmd>(TYPES.SetPermsCmd).to(SetPermsCmdImpl).inSingletonScope()
+
 container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandlerImpl).inSingletonScope();
 
 export default container;

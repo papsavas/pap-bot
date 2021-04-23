@@ -23,5 +23,5 @@ export async function addStudent(student: studentType, returnings?: (keyof stude
 }
 
 export async function dropStudent(field: "am" | "member_id" | "email", value: amType | Snowflake): Promise<number> {
-    return dropRows('student', field, value)
+    return dropRows('student', {[field]: value})
 }

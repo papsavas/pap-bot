@@ -40,6 +40,11 @@ export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
     /* implement DB writes */
+    /*
+    * - guild table add id
+    * - command_perms add @everyone role id in every command
+    * - add guild settings
+    * */
     //onGuildJoin(guild);
 })
 
@@ -63,9 +68,9 @@ async function runScript(): Promise<void> {
 }
 
 PAP.on('ready', async () => {
-    if (inDevelopment) {
+    if (inDevelopment && false) {
         await runScript();
-        //process.exit(132);
+        process.exit(132);
     }
     try {
         bundle.setClient(PAP);

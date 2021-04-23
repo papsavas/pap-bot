@@ -15,6 +15,7 @@ import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
 import {commandType} from "../../Entities/Generic/commandType";
 import {setPrefixCmd} from "./Interf/setPrefixCmd";
+import {addRow} from "../../DB/dbRepo";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -43,6 +44,22 @@ export default class CommandHandlerImpl implements CommandHandler {
     }
 
     public onCommand(message: Message) {
+        /* FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
+        ALSO CONNECT 'commands with command_perms' with foreign key on commands Completion
+        this.commands.forEach(async (cmd) => {
+
+                try{
+                    await addRow('commands', {
+                        "keyword" : cmd.getKeyword(),
+                        "aliases" : cmd.getAliases(),
+                        "guide" : cmd.getGuide()
+                    });
+                }
+                catch (err){
+                    console.log(err)
+                }
+        })
+    */
         const guildHandler = guildMap.get(message.guild.id);
         const prefix = guildHandler.getSettings().prefix;
         const commandMessage = message;
