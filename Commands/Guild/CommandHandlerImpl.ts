@@ -19,6 +19,7 @@ import {addRow} from "../../DB/AbstractRepository";
 import {setPermsCmd} from "./Interf/setPermsCmd";
 import {showPermsCmd} from "./Interf/showPermsCmd";
 import {addResponseCmd} from "./Interf/addResponseCmd";
+import {showPersonalResponsesCmd} from "./Interf/showPersonalResponsesCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -38,11 +39,12 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.SetPermsCmd) setPermsCmd: setPermsCmd,
         @inject(TYPES.ShowPermsCmd) showPermsCmd: showPermsCmd,
         @inject(TYPES.AddResponseCmd) addResponseCmd: addResponseCmd,
+        @inject(TYPES.ShowPersonalResponsesCmd) showPersonalResponsesCmd: showPersonalResponsesCmd
     ) {
         this.commands = [
             helpCmd, pollCmd, dmMemberCmd, messageChannelCmd,
             pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd,
-            setPermsCmd, showPermsCmd, addResponseCmd
+            setPermsCmd, showPermsCmd, addResponseCmd, showPersonalResponsesCmd
         ];
     }
 
@@ -76,7 +78,10 @@ export default class CommandHandlerImpl implements CommandHandler {
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand))
         if (typeof commandImpl !== "undefined") {
             return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
-                .then(execution => commandMessage?.react('✅').catch(err => {
+                .then(execution => commandMessage
+                    ?.react('✅')
+                    .then(msgReaction=>msgReaction.remove().catch())
+                    .catch(err => {
                 }))
                 .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
             /*

@@ -1,7 +1,15 @@
 import {Snowflake} from "discord.js";
 import {addRow, fetchAllOnCondition} from "../../DB/AbstractRepository";
 
-export async function fetchGuildMemberResponses(guildID: Snowflake): Promise<string[]> {
+export function fetchGuildMemberResponses(guildID: Snowflake, memberID: Snowflake): Promise<string []> {
+    return fetchAllOnCondition('guild_responses',
+        {
+            'guild_id': guildID,
+            'member_id': memberID,
+        }, ['response'])
+}
+
+export async function fetchAllGuildMemberResponses(guildID: Snowflake): Promise<string[]> {
     try {
         const raw = await fetchAllOnCondition(
             'guild_responses',
@@ -15,13 +23,13 @@ export async function fetchGuildMemberResponses(guildID: Snowflake): Promise<str
     }
 }
 
-export function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, response: string, nsfw: boolean){
+export function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, response: string, nsfw: boolean) {
     return addRow('guild_responses',
         {
-            "guild_id" : guild_id,
+            "guild_id": guild_id,
             "member_id": member_id,
             "response": response,
             "nsfw": nsfw
-            },
+        },
         ['response'])
 }

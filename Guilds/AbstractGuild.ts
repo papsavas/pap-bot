@@ -11,7 +11,7 @@ import {genericGuildResponses} from "../Queries/Generic/GenericGuildResponses";
 import {guildSettingsType} from "../Entities/Generic/guildSettingsType";
 import {fetchGuildSettings} from "../Queries/Generic/GuildSettings";
 import {memberResponsesType} from "../Entities/Generic/MemberResponsesType";
-import {fetchGuildMemberResponses} from "../Queries/Generic/MemberResponses";
+import {fetchAllGuildMemberResponses} from "../Queries/Generic/MemberResponses";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
@@ -91,7 +91,7 @@ export abstract class AbstractGuild implements GenericGuild {
         this._guild = client.guilds.cache.get(this.guildID);
         this._settings = await fetchGuildSettings(this.guildID);
         const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
-        const memberConcatResponses: string[] = await fetchGuildMemberResponses(this.guildID);
+        const memberConcatResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
         this._responses = memberConcatResponses.concat(genericResponses);
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
