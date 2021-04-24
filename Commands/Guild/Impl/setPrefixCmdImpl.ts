@@ -7,7 +7,7 @@ import {Message} from "discord.js";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {fetchGuildSettings, updateGuildSettings} from "../../../Queries/Generic/GuildSettings";
-import {addRow} from "../../../DB/dbRepo";
+import {addRow} from "../../../DB/AbstractRepository";
 import {guildMap} from "../../../index";
 
 @injectable()

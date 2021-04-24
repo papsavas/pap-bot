@@ -1,4 +1,4 @@
-import {addRows, dropRows, fetchAllOnCondition} from "../../DB/dbRepo";
+import {addRows, dropRows, fetchAllOnCondition} from "../../DB/AbstractRepository";
 import {Snowflake} from "discord.js";
 import {guildRolePermissionType} from "../../Entities/Generic/guildRolePermissionType";
 

@@ -1,4 +1,4 @@
-import {addRow, addRows, dropRows, fetchFirstOnCondition, readFirstRow} from "../../DB/dbRepo";
+import {addRow, addRows, dropRows, fetchFirstOnCondition, readFirstRow} from "../../DB/AbstractRepository";
 import {Snowflake} from "discord.js";
 import {amType, studentType} from "../../Entities/KEP/Student";
 

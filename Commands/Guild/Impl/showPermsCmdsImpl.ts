@@ -8,7 +8,7 @@ import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {showPermsCmd} from "../Interf/showPermsCmd";
 import {fetchCommandPerms} from "../../../Queries/Generic/guildRolePerms";
 import {guildMap} from "../../../index";
-import {fetchAllOnCondition} from "../../../DB/dbRepo";
+import {fetchAllOnCondition} from "../../../DB/AbstractRepository";
 
 @injectable()
 export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
@@ -26,7 +26,7 @@ export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
             .then(reqRoles=>
                 message.reply(new MessageEmbed({
                     title:guild_prefix+command_id,
-                    description: `Required roles: ${reqRoles.toString()}`,
+                    description: `Enabled for : ${reqRoles.toString()}`,
                 }))
         );
     }

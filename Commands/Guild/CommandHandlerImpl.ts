@@ -15,9 +15,10 @@ import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
 import {commandType} from "../../Entities/Generic/commandType";
 import {setPrefixCmd} from "./Interf/setPrefixCmd";
-import {addRow} from "../../DB/dbRepo";
+import {addRow} from "../../DB/AbstractRepository";
 import {setPermsCmd} from "./Interf/setPermsCmd";
 import {showPermsCmd} from "./Interf/showPermsCmd";
+import {addResponseCmd} from "./Interf/addResponseCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -36,11 +37,12 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.SetPrefixCmd) setPrefixCmd: setPrefixCmd,
         @inject(TYPES.SetPermsCmd) setPermsCmd: setPermsCmd,
         @inject(TYPES.ShowPermsCmd) showPermsCmd: showPermsCmd,
+        @inject(TYPES.AddResponseCmd) addResponseCmd: addResponseCmd,
     ) {
         this.commands = [
             helpCmd, pollCmd, dmMemberCmd, messageChannelCmd,
             pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd,
-            setPermsCmd, showPermsCmd
+            setPermsCmd, showPermsCmd, addResponseCmd
         ];
     }
 

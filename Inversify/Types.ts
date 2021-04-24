@@ -9,6 +9,7 @@ export const TYPES = {
     SetPrefixCmd : Symbol.for('SetPrefixCmd'),
     SetPermsCmd : Symbol.for('SetPermsCmd'),
     ShowPermsCmd : Symbol.for('ShowPermsCmd'),
+    AddResponseCmd : Symbol.for('AddResponsesCmd'),
 
     CommandHandler : Symbol.for('CommandHandler')
 }

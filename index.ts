@@ -6,6 +6,7 @@ import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 import {fetchCommandPerms} from "./Queries/Generic/guildRolePerms";
+import {fetchTable} from "./DB/AbstractRepository";
 
 export const bundle: Bundle = new BundleImpl();
 
@@ -58,15 +59,15 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    console.log(await fetchCommandPerms('746309734851674122', 'setperms'));
+
     //-------------------------
     return Promise.resolve()
 }
 
 PAP.on('ready', async () => {
-    if (inDevelopment && false) {
+    if (inDevelopment) {
         await runScript();
-        process.exit(132);
+        //process.exit(132);
     }
     try {
         bundle.setClient(PAP);

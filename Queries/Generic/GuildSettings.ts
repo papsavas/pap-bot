@@ -1,5 +1,5 @@
 import {Snowflake} from "discord.js";
-import {fetchFirstOnCondition, updateRow} from "../../DB/dbRepo";
+import {fetchFirstOnCondition, updateRow} from "../../DB/AbstractRepository";
 import {guildSettingsType} from "../../Entities/Generic/guildSettingsType";
 
 export function fetchGuildSettings(guildID: Snowflake): Promise<guildSettingsType> {
