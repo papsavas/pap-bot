@@ -20,8 +20,8 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
     public execute({channel, member}: Message, {arg1}: commandType, addGuildLog: guildLoggerType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
-                0 : parseInt(arg1) +1;
-        if(isNaN(number))
+                0 : parseInt(arg1) + 1;
+        if (isNaN(number))
             return Promise.reject(new Error(`You need to provide a number between 1-100`));
 
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES))

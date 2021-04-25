@@ -28,6 +28,8 @@ import {ShowPersonalResponsesCmdImpl} from "../Commands/Guild/Impl/showPersonalR
 import {showPersonalResponsesCmd} from "../Commands/Guild/Interf/showPersonalResponsesCmd";
 import {ClearMessagesCmdImpl} from "../Commands/Guild/Impl/clearMessagesCmdImpl";
 import {clearMessagesCmd} from "../Commands/Guild/Interf/clearMessagesCmd";
+import {removePersonalResponseCmd} from "../Commands/Guild/Interf/removePersonalResponseCmd";
+import {RemovePersonalResponseCmdImpl} from "../Commands/Guild/Impl/removePersonalResponseCmdImpl";
 
 const container = new Container();
 container.bind<helpCmd>(TYPES.HelpCmd).to(HelpCmdImpl).inSingletonScope();
@@ -43,6 +45,7 @@ container.bind<showPermsCmd>(TYPES.ShowPermsCmd).to(ShowPermsCmdsImpl).inSinglet
 container.bind<addResponseCmd>(TYPES.AddResponseCmd).to(AddResponseCmdImpl).inSingletonScope();
 container.bind<showPersonalResponsesCmd>(TYPES.ShowPersonalResponsesCmd).to(ShowPersonalResponsesCmdImpl).inSingletonScope();
 container.bind<clearMessagesCmd>(TYPES.ClearMessagesCmd).to(ClearMessagesCmdImpl).inSingletonScope();
+container.bind<removePersonalResponseCmd>(TYPES.RemovePersonalResponseCmd).to(RemovePersonalResponseCmdImpl).inSingletonScope();
 
 container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandlerImpl).inSingletonScope();
 

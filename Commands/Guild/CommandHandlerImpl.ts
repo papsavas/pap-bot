@@ -1,7 +1,6 @@
 import {inject, injectable} from 'Inversify';
 import * as Discord from 'discord.js';
 import {Message, Snowflake} from 'discord.js';
-import {qprefix} from '../../botconfig.json'
 import {TYPES} from "../../Inversify/Types";
 import {bugsChannel, bundle, guildMap} from "../../index";
 import {pinMessageCmd} from "./Interf/pinMessageCmd";
@@ -15,12 +14,12 @@ import {helpCmd} from "./Interf/helpCmd";
 import {editMessageCmd} from "./Interf/editMessageCmd";
 import {commandType} from "../../Entities/Generic/commandType";
 import {setPrefixCmd} from "./Interf/setPrefixCmd";
-import {addRow} from "../../DB/AbstractRepository";
 import {setPermsCmd} from "./Interf/setPermsCmd";
 import {showPermsCmd} from "./Interf/showPermsCmd";
 import {addResponseCmd} from "./Interf/addResponseCmd";
 import {showPersonalResponsesCmd} from "./Interf/showPersonalResponsesCmd";
 import {clearMessagesCmd} from "./Interf/clearMessagesCmd";
+import {removePersonalResponseCmd} from "./Interf/removePersonalResponseCmd";
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -41,13 +40,15 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.ShowPermsCmd) showPermsCmd: showPermsCmd,
         @inject(TYPES.AddResponseCmd) addResponseCmd: addResponseCmd,
         @inject(TYPES.ShowPersonalResponsesCmd) showPersonalResponsesCmd: showPersonalResponsesCmd,
-        @inject(TYPES.ClearMessagesCmd) clearMessagesCmd: clearMessagesCmd
+        @inject(TYPES.ClearMessagesCmd) clearMessagesCmd: clearMessagesCmd,
+        @inject(TYPES.RemovePersonalResponseCmd) removePersonalResponseCmd: removePersonalResponseCmd,
     ) {
         this.commands = [
-            helpCmd, pollCmd, dmMemberCmd, messageChannelCmd,
-            pinMessageCmd, unpinMessageCmd, editMessageCmd, setPrefixCmd,
-            setPermsCmd, showPermsCmd, addResponseCmd, showPersonalResponsesCmd,
-            clearMessagesCmd
+            helpCmd, pollCmd, dmMemberCmd, setPrefixCmd,
+            pinMessageCmd, unpinMessageCmd,
+            messageChannelCmd, clearMessagesCmd, editMessageCmd,
+            setPermsCmd, showPermsCmd,
+            addResponseCmd, showPersonalResponsesCmd, removePersonalResponseCmd
         ];
     }
 
@@ -83,9 +84,14 @@ export default class CommandHandlerImpl implements CommandHandler {
             return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
                 .then(execution => commandMessage
                     ?.react('✅')
-                    .then(msgReaction=>msgReaction.remove().catch())
+                    .then(msgReaction => {
+                        //msgReaction.remove().catch()
+                        const userReactions = msgReaction.message.reactions.cache
+                            .filter(reaction => reaction.users.cache.has('690353618238308385'));
+                        userReactions.forEach(reaction => reaction.users.remove('690353618238308385').catch());
+                    })
                     .catch(err => {
-                }))
+                    }))
                 .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
             /*
             switch (prefix) {

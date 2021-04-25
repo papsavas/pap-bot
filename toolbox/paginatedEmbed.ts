@@ -4,7 +4,7 @@ export function paginationEmbed(
     userMessage: Message, targetStructure: string[], perPage: number,
     headerEmbed: MessageEmbed, fieldBuilder: (resp: string, index: number, start: number) => string[],
     timeout: number, targetChannel = userMessage.channel
-) :Promise<any> {
+) :Promise<void | Error> {
     if (perPage > 25) perPage = 25;
 
     const generateEmbed = start => {

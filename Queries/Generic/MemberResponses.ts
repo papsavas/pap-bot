@@ -1,5 +1,5 @@
 import {Snowflake} from "discord.js";
-import {addRow, fetchAllOnCondition} from "../../DB/AbstractRepository";
+import {addRow, dropRows, fetchAllOnCondition} from "../../DB/AbstractRepository";
 
 export function fetchGuildMemberResponses(guildID: Snowflake, memberID: Snowflake): Promise<string []> {
     return fetchAllOnCondition('guild_responses',
@@ -32,4 +32,15 @@ export function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, res
             "nsfw": nsfw
         },
         ['response'])
+}
+
+export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowflake, response: string) :Promise<string>{
+    const res = await dropRows('guild_responses', {
+        "guild_id": guild_id,
+        "member_id": member_id,
+        "response": response,
+    });
+    let resp :Promise<string>;
+    res > 0 ? resp =  Promise.resolve(`removed ${res} responses`) : resp =  Promise.resolve(`Response \`\`\`${response}\`\`\` not found`);
+    return resp;
 }
