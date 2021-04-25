@@ -11,6 +11,7 @@ export const TYPES = {
     ShowPermsCmd : Symbol.for('ShowPermsCmd'),
     AddResponseCmd : Symbol.for('AddResponsesCmd'),
     ShowPersonalResponsesCmd: Symbol.for('ShowPersonalResponsesCmd'),
+    ClearMessagesCmd: Symbol.for('ClearMessages'),
 
     CommandHandler : Symbol.for('CommandHandler')
 }

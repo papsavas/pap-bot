@@ -97,7 +97,7 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     addGuildLog(log: string): string {
-        this._logs.push(log);
+        this.logs.push(log);
         return log
     }
 
