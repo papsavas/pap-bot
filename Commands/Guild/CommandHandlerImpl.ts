@@ -20,6 +20,7 @@ import {addResponseCmd} from "./Interf/addResponseCmd";
 import {showPersonalResponsesCmd} from "./Interf/showPersonalResponsesCmd";
 import {clearMessagesCmd} from "./Interf/clearMessagesCmd";
 import {removePersonalResponseCmd} from "./Interf/removePersonalResponseCmd";
+require('dotenv').config();
 
 @injectable()
 export default class CommandHandlerImpl implements CommandHandler {
@@ -87,8 +88,8 @@ export default class CommandHandlerImpl implements CommandHandler {
                     .then(msgReaction => {
                         //msgReaction.remove().catch()
                         const userReactions = msgReaction.message.reactions.cache
-                            .filter(reaction => reaction.users.cache.has('690353618238308385'));
-                        userReactions.forEach(reaction => reaction.users.remove('690353618238308385').catch());
+                            .filter(reaction => reaction.users.cache.has(process.env.BOT_ID));
+                        userReactions.forEach(reaction => reaction.users.remove(process.env.BOT_ID).catch());
                     })
                     .catch(err => {
                     }))
