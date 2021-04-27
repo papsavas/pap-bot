@@ -1,6 +1,6 @@
-import {Snowflake} from "discord.js";
+import { Snowflake } from "discord.js";
 
-export type guildSettingsType = {
+export interface guildSettings {
     prefix: string;
     guild_id: Snowflake;
     nsfw_responses: boolean;

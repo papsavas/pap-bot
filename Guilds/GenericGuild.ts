@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import {guildSettingsType} from "../Entities/Generic/guildSettingsType";
+import {guildSettings} from "../Entities/Generic/guildSettingsType";
 
 export interface GenericGuild {
     onReady(client: Discord.Client): Promise<any>;
@@ -20,7 +20,7 @@ export interface GenericGuild {
 
     addGuildLog(log: string);
 
-    getSettings(): guildSettingsType;
+    getSettings(): guildSettings;
 
     setPrefix(newPrefix: string): void;
 }

@@ -1,6 +1,6 @@
 import {Snowflake} from "discord.js";
 
-export type guildRolePermissionType = {
+export interface guildRolePermission {
     guild_id: Snowflake,
     role_id: Snowflake,
     command_id: string,

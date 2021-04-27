@@ -1,9 +1,9 @@
 import {addRows, dropRows, fetchAllOnCondition} from "../../DB/AbstractRepository";
 import {Snowflake} from "discord.js";
-import {guildRolePermissionType} from "../../Entities/Generic/guildRolePermissionType";
+import {guildRolePermission} from "../../Entities/Generic/guildRolePermissionType";
 
 
-export async function overrideCommandPerms(guild_id: Snowflake, command_id: string, roleIDs: Snowflake[]): Promise<guildRolePermissionType []> {
+export async function overrideCommandPerms(guild_id: Snowflake, command_id: string, roleIDs: Snowflake[]): Promise<guildRolePermission []> {
     await dropRows('command_perms',
         {
             "guild_id": guild_id,
@@ -17,7 +17,7 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: stri
     return addRows('command_perms', rows, '*');
 }
 
-export function fetchCommandPerms(guild_id: Snowflake, command_id: string): Promise<guildRolePermissionType[]> {
+export function fetchCommandPerms(guild_id: Snowflake, command_id: string): Promise<guildRolePermission[]> {
     return fetchAllOnCondition('command_perms',
         {
             "guild_id": guild_id,

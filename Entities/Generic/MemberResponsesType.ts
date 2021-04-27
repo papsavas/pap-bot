@@ -1,6 +1,6 @@
 import {Snowflake} from "discord.js";
 
-export type memberResponsesType = {
+export interface memberResponses {
     member_id: Snowflake,
     responses: string[],
 }

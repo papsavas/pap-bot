@@ -8,9 +8,9 @@ import {CommandHandler} from "../Commands/Guild/CommandHandler";
 import {TYPES} from "../Inversify/Types";
 import {randArrElement} from "../toolbox";
 import {genericGuildResponses} from "../Queries/Generic/GenericGuildResponses";
-import {guildSettingsType} from "../Entities/Generic/guildSettingsType";
+import {guildSettings} from "../Entities/Generic/guildSettingsType";
 import {fetchGuildSettings} from "../Queries/Generic/GuildSettings";
-import {memberResponsesType} from "../Entities/Generic/MemberResponsesType";
+import {memberResponses} from "../Entities/Generic/MemberResponsesType";
 import {fetchAllGuildMemberResponses} from "../Queries/Generic/MemberResponses";
 
 const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
@@ -18,7 +18,7 @@ const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
     private _responses: string[];
-    private _settings: guildSettingsType;
+    private _settings: guildSettings;
 
     protected constructor(guild_id: Discord.Snowflake) {
         this.guildID = guild_id;
@@ -30,9 +30,9 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._guild;
     }
 
-    private _userResponses: memberResponsesType;
+    private _userResponses: memberResponses;
 
-    get userResponses(): memberResponsesType {
+    get userResponses(): memberResponses {
         return this._userResponses;
     }
 
@@ -42,7 +42,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._logs;
     }
 
-    getSettings(): guildSettingsType {
+    getSettings(): guildSettings {
         return this._settings;
     }
 
@@ -59,7 +59,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onMessage(message: Discord.Message): Promise<any> {
+    async onMessage(message: Discord.Message): Promise<any> {
         bundle.setMessage(message);
         if ([this._settings.prefix].some((pr: string) => message.content.startsWith(pr))) {
             return commandHandler.onCommand(message);
@@ -67,8 +67,9 @@ export abstract class AbstractGuild implements GenericGuild {
 
         if (message.content.match(mentionRegex)) {
             //implement mentionHandler
-            console.log(`mentioned in ${this._guild.name}`)
+            message.channel.startTyping();
             return message.reply(randArrElement(this._responses))
+                .then(msg=> message.channel.stopTyping())
                 .catch(err => console.log(err));
         }
 

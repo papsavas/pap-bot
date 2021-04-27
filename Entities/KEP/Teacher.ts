@@ -1,11 +1,11 @@
-import {classType} from "./Class";
+import {Class} from "./Class";
 import {Collection} from "discord.js";
 
-export type teacherType = {
+export interface Teacher  {
     username: string,
     fullName: string,
     email: string,
     picture_url?: URL,
     website?: URL,
-    classes: Collection<classType['role_id'],classType[]>
+    classes: Collection<Class['role_id'],Class[]>
 }
