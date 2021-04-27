@@ -13,6 +13,7 @@ export const TYPES = {
     ShowPersonalResponsesCmd: Symbol.for('ShowPersonalResponsesCmd'),
     ClearMessagesCmd: Symbol.for('ClearMessages'),
     RemovePersonalResponseCmd: Symbol.for('RemovePersonalResponseCmd'),
+    MockMessageCmd: Symbol.for('MockMessageCmd'),
 
     CommandHandler : Symbol.for('CommandHandler')
 }
