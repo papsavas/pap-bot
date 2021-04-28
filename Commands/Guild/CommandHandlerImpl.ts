@@ -2,7 +2,7 @@ import {inject, injectable} from 'Inversify';
 import * as Discord from 'discord.js';
 import {Message, Snowflake} from 'discord.js';
 import {TYPES} from "../../Inversify/Types";
-import {bugsChannel, bundle, guildMap} from "../../index";
+import {bugsChannel, guildMap} from "../../index";
 import {pinMessageCmd} from "./Interf/pinMessageCmd";
 import {GenericCommand} from "./GenericCommand";
 import {messageChannelCmd} from "./Interf/messageChannelCmd";
@@ -82,7 +82,7 @@ export default class CommandHandlerImpl implements CommandHandler {
         const commandMessage = message;
         const candidateCommand = this.returnCommand(message);
         this.setGuildLogger(message.guild.id);
-        bundle.setCommand(candidateCommand);
+    
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand))
         if (typeof commandImpl !== "undefined") {
             return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
@@ -96,18 +96,18 @@ export default class CommandHandlerImpl implements CommandHandler {
                     })
                     .catch(err => {
                     }))
-                .catch(err => this.invalidCommand(err, commandMessage, commandImpl));
+                .catch(err => this.invalidCommand(err, commandMessage, commandImpl, candidateCommand.primaryCommand));
             /*
             switch (prefix) {
                 case prefix:
 
 
                 case qprefix:
-                    return (bundle.getChannel() as Discord.TextChannel).send(commandImpl.getGuide())
+                    return message.channel.send(commandImpl.getGuide())
                         .catch(err => `Error on Guide sending\n${err.toString()}`);
             }*/
         } else
-            return (bundle.getMessage() as Discord.Message).react('❔').catch();
+            return message.react('❔').catch();
     }
 
     private setGuildLogger(guildID: Snowflake) {
@@ -133,16 +133,16 @@ export default class CommandHandlerImpl implements CommandHandler {
         }
     }
 
-    private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand) {
+    private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new Discord.MessageEmbed({
             author: {
-                name: bundle.getGuild().name,
+                name: commandMessage.guild.name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: bundle.getGuild().iconURL({format: "png", size: 512})
+                proxy_url: commandMessage.guild.iconURL({format: "png", size: 512})
             },
-            title: bundle.getCommand().primaryCommand,
+            title: primaryCommandLiteral,
             color: "DARK_RED",
             timestamp: new Date()
         });
@@ -163,7 +163,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                 color: "RED"
             })
         ).then(msg => msg.delete({timeout: 20000}));
-        console.log(`Error on Command ${bundle.getCommand().primaryCommand}\n${err.stack}`)
+        console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
 }

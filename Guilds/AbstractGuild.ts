@@ -60,7 +60,6 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Discord.Message): Promise<any> {
-        bundle.setMessage(message);
         if ([this._settings.prefix].some((pr: string) => message.content.startsWith(pr))) {
             return commandHandler.onCommand(message);
         }

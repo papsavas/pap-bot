@@ -24,16 +24,16 @@ export abstract class AbstractCommand implements GenericCommand {
             .find((alias: string) => alias === possibleCommand.toLowerCase());
     }
 
-    logErrorOnBugsChannel(err: Error, bundle: Bundle) {
+    logErrorOnBugsChannel(err: Error, guild: Discord.Guild, primaryCommandLiteral: string) {
         const emb = new Discord.MessageEmbed({
             author: {
-                name: bundle.getGuild().name,
+                name: guild.name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: bundle.getGuild().iconURL({format: "png", size: 512})
+                proxy_url: guild.iconURL({format: "png", size: 512})
             },
-            title: bundle.getCommand().primaryCommand,
+            title: primaryCommandLiteral,
             color: "DARK_RED",
             timestamp: new Date()
 

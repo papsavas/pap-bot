@@ -17,5 +17,4 @@ export interface GenericCommand {
 
     matchAliases(possibleCommand: string): boolean;
 
-    logErrorOnBugsChannel(err: Error, bundle: Bundle): void;
 }
