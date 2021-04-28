@@ -1,8 +1,13 @@
-import knex, {Knex} from "knex";
-import {v4} from "uuid";
+/**
+ * @deprecated 
+*/
+
+import knex, { Knex } from "knex";
+import { v4 } from "uuid";
 import TableBuilder = Knex.TableBuilder;
 
 require('dotenv').config();
+
 
 const knexClient = knex({
     client: 'pg',
@@ -49,30 +54,30 @@ export function readFirstRow(table: string, column: string, value: string): Prom
 
 }
 
-export function updateRow(tableName: string, column:string, value: string, newRow :{},returnings?: string[]): Promise<any>{
+export function updateRow(tableName: string, column: string, value: string, newRow: {}, returnings?: string[]): Promise<any> {
     return knexClient(tableName)
         .where(column, value)
         .update(newRow, returnings)
 }
 
-export function updateRowOnMultConditions(tableName: string, objClause: {}, newRow: {}, returnings?: string[]): Promise<any>{
+export function updateRowOnMultConditions(tableName: string, objClause: {}, newRow: {}, returnings?: string[]): Promise<any> {
     return knexClient(tableName)
         .where(objClause)
         .update(newRow, returnings)
 }
 
-export async function addRow(table, row, returnings?: string[]): Promise<any> {
-    if (await knexClient.schema.hasColumn(table, "uuid")) {
-        Object.assign(row, row, {"uuid": v4()});
+export async function addRow(tableName: string, row, returnings?: string[]): Promise<any> {
+    if (await knexClient.schema.hasColumn(tableName, "uuid")) {
+        Object.assign(row, row, { "uuid": v4() });
     }
-    return knexClient(table).insert(row)
+    return knexClient(tableName).insert(row)
         .returning(returnings);
 }
 
-export async  function addRows(table, rows, returning?: string, size?: number): Promise<any> {
+export async function addRows(table, rows, returning?: string, size?: number): Promise<any> {
     if (await knexClient.schema.hasColumn(table, "uuid"))
-        for(let row of rows)
-            Object.assign(row, {"uuid": v4()});
+        for (let row of rows)
+            Object.assign(row, { "uuid": v4() });
     return knexClient.batchInsert(table, rows, size)
         .returning(returning);
 }

@@ -8,7 +8,7 @@ import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {showPermsCmd} from "../Interf/showPermsCmd";
 import {fetchCommandPerms} from "../../../Queries/Generic/guildRolePerms";
 import {guildMap} from "../../../index";
-import {fetchAllOnCondition} from "../../../DB/AbstractRepository";
+import {fetchAllOnCondition} from "../../../DB/CoreRepo";
 import {removePersonalResponseCmd} from "../Interf/removePersonalResponseCmd";
 import {removeMemberResponse} from "../../../Queries/Generic/MemberResponses";
 

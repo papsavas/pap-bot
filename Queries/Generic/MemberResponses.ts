@@ -1,5 +1,5 @@
 import {Snowflake} from "discord.js";
-import {addRow, dropRows, fetchAllOnCondition} from "../../DB/AbstractRepository";
+import {addRow, dropRows, fetchAllOnCondition} from "../../DB/CoreRepo";
 
 export function fetchGuildMemberResponses(guildID: Snowflake, memberID: Snowflake): Promise<string []> {
     return fetchAllOnCondition('guild_responses',

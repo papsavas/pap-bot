@@ -1,5 +1,5 @@
 import {Snowflake} from "discord.js";
-import {fetchTable} from "../../DB/AbstractRepository";
+import {fetchTable} from "../../DB/CoreRepo";
 
 export async function genericGuildResponses(guildID: Snowflake, nsfwEnabled: boolean): Promise<string[]> {
     const res = await fetchTable('generic_responses') as unknown as { response: string, nsfw: boolean }[];

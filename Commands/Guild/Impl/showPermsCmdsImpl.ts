@@ -8,7 +8,7 @@ import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {showPermsCmd} from "../Interf/showPermsCmd";
 import {fetchCommandPerms} from "../../../Queries/Generic/guildRolePerms";
 import {guildMap} from "../../../index";
-import {fetchAllOnCondition} from "../../../DB/AbstractRepository";
+import {fetchAllOnCondition} from "../../../DB/CoreRepo";
 
 @injectable()
 export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {

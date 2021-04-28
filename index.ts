@@ -5,8 +5,7 @@ import Bundle from "./BundlePackage/Bundle";
 import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
-import {fetchCommandPerms} from "./Queries/Generic/guildRolePerms";
-import {fetchTable} from "./DB/AbstractRepository";
+
 
 export const bundle: Bundle = new BundleImpl();
 

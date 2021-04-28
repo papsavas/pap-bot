@@ -2,7 +2,7 @@ import {AbstractGuild} from "../AbstractGuild";
 import {GenericGuild} from "../GenericGuild";
 import {CategoryChannel, Channel, Client, Message, Role} from "discord.js";
 import {readData} from "../../DB/firestoreRepo";
-import {fetchTable} from "../../DB/AbstractRepository";
+import {fetchTable} from "../../DB/CoreRepo";
 
 export class KepGuild extends AbstractGuild implements GenericGuild {
     private readonly _roles: { name: string, role: Role };
