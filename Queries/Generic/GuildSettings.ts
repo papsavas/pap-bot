@@ -1,4 +1,5 @@
 import {Snowflake} from "discord.js";
+import { guildMap } from "../..";
 import {fetchFirstOnCondition, updateRow} from "../../DB/CoreRepo";
 import {guildSettings} from "../../Entities/Generic/guildSettingsType";
 

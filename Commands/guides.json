@@ -20,6 +20,7 @@
     "GdeleteMessage" : "Begins a petition for deleting a certain message\n```$deletemsg msg_link [reason]```",
     "GlogChanges" : "Prints guilds logs\n```$logs```",
     "GsetPerms" : "Sets role permissions on a command\n ```$setperms <cmd> <role1> [<role2> <role3>]",
+    "GnsfwSwitch" : "Enables/Disables nsfw responses\n```$nsfw```",
     "Gselfnotes" : "Οι προσωπικές σας σημειώσεις\n ```$notes [add <note> / remove <index> / edit <index> <note> / clear]```",
     "GPAP_test2" : "test2\n```$test2```",
     "GKEP_drive" : "Σας εγγράφει στο Dai Archive\n```$drive register```\n```$drive reader/writer email```",

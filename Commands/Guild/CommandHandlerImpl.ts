@@ -21,6 +21,7 @@ import {showPersonalResponsesCmd} from "./Interf/showPersonalResponsesCmd";
 import {clearMessagesCmd} from "./Interf/clearMessagesCmd";
 import {removePersonalResponseCmd} from "./Interf/removePersonalResponseCmd";
 import { mockMessageCmd } from './Interf/mockMessageCmd';
+import { nsfwSwitchCmd } from './Interf/nsfwSwitchCmd';
 require('dotenv').config();
 
 @injectable()
@@ -45,6 +46,7 @@ export default class CommandHandlerImpl implements CommandHandler {
         @inject(TYPES.ClearMessagesCmd) clearMessagesCmd: clearMessagesCmd,
         @inject(TYPES.RemovePersonalResponseCmd) removePersonalResponseCmd: removePersonalResponseCmd,
         @inject(TYPES.MockMessageCmd) mockMessageCmd: mockMessageCmd,
+        @inject(TYPES.NsfwSwitchCmd) nsfwSwitchCmd: nsfwSwitchCmd
     ) {
         this.commands = [
             helpCmd, pollCmd, dmMemberCmd, setPrefixCmd,
@@ -52,7 +54,7 @@ export default class CommandHandlerImpl implements CommandHandler {
             messageChannelCmd, clearMessagesCmd, editMessageCmd,
             setPermsCmd, showPermsCmd,
             addResponseCmd, showPersonalResponsesCmd, removePersonalResponseCmd,
-            mockMessageCmd
+            mockMessageCmd, nsfwSwitchCmd
         ];
     }
 

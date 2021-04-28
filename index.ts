@@ -1,13 +1,9 @@
 import * as Discord from 'discord.js';
 import {GuildMember, Message, User} from 'discord.js';
 import {guildID as botGuildID} from './botconfig.json'
-import Bundle from "./BundlePackage/Bundle";
-import BundleImpl from "./BundlePackage/BundleImpl";
 import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
 import {GenericGuild} from "./Guilds/GenericGuild";
 
-
-export const bundle: Bundle = new BundleImpl();
 
 export let bugsChannel: Discord.TextChannel;
 export let logsChannel: Discord.TextChannel;
@@ -69,7 +65,6 @@ PAP.on('ready', async () => {
         //process.exit(132);
     }
     try {
-        bundle.setClient(PAP);
         await PAP.user.setActivity('over you', {type: 'WATCHING'})
         //.catch(err => console.log(err));
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;

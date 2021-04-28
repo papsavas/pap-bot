@@ -20,6 +20,7 @@
     "clearMessages" : "clear",
     "logChanges" : "logs",
     "deleteMessage" :"deletemsg",
+    "nsfwSwitch" : "nsfw",
     "selfnotes" : "notes",
     "PAP_test2" : "test2",
     "KEP_drive" : "drive_register",

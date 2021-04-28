@@ -32,6 +32,8 @@ import {removePersonalResponseCmd} from "../Commands/Guild/Interf/removePersonal
 import {RemovePersonalResponseCmdImpl} from "../Commands/Guild/Impl/removePersonalResponseCmdImpl";
 import { MockMessageCmdImpl } from "../Commands/Guild/Impl/mockMessageCmdImpl";
 import { mockMessageCmd } from "../Commands/Guild/Interf/mockMessageCmd";
+import { nsfwSwitchCmd } from "../Commands/Guild/Interf/nsfwSwitchCmd";
+import { NsfwSwitchCmdImpl } from "../Commands/Guild/Impl/nsfwSwitchCmdImpl";
 
 const container = new Container();
 container.bind<helpCmd>(TYPES.HelpCmd).to(HelpCmdImpl).inSingletonScope();
@@ -49,6 +51,7 @@ container.bind<showPersonalResponsesCmd>(TYPES.ShowPersonalResponsesCmd).to(Show
 container.bind<clearMessagesCmd>(TYPES.ClearMessagesCmd).to(ClearMessagesCmdImpl).inSingletonScope();
 container.bind<removePersonalResponseCmd>(TYPES.RemovePersonalResponseCmd).to(RemovePersonalResponseCmdImpl).inSingletonScope();
 container.bind<mockMessageCmd>(TYPES.MockMessageCmd).to(MockMessageCmdImpl).inSingletonScope();
+container.bind<nsfwSwitchCmd>(TYPES.NsfwSwitchCmd).to(NsfwSwitchCmdImpl).inSingletonScope();
 
 container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandlerImpl).inSingletonScope();
 

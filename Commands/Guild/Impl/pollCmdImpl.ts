@@ -3,7 +3,6 @@ import * as Discord from 'discord.js';
 import {simplePoll as _keyword} from '../../keywords.json';
 import {GsimplePoll as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
-import Bundle from "../../../BundlePackage/Bundle";
 import {pollCmd} from "../Interf/pollCmd";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";

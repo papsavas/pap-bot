@@ -1,7 +1,6 @@
 import {GenericGuild} from "./GenericGuild";
 import * as Discord from 'discord.js';
 import {Guild, Snowflake} from 'discord.js';
-import {bundle} from "../index";
 import {mentionRegex} from "../botconfig.json";
 import container from "../Inversify/inversify.config";
 import {CommandHandler} from "../Commands/Guild/CommandHandler";
@@ -89,10 +88,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     async onReady(client: Discord.Client): Promise<any> {
         this._guild = client.guilds.cache.get(this.guildID);
-        this._settings = await fetchGuildSettings(this.guildID);
-        const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
-        const memberConcatResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
-        this._responses = memberConcatResponses.concat(genericResponses);
+        await this.loadResponses()
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
 
@@ -103,6 +99,14 @@ export abstract class AbstractGuild implements GenericGuild {
 
     setPrefix(newPrefix: string): void {
         this._settings.prefix = newPrefix;
+    }
+
+    async loadResponses(){
+        this._settings = await fetchGuildSettings(this.guildID);
+        const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
+        const memberConcatResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
+        this._responses = memberConcatResponses.concat(genericResponses);
+        return Promise.resolve('responses reloaded')
     }
 
 }
