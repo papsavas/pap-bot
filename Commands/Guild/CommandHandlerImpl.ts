@@ -164,7 +164,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                 footer: {text: commandImpl.getAliases().toString()},
                 color: "RED"
             })
-        ).then(msg => msg.delete({timeout: 20000}));
+        ).then(msg => msg.client.setTimeout(() => msg.delete(), 10000));
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 

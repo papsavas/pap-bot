@@ -18,13 +18,16 @@ console.log("running in " + process.env.NODE_ENV + " mode\n");
 
 export const PAP = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
-    ws: {
-        intents: [
-            'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
-            'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
-            'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'
-        ]
+    intents: [
+        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
+        'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
+        'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'
+    ],
+    allowedMentions: {
+        parse: ['users'],
+        repliedUser: true 
     }
+    
 });
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
@@ -65,8 +68,7 @@ PAP.on('ready', async () => {
         //process.exit(132);
     }
     try {
-        await PAP.user.setActivity('over you', {type: 'WATCHING'})
-        //.catch(err => console.log(err));
+        PAP.user.setActivity('over you', {type: 'WATCHING'}); 
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;

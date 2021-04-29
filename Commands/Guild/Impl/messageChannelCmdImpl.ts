@@ -17,7 +17,7 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
     );
 
     async execute({guild, mentions}: Message, {commandless2}: commandType, addGuildLog: guildLoggerType) {
-        const sendChannel: Discord.TextChannel | undefined = mentions.channels.first();
+        const sendChannel = mentions.channels.first() as Discord.TextChannel;
         if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
             return sendChannel.send(commandless2)
                 .then(() => addGuildLog(`sent ${commandless2} to ${sendChannel.name}`));
