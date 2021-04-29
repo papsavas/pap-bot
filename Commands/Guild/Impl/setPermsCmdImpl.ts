@@ -2,7 +2,7 @@ import {injectable} from "inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {setPerms as _keyword} from '../../keywords.json';
 import {GsetPerms as _guide} from '../../guides.json';
-import {Message} from "discord.js";
+import {ApplicationCommandData, Message} from "discord.js";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {setPermsCmd} from "../Interf/setPermsCmd";
@@ -15,6 +15,42 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
         ['setPerms', 'setperms', 'set_perms'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'command_name',
+                    description: 'command name to override perms',
+                    type: 'STRING',
+                    required: true
+                },
+                {
+                    name: 'role1',
+                    description: 'allowed role',
+                    type: 'ROLE',
+                    required: true
+                },
+
+                {
+                    name: 'role2',
+                    description: 'allowed role',
+                    type: 'ROLE',
+                    required: false
+                },
+
+                {
+                    name: 'role3',
+                    description: 'allowed role',
+                    type: 'ROLE',
+                    required: false
+                },
+
+            ]
+        }
+    }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
