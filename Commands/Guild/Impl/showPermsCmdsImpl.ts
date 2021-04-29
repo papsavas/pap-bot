@@ -1,4 +1,4 @@
-import {Message, MessageEmbed} from 'discord.js';
+import {ApplicationCommandData, Message, MessageEmbed} from 'discord.js';
 import {showPerms as _keyword} from '../../keywords.json';
 import {GshowPerms as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -17,6 +17,21 @@ export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
         ['perms', 'perm', 'showperms', 'show_perms'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'command',
+                    description: 'permissions for command',
+                    type: 'STRING',
+                    required: true
+                }
+            ]
+        }
+    }
 
     async execute(message, {arg1}: commandType, addGuildLog: guildLoggerType) {
         const command_id = arg1;

@@ -6,6 +6,7 @@ import {injectable} from "Inversify";
 import {pollCmd} from "../Interf/pollCmd";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
+import { ApplicationCommandData } from "discord.js";
 
 
 @injectable()
@@ -15,6 +16,21 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
         ['poll', 'πολλ'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'text',
+                    description: 'text to poll',
+                    type: 'STRING',
+                    required: true
+                }
+            ]
+        }
+    }
 
 
     execute(message, {commandless1}: commandType, addGuildLog: guildLoggerType) {

@@ -1,6 +1,6 @@
 import {inject, injectable} from 'Inversify';
 import * as Discord from 'discord.js';
-import {Message, Snowflake} from 'discord.js';
+import {ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake} from 'discord.js';
 import {TYPES} from "../../Inversify/Types";
 import {bugsChannel, guildMap} from "../../index";
 import {pinMessageCmd} from "./Interf/pinMessageCmd";
@@ -58,6 +58,18 @@ export default class CommandHandlerImpl implements CommandHandler {
         ];
     }
 
+    public async registerApplicationCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager){
+        for(const command of this.commands){
+            try {
+                await commandManager.create(command.getCommandData())
+            } catch (error) {
+                console.log(command.getKeyword(), error);
+            }
+            
+        }
+        return Promise.resolve('slash commands created');
+    }
+
     public getGuildLogger() {
         return this._guildLogger;
     }
@@ -110,6 +122,14 @@ export default class CommandHandlerImpl implements CommandHandler {
             }*/
         } else
             return message.react('❔').catch();
+    }
+
+    onSlasCommand(interaction: Discord.Interaction): Promise<any> {
+        if(interaction.isCommand()){
+            const options = interaction.options;
+            
+        }
+        return Promise.resolve()
     }
 
     private setGuildLogger(guildID: Snowflake) {

@@ -1,5 +1,4 @@
-import Bundle from "../../BundlePackage/Bundle";
-import {Message} from "discord.js";
+import {ApplicationCommandData, Message} from "discord.js";
 import {commandType} from "../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
@@ -14,6 +13,8 @@ export interface GenericCommand {
     getKeyword(): string;
 
     getAliases(): string[];
+
+    getCommandData(): ApplicationCommandData;
 
     matchAliases(possibleCommand: string): boolean;
 

@@ -3,7 +3,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { pollCmd } from "../Interf/pollCmd";
 import { setPrefix as _keyword } from '../../keywords.json';
 import { GsetPrefix as _guide } from '../../guides.json';
-import { Message } from "discord.js";
+import { ApplicationCommandData, Message } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
@@ -17,6 +17,21 @@ export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
             ['prefix', 'setprefix'],
             _keyword
         );
+    
+        getCommandData(): ApplicationCommandData {
+            return {
+                name: _keyword,
+                description: this.getGuide(),
+                options: [
+                    {
+                        name: 'prefix',
+                        description: 'new prefix',
+                        type: 'STRING',
+                        required: true
+                    }
+                ]
+            }
+        }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guildHandler = guildMap.get(receivedMessage.guild.id);

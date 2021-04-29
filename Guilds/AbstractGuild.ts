@@ -12,7 +12,7 @@ import {fetchGuildSettings} from "../Queries/Generic/GuildSettings";
 import {memberResponses} from "../Entities/Generic/MemberResponsesType";
 import {fetchAllGuildMemberResponses} from "../Queries/Generic/MemberResponses";
 
-const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
+//const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
@@ -60,7 +60,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     async onMessage(message: Discord.Message): Promise<any> {
         if ([this._settings.prefix].some((pr: string) => message.content.startsWith(pr))) {
-            return commandHandler.onCommand(message);
+            return Promise.resolve()//commandHandler.onCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {

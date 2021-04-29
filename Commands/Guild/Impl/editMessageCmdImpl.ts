@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import {Message} from 'discord.js';
+import {ApplicationCommandData, Message} from 'discord.js';
 import {editMessage as _keyword} from '../../keywords.json';
 import {GeditMessage as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -17,6 +17,33 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
         _keyword
     );
 
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'channel',
+                    description: 'target channel',
+                    type: 'CHANNEL',
+                    required: true
+                },
+                {
+                    name: 'message_id',
+                    description: 'the id of the message',
+                    type: 'STRING',
+                    required: true
+                },
+                {
+                    name: 'edit',
+                    description: 'new message',
+                    type: 'STRING',
+                    required:true
+                }
+            ]
+        }
+    }
+    
     async execute(
         {channel, mentions, guild, url}: Message,
         {arg1, arg2, commandless2, commandless3}: commandType,

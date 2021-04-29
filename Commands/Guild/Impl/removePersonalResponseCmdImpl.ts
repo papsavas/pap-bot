@@ -1,4 +1,4 @@
-import {Message, MessageEmbed} from 'discord.js';
+import {ApplicationCommandData, Message, MessageEmbed} from 'discord.js';
 import {showPerms as _keyword} from '../../keywords.json';
 import {GshowPerms as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -19,6 +19,21 @@ export class RemovePersonalResponseCmdImpl extends AbstractCommand implements re
         ['removeresponse', 'rresponse', 'remove_response', 'rr'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'response',
+                    description: 'exact personal response',
+                    type: 'STRING',
+                    required: true
+                }
+            ]
+        }
+    }
 
     async execute(message: Message, {commandless1}: commandType, addGuildLog: guildLoggerType) {
         return message.reply(await removeMemberResponse(message.guild.id, message.member.id, commandless1));

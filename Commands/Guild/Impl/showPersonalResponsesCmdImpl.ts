@@ -2,7 +2,7 @@ import {injectable} from "inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {myresponses as _keyword} from '../../keywords.json';
 import {Gmyresponses as _guide} from '../../guides.json';
-import {Message, MessageEmbed} from "discord.js";
+import {ApplicationCommandData, Message, MessageEmbed} from "discord.js";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {showPersonalResponsesCmd} from "../Interf/showPersonalResponsesCmd";
@@ -16,6 +16,13 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
         ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide()
+        }
+    }
 
     async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guild_id = receivedMessage.guild.id;

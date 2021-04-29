@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import {Message} from 'discord.js';
+import {ApplicationCommandData, Message} from 'discord.js';
 import {messageChannel as _keyword} from '../../keywords.json';
 import {GmessageChannel as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -15,6 +15,27 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
         ['send', 'msgchannel', 'messagechannel', 'message_channel'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'channel',
+                    description: 'targeted channel',
+                    type: 'CHANNEL',
+                    required: true
+                },
+                {
+                    name: 'message',
+                    description: 'the message',
+                    type: 'STRING',
+                    required: true
+                }
+            ]
+        }
+    }
 
     async execute({guild, mentions}: Message, {commandless2}: commandType, addGuildLog: guildLoggerType) {
         const sendChannel = mentions.channels.first() as Discord.TextChannel;

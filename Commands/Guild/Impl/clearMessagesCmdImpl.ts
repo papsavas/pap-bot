@@ -2,7 +2,7 @@ import {clearMessages as _keyword} from '../../keywords.json';
 import {GclearMessages as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
 import {AbstractCommand} from "../AbstractCommand";
-import {Message, Permissions, TextChannel} from 'discord.js';
+import {ApplicationCommandData, Message, Permissions, TextChannel} from 'discord.js';
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {clearMessagesCmd} from "../Interf/clearMessagesCmd";
@@ -16,7 +16,22 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
         _keyword
     );
 
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'number',
+                    description: 'number of message to delete',
+                    type: 'INTEGER',
+                    required: true
 
+                }
+            ]
+        }
+    }
+    
     public execute({channel, member}: Message, {arg1}: commandType, addGuildLog: guildLoggerType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?

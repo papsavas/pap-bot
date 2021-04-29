@@ -5,7 +5,7 @@ import {AbstractCommand} from "../AbstractCommand";
 import {dmMemberCmd} from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
-import {Message} from 'discord.js';
+import {ApplicationCommandData, Message} from 'discord.js';
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 
@@ -17,7 +17,27 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
         ['directmessage', 'message', 'dm'],
         _keyword
     );
-
+    
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'user',
+                    description: 'user to dm',
+                    type: 'USER',
+                    required: true
+                },
+                {
+                    name: 'message',
+                    description: 'message to user',
+                    type: 'STRING',
+                    required: true
+                }
+            ]
+        }
+    }
 
     public async execute(
         {guild, attachments, mentions}: Message,

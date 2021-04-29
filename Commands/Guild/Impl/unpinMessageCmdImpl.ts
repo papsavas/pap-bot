@@ -4,7 +4,7 @@ import * as Discord from "discord.js";
 import {injectable} from "Inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
-import {Message} from "discord.js";
+import {ApplicationCommandData, Message} from "discord.js";
 import {extractId} from "../../../toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
@@ -17,6 +17,27 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
         ['unpin', 'ανπιν'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'message_id',
+                    description: 'targeted message id',
+                    type: 'STRING',
+                    required: true
+                },
+                {
+                    name: 'reason',
+                    description: 'reason for unpinning',
+                    type: 'STRING',
+                    required: false
+                }
+            ]
+        }
+    }
 
     execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const [channel, member] = [message.channel, message.member];

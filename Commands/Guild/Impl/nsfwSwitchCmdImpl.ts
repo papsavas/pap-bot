@@ -1,4 +1,4 @@
-import {Message} from 'discord.js';
+import {ApplicationCommandData, Message} from 'discord.js';
 import {nsfwSwitch as _keyword} from '../../keywords.json';
 import {GnsfwSwitch as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -16,6 +16,13 @@ export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd 
         ['nsfw', 'nsfwswitch'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide()
+        }
+    }
 
     async execute(message: Message, {}: commandType, addGuildLog: guildLoggerType) {
         try { 

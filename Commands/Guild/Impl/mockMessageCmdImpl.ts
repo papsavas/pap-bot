@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { Message } from 'discord.js';
+import { ApplicationCommandData, Message } from 'discord.js';
 import { mock as _keyword } from '../../keywords.json';
 import { Gmock as _guide } from '../../guides.json';
 import { injectable } from "Inversify";
@@ -17,6 +17,21 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
             ['mock'],
             _keyword
         );
+
+        getCommandData(): ApplicationCommandData {
+            return {
+                name: _keyword,
+                description: this.getGuide(),
+                options: [
+                    {
+                        name: 'text',
+                        description: 'text to mock',
+                        type: 'STRING',
+                        required: true
+                    }
+                ]
+            }
+        }
 
     execute(message: Message, { commandless1 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))

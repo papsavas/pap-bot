@@ -6,7 +6,7 @@ import {AbstractCommand} from "../AbstractCommand";
 import {extractId} from "../../../toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import { Message } from "discord.js";
+import { ApplicationCommandData, Message } from "discord.js";
 
 
 @injectable()
@@ -16,6 +16,27 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
         ['pin', 'πιν'],
         _keyword
     );
+
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'message_id',
+                    description: 'targeted message id',
+                    type: 'STRING',
+                    required: true
+                },
+                {
+                    name: 'reason',
+                    description: 'reason for pinning',
+                    type: 'STRING',
+                    required: false
+                }
+            ]
+        }
+    }
 
     execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const channel = message.channel;

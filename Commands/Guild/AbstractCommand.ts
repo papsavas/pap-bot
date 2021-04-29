@@ -9,6 +9,7 @@ import {guildLoggerType} from "../../Entities/Generic/guildLoggerType";
 
 @injectable()
 export abstract class AbstractCommand implements GenericCommand {
+    abstract getCommandData(): Discord.ApplicationCommandData;
 
     abstract execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any>;
 
