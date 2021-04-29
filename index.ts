@@ -32,6 +32,18 @@ export const PAP = new Discord.Client({
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
+// The data for our command
+const commandData = {
+    name: 'echo',
+    description: 'Replies with your input!',
+    options: [{
+      name: 'input',
+      type: 'STRING',
+      description: 'The input which should be echoed back',
+      required: true,
+    }],
+  };
+
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
     /* implement DB writes */
@@ -68,6 +80,22 @@ PAP.on('ready', async () => {
         //process.exit(132);
     }
     try {
+        // Creating a guild-specific command
+        await PAP.guilds.cache.get('746309734851674122').commands.create( {
+            name: 'echo',
+            description: 'Replies with your input!',
+            options: [{
+              name: 'input',
+              type: 'STRING',
+              description: 'The input which should be echoed back',
+              required: true,
+            }, {
+                name:'second',
+                type: 'STRING',
+                description: 'optional parameter',
+                required:false
+            }],
+          });
         PAP.user.setActivity('over you', {type: 'WATCHING'}); 
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
@@ -89,6 +117,20 @@ PAP.on('ready', async () => {
 
     console.log(`___Initiated___`);
 });
+
+PAP.on('interaction', interaction => {
+    // If the interaction isn't a slash command, return
+    if (!interaction.isCommand()) return;
+  
+    // Check if it is the correct command
+    if (interaction.commandName === 'echo') {
+      // Get the input of the user
+      const input = interaction.options[0].value;
+      console.log(interaction.options);
+      // Reply to the command
+      interaction.reply('you used it yay', {ephemeral:true});
+    }
+  });
 
 
 PAP.on('message', (receivedMessage) => {
