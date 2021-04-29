@@ -23,8 +23,8 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
     public async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
-            receivedMessage.content.includes(swear['swear_word']))
-        || Profanity.isProfane(receivedMessage.cleanContent);
+            receivedMessage.content.includes(swear['swear_word'])) || 
+            Profanity.isProfane(receivedMessage.cleanContent);
         return addMemberResponse(receivedMessage.guild.id, receivedMessage.member.id, receivedCommand.commandless1, nsfw)
     }
 

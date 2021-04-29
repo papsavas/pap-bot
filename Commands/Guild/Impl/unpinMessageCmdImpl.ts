@@ -18,7 +18,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
         _keyword
     );
 
-    execute(message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const [channel, member] = [message.channel, message.member];
         let unpinReason = commandless2 ? commandless2 : `undefined`;
         unpinReason += `\nby ${member.displayName}`;
@@ -27,9 +27,9 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
             .then((msg) => {
                 msg.unpin({reason: unpinReason})
                     .then((msg) => {
-                        addGuildLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
+                        //addGuildLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
                         if (message.deletable)
-                            message.delete({timeout: 5000}).catch()
+                            message.client.setTimeout(()=> message.delete().catch(), 3000);
                     });
             })
     }

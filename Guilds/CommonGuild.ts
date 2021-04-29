@@ -1,3 +1,8 @@
+/**
+ * @obsolete
+ */
+
+
 import * as Discord from 'discord.js';
 import {CommonGuildInterface} from './GuildBase';
 import * as DB from '../../PAPbot/toolbox/Gfirestore';

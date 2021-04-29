@@ -22,7 +22,7 @@ export function paginationEmbed(
         return embed
     }
 
-    return targetChannel.send(generateEmbed(0))
+    return userMessage.reply(generateEmbed(0))
         .then(message => {
                 if (targetStructure.length <= perPage) return
                 // react with the right arrow (so that the user can click it) (left arrow isn't needed because it is the start)

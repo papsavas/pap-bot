@@ -6,6 +6,7 @@ import {AbstractCommand} from "../AbstractCommand";
 import {extractId} from "../../../toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
+import { Message } from "discord.js";
 
 
 @injectable()
@@ -16,7 +17,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
         _keyword
     );
 
-    execute(message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const channel = message.channel;
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
@@ -25,10 +26,9 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
             .then((fetchedMessage) => {
                 fetchedMessage.pin({reason: pinReason})
                     .then((pinnedMessage) => {
-                        addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
-                        message.react('👌').catch();
+                        //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                         if (message.deletable)
-                            message.delete({timeout: 5000}).catch();
+                            message.client.setTimeout(()=> message.delete().catch(), 3000);
                     });
             })
     }
