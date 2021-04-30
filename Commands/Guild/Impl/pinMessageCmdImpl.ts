@@ -6,7 +6,8 @@ import {AbstractCommand} from "../AbstractCommand";
 import {extractId} from "../../../toolbox/toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, CommandInteraction, DiscordAPIError, Message, MessageEmbed, TextChannel } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, DiscordAPIError, Message, MessageEmbed, TextChannel} from "discord.js";
+import * as e from '../../../errorCodes.json';
 
 
 @injectable()
@@ -40,17 +41,28 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
 
     async interactiveExecute(interaction: CommandInteraction):Promise<any>{
         const channel = interaction.channel as TextChannel;
-        const reason = interaction.options[1].value as string|undefined
-        let pinReason = reason ? reason : ``;
+        const reason = interaction.options[1];
+        let pinReason = reason ? reason.value as string : ``;
         pinReason += `\nby ${interaction.member.displayName}`;
         let pinningMessageID = extractId(interaction.options[0].value as string);
-        const fetchedMessage = await channel.messages.fetch(pinningMessageID);    
+        let fetchedMessage: Message;
+        try {
+            fetchedMessage = await channel.messages.fetch(pinningMessageID);   
+        } catch (error) {
+            if(error.code == e["Unknown message"])
+                return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
+                 {ephemeral:true})
+        }
+         
         return fetchedMessage.pin({reason: pinReason})
             .then((pinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                 interaction.reply(new MessageEmbed({
                     title:`Pinned Message 📌`,
-                    description: `[pinned message](${pinnedMessage.url})`
+                    description: pinnedMessage.content?.length>0 ? 
+                    `[${pinnedMessage.content.substring(0,100)}...](${pinnedMessage.url})`: 
+                    `[Click to jump](${pinnedMessage.url})`,
+                    footer:{text:pinReason}
                 }))
             })
             .catch(err=> {

@@ -8,6 +8,8 @@ import {ApplicationCommandData, CommandInteraction, Message} from "discord.js";
 import {extractId} from "../../../toolbox/toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
+import * as e from '../../../errorCodes.json';
+
 
 injectable()
 
@@ -45,13 +47,23 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
         let unpinReason = reason ? reason.value as string : ``;
         unpinReason += `\nby ${interaction.member.displayName}`;
         let pinningMessageID = extractId(interaction.options[0].value as string);
-        const fetchedMessage = await channel.messages.fetch(pinningMessageID);    
+        let fetchedMessage;
+        try {
+            fetchedMessage = await channel.messages.fetch(pinningMessageID);   
+        } catch (error) {
+            if(error.code == e["Unknown message"])
+                return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
+                 {ephemeral:true})
+        }
         return fetchedMessage.unpin({reason: unpinReason})
-            .then((pinnedMessage) => {
+            .then((unpinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                 interaction.reply(new Discord.MessageEmbed({
                     title:`Unpinned Message 📌`,
-                    description: `[unpinned message](${pinnedMessage.url})`
+                    description: unpinnedMessage.content?.length>0 ? 
+                    `[${unpinnedMessage.content.substring(0,40)}...](${unpinnedMessage.url})`: 
+                    `[Click to jump](${unpinnedMessage.url})`,
+                    footer:{text:unpinReason}
                 }))
             })
             .catch(err=> {

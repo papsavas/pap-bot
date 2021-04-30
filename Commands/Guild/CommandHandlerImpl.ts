@@ -179,16 +179,18 @@ export default class CommandHandlerImpl implements CommandHandler {
                     icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                 },
                 title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
-                description: interaction.command.description,
                 fields: [{name: `Specified error  💥`, value: `• ${err}`}],
                 color: "RED"
             })
 
         const interactionPromise : Promise<any> = interaction.replied ?
          interaction.editReply(interactionEmb) : interaction.reply(interactionEmb);
-        interactionPromise.then(() => interaction.client.setTimeout(() => interaction.deleteReply(), 10000));
+        interactionPromise
+            .then(() => interaction.client.setTimeout(() => interaction.deleteReply().catch(), 15000))
+            .catch();
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
+
 
     private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new Discord.MessageEmbed({
@@ -219,7 +221,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                 footer: {text: commandImpl.getAliases().toString()},
                 color: "RED"
             })
-        ).then(msg => msg.client.setTimeout(() => msg.delete(), 10000));
+        ).then(msg => msg.client.setTimeout(() => msg.delete(), 15000));
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
