@@ -4,6 +4,8 @@ import { guildSettings } from "../Entities/Generic/guildSettingsType";
 export interface GenericGuild {
     onReady(client: Discord.Client): Promise<any>;
 
+    onSlashCommand(interaction: Discord.Interaction): Promise<any>;
+
     onMessage(message: Discord.Message): Promise<any>;
 
     onMessageDelete(deletedMessage: Discord.Message): Promise<any>;

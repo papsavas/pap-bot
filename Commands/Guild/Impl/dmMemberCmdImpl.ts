@@ -5,7 +5,7 @@ import {AbstractCommand} from "../AbstractCommand";
 import {dmMemberCmd} from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
-import {ApplicationCommandData, Message} from 'discord.js';
+import {ApplicationCommandData, Message, User} from 'discord.js';
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 
@@ -37,6 +37,31 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
                 }
             ]
         }
+    }
+
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>{
+        const user = interaction.options[0].user;
+        const messageContent = interaction.options[1].value as string;
+        const sendEmb = new Discord.MessageEmbed({
+            author: {
+                name: interaction.guild.name,
+                //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
+                //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
+            },
+            title: `You have a message ${user.username}`,
+            thumbnail: {url: interaction.guild.iconURL({format: "png", size: 128})},
+            color: "AQUA",
+            description: messageContent,
+            //video: { url: attachments?.proxyURL}, cannot send video via rich embed
+            timestamp: new Date()
+        })
+        return user.send(sendEmb)
+            .then((smsg) => interaction.reply(`message send to ${user.toString()}`, {ephemeral:true}))
+            .catch(err => {
+                if (err.code == e["Cannot send messages to this user"]) {
+                   interaction.reply(`Could not dm ${user.username}`);
+                }
+            })
     }
 
     public async execute(

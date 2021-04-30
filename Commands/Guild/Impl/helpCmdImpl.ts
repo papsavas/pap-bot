@@ -4,7 +4,7 @@ import {Ghelp as _guide} from '../../guides.json';
 import {helpCmd} from "../Interf/helpCmd";
 import {injectable} from "Inversify";
 import "reflect-metadata";
-import { ApplicationCommandData } from "discord.js";
+import { ApplicationCommandData, CommandInteraction } from "discord.js";
 
 @injectable()
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {
@@ -20,6 +20,11 @@ export class HelpCmdImpl extends AbstractCommand implements helpCmd {
             description: this.getGuide(),
         }
     }
+
+    interactiveExecute(interaction: CommandInteraction): Promise<any>{
+        return interaction.reply('help is here');
+    }
+
     
     execute(message, command, addGuildLog) {
         return (message.channel).send('help is here');

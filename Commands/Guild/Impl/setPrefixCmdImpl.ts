@@ -3,7 +3,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { pollCmd } from "../Interf/pollCmd";
 import { setPrefix as _keyword } from '../../keywords.json';
 import { GsetPrefix as _guide } from '../../guides.json';
-import { ApplicationCommandData, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, Message } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
@@ -32,6 +32,21 @@ export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
                 ]
             }
         }
+
+    async interactiveExecute(interaction: CommandInteraction): Promise<any>{
+        const guildHandler = guildMap.get(interaction.guildID);
+        const newPrefix = interaction.options[0].value as string|undefined;
+        await interaction.defer();
+        if (!!newPrefix){
+            const oldSettings =  await fetchGuildSettings(interaction.guildID);
+            const newSettings = Object.assign(oldSettings, { 'prefix': newPrefix });
+            await updateGuildSettings(interaction.guildID, newSettings).then(() => guildHandler.setPrefix(newPrefix));
+            return interaction.editReply(`new prefix is set to \`${newPrefix}\``)
+        }
+        else
+            return interaction.editReply(`Current prefix is \`${guildHandler.getSettings().prefix}\``);
+
+    }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guildHandler = guildMap.get(receivedMessage.guild.id);

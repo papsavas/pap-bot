@@ -13,6 +13,8 @@ export abstract class AbstractCommand implements GenericCommand {
 
     abstract execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any>;
 
+    abstract interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>;
+
     abstract getKeyword(): string;
 
     abstract getAliases(): string[];

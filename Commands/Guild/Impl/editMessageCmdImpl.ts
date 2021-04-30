@@ -43,6 +43,21 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
             ]
         }
     }
+
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>{
+        const targetChannel: Discord.GuildChannel = interaction.options[0].channel;
+        const messageID = interaction.options[1].value as Discord.Snowflake
+        await interaction.defer(true);
+        const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(messageID);
+        if(targetMessage.author != interaction.client.user)
+            return interaction.reply('Cannot edit a message authored by another user');
+        const editedMessage = await targetMessage?.edit(interaction.options[2].value as string);
+        return interaction.editReply(
+            new Discord.MessageEmbed({
+                description: `[edited message](${editedMessage.url})`
+            })
+        );
+    }
     
     async execute(
         {channel, mentions, guild, url}: Message,

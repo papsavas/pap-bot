@@ -3,7 +3,7 @@ import { Gaddresponse as _guide } from '../../guides.json';
 import { injectable } from "Inversify";
 import { AbstractCommand } from "../AbstractCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
-import { ApplicationCommandData, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
@@ -34,6 +34,26 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
                 }
             ]
         }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction){
+        const memberResponse = interaction.options[0].value as string;
+        const guildID = interaction.guildID;
+        const memberID = interaction.member.id;
+        const swears = await loadSwearWords();
+        const nsfw = swears.some((swear) =>
+            memberResponse.includes(swear['swear_word'])) ||
+            Profanity.isProfane(memberResponse);
+        await interaction.defer(true);
+        await addMemberResponse(guildID, memberID, memberResponse, nsfw);
+        return interaction.editReply(new MessageEmbed({
+            title:`Response Added`,
+            description:` your response has been added`,
+            fields:[
+                {name:`response`, value:`\`\`\`${memberResponse}\`\`\``},
+                {name:`marked as nsfw`, value: nsfw.toString()}
+            ]
+        }))
     }
 
     public async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType) {

@@ -74,7 +74,8 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
+    
+    //await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
     //-------------------------
     return Promise.resolve()
 }
@@ -113,11 +114,10 @@ PAP.on('interaction', interaction => {
     // If the interaction isn't a slash command, return
     if (!interaction.isCommand()) return;
   
-      // Get the input of the user
-      const input = interaction.options[0].value;
-      console.log(interaction.options);
-      // Reply to the command
-      interaction.reply('you used it yay', {ephemeral:true});
+    if(!!interaction.guildID)
+        guildMap.get(interaction.guildID)
+            ?.onSlashCommand(interaction)
+            .catch(err => console.log(err));
   });
 
 

@@ -1,4 +1,4 @@
-import {ApplicationCommandData, Message} from 'discord.js';
+import {ApplicationCommandData, CommandInteraction, Message} from 'discord.js';
 import {nsfwSwitch as _keyword} from '../../keywords.json';
 import {GnsfwSwitch as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -22,6 +22,15 @@ export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd 
             name: _keyword,
             description: this.getGuide()
         }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction):Promise<any>{
+        const oldSettings = await fetchGuildSettings(interaction.guildID);
+        const literal = oldSettings.nsfw_responses? "Disabled" : "Enabled"
+        await interaction.defer();
+        await updateGuildSettings(interaction.guildID, Object.assign(oldSettings, {"nsfw_responses":!oldSettings.nsfw_responses}));
+        await guildMap.get(interaction.guildID).loadResponses();
+        return interaction.editReply(`**${literal}** \`nsfw\` mode`);
     }
 
     async execute(message: Message, {}: commandType, addGuildLog: guildLoggerType) {

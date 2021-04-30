@@ -6,7 +6,7 @@ import {injectable} from "Inversify";
 import {pollCmd} from "../Interf/pollCmd";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData } from "discord.js";
+import { ApplicationCommandData, TextChannel } from "discord.js";
 
 
 @injectable()
@@ -30,6 +30,35 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                 }
             ]
         }
+    }
+
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>{
+        const channel = interaction.channel as TextChannel;
+        const member = interaction.member;
+        return channel.send(
+            new Discord.MessageEmbed(
+                {
+                    title: `Ψηφίστε`,
+                    color: '#D8F612',
+                    description: interaction.options[0].value as string,
+                    author: {
+                        name: member.displayName,
+                        icon_url: member.user.avatarURL({format: 'png'})
+                    },
+                    //add blank
+                    fields: [{
+                        name: '\u200B',
+                        value: '\u200B',
+                    },],
+
+                    footer: {text: 'Poll📊'}
+                }))
+            .then((botmsg) => {
+                botmsg.react('👍');
+                botmsg.react('👎');
+                interaction.reply('poll created', {ephemeral:true})
+                    .then(()=> interaction.deleteReply());
+            })
     }
 
 

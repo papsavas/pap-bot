@@ -4,8 +4,8 @@ import * as Discord from "discord.js";
 import {injectable} from "Inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
-import {ApplicationCommandData, Message} from "discord.js";
-import {extractId} from "../../../toolbox";
+import {ApplicationCommandData, CommandInteraction, Message} from "discord.js";
+import {extractId} from "../../../toolbox/toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 
@@ -25,7 +25,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
             options: [
                 {
                     name: 'message_id',
-                    description: 'targeted message id',
+                    description: 'targeted message id or link',
                     type: 'STRING',
                     required: true
                 },
@@ -37,6 +37,26 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                 }
             ]
         }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction):Promise<any>{
+        const channel = interaction.channel as Discord.TextChannel;
+        const reason = interaction.options[1];
+        let unpinReason = reason ? reason.value as string : ``;
+        unpinReason += `\nby ${interaction.member.displayName}`;
+        let pinningMessageID = extractId(interaction.options[0].value as string);
+        const fetchedMessage = await channel.messages.fetch(pinningMessageID);    
+        return fetchedMessage.unpin({reason: unpinReason})
+            .then((pinnedMessage) => {
+                //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                interaction.reply(new Discord.MessageEmbed({
+                    title:`Unpinned Message 📌`,
+                    description: `[unpinned message](${pinnedMessage.url})`
+                }))
+            })
+            .catch(err=> {
+                interaction.reply('could not pin message');
+            });
     }
 
     execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {

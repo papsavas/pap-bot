@@ -5,14 +5,14 @@ import {mentionRegex} from "../botconfig.json";
 import container from "../Inversify/inversify.config";
 import {CommandHandler} from "../Commands/Guild/CommandHandler";
 import {TYPES} from "../Inversify/Types";
-import {randArrElement} from "../toolbox";
+import {randArrElement} from "../toolbox/toolbox";
 import {genericGuildResponses} from "../Queries/Generic/GenericGuildResponses";
 import {guildSettings} from "../Entities/Generic/guildSettingsType";
 import {fetchGuildSettings} from "../Queries/Generic/GuildSettings";
 import {memberResponses} from "../Entities/Generic/MemberResponsesType";
 import {fetchAllGuildMemberResponses} from "../Queries/Generic/MemberResponses";
 
-//const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
+const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
@@ -58,9 +58,13 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
+    onSlashCommand(interaction: Discord.CommandInteraction): Promise<any>{
+        return commandHandler.onSlashCommand(interaction);
+    }
+
     async onMessage(message: Discord.Message): Promise<any> {
         if ([this._settings.prefix].some((pr: string) => message.content.startsWith(pr))) {
-            return Promise.resolve()//commandHandler.onCommand(message);
+            return commandHandler.onCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {

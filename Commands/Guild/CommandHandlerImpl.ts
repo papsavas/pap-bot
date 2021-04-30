@@ -124,12 +124,11 @@ export default class CommandHandlerImpl implements CommandHandler {
             return message.react('❔').catch();
     }
 
-    onSlasCommand(interaction: Discord.Interaction): Promise<any> {
-        if(interaction.isCommand()){
-            const options = interaction.options;
-            
-        }
-        return Promise.resolve()
+    onSlashCommand(interaction: Discord.CommandInteraction): Promise<any> {
+        return this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
+            .interactiveExecute(interaction)
+            .catch(err=> this.invalidSlashCommand(err, interaction, interaction.commandName));
+       
     }
 
     private setGuildLogger(guildID: Snowflake) {
@@ -153,6 +152,42 @@ export default class CommandHandlerImpl implements CommandHandler {
             commandless2: splitCommand.slice(2).join(' '),
             commandless3: splitCommand.slice(3).join(' ')
         }
+    }
+
+    private invalidSlashCommand(err: Error, interaction: Discord.CommandInteraction, primaryCommandLiteral: string){
+        const bugsChannelEmbed = new Discord.MessageEmbed({
+            author: {
+                name: interaction.guild.name,
+                icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
+            },
+            thumbnail: {
+                proxy_url: interaction.guild.iconURL({format: "png", size: 512})
+            },
+            title: primaryCommandLiteral,
+            color: "DARK_RED",
+            timestamp: new Date()
+        });
+        bugsChannelEmbed.setDescription(err);
+        bugsChannelEmbed.addField(`caused by`, interaction.id);
+        bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
+        //send feedback to member
+
+        const interactionEmb = new Discord.MessageEmbed(
+            {
+                author: {
+                    name: `Error on Command`,
+                    icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
+                },
+                title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
+                description: interaction.command.description,
+                fields: [{name: `Specified error  💥`, value: `• ${err}`}],
+                color: "RED"
+            })
+
+        const interactionPromise : Promise<any> = interaction.replied ?
+         interaction.editReply(interactionEmb) : interaction.reply(interactionEmb);
+        interactionPromise.then(() => interaction.client.setTimeout(() => interaction.deleteReply(), 10000));
+        console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
     private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {

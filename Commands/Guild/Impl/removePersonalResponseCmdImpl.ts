@@ -1,4 +1,4 @@
-import {ApplicationCommandData, Message, MessageEmbed} from 'discord.js';
+import {ApplicationCommandData, CommandInteraction, Message, MessageEmbed} from 'discord.js';
 import {showPerms as _keyword} from '../../keywords.json';
 import {GshowPerms as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
@@ -33,6 +33,10 @@ export class RemovePersonalResponseCmdImpl extends AbstractCommand implements re
                 }
             ]
         }
+    }
+
+    async interactiveExecute({guildID, member, options, reply}: CommandInteraction): Promise<any>{
+        return reply(await removeMemberResponse(guildID, member.id, options[0].value as string), {ephemeral:true});
     }
 
     async execute(message: Message, {commandless1}: commandType, addGuildLog: guildLoggerType) {

@@ -3,10 +3,10 @@ import {pinMessage as _keyword} from "../../keywords.json";
 import {injectable} from "Inversify";
 import {pinMessageCmd} from "../Interf/pinMessageCmd";
 import {AbstractCommand} from "../AbstractCommand";
-import {extractId} from "../../../toolbox";
+import {extractId} from "../../../toolbox/toolbox";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, DiscordAPIError, Message, MessageEmbed, TextChannel } from "discord.js";
 
 
 @injectable()
@@ -24,7 +24,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
             options: [
                 {
                     name: 'message_id',
-                    description: 'targeted message id',
+                    description: 'targeted message id or link',
                     type: 'STRING',
                     required: true
                 },
@@ -36,6 +36,26 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                 }
             ]
         }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction):Promise<any>{
+        const channel = interaction.channel as TextChannel;
+        const reason = interaction.options[1].value as string|undefined
+        let pinReason = reason ? reason : ``;
+        pinReason += `\nby ${interaction.member.displayName}`;
+        let pinningMessageID = extractId(interaction.options[0].value as string);
+        const fetchedMessage = await channel.messages.fetch(pinningMessageID);    
+        return fetchedMessage.pin({reason: pinReason})
+            .then((pinnedMessage) => {
+                //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                interaction.reply(new MessageEmbed({
+                    title:`Pinned Message 📌`,
+                    description: `[pinned message](${pinnedMessage.url})`
+                }))
+            })
+            .catch(err=> {
+                interaction.reply('could not pin message');
+            });
     }
 
     execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {

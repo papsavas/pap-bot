@@ -33,6 +33,10 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
             }
         }
 
+    async interactiveExecute(interaction: Discord.CommandInteraction):Promise<any>{
+        return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
+    }
+
     execute(message: Message, { commandless1 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))
             .then(mockedMessage => {

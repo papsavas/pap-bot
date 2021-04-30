@@ -2,7 +2,7 @@ import {clearMessages as _keyword} from '../../keywords.json';
 import {GclearMessages as _guide} from '../../guides.json';
 import {injectable} from "Inversify";
 import {AbstractCommand} from "../AbstractCommand";
-import {ApplicationCommandData, Message, Permissions, TextChannel} from 'discord.js';
+import {ApplicationCommandData, CommandInteraction, Message, Permissions, TextChannel} from 'discord.js';
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {clearMessagesCmd} from "../Interf/clearMessagesCmd";
@@ -30,6 +30,33 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
                 }
             ]
         }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction): Promise<any>{
+        const number = interaction.options[0].value as number
+        if (interaction.member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)){
+            const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
+            //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
+            let descr = '';
+            delMessages.array()/*.slice(1)*/.reverse().map(msg => {
+                try {
+                    if (!msg.content.startsWith('$clear'))
+                        descr += `**${msg.author.username}**: ${msg.content}\n`;
+                } catch (err) {
+                    descr += `**${msg.author.username}**: ???\n`;
+                }
+            });
+
+            return interaction.reply({
+                embed: {
+                    title: `🗑️ Deleted ${number} messages`,
+                    description: descr.substring(0,2048)
+                }
+            });
+        }
+        else
+            return interaction.reply('You need `MANAGE_MESSAGES` permissions', {ephemeral:true})
+    
     }
     
     public execute({channel, member}: Message, {arg1}: commandType, addGuildLog: guildLoggerType) {

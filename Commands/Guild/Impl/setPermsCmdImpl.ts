@@ -2,7 +2,7 @@ import {injectable} from "inversify";
 import {AbstractCommand} from "../AbstractCommand";
 import {setPerms as _keyword} from '../../keywords.json';
 import {GsetPerms as _guide} from '../../guides.json';
-import {ApplicationCommandData, Message} from "discord.js";
+import {ApplicationCommandData, CommandInteraction, Message} from "discord.js";
 import {commandType} from "../../../Entities/Generic/commandType";
 import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
 import {setPermsCmd} from "../Interf/setPermsCmd";
@@ -18,7 +18,7 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
 
     getCommandData(): ApplicationCommandData {
         return {
-            name: _keyword,
+            name: `lockCommand`,
             description: this.getGuide(),
             options: [
                 {
@@ -31,7 +31,10 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
                     name: 'role1',
                     description: 'allowed role',
                     type: 'ROLE',
-                    required: true
+                    required: true,
+                    choices: [
+                        
+                    ]
                 },
 
                 {
@@ -50,6 +53,16 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
 
             ]
         }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction): Promise<any>{
+        const guild_id = interaction.guildID;
+        const filteredRoles = interaction.options.filter(option => option.role);
+        const rolesKeyArr = filteredRoles.map(filteredOptions => filteredOptions.role.id);
+        const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
+        await interaction.defer(true);
+        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
+        return interaction.reply(`Command ${command_id} overriden`, {ephemeral:true});
     }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
