@@ -87,7 +87,8 @@ PAP.on('ready', async () => {
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
         logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
-        await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+        if (!inDevelopment)
+            await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
         /*PAP.guilds.cache.keyArray()*/
         [botGuildID].forEach((guildID) => {
