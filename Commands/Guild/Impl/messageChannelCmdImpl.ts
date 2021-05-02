@@ -1,20 +1,20 @@
 import * as Discord from 'discord.js';
-import {ApplicationCommandData, Message, TextChannel} from 'discord.js';
-import {messageChannel as _keyword} from '../../keywords.json';
-import {GmessageChannel as _guide} from '../../guides.json';
-import {injectable} from "Inversify";
-import {AbstractCommand} from "../AbstractCommand";
-import {messageChannelCmd} from "../Interf/messageChannelCmd";
-import {commandType} from "../../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
+import { ApplicationCommandData, Message, TextChannel } from 'discord.js';
+import { messageChannel as _keyword } from '../../keywords.json';
+import { GmessageChannel as _guide } from '../../guides.json';
+import { injectable } from "Inversify";
+import { AbstractCommand } from "../AbstractCommand";
+import { messageChannelCmd } from "../Interf/messageChannelCmd";
+import { commandType } from "../../../Entities/Generic/commandType";
+import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 
 @injectable()
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['send', 'msgchannel', 'messagechannel', 'message_channel'],
-        _keyword
-    );
+        (
+            ['send', 'msgchannel', 'messagechannel', 'message_channel'],
+            _keyword
+        );
 
     getCommandData(): ApplicationCommandData {
         return {
@@ -36,22 +36,28 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
             ]
         }
     }
-    
-    async interactiveExecute(interaction: Discord.CommandInteraction):Promise<any>{
+
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const sendChannel = interaction.options[0].channel as TextChannel;
         const messageContent = interaction.options[1].value as string;
-        await sendChannel.send(messageContent, {split:true});
-        return interaction.reply({embed: new Discord.MessageEmbed({
-            title:`Message send`,
-            fields:[
-                {name: `target`, value: sendChannel.toString()},
-                {name:`message`, value: messageContent.substr(0,1023)}
-            ]
-        }), ephemeral:true});
+        await sendChannel.send(messageContent, { split: true });
+        return interaction.reply({
+            embeds: [
+                new Discord.MessageEmbed({
+                    title: `Message send`,
+                    fields: [
+                        { name: `target`, value: sendChannel.toString() },
+                        { name: `message`, value: messageContent.substr(0, 1023) }
+                    ]
+
+                }
+                )]
+            , ephemeral: true
+        });
 
     }
 
-    async execute({guild, mentions}: Message, {commandless2}: commandType, addGuildLog: guildLoggerType) {
+    async execute({ guild, mentions }: Message, { commandless2 }: commandType, addGuildLog: guildLoggerType) {
         const sendChannel = mentions.channels.first() as Discord.TextChannel;
         if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
             return sendChannel.send(commandless2)

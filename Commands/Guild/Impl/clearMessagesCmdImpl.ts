@@ -1,20 +1,20 @@
-import {clearMessages as _keyword} from '../../keywords.json';
-import {GclearMessages as _guide} from '../../guides.json';
-import {injectable} from "Inversify";
-import {AbstractCommand} from "../AbstractCommand";
-import {ApplicationCommandData, CommandInteraction, Message, Permissions, TextChannel} from 'discord.js';
-import {commandType} from "../../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import {clearMessagesCmd} from "../Interf/clearMessagesCmd";
+import { clearMessages as _keyword } from '../../keywords.json';
+import { GclearMessages as _guide } from '../../guides.json';
+import { injectable } from "Inversify";
+import { AbstractCommand } from "../AbstractCommand";
+import { ApplicationCommandData, CommandInteraction, Message, Permissions, TextChannel } from 'discord.js';
+import { commandType } from "../../../Entities/Generic/commandType";
+import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 
 
 @injectable()
 export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['clear', 'clean', 'purge'],
-        _keyword
-    );
+        (
+            ['clear', 'clean', 'purge'],
+            _keyword
+        );
 
     getCommandData(): ApplicationCommandData {
         return {
@@ -32,9 +32,9 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any>{
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const number = interaction.options[0].value as number
-        if (interaction.member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)){
+        if (interaction.member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
             //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
             let descr = '';
@@ -48,18 +48,18 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
             });
 
             return interaction.reply({
-                embed: {
+                embeds: [{
                     title: `🗑️ Deleted ${number} messages`,
-                    description: descr.substring(0,2048)
-                }
+                    description: descr.substring(0, 2048)
+                }]
             });
         }
         else
-            return interaction.reply('You need `MANAGE_MESSAGES` permissions', {ephemeral:true})
-    
+            return interaction.reply('You need `MANAGE_MESSAGES` permissions', { ephemeral: true })
+
     }
-    
-    public execute({channel, member}: Message, {arg1}: commandType, addGuildLog: guildLoggerType) {
+
+    public execute({ channel, member }: Message, { arg1 }: commandType, addGuildLog: guildLoggerType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;
