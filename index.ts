@@ -68,7 +68,6 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    console.log(`merging with master`);
 
     //await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
     //-------------------------
