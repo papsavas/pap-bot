@@ -24,6 +24,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/pg": "^7.14.11"
+    "@types/pg": "^7.14.11",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.4.2"
   }
 }
