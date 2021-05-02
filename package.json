@@ -5,7 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node index.ts"
+    "start": "node build/index.js",
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
@@ -22,10 +24,10 @@
     "profanity-js": "^0.1.2",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/pg": "^7.14.11"
+    "@types/pg": "^7.14.11",
+    "typescript": "^4.2.4"
   }
 }
