@@ -1,10 +1,11 @@
 {
   "name": "papbotts",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "PAPbot",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node index.ts"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
