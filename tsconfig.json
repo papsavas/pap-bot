@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "outDir": "./build",
     "experimentalDecorators": true,
-    "target": "ES6",
+    "target": "ES2019",
     "module": "commonjs",
     "strict": false,
     "moduleResolution": "node",
