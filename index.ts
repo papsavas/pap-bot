@@ -68,7 +68,8 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-
+    console.log(`this is on a testing branch`);
+    process.exit(0);
     //await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
     //-------------------------
     return Promise.resolve()
