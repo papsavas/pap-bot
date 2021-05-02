@@ -21,11 +21,11 @@
     "pg": "^8.5.1",
     "profanity-js": "^0.1.2",
     "reflect-metadata": "^0.1.13",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/pg": "^7.14.11",
-    "ts-node": "^3.3.0",
-    "typescript": "^2.4.2"
+    "@types/pg": "^7.14.11"
   }
 }
