@@ -1,21 +1,21 @@
 import * as Discord from 'discord.js';
-import {ApplicationCommandData, Message} from 'discord.js';
-import {editMessage as _keyword} from '../../keywords.json';
-import {GeditMessage as _guide} from '../../guides.json';
-import {injectable} from "Inversify";
-import {AbstractCommand} from "../AbstractCommand";
-import {editMessageCmd} from "../Interf/editMessageCmd";
+import { ApplicationCommandData, Message } from 'discord.js';
+import { editMessage as _keyword } from '../../keywords.json';
+import { GeditMessage as _guide } from '../../guides.json';
+import { injectable } from "Inversify";
+import { AbstractCommand } from "../AbstractCommand";
+import { editMessageCmd } from "../Interf/editMessageCmd";
 import * as e from '../../../errorCodes.json'
-import {commandType} from "../../../Entities/Generic/commandType";
+import { commandType } from "../../../Entities/Generic/commandType";
 
 
 @injectable()
 export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
-        _keyword
-    );
+        (
+            ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
+            _keyword
+        );
 
     getCommandData(): ApplicationCommandData {
         return {
@@ -38,18 +38,18 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
                     name: 'edit',
                     description: 'new message',
                     type: 'STRING',
-                    required:true
+                    required: true
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>{
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const targetChannel: Discord.GuildChannel = interaction.options[0].channel;
         const messageID = interaction.options[1].value as Discord.Snowflake
         await interaction.defer(true);
         const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(messageID);
-        if(targetMessage.author != interaction.client.user)
+        if (targetMessage.author != interaction.client.user)
             return interaction.reply('Cannot edit a message authored by another user');
         const editedMessage = await targetMessage?.edit(interaction.options[2].value as string);
         return interaction.editReply(
@@ -58,10 +58,10 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
             })
         );
     }
-    
+
     async execute(
-        {channel, mentions, guild, url}: Message,
-        {arg1, arg2, commandless2, commandless3}: commandType,
+        { channel, mentions, guild, url }: Message,
+        { arg1, arg2, commandless2, commandless3 }: commandType,
         addGuildLog
     ): Promise<any> {
 
@@ -85,7 +85,7 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
 
                     const editedMessage = await targetMessage?.edit(commandless3);
                     const sendLinkMessage = await channel.send(new Discord.MessageEmbed(
-                        {description: `[edited message](${editedMessage.url})`}
+                        { description: `[edited message](${editedMessage.url})` }
                     ));
                     return new Promise((res, rej) => res('edit message success'));
                 } catch (err) {

@@ -36,7 +36,7 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction){
+    async interactiveExecute(interaction: CommandInteraction) {
         const memberResponse = interaction.options[0].value as string;
         const guildID = interaction.guildID;
         const memberID = interaction.member.id;
@@ -47,11 +47,11 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         await interaction.defer(true);
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
         return interaction.editReply(new MessageEmbed({
-            title:`Response Added`,
-            description:` your response has been added`,
-            fields:[
-                {name:`response`, value:`\`\`\`${memberResponse}\`\`\``},
-                {name:`marked as nsfw`, value: nsfw.toString()}
+            title: `Response Added`,
+            description: ` your response has been added`,
+            fields: [
+                { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
+                { name: `marked as nsfw`, value: nsfw.toString() }
             ]
         }))
     }

@@ -18,22 +18,22 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
             _keyword
         );
 
-        getCommandData(): ApplicationCommandData {
-            return {
-                name: _keyword,
-                description: this.getGuide(),
-                options: [
-                    {
-                        name: 'text',
-                        description: 'text to mock',
-                        type: 'STRING',
-                        required: true
-                    }
-                ]
-            }
+    getCommandData(): ApplicationCommandData {
+        return {
+            name: _keyword,
+            description: this.getGuide(),
+            options: [
+                {
+                    name: 'text',
+                    description: 'text to mock',
+                    type: 'STRING',
+                    required: true
+                }
+            ]
         }
+    }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction):Promise<any>{
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
     }
 

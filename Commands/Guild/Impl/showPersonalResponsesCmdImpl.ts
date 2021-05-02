@@ -1,21 +1,21 @@
-import {injectable} from "inversify";
-import {AbstractCommand} from "../AbstractCommand";
-import {myresponses as _keyword} from '../../keywords.json';
-import {Gmyresponses as _guide} from '../../guides.json';
-import {ApplicationCommandData, CommandInteraction, Message, MessageEmbed} from "discord.js";
-import {commandType} from "../../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import {showPersonalResponsesCmd} from "../Interf/showPersonalResponsesCmd";
-import {fetchGuildMemberResponses} from "../../../Queries/Generic/MemberResponses";
-import {paginationEmbed} from "../../../toolbox/paginatedEmbed";
+import { injectable } from "inversify";
+import { AbstractCommand } from "../AbstractCommand";
+import { myresponses as _keyword } from '../../keywords.json';
+import { Gmyresponses as _guide } from '../../guides.json';
+import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed } from "discord.js";
+import { commandType } from "../../../Entities/Generic/commandType";
+import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
+import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
+import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
 
 @injectable()
 export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements showPersonalResponsesCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
-        _keyword
-    );
+        (
+            ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
+            _keyword
+        );
 
     getCommandData(): ApplicationCommandData {
         return {
@@ -24,7 +24,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
         }
     }
 
-    interactiveExecute(interaction :CommandInteraction):Promise<any>{
+    interactiveExecute(interaction: CommandInteraction): Promise<any> {
         return interaction.reply('coming soon');
     }
 
@@ -45,7 +45,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
                 },
                 title: `Your Added Responses ✍ 💬`,
                 color: `#fcfcfc`,
-                footer: { text: this.getAliases().toString()}
+                footer: { text: this.getAliases().toString() }
             }
         );
         return paginationEmbed(
