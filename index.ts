@@ -1,19 +1,14 @@
 import * as Discord from 'discord.js';
-import {GuildMember, Message, User} from 'discord.js';
-import {guildID as botGuildID} from './botconfig.json'
-import {DefaultGuild} from "./Guilds/Impl/DefaultGuild";
-import {GenericGuild} from "./Guilds/GenericGuild";
-import container from './Inversify/inversify.config';
-import { CommandHandler } from './Commands/Guild/CommandHandler';
-import { TYPES } from './Inversify/Types';
+import { GuildMember, Message, User } from 'discord.js';
+import { guildID as botGuildID } from './botconfig.json'
+import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
+import { GenericGuild } from "./Guilds/GenericGuild";
 
 
 export let bugsChannel: Discord.TextChannel;
 export let logsChannel: Discord.TextChannel;
 
 export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
-
-const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
 
 if (inDevelopment)
     require('dotenv').config();  //load env variables
@@ -30,9 +25,8 @@ export const PAP = new Discord.Client({
     ],
     allowedMentions: {
         parse: ['users'],
-        repliedUser: true 
+        repliedUser: true
     }
-    
 });
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
@@ -42,12 +36,12 @@ const commandData = {
     name: 'echo',
     description: 'Replies with your input!',
     options: [{
-      name: 'input',
-      type: 'STRING',
-      description: 'The input which should be echoed back',
-      required: true,
+        name: 'input',
+        type: 'STRING',
+        description: 'The input which should be echoed back',
+        required: true,
     }],
-  };
+};
 
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
@@ -74,7 +68,7 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    
+
     //await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
     //-------------------------
     return Promise.resolve()
@@ -87,8 +81,8 @@ PAP.on('ready', async () => {
     }
     try {
         // Creating a guild-specific command
-        
-        PAP.user.setActivity('over you', {type: 'WATCHING'}); 
+
+        PAP.user.setActivity('over you', { type: 'WATCHING' });
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
@@ -113,12 +107,12 @@ PAP.on('ready', async () => {
 PAP.on('interaction', interaction => {
     // If the interaction isn't a slash command, return
     if (!interaction.isCommand()) return;
-  
-    if(!!interaction.guildID)
+
+    if (!!interaction.guildID)
         guildMap.get(interaction.guildID)
             ?.onSlashCommand(interaction)
             .catch(err => console.log(err));
-  });
+});
 
 
 PAP.on('message', (receivedMessage) => {
