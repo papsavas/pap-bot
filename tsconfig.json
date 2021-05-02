@@ -3,9 +3,9 @@
     "outDir": "./build",
     "experimentalDecorators": true,
     "target": "ES2019",
-    "module": "commonjs",
+    "module": "CommonJS",
     "strict": false,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "baseUrl": "./",
     /*
