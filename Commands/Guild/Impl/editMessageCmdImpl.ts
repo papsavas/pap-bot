@@ -45,7 +45,7 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        const targetChannel: Discord.GuildChannel = interaction.options[0].channel;
+        const targetChannel = interaction.options[0].channel as Discord.GuildChannel;
         const messageID = interaction.options[1].value as Discord.Snowflake
         await interaction.defer(true);
         const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(messageID);

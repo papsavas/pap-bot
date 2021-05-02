@@ -6,7 +6,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { extractId } from "../../../toolbox/toolbox";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, CommandInteraction, DiscordAPIError, Message, MessageEmbed, TextChannel } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, TextChannel } from "discord.js";
 import * as e from '../../../errorCodes.json';
 
 
@@ -42,8 +42,9 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
         const reason = interaction.options[1];
+        const member = interaction.member as GuildMember
         let pinReason = reason ? reason.value as string : ``;
-        pinReason += `\nby ${interaction.member.displayName}`;
+        pinReason += `\nby ${member.displayName}`;
         let pinningMessageID = extractId(interaction.options[0].value as string);
         let fetchedMessage: Message;
         try {

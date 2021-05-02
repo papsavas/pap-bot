@@ -6,7 +6,7 @@ import { injectable } from "Inversify";
 import { pollCmd } from "../Interf/pollCmd";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, TextChannel } from "discord.js";
+import { ApplicationCommandData, GuildMember, TextChannel } from "discord.js";
 
 
 @injectable()
@@ -34,7 +34,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
-        const member = interaction.member;
+        const member = interaction.member as GuildMember;
         return channel.send(
             new Discord.MessageEmbed(
                 {

@@ -39,7 +39,7 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
     async interactiveExecute(interaction: CommandInteraction) {
         const memberResponse = interaction.options[0].value as string;
         const guildID = interaction.guildID;
-        const memberID = interaction.member.id;
+        const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             memberResponse.includes(swear['swear_word'])) ||
