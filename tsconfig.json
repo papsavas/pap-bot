@@ -5,7 +5,7 @@
     "target": "ESNext",
     "module": "CommonJS",
     "strict": false,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "baseUrl": "./",
   }
