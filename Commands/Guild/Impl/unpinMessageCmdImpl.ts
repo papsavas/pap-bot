@@ -4,7 +4,7 @@ import * as Discord from "discord.js";
 import { injectable } from "Inversify";
 import { AbstractCommand } from "../AbstractCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
-import { ApplicationCommandData, CommandInteraction, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message } from "discord.js";
 import { extractId } from "../../../toolbox/toolbox";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -44,10 +44,11 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as Discord.TextChannel;
         const reason = interaction.options[1];
+        const member = interaction.member as GuildMember;
         let unpinReason = reason ? reason.value as string : ``;
-        unpinReason += `\nby ${interaction.member.displayName}`;
+        unpinReason += `\nby ${member?.displayName}`;
         let pinningMessageID = extractId(interaction.options[0].value as string);
-        let fetchedMessage;
+        let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
