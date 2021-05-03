@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node build/index.js",
     "build": "tsc",
-    "postinstall": "npm run build"
+    "heroku-postbuild": "npm run build"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
