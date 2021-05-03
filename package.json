@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
-    "build": "tsc -p"
+    "build": "tsc --project tsconfig.json"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
