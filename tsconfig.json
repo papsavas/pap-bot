@@ -2,11 +2,17 @@
   "compilerOptions": {
     "outDir": "./dist",
     "experimentalDecorators": true,
-    "target": "ESNext",
+    "target": "ES6",
     "module": "CommonJS",
     "strict": false,
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "lib": [
+      "ES2018"
+    ],
     "resolveJsonModule": true,
     "baseUrl": "./",
   }
