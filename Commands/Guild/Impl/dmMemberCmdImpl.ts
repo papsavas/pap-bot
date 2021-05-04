@@ -1,6 +1,6 @@
 import { dmMember as _keyword } from '../../keywords.json';
 import { GdmMember as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
@@ -10,7 +10,7 @@ import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 
 
-@injectable()
+
 export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

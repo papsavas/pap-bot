@@ -2,14 +2,14 @@ import { AbstractCommand } from "../AbstractCommand";
 import * as Discord from 'discord.js';
 import { simplePoll as _keyword } from '../../keywords.json';
 import { GsimplePoll as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
+
 import { pollCmd } from "../Interf/pollCmd";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { ApplicationCommandData, GuildMember, TextChannel } from "discord.js";
 
 
-@injectable()
+
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

@@ -1,4 +1,3 @@
-import { injectable } from "inversify";
 import { AbstractCommand } from "../AbstractCommand";
 import { myresponses as _keyword } from '../../keywords.json';
 import { Gmyresponses as _guide } from '../../guides.json';
@@ -9,7 +8,7 @@ import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
 
-@injectable()
+
 export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements showPersonalResponsesCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

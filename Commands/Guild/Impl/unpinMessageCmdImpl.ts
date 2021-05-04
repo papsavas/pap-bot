@@ -1,7 +1,7 @@
 import { GunpinMessage as _guide } from "../../guides.json";
 import { unpinMessage as _keyword } from "../../keywords.json";
 import * as Discord from "discord.js";
-import { injectable } from "Inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message } from "discord.js";
@@ -10,8 +10,6 @@ import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import * as e from '../../../errorCodes.json';
 
-
-injectable()
 
 export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
     private readonly _aliases = this.addKeywordToAliases

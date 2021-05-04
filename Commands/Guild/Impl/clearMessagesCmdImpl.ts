@@ -1,6 +1,6 @@
 import { clearMessages as _keyword } from '../../keywords.json';
 import { GclearMessages as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, TextChannel } from 'discord.js';
 import { commandType } from "../../../Entities/Generic/commandType";
@@ -9,7 +9,7 @@ import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 import { APIGuildMember } from 'discord-api-types';
 
 
-@injectable()
+
 export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

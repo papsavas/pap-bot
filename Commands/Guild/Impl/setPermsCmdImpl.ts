@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { setPerms as _keyword } from '../../keywords.json';
 import { GsetPerms as _guide } from '../../guides.json';
@@ -8,7 +8,7 @@ import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { setPermsCmd } from "../Interf/setPermsCmd";
 import { overrideCommandPerms } from "../../../Queries/Generic/guildRolePerms";
 
-@injectable()
+
 export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

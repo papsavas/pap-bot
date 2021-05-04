@@ -1,6 +1,6 @@
 import { GpinMessage as _guide } from "../../guides.json";
 import { pinMessage as _keyword } from "../../keywords.json";
-import { injectable } from "Inversify";
+
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
 import { AbstractCommand } from "../AbstractCommand";
 import { extractId } from "../../../toolbox/toolbox";
@@ -10,7 +10,7 @@ import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMembe
 import * as e from '../../../errorCodes.json';
 
 
-@injectable()
+
 export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
