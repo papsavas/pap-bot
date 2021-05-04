@@ -32,9 +32,6 @@ export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCm
                     description: 'allowed role',
                     type: 'ROLE',
                     required: true,
-                    choices: [
-
-                    ]
                 },
 
                 {
@@ -46,6 +43,12 @@ export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCm
 
                 {
                     name: 'role3',
+                    description: 'allowed role',
+                    type: 'ROLE',
+                    required: false
+                },
+                {
+                    name: 'role4',
                     description: 'allowed role',
                     type: 'ROLE',
                     required: false
@@ -62,7 +65,7 @@ export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCm
         const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
         await interaction.defer(true);
         await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
-        return interaction.reply(`Command ${command_id} overriden`, { ephemeral: true });
+        return interaction.editReply(`Command ${command_id} overriden`);
     }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {

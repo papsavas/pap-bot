@@ -18,7 +18,7 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
 
     getCommandData(): ApplicationCommandData {
         return {
-            name: `lockCommand`,
+            name: `unlockCommand`,
             description: this.getGuide(),
             options: [
                 {
@@ -36,7 +36,7 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
         const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
         await interaction.defer(true);
         await overrideCommandPerms(guild_id, command_id, [guild_id]);
-        return interaction.reply(`Command ${command_id} unlocked`, { ephemeral: true });
+        return interaction.editReply(`Command ${command_id} unlocked`);
     }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {

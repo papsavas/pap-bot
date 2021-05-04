@@ -68,8 +68,8 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-
-    //await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
+    //const cmds = await PAP.guilds.cache.get('746309734851674122').commands.fetch();
+    //console.table(cmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
     //-------------------------
     return Promise.resolve()
 }
