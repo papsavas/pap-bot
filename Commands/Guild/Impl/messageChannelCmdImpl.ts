@@ -51,6 +51,7 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
         return interaction.reply({
             embeds: [emb],
             ephemeral: true
+
         });
 
     }

@@ -1,13 +1,11 @@
 import { clearMessages as _keyword } from '../../keywords.json';
 import { GclearMessages as _guide } from '../../guides.json';
-
 import { AbstractCommand } from "../AbstractCommand";
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, TextChannel } from 'discord.js';
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 import { APIGuildMember } from 'discord-api-types';
-
 
 
 export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
@@ -38,6 +36,7 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
         const member = interaction.member as GuildMember;
 
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
             //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
             let descr = '';
