@@ -1,18 +1,16 @@
-import {GenericGuild} from "./GenericGuild";
+import { GenericGuild } from "./GenericGuild";
 import * as Discord from 'discord.js';
-import {Guild, Snowflake} from 'discord.js';
-import {mentionRegex} from "../botconfig.json";
-import container from "../Inversify/inversify.config";
-import {CommandHandler} from "../Commands/Guild/CommandHandler";
-import {TYPES} from "../Inversify/Types";
-import {randArrElement} from "../toolbox/toolbox";
-import {genericGuildResponses} from "../Queries/Generic/GenericGuildResponses";
-import {guildSettings} from "../Entities/Generic/guildSettingsType";
-import {fetchGuildSettings} from "../Queries/Generic/GuildSettings";
-import {memberResponses} from "../Entities/Generic/MemberResponsesType";
-import {fetchAllGuildMemberResponses} from "../Queries/Generic/MemberResponses";
+import { Guild, Snowflake } from 'discord.js';
+import { mentionRegex } from "../botconfig.json";
+import { randArrElement } from "../toolbox/toolbox";
+import { genericGuildResponses } from "../Queries/Generic/GenericGuildResponses";
+import { guildSettings } from "../Entities/Generic/guildSettingsType";
+import { fetchGuildSettings } from "../Queries/Generic/GuildSettings";
+import { memberResponses } from "../Entities/Generic/MemberResponsesType";
+import { fetchAllGuildMemberResponses } from "../Queries/Generic/MemberResponses";
+import CommandHandlerImpl from "../Commands/Guild/CommandHandlerImpl";
 
-const commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
+const commandHandler = new CommandHandlerImpl()
 
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
@@ -58,7 +56,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onSlashCommand(interaction: Discord.CommandInteraction): Promise<any>{
+    onSlashCommand(interaction: Discord.CommandInteraction): Promise<any> {
         return commandHandler.onSlashCommand(interaction);
     }
 
@@ -71,7 +69,7 @@ export abstract class AbstractGuild implements GenericGuild {
             //implement mentionHandler
             message.channel.startTyping();
             return message.reply(randArrElement(this._responses))
-                .then(msg=> message.channel.stopTyping())
+                .then(msg => message.channel.stopTyping())
                 .catch(err => console.log(err));
         }
 
@@ -105,7 +103,7 @@ export abstract class AbstractGuild implements GenericGuild {
         this._settings.prefix = newPrefix;
     }
 
-    async loadResponses(){
+    async loadResponses() {
         this._settings = await fetchGuildSettings(this.guildID);
         const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
         const memberConcatResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);

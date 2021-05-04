@@ -1,71 +1,67 @@
-import {inject, injectable} from 'Inversify';
 import * as Discord from 'discord.js';
-import {ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake} from 'discord.js';
-import {TYPES} from "../../Inversify/Types";
-import {bugsChannel, guildMap} from "../../index";
-import {pinMessageCmd} from "./Interf/pinMessageCmd";
-import {GenericCommand} from "./GenericCommand";
-import {messageChannelCmd} from "./Interf/messageChannelCmd";
-import {dmMemberCmd} from "./Interf/dmMemberCmd";
-import {CommandHandler} from "./CommandHandler";
-import {pollCmd} from "./Interf/pollCmd";
-import {unpinMessageCmd} from "./Interf/unpinMessageCmd";
-import {helpCmd} from "./Interf/helpCmd";
-import {editMessageCmd} from "./Interf/editMessageCmd";
-import {commandType} from "../../Entities/Generic/commandType";
-import {setPrefixCmd} from "./Interf/setPrefixCmd";
-import {setPermsCmd} from "./Interf/setPermsCmd";
-import {showPermsCmd} from "./Interf/showPermsCmd";
-import {addResponseCmd} from "./Interf/addResponseCmd";
-import {showPersonalResponsesCmd} from "./Interf/showPersonalResponsesCmd";
-import {clearMessagesCmd} from "./Interf/clearMessagesCmd";
-import {removePersonalResponseCmd} from "./Interf/removePersonalResponseCmd";
+import { ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
+import { bugsChannel, guildMap } from "../../index";
+import { pinMessageCmd } from "./Interf/pinMessageCmd";
+import { GenericCommand } from "./GenericCommand";
+import { messageChannelCmd } from "./Interf/messageChannelCmd";
+import { dmMemberCmd } from "./Interf/dmMemberCmd";
+import { CommandHandler } from "./CommandHandler";
+import { pollCmd } from "./Interf/pollCmd";
+import { unpinMessageCmd } from "./Interf/unpinMessageCmd";
+import { helpCmd } from "./Interf/helpCmd";
+import { editMessageCmd } from "./Interf/editMessageCmd";
+import { commandType } from "../../Entities/Generic/commandType";
+import { setPrefixCmd } from "./Interf/setPrefixCmd";
+import { setPermsCmd } from "./Interf/setPermsCmd";
+import { showPermsCmd } from "./Interf/showPermsCmd";
+import { addResponseCmd } from "./Interf/addResponseCmd";
+import { showPersonalResponsesCmd } from "./Interf/showPersonalResponsesCmd";
+import { clearMessagesCmd } from "./Interf/clearMessagesCmd";
+import { removePersonalResponseCmd } from "./Interf/removePersonalResponseCmd";
 import { mockMessageCmd } from './Interf/mockMessageCmd';
 import { nsfwSwitchCmd } from './Interf/nsfwSwitchCmd';
+import { HelpCmdImpl } from './Impl/helpCmdImpl';
+import { PollCmdImpl } from './Impl/pollCmdImpl';
+import { DmMemberCmdImpl } from './Impl/dmMemberCmdImpl';
+import { SetPrefixCmdImpl } from './Impl/setPrefixCmdImpl';
+import { UnpinMessageCmdImpl } from './Impl/unpinMessageCmdImpl';
+import { PinMessageCmdImpl } from './Impl/pinMessageCmdImpl';
+import { MessageChannelCmdImpl } from './Impl/messageChannelCmdImpl';
+import { ClearMessagesCmdImpl } from './Impl/clearMessagesCmdImpl';
+import { EditMessageCmdImpl } from './Impl/editMessageCmdImpl';
+import { ShowPermsCmdsImpl } from './Impl/showPermsCmdsImpl';
+import { SetPermsCmdImpl } from './Impl/setPermsCmdImpl';
+import { AddResponseCmdImpl } from './Impl/addResponseCmdImpl';
+import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImpl';
+import { RemovePersonalResponseCmdImpl } from './Impl/removePersonalResponseCmdImpl';
+import { NsfwSwitchCmdImpl } from './Impl/nsfwSwitchCmdImpl';
+import { MockMessageCmdImpl } from './Impl/mockMessageCmdImpl';
 require('dotenv').config();
 
-@injectable()
 export default class CommandHandlerImpl implements CommandHandler {
 
     private readonly commands: GenericCommand[];
     private _guildLogger;
 
-    constructor(
-        @inject(TYPES.HelpCmd) helpCmd: helpCmd,
-        @inject(TYPES.PollCmd) pollCmd: pollCmd,
-        @inject(TYPES.DmMemberCmd) dmMemberCmd: dmMemberCmd,
-        @inject(TYPES.MessageChannelCmd) messageChannelCmd: messageChannelCmd,
-        @inject(TYPES.PinMessageCmd) pinMessageCmd: pinMessageCmd,
-        @inject(TYPES.UnpinMessageCmd) unpinMessageCmd: unpinMessageCmd,
-        @inject(TYPES.EditMessageCmd) editMessageCmd: editMessageCmd,
-        @inject(TYPES.SetPrefixCmd) setPrefixCmd: setPrefixCmd,
-        @inject(TYPES.SetPermsCmd) setPermsCmd: setPermsCmd,
-        @inject(TYPES.ShowPermsCmd) showPermsCmd: showPermsCmd,
-        @inject(TYPES.AddResponseCmd) addResponseCmd: addResponseCmd,
-        @inject(TYPES.ShowPersonalResponsesCmd) showPersonalResponsesCmd: showPersonalResponsesCmd,
-        @inject(TYPES.ClearMessagesCmd) clearMessagesCmd: clearMessagesCmd,
-        @inject(TYPES.RemovePersonalResponseCmd) removePersonalResponseCmd: removePersonalResponseCmd,
-        @inject(TYPES.MockMessageCmd) mockMessageCmd: mockMessageCmd,
-        @inject(TYPES.NsfwSwitchCmd) nsfwSwitchCmd: nsfwSwitchCmd
-    ) {
+    constructor() {
         this.commands = [
-            helpCmd, pollCmd, dmMemberCmd, setPrefixCmd,
-            pinMessageCmd, unpinMessageCmd,
-            messageChannelCmd, clearMessagesCmd, editMessageCmd,
-            setPermsCmd, showPermsCmd,
-            addResponseCmd, showPersonalResponsesCmd, removePersonalResponseCmd,
-            mockMessageCmd, nsfwSwitchCmd
+            new HelpCmdImpl(), new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
+            new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
+            new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
+            new SetPermsCmdImpl(), new ShowPermsCmdsImpl(),
+            new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
+            new MockMessageCmdImpl(), new NsfwSwitchCmdImpl()
         ];
     }
 
-    public async registerApplicationCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager){
-        for(const command of this.commands){
+    public async registerApplicationCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+        for (const command of this.commands) {
             try {
                 await commandManager.create(command.getCommandData())
             } catch (error) {
                 console.log(command.getKeyword(), error);
             }
-            
+
         }
         return Promise.resolve('slash commands created');
     }
@@ -96,7 +92,7 @@ export default class CommandHandlerImpl implements CommandHandler {
         const commandMessage = message;
         const candidateCommand = this.returnCommand(message);
         this.setGuildLogger(message.guild.id);
-    
+
         const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand))
         if (typeof commandImpl !== "undefined") {
             return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
@@ -127,8 +123,8 @@ export default class CommandHandlerImpl implements CommandHandler {
     onSlashCommand(interaction: Discord.CommandInteraction): Promise<any> {
         return this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
             .interactiveExecute(interaction)
-            .catch(err=> this.invalidSlashCommand(err, interaction, interaction.commandName));
-       
+            .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
+
     }
 
     private setGuildLogger(guildID: Snowflake) {
@@ -154,14 +150,14 @@ export default class CommandHandlerImpl implements CommandHandler {
         }
     }
 
-    private invalidSlashCommand(err: Error, interaction: Discord.CommandInteraction, primaryCommandLiteral: string){
+    private invalidSlashCommand(err: Error, interaction: Discord.CommandInteraction, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new Discord.MessageEmbed({
             author: {
                 name: interaction.guild.name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: interaction.guild.iconURL({format: "png", size: 512})
+                proxy_url: interaction.guild.iconURL({ format: "png", size: 512 })
             },
             title: primaryCommandLiteral,
             color: "DARK_RED",
@@ -179,12 +175,12 @@ export default class CommandHandlerImpl implements CommandHandler {
                     icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                 },
                 title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
-                fields: [{name: `Specified error  💥`, value: `• ${err}`}],
+                fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
                 color: "RED"
             })
 
-        const interactionPromise : Promise<any> = interaction.replied ?
-         interaction.editReply(interactionEmb) : interaction.reply(interactionEmb);
+        const interactionPromise: Promise<any> = interaction.replied ?
+            interaction.editReply(interactionEmb) : interaction.reply(interactionEmb);
         interactionPromise
             .then(() => interaction.client.setTimeout(() => interaction.deleteReply().catch(), 15000))
             .catch();
@@ -199,7 +195,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: commandMessage.guild.iconURL({format: "png", size: 512})
+                proxy_url: commandMessage.guild.iconURL({ format: "png", size: 512 })
             },
             title: primaryCommandLiteral,
             color: "DARK_RED",
@@ -217,8 +213,8 @@ export default class CommandHandlerImpl implements CommandHandler {
                 },
                 title: guildMap.get(commandMessage.guild.id).getSettings().prefix + commandImpl.getKeyword(),
                 description: commandImpl.getGuide(),
-                fields: [{name: `Specified error  💥`, value: `• ${err}`}],
-                footer: {text: commandImpl.getAliases().toString()},
+                fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
+                footer: { text: commandImpl.getAliases().toString() },
                 color: "RED"
             })
         ).then(msg => msg.client.setTimeout(() => msg.delete(), 15000));

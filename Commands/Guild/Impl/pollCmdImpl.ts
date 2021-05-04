@@ -1,21 +1,21 @@
-import {AbstractCommand} from "../AbstractCommand";
+import { AbstractCommand } from "../AbstractCommand";
 import * as Discord from 'discord.js';
-import {simplePoll as _keyword} from '../../keywords.json';
-import {GsimplePoll as _guide} from '../../guides.json';
-import {injectable} from "Inversify";
-import {pollCmd} from "../Interf/pollCmd";
-import {commandType} from "../../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, TextChannel } from "discord.js";
+import { simplePoll as _keyword } from '../../keywords.json';
+import { GsimplePoll as _guide } from '../../guides.json';
+
+import { pollCmd } from "../Interf/pollCmd";
+import { commandType } from "../../../Entities/Generic/commandType";
+import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { ApplicationCommandData, GuildMember, TextChannel } from "discord.js";
 
 
-@injectable()
+
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['poll', 'πολλ'],
-        _keyword
-    );
+        (
+            ['poll', 'πολλ'],
+            _keyword
+        );
 
     getCommandData(): ApplicationCommandData {
         return {
@@ -32,9 +32,9 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>{
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
-        const member = interaction.member;
+        const member = interaction.member as GuildMember;
         return channel.send(
             new Discord.MessageEmbed(
                 {
@@ -43,7 +43,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                     description: interaction.options[0].value as string,
                     author: {
                         name: member.displayName,
-                        icon_url: member.user.avatarURL({format: 'png'})
+                        icon_url: member.user.avatarURL({ format: 'png' })
                     },
                     //add blank
                     fields: [{
@@ -51,18 +51,18 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                         value: '\u200B',
                     },],
 
-                    footer: {text: 'Poll📊'}
+                    footer: { text: 'Poll📊' }
                 }))
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                interaction.reply('poll created', {ephemeral:true})
-                    .then(()=> interaction.deleteReply());
+                interaction.reply('poll created', { ephemeral: true })
+                    .then(() => interaction.deleteReply());
             })
     }
 
 
-    execute(message, {commandless1}: commandType, addGuildLog: guildLoggerType) {
+    execute(message, { commandless1 }: commandType, addGuildLog: guildLoggerType) {
         const commandMsg = message;
         return (commandMsg.channel as Discord.TextChannel).send(
             new Discord.MessageEmbed(
@@ -72,7 +72,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                     description: commandless1,
                     author: {
                         name: commandMsg.member.displayName,
-                        icon_url: commandMsg.member.user.avatarURL({format: 'png'})
+                        icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
                     },
                     //add blank
                     fields: [{
@@ -80,16 +80,16 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
                         value: '\u200B',
                     },],
 
-                    footer: {text: 'Poll📊'}
+                    footer: { text: 'Poll📊' }
                 }))
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                if(commandMsg.deletable)
+                if (commandMsg.deletable)
                     commandMsg.delete()
-                    .catch(err =>{
-                        //this.logErrorOnBugsChannel(err, bundle);
-                    });
+                        .catch(err => {
+                            //this.logErrorOnBugsChannel(err, bundle);
+                        });
             })
     }
 

@@ -1,6 +1,5 @@
 import { addresponse as _keyword } from '../../keywords.json';
 import { Gaddresponse as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
 import { AbstractCommand } from "../AbstractCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
 import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed } from "discord.js";
@@ -11,7 +10,6 @@ import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
-@injectable()
 export class AddResponseCmdImpl extends AbstractCommand implements addResponseCmd {
 
     private readonly _aliases = this.addKeywordToAliases
@@ -36,10 +34,10 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction){
+    async interactiveExecute(interaction: CommandInteraction) {
         const memberResponse = interaction.options[0].value as string;
         const guildID = interaction.guildID;
-        const memberID = interaction.member.id;
+        const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             memberResponse.includes(swear['swear_word'])) ||
@@ -47,11 +45,11 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         await interaction.defer(true);
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
         return interaction.editReply(new MessageEmbed({
-            title:`Response Added`,
-            description:` your response has been added`,
-            fields:[
-                {name:`response`, value:`\`\`\`${memberResponse}\`\`\``},
-                {name:`marked as nsfw`, value: nsfw.toString()}
+            title: `Response Added`,
+            description: ` your response has been added`,
+            fields: [
+                { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
+                { name: `marked as nsfw`, value: nsfw.toString() }
             ]
         }))
     }

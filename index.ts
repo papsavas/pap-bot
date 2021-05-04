@@ -202,6 +202,8 @@ PAP.on('error', (error) => {
 });
 
 
+/*
 PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in`))
     .catch(err => console.log(`ERROR ON LOGIN:\n${err}`));
+*/

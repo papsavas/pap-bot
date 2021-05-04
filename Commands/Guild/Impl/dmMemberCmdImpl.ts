@@ -1,23 +1,23 @@
-import {dmMember as _keyword} from '../../keywords.json';
-import {GdmMember as _guide} from '../../guides.json';
-import {injectable} from "Inversify";
-import {AbstractCommand} from "../AbstractCommand";
-import {dmMemberCmd} from "../Interf/dmMemberCmd";
+import { dmMember as _keyword } from '../../keywords.json';
+import { GdmMember as _guide } from '../../guides.json';
+
+import { AbstractCommand } from "../AbstractCommand";
+import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
-import {ApplicationCommandData, Message, User} from 'discord.js';
-import {commandType} from "../../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
+import { ApplicationCommandData, Message, User } from 'discord.js';
+import { commandType } from "../../../Entities/Generic/commandType";
+import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 
 
-@injectable()
+
 export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['directmessage', 'message', 'dm'],
-        _keyword
-    );
-    
+        (
+            ['directmessage', 'message', 'dm'],
+            _keyword
+        );
+
     getCommandData(): ApplicationCommandData {
         return {
             name: _keyword,
@@ -39,7 +39,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>{
+    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const user = interaction.options[0].user;
         const messageContent = interaction.options[1].value as string;
         const sendEmb = new Discord.MessageEmbed({
@@ -49,24 +49,24 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
             title: `You have a message ${user.username}`,
-            thumbnail: {url: interaction.guild.iconURL({format: "png", size: 128})},
+            thumbnail: { url: interaction.guild.iconURL({ format: "png", size: 128 }) },
             color: "AQUA",
             description: messageContent,
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
             timestamp: new Date()
         })
         return user.send(sendEmb)
-            .then((smsg) => interaction.reply(`message send to ${user.toString()}`, {ephemeral:true}))
+            .then((smsg) => interaction.reply(`message send to ${user.toString()}`, { ephemeral: true }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
-                   interaction.reply(`Could not dm ${user.username}`);
+                    interaction.reply(`Could not dm ${user.username}`);
                 }
             })
     }
 
     public async execute(
-        {guild, attachments, mentions}: Message,
-        {commandless2}: commandType,
+        { guild, attachments, mentions }: Message,
+        { commandless2 }: commandType,
         addGuildLog: guildLoggerType
     ) {
         const user = mentions.users.first();
@@ -81,8 +81,8 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
             title: `You have a message ${user.username}`,
-            thumbnail: {url: guild.iconURL({format: "png", size: 128})},
-            image: {url: attachments?.first().url},
+            thumbnail: { url: guild.iconURL({ format: "png", size: 128 }) },
+            image: { url: attachments?.first().url },
             color: "AQUA",
             description: text,
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed

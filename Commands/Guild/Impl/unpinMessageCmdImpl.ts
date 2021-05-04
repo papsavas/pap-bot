@@ -1,24 +1,22 @@
-import {GunpinMessage as _guide} from "../../guides.json";
-import {unpinMessage as _keyword} from "../../keywords.json";
+import { GunpinMessage as _guide } from "../../guides.json";
+import { unpinMessage as _keyword } from "../../keywords.json";
 import * as Discord from "discord.js";
-import {injectable} from "Inversify";
-import {AbstractCommand} from "../AbstractCommand";
-import {unpinMessageCmd} from "../Interf/unpinMessageCmd";
-import {ApplicationCommandData, CommandInteraction, Message} from "discord.js";
-import {extractId} from "../../../toolbox/toolbox";
-import {commandType} from "../../../Entities/Generic/commandType";
-import {guildLoggerType} from "../../../Entities/Generic/guildLoggerType";
+
+import { AbstractCommand } from "../AbstractCommand";
+import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message } from "discord.js";
+import { extractId } from "../../../toolbox/toolbox";
+import { commandType } from "../../../Entities/Generic/commandType";
+import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import * as e from '../../../errorCodes.json';
 
 
-injectable()
-
 export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
     private readonly _aliases = this.addKeywordToAliases
-    (
-        ['unpin', 'ανπιν'],
-        _keyword
-    );
+        (
+            ['unpin', 'ανπιν'],
+            _keyword
+        );
 
     getCommandData(): ApplicationCommandData {
         return {
@@ -41,48 +39,49 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction):Promise<any>{
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as Discord.TextChannel;
         const reason = interaction.options[1];
+        const member = interaction.member as GuildMember;
         let unpinReason = reason ? reason.value as string : ``;
-        unpinReason += `\nby ${interaction.member.displayName}`;
+        unpinReason += `\nby ${member?.displayName}`;
         let pinningMessageID = extractId(interaction.options[0].value as string);
-        let fetchedMessage;
+        let fetchedMessage: Message;
         try {
-            fetchedMessage = await channel.messages.fetch(pinningMessageID);   
+            fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
-            if(error.code == e["Unknown message"])
+            if (error.code == e["Unknown message"])
                 return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
-                 {ephemeral:true})
+                    { ephemeral: true })
         }
-        return fetchedMessage.unpin({reason: unpinReason})
+        return fetchedMessage.unpin({ reason: unpinReason })
             .then((unpinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                 interaction.reply(new Discord.MessageEmbed({
-                    title:`Unpinned Message 📌`,
-                    description: unpinnedMessage.content?.length>0 ? 
-                    `[${unpinnedMessage.content.substring(0,40)}...](${unpinnedMessage.url})`: 
-                    `[Click to jump](${unpinnedMessage.url})`,
-                    footer:{text:unpinReason}
+                    title: `Unpinned Message 📌`,
+                    description: unpinnedMessage.content?.length > 0 ?
+                        `[${unpinnedMessage.content.substring(0, 40)}...](${unpinnedMessage.url})` :
+                        `[Click to jump](${unpinnedMessage.url})`,
+                    footer: { text: unpinReason }
                 }))
             })
-            .catch(err=> {
+            .catch(err => {
                 interaction.reply('could not pin message');
             });
     }
 
-    execute(message: Message, {arg1, commandless2}: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, { arg1, commandless2 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const [channel, member] = [message.channel, message.member];
         let unpinReason = commandless2 ? commandless2 : `undefined`;
         unpinReason += `\nby ${member.displayName}`;
         let id = extractId(arg1);
         return (channel as Discord.TextChannel).messages.fetch(id)
             .then((msg) => {
-                msg.unpin({reason: unpinReason})
+                msg.unpin({ reason: unpinReason })
                     .then((msg) => {
                         //addGuildLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
                         if (message.deletable)
-                            message.client.setTimeout(()=> message.delete().catch(), 3000);
+                            message.client.setTimeout(() => message.delete().catch(), 3000);
                     });
             })
     }

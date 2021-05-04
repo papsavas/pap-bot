@@ -1,14 +1,13 @@
 import { clearMessages as _keyword } from '../../keywords.json';
 import { GclearMessages as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
 import { AbstractCommand } from "../AbstractCommand";
-import { ApplicationCommandData, CommandInteraction, Message, Permissions, TextChannel } from 'discord.js';
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, TextChannel } from 'discord.js';
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
+import { APIGuildMember } from 'discord-api-types';
 
 
-@injectable()
 export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
@@ -33,14 +32,18 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const number = interaction.options[0].value as number
-        if (interaction.member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+        const number = interaction.options[0].value as number;
+        const member = interaction.member as GuildMember;
+
+        if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
             //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
             let descr = '';
             delMessages.array()/*.slice(1)*/.reverse().map(msg => {
+
                 try {
-                    if (!msg.content.startsWith('$clear'))
+                    if (!msg.content.startsWith('$clear') && msg.type !== 'APPLICATION_COMMAND')
                         descr += `**${msg.author.username}**: ${msg.content}\n`;
                 } catch (err) {
                     descr += `**${msg.author.username}**: ???\n`;

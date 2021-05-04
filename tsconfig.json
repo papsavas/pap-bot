@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "experimentalDecorators": true,
-    "target": "ESNext",
-    "module": "commonjs",
+    "target": "ES2019",
+    "module": "CommonJS",
     "strict": false,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "lib": [
+      "ES2018"
+    ],
     "resolveJsonModule": true,
     "baseUrl": "./",
-    /*
-    "paths": {
-      "@root/*" : ["./*"],
-      "@cmdInterfaces/*" : ["./Commands/Interf/*"],
-      "@cmdImplementations/*" : ["./Commands/Impl/*"],
-      "@Commands/*" : ["./Commands/*"],
-      "@Inversify/*" : ["./Inversify/*"]
-    }*/
   }
 }
