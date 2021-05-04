@@ -3,6 +3,7 @@ import { GuildMember, Message, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json'
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 import { GenericGuild } from "./Guilds/GenericGuild";
+import CommandHandlerImpl from './Commands/Guild/CommandHandlerImpl';
 
 
 export let bugsChannel: Discord.TextChannel;
@@ -57,8 +58,12 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    //const cmds = await PAP.guilds.cache.get('746309734851674122').commands.fetch();
-    //console.table(cmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+
+    const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
+    await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    const cmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
+    console.table(cmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+
     //-------------------------
     return Promise.resolve()
 }
@@ -71,7 +76,6 @@ PAP.on('ready', async () => {
     }
     try {
         // Creating a guild-specific command
-
         PAP.user.setActivity('over you', { type: 'WATCHING' });
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;

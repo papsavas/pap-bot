@@ -38,7 +38,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
         return channel.send(
             new Discord.MessageEmbed(
                 {
-                    title: `Ψηφίστε`,
+                    title: `Vote`,
                     color: '#D8F612',
                     description: interaction.options[0].value as string,
                     author: {
@@ -56,9 +56,9 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                interaction.reply('poll created', { ephemeral: true })
-                    .then(() => interaction.deleteReply());
+                interaction.reply('poll created', { ephemeral: true }).catch();
             })
+            .catch(err => interaction.reply(`something went wrong`))
     }
 
 

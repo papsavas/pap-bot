@@ -1,42 +1,25 @@
 import * as Discord from 'discord.js';
 import { ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
-import { bugsChannel, guildMap } from "../../index";
-import { pinMessageCmd } from "./Interf/pinMessageCmd";
-import { GenericCommand } from "./GenericCommand";
-import { messageChannelCmd } from "./Interf/messageChannelCmd";
-import { dmMemberCmd } from "./Interf/dmMemberCmd";
-import { CommandHandler } from "./CommandHandler";
-import { pollCmd } from "./Interf/pollCmd";
-import { unpinMessageCmd } from "./Interf/unpinMessageCmd";
-import { helpCmd } from "./Interf/helpCmd";
-import { editMessageCmd } from "./Interf/editMessageCmd";
 import { commandType } from "../../Entities/Generic/commandType";
-import { setPrefixCmd } from "./Interf/setPrefixCmd";
-import { lockCommandCmd } from "./Interf/lockCommandCmd";
-import { showPermsCmd } from "./Interf/showPermsCmd";
-import { addResponseCmd } from "./Interf/addResponseCmd";
-import { showPersonalResponsesCmd } from "./Interf/showPersonalResponsesCmd";
-import { clearMessagesCmd } from "./Interf/clearMessagesCmd";
-import { removePersonalResponseCmd } from "./Interf/removePersonalResponseCmd";
-import { mockMessageCmd } from './Interf/mockMessageCmd';
-import { nsfwSwitchCmd } from './Interf/nsfwSwitchCmd';
-import { HelpCmdImpl } from './Impl/helpCmdImpl';
-import { PollCmdImpl } from './Impl/pollCmdImpl';
-import { DmMemberCmdImpl } from './Impl/dmMemberCmdImpl';
-import { SetPrefixCmdImpl } from './Impl/setPrefixCmdImpl';
-import { UnpinMessageCmdImpl } from './Impl/unpinMessageCmdImpl';
-import { PinMessageCmdImpl } from './Impl/pinMessageCmdImpl';
-import { MessageChannelCmdImpl } from './Impl/messageChannelCmdImpl';
-import { ClearMessagesCmdImpl } from './Impl/clearMessagesCmdImpl';
-import { EditMessageCmdImpl } from './Impl/editMessageCmdImpl';
-import { ShowPermsCmdsImpl } from './Impl/showPermsCmdsImpl';
-import { LockCommandCmdImpl } from './Impl/lockCommandCmdImpl';
+import { bugsChannel, guildMap } from "../../index";
+import { CommandHandler } from "./CommandHandler";
+import { GenericCommand } from "./GenericCommand";
 import { AddResponseCmdImpl } from './Impl/addResponseCmdImpl';
-import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImpl';
-import { RemovePersonalResponseCmdImpl } from './Impl/removePersonalResponseCmdImpl';
-import { NsfwSwitchCmdImpl } from './Impl/nsfwSwitchCmdImpl';
+import { ClearMessagesCmdImpl } from './Impl/clearMessagesCmdImpl';
+import { DmMemberCmdImpl } from './Impl/dmMemberCmdImpl';
+import { EditMessageCmdImpl } from './Impl/editMessageCmdImpl';
+import { LockCommandCmdImpl } from './Impl/lockCommandCmdImpl';
+import { MessageChannelCmdImpl } from './Impl/messageChannelCmdImpl';
 import { MockMessageCmdImpl } from './Impl/mockMessageCmdImpl';
+import { NsfwSwitchCmdImpl } from './Impl/nsfwSwitchCmdImpl';
+import { PinMessageCmdImpl } from './Impl/pinMessageCmdImpl';
+import { PollCmdImpl } from './Impl/pollCmdImpl';
+import { RemovePersonalResponseCmdImpl } from './Impl/removePersonalResponseCmdImpl';
+import { SetPrefixCmdImpl } from './Impl/setPrefixCmdImpl';
+import { ShowPermsCmdsImpl } from './Impl/showPermsCmdsImpl';
+import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImpl';
 import { UnlockCommandCmdImpl } from './Impl/unlockCommandCmdImpl';
+import { UnpinMessageCmdImpl } from './Impl/unpinMessageCmdImpl';
 require('dotenv').config();
 
 export default class CommandHandlerImpl implements CommandHandler {
@@ -46,7 +29,7 @@ export default class CommandHandlerImpl implements CommandHandler {
 
     constructor() {
         this.commands = [
-            new HelpCmdImpl(), new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
+            new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
             new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
             new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
             new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
@@ -55,15 +38,30 @@ export default class CommandHandlerImpl implements CommandHandler {
         ];
     }
 
-    public async registerApplicationCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+    public async refreshApplicationCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+        await commandManager.set([]);
+        const helpCommand: Discord.ApplicationCommandData = {
+            name: "help",
+            description: "displays support for a certain command",
+            options: [
+                {
+                    name: `command`,
+                    description: `the specified command`,
+                    type: 'STRING',
+                    choices: this.commands.map(cmd => Object.assign({}, { name: cmd.getKeyword(), value: cmd.getGuide() })),
+                    required: true
+                }
+            ]
+        }
+
         for (const command of this.commands) {
             try {
                 await commandManager.create(command.getCommandData())
             } catch (error) {
                 console.log(command.getKeyword(), error);
             }
-
         }
+        await commandManager.create(helpCommand);
         return Promise.resolve('slash commands created');
     }
 
@@ -71,11 +69,11 @@ export default class CommandHandlerImpl implements CommandHandler {
         return this._guildLogger;
     }
 
-    public onCommand(message: Message) {
+    public onCommand(message: Message): Promise<any> {
         /* FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
         ALSO CONNECT 'commands with command_perms' with foreign key on commands Completion
         this.commands.forEach(async (cmd) => {
-
+    
                 try{
                     await addRow('commands', {
                         "keyword" : cmd.getKeyword(),
@@ -88,13 +86,21 @@ export default class CommandHandlerImpl implements CommandHandler {
                 }
         })
     */
+
         const guildHandler = guildMap.get(message.guild.id);
         const prefix = guildHandler.getSettings().prefix;
+
+
+
         const commandMessage = message;
         const candidateCommand = this.returnCommand(message);
         this.setGuildLogger(message.guild.id);
 
-        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand))
+        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
+
+        if (message.content.startsWith(`${prefix}help`))
+            return this.helpCmd(message, commandImpl);
+
         if (typeof commandImpl !== "undefined") {
             return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
                 .then(execution => commandMessage
@@ -108,20 +114,22 @@ export default class CommandHandlerImpl implements CommandHandler {
                     .catch(err => {
                     }))
                 .catch(err => this.invalidCommand(err, commandMessage, commandImpl, candidateCommand.primaryCommand));
-            /*
-            switch (prefix) {
-                case prefix:
-
-
-                case qprefix:
-                    return message.channel.send(commandImpl.getGuide())
-                        .catch(err => `Error on Guide sending\n${err.toString()}`);
-            }*/
         } else
             return message.react('❔').catch();
     }
 
     onSlashCommand(interaction: Discord.CommandInteraction): Promise<any> {
+        if (interaction.commandName == 'help')
+            return interaction.reply({
+                embeds: [
+                    new Discord.MessageEmbed({
+                        description: interaction.options[0].value as string
+                    })
+                ]
+                , ephemeral: true
+            }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
+
+
         return this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
             .interactiveExecute(interaction)
             .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
@@ -222,4 +230,11 @@ export default class CommandHandlerImpl implements CommandHandler {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
+    private helpCmd(message: Message, command: GenericCommand): Promise<any> {
+        return message.reply(new Discord.MessageEmbed({
+            title: command.getKeyword(),
+            description: command.getGuide(),
+            footer: { text: command.getAliases().toString() }
+        }))
+    }
 }
