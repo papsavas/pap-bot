@@ -12,7 +12,7 @@ import { helpCmd } from "./Interf/helpCmd";
 import { editMessageCmd } from "./Interf/editMessageCmd";
 import { commandType } from "../../Entities/Generic/commandType";
 import { setPrefixCmd } from "./Interf/setPrefixCmd";
-import { setPermsCmd } from "./Interf/setPermsCmd";
+import { lockCommandCmd } from "./Interf/lockCommandCmd";
 import { showPermsCmd } from "./Interf/showPermsCmd";
 import { addResponseCmd } from "./Interf/addResponseCmd";
 import { showPersonalResponsesCmd } from "./Interf/showPersonalResponsesCmd";
@@ -30,12 +30,13 @@ import { MessageChannelCmdImpl } from './Impl/messageChannelCmdImpl';
 import { ClearMessagesCmdImpl } from './Impl/clearMessagesCmdImpl';
 import { EditMessageCmdImpl } from './Impl/editMessageCmdImpl';
 import { ShowPermsCmdsImpl } from './Impl/showPermsCmdsImpl';
-import { SetPermsCmdImpl } from './Impl/setPermsCmdImpl';
+import { LockCommandCmdImpl } from './Impl/lockCommandCmdImpl';
 import { AddResponseCmdImpl } from './Impl/addResponseCmdImpl';
 import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImpl';
 import { RemovePersonalResponseCmdImpl } from './Impl/removePersonalResponseCmdImpl';
 import { NsfwSwitchCmdImpl } from './Impl/nsfwSwitchCmdImpl';
 import { MockMessageCmdImpl } from './Impl/mockMessageCmdImpl';
+import { UnlockCommandCmdImpl } from './Impl/unlockCommandCmdImpl';
 require('dotenv').config();
 
 export default class CommandHandlerImpl implements CommandHandler {
@@ -48,7 +49,7 @@ export default class CommandHandlerImpl implements CommandHandler {
             new HelpCmdImpl(), new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
             new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
             new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
-            new SetPermsCmdImpl(), new ShowPermsCmdsImpl(),
+            new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
             new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
             new MockMessageCmdImpl(), new NsfwSwitchCmdImpl()
         ];

@@ -1,18 +1,18 @@
 
 import { AbstractCommand } from "../AbstractCommand";
-import { setPerms as _keyword } from '../../keywords.json';
-import { GsetPerms as _guide } from '../../guides.json';
+import { lockCommand as _keyword } from '../../keywords.json';
+import { GlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { setPermsCmd } from "../Interf/setPermsCmd";
+import { lockCommandCmd } from "../Interf/lockCommandCmd";
 import { overrideCommandPerms } from "../../../Queries/Generic/guildRolePerms";
 
 
-export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
+export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
-            ['setPerms', 'setperms', 'set_perms'],
+            ['lockcmd', 'lockcommand', 'lock_command', 'lock_cmd'],
             _keyword
         );
 
@@ -68,8 +68,6 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const rolesKeyArr = receivedMessage.mentions.roles.keyArray();
-        if (receivedMessage.mentions.everyone)
-            rolesKeyArr.push(guild_id);
         const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
         return overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
     }
