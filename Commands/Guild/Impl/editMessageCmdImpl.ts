@@ -2,14 +2,14 @@ import * as Discord from 'discord.js';
 import { ApplicationCommandData, Message } from 'discord.js';
 import { editMessage as _keyword } from '../../keywords.json';
 import { GeditMessage as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
 import * as e from '../../../errorCodes.json'
 import { commandType } from "../../../Entities/Generic/commandType";
 
 
-@injectable()
+
 export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

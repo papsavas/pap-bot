@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { pollCmd } from "../Interf/pollCmd";
 import { setPrefix as _keyword } from '../../keywords.json';
@@ -10,7 +10,7 @@ import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generi
 import { addRow } from "../../../DB/CoreRepo";
 import { guildMap } from "../../../index";
 
-@injectable()
+
 export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

@@ -1,4 +1,4 @@
-import { injectable } from "Inversify";
+
 import { GenericCommand } from "./GenericCommand";
 import "reflect-metadata";
 import * as Discord from 'discord.js';
@@ -7,7 +7,6 @@ import { bugsChannel } from '../../index';
 import { commandType } from "../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../Entities/Generic/guildLoggerType";
 
-@injectable()
 export abstract class AbstractCommand implements GenericCommand {
     abstract getCommandData(): Discord.ApplicationCommandData;
 

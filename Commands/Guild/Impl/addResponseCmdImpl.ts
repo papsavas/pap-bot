@@ -1,6 +1,5 @@
 import { addresponse as _keyword } from '../../keywords.json';
 import { Gaddresponse as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
 import { AbstractCommand } from "../AbstractCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
 import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed } from "discord.js";
@@ -11,7 +10,6 @@ import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
-@injectable()
 export class AddResponseCmdImpl extends AbstractCommand implements addResponseCmd {
 
     private readonly _aliases = this.addKeywordToAliases

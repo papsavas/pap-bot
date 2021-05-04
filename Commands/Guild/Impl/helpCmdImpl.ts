@@ -2,11 +2,9 @@ import { AbstractCommand } from "../AbstractCommand";
 import { help as _keyword } from '../../keywords.json';
 import { Ghelp as _guide } from '../../guides.json';
 import { helpCmd } from "../Interf/helpCmd";
-import { injectable } from "Inversify";
 import "reflect-metadata";
 import { ApplicationCommandData, CommandInteraction } from "discord.js";
 
-@injectable()
 export class HelpCmdImpl extends AbstractCommand implements helpCmd {
     private readonly _aliases = this.addKeywordToAliases
         (

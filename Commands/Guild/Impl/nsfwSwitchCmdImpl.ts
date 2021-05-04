@@ -1,7 +1,7 @@
 import { ApplicationCommandData, CommandInteraction, Message } from 'discord.js';
 import { nsfwSwitch as _keyword } from '../../keywords.json';
 import { GnsfwSwitch as _guide } from '../../guides.json';
-import { injectable } from "Inversify";
+
 import { AbstractCommand } from "../AbstractCommand";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -9,7 +9,7 @@ import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
 import { guildMap } from '../../..';
 
-@injectable()
+
 export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
