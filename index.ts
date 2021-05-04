@@ -31,17 +31,6 @@ export const PAP = new Discord.Client({
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
-// The data for our command
-const commandData = {
-    name: 'echo',
-    description: 'Replies with your input!',
-    options: [{
-        name: 'input',
-        type: 'STRING',
-        description: 'The input which should be echoed back',
-        required: true,
-    }],
-};
 
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
@@ -74,6 +63,7 @@ async function runScript(): Promise<void> {
     return Promise.resolve()
 }
 
+
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
@@ -104,6 +94,7 @@ PAP.on('ready', async () => {
 
     console.log(`___Initiated___`);
 });
+
 
 PAP.on('interaction', interaction => {
     // If the interaction isn't a slash command, return

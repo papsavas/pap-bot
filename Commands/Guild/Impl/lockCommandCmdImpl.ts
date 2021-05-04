@@ -65,7 +65,7 @@ export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCm
         const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
         await interaction.defer(true);
         await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
-        return interaction.editReply(`Command ${command_id} overriden`);
+        return interaction.editReply(`Command ${command_id} locked for ${filteredRoles.map(ro => ro.role).toString()}`);
     }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {

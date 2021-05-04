@@ -49,7 +49,7 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
             description: ` your response has been added`,
             fields: [
                 { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
-                { name: `marked as nsfw`, value: nsfw.toString() }
+                { name: `marked as nsfw`, value: nsfw.toString(), inline: true }
             ]
         }))
     }
@@ -59,7 +59,11 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         const nsfw = swears.some((swear) =>
             receivedMessage.content.includes(swear['swear_word'])) ||
             Profanity.isProfane(receivedMessage.cleanContent);
-        return addMemberResponse(receivedMessage.guild.id, receivedMessage.member.id, receivedCommand.commandless1, nsfw)
+        return addMemberResponse(
+            receivedMessage.guild.id,
+            receivedMessage.member.id,
+            receivedCommand.commandless1, nsfw
+        )
     }
 
     getKeyword(): string {
