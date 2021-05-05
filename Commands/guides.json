@@ -22,7 +22,7 @@
     "GlockCommand": "Locks command for certain roles\n ```$lockcmd <cmd> <role1> [<role2> <role3>]",
     "GunlockCommand": "Unlocks command for everyone\n```$unlock <cmd>",
     "GnsfwSwitch": "Enables/Disables nsfw responses\n```$nsfw```",
-    "Gselfnotes": "Οι προσωπικές σας σημειώσεις\n ```$notes [add <note> / remove <index> / edit <index> <note> / clear]```",
+    "GuserNotes": "Your personal notes\n ```$notes [add <note> / remove <index> / edit <index> <note> / clear]```",
     "GPAP_test2": "test2\n```$test2```",
     "GKEP_drive": "Σας εγγράφει στο Dai Archive\n```$drive register```\n```$drive reader/writer email```",
     "GKEP_myexams": "Στέλνει σε προσωπικό το πρόγραμμα εξεταστικής σας\n```$myexams```",

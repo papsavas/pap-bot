@@ -20,6 +20,7 @@ import { ShowPermsCmdsImpl } from './Impl/showPermsCmdsImpl';
 import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImpl';
 import { UnlockCommandCmdImpl } from './Impl/unlockCommandCmdImpl';
 import { UnpinMessageCmdImpl } from './Impl/unpinMessageCmdImpl';
+import { userNotesCmdImpl } from './Impl/userNotesCmdImpl';
 require('dotenv').config();
 
 export default class CommandHandlerImpl implements CommandHandler {
@@ -34,7 +35,7 @@ export default class CommandHandlerImpl implements CommandHandler {
             new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
             new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
             new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
-            new MockMessageCmdImpl(), new NsfwSwitchCmdImpl()
+            new MockMessageCmdImpl(), new NsfwSwitchCmdImpl(), new userNotesCmdImpl()
         ];
     }
 
@@ -48,7 +49,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                     name: `command`,
                     description: `the specified command`,
                     type: 'STRING',
-                    choices: this.commands.map(cmd => Object.assign({}, { name: cmd.getKeyword(), value: cmd.getGuide() })),
+                    choices: this.commands.map(cmd => Object.assign({}, { name: cmd.getKeyword(), value: cmd.getGuide().substring(0, 99) })),
                     required: true
                 }
             ]
