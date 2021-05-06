@@ -9,6 +9,7 @@ import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { userNotesCmd } from '../Interf/userNotesCmd';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { userNote } from '../../../Entities/Generic/userNote';
+import { auth } from 'firebase-admin';
 
 
 export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
@@ -124,8 +125,38 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     }
 
-    async execute({ author }: Message, { commandless2 }: commandType, addGuildLog: guildLoggerType) {
-        return author.send('no notes found');
+    async execute({ author }: Message, { arg1, arg2, commandless3, commandless2 }: commandType, addGuildLog: guildLoggerType) {
+        const user_id = author.id;
+        const user = author;
+        switch (arg1) {
+            case 'add':
+                const addedNote = commandless2;
+                await addNote(user_id, addedNote);
+                return user.send(`you added: \`\`\`${addedNote}\`\`\``);
+
+            case 'edit':
+                const [oldNote, newNote] = commandless2.split('|', 2);
+                console.log(`old: ${oldNote.substr(0, 5)}...\n new:${newNote.substr(0, 5)}...`)
+                const res = await editNote(user_id, oldNote, newNote);
+                return user.send(`note edited to ${res.note.substr(0, 10)}...`);
+
+            case 'remove':
+                const removingNote = commandless2;
+                const n = await deleteNote(user_id, removingNote);
+                return user.send(`removed **${n}** notes`);
+
+
+            case 'clear':
+                return user.send(`Removed **${await clearNotes(user_id)}** notes`);
+
+            case 'show':
+                const notes: userNote[] = await fetchAllNotes(user_id);
+                await user.send(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
+
+
+            case 'default':
+                return new Error(`$notes add <note>\n$notes edit <old_note>|<new_note>\n$notes remove <note>\n$notes clear\n$notes show`);
+        }
     }
 
     getAliases(): string[] {
