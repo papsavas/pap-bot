@@ -6,7 +6,7 @@ export function addNote(user_id: Snowflake, note: string): Promise<userNote> {
     return addRow('user_notes', {
         "user_id": user_id,
         "note": note,
-        "createdAt": new Date()
+        "createdAt": new Date().toISOString()
     }, ['*'])
 }
 
@@ -17,7 +17,7 @@ export function editNote(user_id: Snowflake, old_note: string, new_note: string)
     }, {
         "user_id": user_id,
         "note": new_note,
-        "editedAt": new Date()
+        "editedAt": new Date().toISOString()
     }, ["*"])
 }
 

@@ -58,6 +58,7 @@ export function updateRow(tableName: string, clause: {}, newRow: {}, returnings?
     return knexClient(tableName)
         .where(clause)
         .update(newRow, returnings)
+        .returning(returnings)
 }
 
 export function updateRowOnMultConditions(tableName: string, objClause: {}, newRow: {}, returnings?: string[]): Promise<any> {

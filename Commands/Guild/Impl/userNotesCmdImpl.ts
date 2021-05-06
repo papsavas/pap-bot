@@ -130,18 +130,17 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
         const user = author;
         switch (arg1) {
             case 'add':
-                const addedNote = commandless2;
+                const addedNote = commandless2.trimStart().trimEnd();
                 await addNote(user_id, addedNote);
                 return user.send(`you added: \`\`\`${addedNote}\`\`\``);
 
             case 'edit':
                 const [oldNote, newNote] = commandless2.split('|', 2);
-                console.log(`old: ${oldNote.substr(0, 5)}...\n new:${newNote.substr(0, 5)}...`)
-                const res = await editNote(user_id, oldNote, newNote);
-                return user.send(`note edited to ${res.note.substr(0, 10)}...`);
+                const res = await editNote(user_id, oldNote.trimStart().trimEnd(), newNote.trimStart().trimEnd());
+                return user.send(res[0].note ? `note edited to \`${res[0].note?.substr(0, 10)}...\`` : `note \`${oldNote.trimStart().trimEnd()}\` does not exist`);
 
             case 'remove':
-                const removingNote = commandless2;
+                const removingNote = commandless2.trimStart().trimEnd();
                 const n = await deleteNote(user_id, removingNote);
                 return user.send(`removed **${n}** notes`);
 
