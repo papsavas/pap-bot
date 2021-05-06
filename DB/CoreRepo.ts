@@ -54,9 +54,9 @@ export function readFirstRow(table: string, column: string, value: string): Prom
 
 }
 
-export function updateRow(tableName: string, column: string, value: string, newRow: {}, returnings?: string[]): Promise<any> {
+export function updateRow(tableName: string, clause: {}, newRow: {}, returnings?: string[]): Promise<any> {
     return knexClient(tableName)
-        .where(column, value)
+        .where(clause)
         .update(newRow, returnings)
 }
 

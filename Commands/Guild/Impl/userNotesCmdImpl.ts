@@ -7,6 +7,8 @@ import { AbstractCommand } from "../AbstractCommand";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { userNotesCmd } from '../Interf/userNotesCmd';
+import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
+import { userNote } from '../../../Entities/Generic/userNote';
 
 
 export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
@@ -40,13 +42,13 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
                     type: 'SUB_COMMAND',
                     options: [
                         {
-                            name: "index",
-                            description: "note index",
+                            name: "old",
+                            description: "the note you want to edit",
                             required: true,
-                            type: 'INTEGER'
+                            type: 'STRING'
                         },
                         {
-                            name: "note",
+                            name: "new_note",
                             description: "your edited note",
                             required: true,
                             type: 'STRING'
@@ -59,10 +61,10 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
                     type: "SUB_COMMAND",
                     options: [
                         {
-                            name: "index",
-                            description: "index of note",
+                            name: "note",
+                            description: "the note you want to remove",
                             required: true,
-                            type: "INTEGER"
+                            type: "STRING"
                         }
                     ]
                 },
@@ -82,28 +84,43 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         await interaction.defer(true);
-        console.log(JSON.stringify(interaction.options));
-        switch (interaction.options[0].name) {
-            case 'add':
-                return interaction.editReply(`you added: ${interaction.options[0].options[0].value}`);
+        const user_id = interaction.user.id;
+        const cmdOptions = interaction.options[0].options;
+        try {
+            switch (interaction.options[0].name) {
+                case 'add':
+                    const addedNote = cmdOptions[0].value as string;
+                    await addNote(user_id, addedNote);
+                    return interaction.editReply(`you added: ${addedNote}`);
 
-            case 'edit':
+                case 'edit':
+                    const oldNote = cmdOptions[0].value as string;
+                    const newNote = cmdOptions[1].value as string;
+                    const res = await editNote(user_id, oldNote, newNote);
+                    return interaction.editReply(`note edited to ${res.note.substr(0, 10)}...`);
 
-                return interaction.editReply(`you edited __ to __`);
+                case 'remove':
+                    const removingNote = cmdOptions[0].value as string;
+                    const n = await deleteNote(user_id, removingNote);
+                    return interaction.editReply(`removed **${n}** notes`);
 
-            case 'remove':
-                return interaction.editReply(`you removed __`)
-                
 
-            case 'clear':
-                return interaction.editReply(`Cleared all notes`);
+                case 'clear':
+                    return interaction.editReply(`Removed **${await clearNotes(user_id)}** notes`);
 
-            case 'show':
-                return interaction.editReply(`here are your notes __`);
+                case 'show':
+                    const notes: userNote[] = await fetchAllNotes(user_id);
+                    await interaction.editReply(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
 
-            case 'default':
-                return new Error(`returned wrong subcommand on notes: ${interaction.options[0].name}`);
+
+                case 'default':
+                    return new Error(`returned wrong subcommand on notes: ${interaction.options[0].name} `);
+            }
+        } catch (error) {
+            return interaction.replied ? interaction.editReply(`\`\`\`${JSON.stringify(error)}\`\`\``) :
+                interaction.reply(`\`\`\`${JSON.stringify(error)}\`\`\``)
         }
+
 
     }
 
