@@ -60,12 +60,12 @@ async function runScript(): Promise<void> {
     //-----insert script--------
     /*
     const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
-    await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    const cmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
-    console.table(cmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    const botGuildcmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
+    console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
     */
     //-------------------------
-    return Promise.resolve()
+    return
 }
 
 

@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
+import { ApplicationCommand, ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
 import { commandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
 import { CommandHandler } from "./CommandHandler";
@@ -39,7 +39,9 @@ export default class CommandHandlerImpl implements CommandHandler {
         ];
     }
 
-    public async refreshApplicationCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+    public async refreshApplicationCommands(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager
+    ): Promise<ApplicationCommand[]> {
         await commandManager.set([]);
         const helpCommand: Discord.ApplicationCommandData = {
             name: "help",
@@ -54,16 +56,16 @@ export default class CommandHandlerImpl implements CommandHandler {
                 }
             ]
         }
-
+        const applicationCommands: ApplicationCommand[] = [];
         for (const command of this.commands) {
             try {
-                await commandManager.create(command.getCommandData())
+                applicationCommands.push(await commandManager.create(command.getCommandData()));
             } catch (error) {
                 console.log(command.getKeyword(), error);
             }
         }
-        await commandManager.create(helpCommand);
-        return Promise.resolve('slash commands created');
+        applicationCommands.push(await commandManager.create(helpCommand));
+        return Promise.resolve(applicationCommands);
     }
 
     public getGuildLogger() {

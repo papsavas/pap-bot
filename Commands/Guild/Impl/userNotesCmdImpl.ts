@@ -93,6 +93,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
             case 'remove':
                 return interaction.editReply(`you removed __`)
+                
 
             case 'clear':
                 return interaction.editReply(`Cleared all notes`);

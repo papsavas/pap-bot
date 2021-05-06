@@ -3,7 +3,7 @@ import { pinMessage as _keyword } from "../../keywords.json";
 
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
 import { AbstractCommand } from "../AbstractCommand";
-import { extractId } from "../../../toolbox/toolbox";
+import { extractId } from "../../../toolbox/extractMessageId";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, TextChannel } from "discord.js";

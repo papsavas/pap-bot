@@ -5,7 +5,7 @@ import * as Discord from "discord.js";
 import { AbstractCommand } from "../AbstractCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message } from "discord.js";
-import { extractId } from "../../../toolbox/toolbox";
+import { extractId } from "../../../toolbox/extractMessageId";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import * as e from '../../../errorCodes.json';

@@ -2,7 +2,7 @@ import { GenericGuild } from "./GenericGuild";
 import * as Discord from 'discord.js';
 import { Guild, Snowflake } from 'discord.js';
 import { mentionRegex } from "../botconfig.json";
-import { randArrElement } from "../toolbox/toolbox";
+import { randomArrayValue } from "../toolbox/randomArrayValue";
 import { genericGuildResponses } from "../Queries/Generic/GenericGuildResponses";
 import { guildSettings } from "../Entities/Generic/guildSettingsType";
 import { fetchGuildSettings } from "../Queries/Generic/GuildSettings";
@@ -68,7 +68,7 @@ export abstract class AbstractGuild implements GenericGuild {
         if (message.content.match(mentionRegex)) {
             //implement mentionHandler
             message.channel.startTyping();
-            return message.reply(randArrElement(this._responses))
+            return message.reply(randomArrayValue(this._responses))
                 .then(msg => message.channel.stopTyping())
                 .catch(err => console.log(err));
         }
