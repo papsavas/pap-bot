@@ -43,7 +43,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
                     type: 'SUB_COMMAND',
                     options: [
                         {
-                            name: "old",
+                            name: "old_note",
                             description: "the note you want to edit",
                             required: true,
                             type: 'STRING'
