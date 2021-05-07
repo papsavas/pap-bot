@@ -1,7 +1,8 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommand, ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
+import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
 import { commandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
+import * as _ from 'lodash';
 import { CommandHandler } from "./CommandHandler";
 import { GenericCommand } from "./GenericCommand";
 import { AddResponseCmdImpl } from './Impl/addResponseCmdImpl';
@@ -42,7 +43,8 @@ export default class CommandHandlerImpl implements CommandHandler {
     public async refreshApplicationCommands(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager
     ): Promise<ApplicationCommand[]> {
-        await commandManager.set([]);
+        let applicationCommands: ApplicationCommand[] = [];
+
         const helpCommand: Discord.ApplicationCommandData = {
             name: "help",
             description: "displays support for a certain command",
@@ -56,15 +58,27 @@ export default class CommandHandlerImpl implements CommandHandler {
                 }
             ]
         }
-        const applicationCommands: ApplicationCommand[] = [];
-        for (const command of this.commands) {
-            try {
-                applicationCommands.push(await commandManager.create(command.getCommandData()));
-            } catch (error) {
-                console.log(command.getKeyword(), error);
+
+        const registeredCommands: ApplicationCommandData[] = (await commandManager.fetch()).map(cmd => Object.assign({}, { name: cmd.name, description: cmd.description, options: cmd.options }));
+        const currentCommands = this.commands.map(cmd => cmd.getCommandData());
+        currentCommands.push(helpCommand);
+        if (false) {
+            console.log('Equal :)')
+            applicationCommands = registeredCommands as ApplicationCommand[];
+        }
+        else {
+
+            console.log(`commands changed. Refreshing...`);
+            await commandManager.set([]);
+            for (const cc of currentCommands) {
+                try {
+                    applicationCommands.push(await commandManager.create(cc));
+                } catch (error) {
+                    console.log(cc.name, error);
+                }
             }
         }
-        applicationCommands.push(await commandManager.create(helpCommand));
+
         return Promise.resolve(applicationCommands);
     }
 

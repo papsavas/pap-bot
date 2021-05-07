@@ -17,6 +17,7 @@
     "simplePoll": "poll",
     "mock": "mock",
     "addresponse": "addresponse",
+    "removeResponse": "removeresponse",
     "myresponses": "myresponses",
     "clearMessages": "clear",
     "logChanges": "logs",
