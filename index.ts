@@ -3,6 +3,7 @@ import { GuildMember, Message, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json'
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 import { GenericGuild } from "./Guilds/GenericGuild";
+import CommandHandlerImpl from './Commands/Guild/CommandHandlerImpl';
 
 
 export let bugsChannel: Discord.TextChannel;
@@ -31,17 +32,6 @@ export const PAP = new Discord.Client({
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
-// The data for our command
-const commandData = {
-    name: 'echo',
-    description: 'Replies with your input!',
-    options: [{
-        name: 'input',
-        type: 'STRING',
-        description: 'The input which should be echoed back',
-        required: true,
-    }],
-};
 
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
@@ -68,11 +58,16 @@ PAP.on('guildUnavailable', (guild) => {
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-
-    //await commandHandler.registerApplicationCommands(PAP.guilds.cache.get('746309734851674122').commands);
+    /*
+    const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
+    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    const botGuildcmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
+    console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+    */
     //-------------------------
-    return Promise.resolve()
+    return
 }
+
 
 PAP.on('ready', async () => {
     if (inDevelopment) {
@@ -81,7 +76,6 @@ PAP.on('ready', async () => {
     }
     try {
         // Creating a guild-specific command
-
         PAP.user.setActivity('over you', { type: 'WATCHING' });
         const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
@@ -104,6 +98,7 @@ PAP.on('ready', async () => {
 
     console.log(`___Initiated___`);
 });
+
 
 PAP.on('interaction', interaction => {
     // If the interaction isn't a slash command, return
@@ -202,8 +197,7 @@ PAP.on('error', (error) => {
 });
 
 
-/*
+
 PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in`))
     .catch(err => console.log(`ERROR ON LOGIN:\n${err}`));
-*/

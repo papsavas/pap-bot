@@ -1,18 +1,18 @@
 
 import { AbstractCommand } from "../AbstractCommand";
-import { setPerms as _keyword } from '../../keywords.json';
-import { GsetPerms as _guide } from '../../guides.json';
+import { lockCommand as _keyword } from '../../keywords.json';
+import { GlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { setPermsCmd } from "../Interf/setPermsCmd";
+import { lockCommandCmd } from "../Interf/lockCommandCmd";
 import { overrideCommandPerms } from "../../../Queries/Generic/guildRolePerms";
 
 
-export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
+export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
-            ['setPerms', 'setperms', 'set_perms'],
+            ['lockcmd', 'lockcommand', 'lock_command', 'lock_cmd'],
             _keyword
         );
 
@@ -32,9 +32,6 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
                     description: 'allowed role',
                     type: 'ROLE',
                     required: true,
-                    choices: [
-
-                    ]
                 },
 
                 {
@@ -46,6 +43,12 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
 
                 {
                     name: 'role3',
+                    description: 'allowed role',
+                    type: 'ROLE',
+                    required: false
+                },
+                {
+                    name: 'role4',
                     description: 'allowed role',
                     type: 'ROLE',
                     required: false
@@ -62,14 +65,12 @@ export class SetPermsCmdImpl extends AbstractCommand implements setPermsCmd {
         const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
         await interaction.defer(true);
         await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
-        return interaction.reply(`Command ${command_id} overriden`, { ephemeral: true });
+        return interaction.editReply(`Command ${command_id} locked for ${filteredRoles.map(ro => ro.role).toString()}`);
     }
 
     execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const rolesKeyArr = receivedMessage.mentions.roles.keyArray();
-        if (receivedMessage.mentions.everyone)
-            rolesKeyArr.push(guild_id);
         const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
         return overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
     }

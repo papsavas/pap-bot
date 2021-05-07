@@ -22,7 +22,7 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
             options: [
                 {
                     name: 'number',
-                    description: 'number of message to delete',
+                    description: 'number of messages to delete',
                     type: 'INTEGER',
                     required: true
 

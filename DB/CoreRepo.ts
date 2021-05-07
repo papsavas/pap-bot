@@ -18,7 +18,8 @@ const knexClient = knex({
         password: process.env.DB_PSWD,
         database: process.env.DB_DATABASE
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,
+
 });
 
 export function createTable(tableName: string, callback?: (tableBuilder: TableBuilder) => any): Promise<any> {
@@ -54,10 +55,11 @@ export function readFirstRow(table: string, column: string, value: string): Prom
 
 }
 
-export function updateRow(tableName: string, column: string, value: string, newRow: {}, returnings?: string[]): Promise<any> {
+export function updateRow(tableName: string, clause: {}, newRow: {}, returnings?: string[]): Promise<any> {
     return knexClient(tableName)
-        .where(column, value)
+        .where(clause)
         .update(newRow, returnings)
+        .returning(returnings)
 }
 
 export function updateRowOnMultConditions(tableName: string, objClause: {}, newRow: {}, returnings?: string[]): Promise<any> {
