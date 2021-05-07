@@ -3,7 +3,6 @@ import { GuildMember, Message, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json'
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 import { GenericGuild } from "./Guilds/GenericGuild";
-import CommandHandlerImpl from './Commands/Guild/CommandHandlerImpl';
 
 
 export let bugsChannel: Discord.TextChannel;
