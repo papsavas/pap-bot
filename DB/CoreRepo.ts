@@ -18,7 +18,8 @@ const knexClient = knex({
         password: process.env.DB_PSWD,
         database: process.env.DB_DATABASE
     },
-    useNullAsDefault: true
+    useNullAsDefault: true,
+
 });
 
 export function createTable(tableName: string, callback?: (tableBuilder: TableBuilder) => any): Promise<any> {

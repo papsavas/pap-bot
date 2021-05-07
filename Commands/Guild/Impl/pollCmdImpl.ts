@@ -62,7 +62,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
     }
 
 
-    execute(message, { commandless1 }: commandType, addGuildLog: guildLoggerType) {
+    execute(message: Discord.Message, { commandless1 }: commandType, addGuildLog: guildLoggerType) {
         const commandMsg = message;
         return (commandMsg.channel as Discord.TextChannel).send(
             new Discord.MessageEmbed(
