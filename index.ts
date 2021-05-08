@@ -5,6 +5,7 @@ import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 
 
+
 export let bugsChannel: Discord.TextChannel;
 export let logsChannel: Discord.TextChannel;
 
