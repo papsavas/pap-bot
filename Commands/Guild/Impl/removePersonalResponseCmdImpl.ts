@@ -1,6 +1,6 @@
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed } from 'discord.js';
-import { showPerms as _keyword } from '../../keywords.json';
-import { GshowPerms as _guide } from '../../guides.json';
+import { removeResponse as _keyword } from '../../keywords.json';
+import { GremoveResponse as _guide } from '../../guides.json';
 
 import { AbstractCommand } from "../AbstractCommand";
 import { commandType } from "../../../Entities/Generic/commandType";

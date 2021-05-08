@@ -17,15 +17,20 @@
     "dotenv": "^8.2.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",
+    "fs": "0.0.1-security",
+    "googleapis": "^73.0.0",
     "knex": "^0.95.4",
+    "lodash": "^4.17.21",
     "node": "^15.12.0",
     "pg": "^8.5.1",
     "profanity-js": "^0.1.2",
+    "readline": "^1.3.0",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^9.1.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.168",
     "@types/pg": "^7.14.11",
     "typescript": "^4.2.4"
   }

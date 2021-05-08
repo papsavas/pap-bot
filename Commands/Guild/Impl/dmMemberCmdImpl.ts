@@ -10,7 +10,8 @@ import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 
 
-
+const requiredPerm = Discord.Permissions.FLAGS.ADMINISTRATOR;
+const permLiteral = 'ADMINISTRATOR'
 export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
@@ -40,11 +41,16 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
+
+        if (!(interaction.member as Discord.GuildMember).permissions.has(requiredPerm))
+            return interaction.reply(`\`\`\`${permLiteral} permissions needed\`\`\``,
+                { ephemeral: true });
+
         const user = interaction.options[0].user;
         const messageContent = interaction.options[1].value as string;
         const sendEmb = new Discord.MessageEmbed({
             author: {
-                name: interaction.guild.name,
+                name: "from: " + interaction.guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
@@ -56,7 +62,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
             timestamp: new Date()
         })
         return user.send(sendEmb)
-            .then((smsg) => interaction.reply(`message send to ${user.toString()}`, { ephemeral: true }))
+            .then((smsg) => interaction.reply(`message send to ${user.toString()}\npreview`, { ephemeral: true, embeds: [sendEmb] }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
                     interaction.reply(`Could not dm ${user.username}`);
@@ -65,10 +71,13 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     }
 
     public async execute(
-        { guild, attachments, mentions }: Message,
+        { guild, attachments, mentions, reply, member }: Message,
         { commandless2 }: commandType,
         addGuildLog: guildLoggerType
     ) {
+        if (!member.permissions.has(requiredPerm))
+            return reply(`\`\`\`{${permLiteral} permissions needed\`\`\``);
+
         const user = mentions.users.first();
         const text = commandless2;
         if (!text && !attachments)
@@ -76,7 +85,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
 
         const sendEmb = new Discord.MessageEmbed({
             author: {
-                name: guild.name,
+                name: "from: " + guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
@@ -89,7 +98,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
             timestamp: new Date()
         })
         return user.send(sendEmb)
-            .then((smsg) => addGuildLog(`sent "${text}" to ${user.username}`))
+            .then((smsg) => reply(`message sent to ${user.toString()}\npreview:`, { embed: sendEmb }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
                     throw new Error(`Could not dm ${user.username}`);
