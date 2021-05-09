@@ -1,11 +1,11 @@
 import { AbstractCommand } from "../AbstractCommand";
 import { myresponses as _keyword } from '../../keywords.json';
 import { Gmyresponses as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, MessageEmbed } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
-import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
+import { fetchAllGuildMemberResponses, fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
 
 
@@ -23,8 +23,13 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
         }
     }
 
-    interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        return interaction.reply('coming soon');
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        await interaction.defer(true);
+        const guild_id = interaction.guildID;
+        const member_id = (interaction.member as GuildMember).id;
+        const responses = await fetchGuildMemberResponses(guild_id, member_id);
+        const responsesArr = responses.map(resObj => resObj['response']);
+        return interaction.editReply(`\`\`\`${responsesArr.toString()}\`\`\``);
     }
 
     async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
