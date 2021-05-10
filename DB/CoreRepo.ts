@@ -1,10 +1,8 @@
 /**
  * @deprecated 
 */
-
 import knex, { Knex } from "knex";
 import { v4 } from "uuid";
-import { inDevelopment } from "..";
 import TableBuilder = Knex.TableBuilder;
 
 require('dotenv').config();
