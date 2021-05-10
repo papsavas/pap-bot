@@ -6,7 +6,8 @@ import { GsimplePoll as _guide } from '../../guides.json';
 import { pollCmd } from "../Interf/pollCmd";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, GuildMember, TextChannel } from "discord.js";
+import { ApplicationCommandData, GuildMember, Snowflake, TextChannel } from "discord.js";
+import { guildMap } from "../../..";
 
 
 
@@ -62,7 +63,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
     }
 
 
-    execute(message: Discord.Message, { commandless1 }: commandType, addGuildLog: guildLoggerType) {
+    execute(message: Discord.Message, { commandless1 }: commandType) {
         const commandMsg = message;
         return (commandMsg.channel as Discord.TextChannel).send(
             new Discord.MessageEmbed(
@@ -103,5 +104,9 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
 
     getGuide(): string {
         return _guide;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

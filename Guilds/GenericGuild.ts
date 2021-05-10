@@ -20,7 +20,7 @@ export interface GenericGuild {
 
     onGuildMemberUpdate(oldMember: Discord.GuildMember, newMember: Discord.GuildMember): Promise<any>;
 
-    addGuildLog(log: string);
+    addGuildLog(log: string): string;
 
     getSettings(): guildSettings;
 

@@ -2,11 +2,12 @@
 import { AbstractCommand } from "../AbstractCommand";
 import { unlockCommand as _keyword } from '../../keywords.json';
 import { GunlockCommand as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { overrideCommandPerms } from "../../../Queries/Generic/guildRolePerms";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
+import { guildMap } from "../../..";
 
 
 export class UnlockCommandCmdImpl extends AbstractCommand implements unlockCommandCmd {
@@ -39,7 +40,7 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
         return interaction.editReply(`Command ${command_id} unlocked`);
     }
 
-    execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(receivedMessage: Message, receivedCommand: commandType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
         return overrideCommandPerms(guild_id, command_id, [guild_id]);
@@ -55,6 +56,10 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
 
     getGuide(): string {
         return _guide;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 
 }

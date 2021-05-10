@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed } from 'discord.js';
+import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { showPerms as _keyword } from '../../keywords.json';
 import { GshowPerms as _guide } from '../../guides.json';
 
@@ -45,7 +45,7 @@ export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
         }));
     }
 
-    async execute(message, { arg1 }: commandType, addGuildLog: guildLoggerType) {
+    async execute(message: Message, { arg1 }: commandType) {
         const command_id = arg1;
         const guild_prefix = guildMap.get(message.guild.id).getSettings().prefix;
         const commandPerms = await fetchCommandPerms(message.guild.id, command_id);
@@ -68,5 +68,9 @@ export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

@@ -1,16 +1,12 @@
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed } from 'discord.js';
-import { removeResponse as _keyword } from '../../keywords.json';
-import { GremoveResponse as _guide } from '../../guides.json';
-
-import { AbstractCommand } from "../AbstractCommand";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
 import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { showPermsCmd } from "../Interf/showPermsCmd";
-import { fetchCommandPerms } from "../../../Queries/Generic/guildRolePerms";
 import { guildMap } from "../../../index";
-import { fetchAllOnCondition } from "../../../DB/CoreRepo";
-import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 import { removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
+import { GremoveResponse as _guide } from '../../guides.json';
+import { removeResponse as _keyword } from '../../keywords.json';
+import { AbstractCommand } from "../AbstractCommand";
+import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
+
 
 
 export class RemovePersonalResponseCmdImpl extends AbstractCommand implements removePersonalResponseCmd {
@@ -39,7 +35,7 @@ export class RemovePersonalResponseCmdImpl extends AbstractCommand implements re
         return reply(await removeMemberResponse(guildID, (member as GuildMember).id, options[0].value as string), { ephemeral: true });
     }
 
-    async execute(message: Message, { commandless1 }: commandType, addGuildLog: guildLoggerType) {
+    async execute(message: Message, { commandless1 }: commandType) {
         return message.reply(await removeMemberResponse(message.guild.id, message.member.id, commandless1));
     }
 
@@ -53,5 +49,9 @@ export class RemovePersonalResponseCmdImpl extends AbstractCommand implements re
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

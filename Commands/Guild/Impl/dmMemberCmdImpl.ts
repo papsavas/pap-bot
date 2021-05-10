@@ -5,9 +5,10 @@ import { AbstractCommand } from "../AbstractCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, User } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake, User } from 'discord.js';
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { guildMap } from '../../..';
 
 
 const requiredPerm = Discord.Permissions.FLAGS.ADMINISTRATOR;
@@ -72,8 +73,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
 
     public async execute(
         { guild, attachments, mentions, reply, member }: Message,
-        { commandless2 }: commandType,
-        addGuildLog: guildLoggerType
+        { commandless2 }: commandType
     ) {
         if (!member.permissions.has(requiredPerm))
             return reply(`\`\`\`{${permLiteral} permissions needed\`\`\``);
@@ -116,5 +116,9 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
 
     getGuide(): string {
         return _guide;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

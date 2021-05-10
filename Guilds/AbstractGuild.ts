@@ -9,6 +9,7 @@ import { fetchGuildSettings } from "../Queries/Generic/GuildSettings";
 import { memberResponses } from "../Entities/Generic/MemberResponsesType";
 import { fetchAllGuildMemberResponses } from "../Queries/Generic/MemberResponses";
 import CommandHandlerImpl from "../Commands/Guild/CommandHandlerImpl";
+import { addLog } from "../Queries/Generic/guildLogs";
 
 const commandHandler = new CommandHandlerImpl()
 
@@ -94,9 +95,11 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
 
-    addGuildLog(log: string): string {
+    addGuildLog(log: string, member_id: Snowflake = null): string {
         this.logs.push(log);
-        return log
+        addLog(this.guildID, log, member_id)
+            .catch(er => console.error(er));
+        return log;
     }
 
     setPrefix(newPrefix: string): void {

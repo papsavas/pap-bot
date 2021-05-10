@@ -22,6 +22,7 @@ import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImp
 import { UnlockCommandCmdImpl } from './Impl/unlockCommandCmdImpl';
 import { UnpinMessageCmdImpl } from './Impl/unpinMessageCmdImpl';
 import { userNotesCmdImpl } from './Impl/userNotesCmdImpl';
+import { ShowLogsCmdImpl } from './Impl/showLogsCmdImpl';
 require('dotenv').config();
 
 export default class CommandHandlerImpl implements CommandHandler {
@@ -36,7 +37,8 @@ export default class CommandHandlerImpl implements CommandHandler {
             new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
             new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
             new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
-            new MockMessageCmdImpl(), new NsfwSwitchCmdImpl(), new userNotesCmdImpl()
+            new MockMessageCmdImpl(), new NsfwSwitchCmdImpl(), new userNotesCmdImpl(),
+            new ShowLogsCmdImpl()
         ];
     }
 
@@ -119,7 +121,7 @@ export default class CommandHandlerImpl implements CommandHandler {
             return this.helpCmd(message, commandImpl);
 
         if (typeof commandImpl !== "undefined") {
-            return commandImpl.execute(commandMessage, candidateCommand, this.getGuildLogger())
+            return commandImpl.execute(commandMessage, candidateCommand)
                 .then(execution => commandMessage
                     ?.react('✅')
                     .then(msgReaction => {

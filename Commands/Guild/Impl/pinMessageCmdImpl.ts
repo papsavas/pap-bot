@@ -6,8 +6,9 @@ import { AbstractCommand } from "../AbstractCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, TextChannel } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import * as e from '../../../errorCodes.json';
+import { guildMap } from "../../..";
 
 
 
@@ -71,7 +72,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
             });
     }
 
-    execute(message: Message, { arg1, commandless2 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
         const channel = message.channel;
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
@@ -97,5 +98,9 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

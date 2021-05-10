@@ -2,11 +2,12 @@ import { addresponse as _keyword } from '../../keywords.json';
 import { Gaddresponse as _guide } from '../../guides.json';
 import { AbstractCommand } from "../AbstractCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
-import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed, Snowflake } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
+import { guildMap } from '../../..';
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
@@ -54,15 +55,16 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         }))
     }
 
-    public async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType) {
+    public async execute({ guild, member }: Message, { commandless1 }: commandType) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
-            receivedMessage.content.includes(swear['swear_word'])) ||
-            Profanity.isProfane(receivedMessage.cleanContent);
+            commandless1.includes(swear['swear_word'])) ||
+            Profanity.isProfane(commandless1);
+        this.addGuildLog(guild.id, `${member.displayName} added response ${commandless1.substr(0, 100)}`);
         return addMemberResponse(
-            receivedMessage.guild.id,
-            receivedMessage.member.id,
-            receivedCommand.commandless1, nsfw
+            guild.id,
+            member.id,
+            commandless1, nsfw
         )
     }
 
@@ -77,4 +79,9 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
     getGuide(): string {
         return _guide;
     }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
+    }
+
 }

@@ -4,11 +4,12 @@ import * as Discord from "discord.js";
 
 import { AbstractCommand } from "../AbstractCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import * as e from '../../../errorCodes.json';
+import { guildMap } from "../../..";
 
 
 export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
@@ -70,7 +71,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
             });
     }
 
-    execute(message: Message, { arg1, commandless2 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
         const [channel, member] = [message.channel, message.member];
         let unpinReason = commandless2 ? commandless2 : `undefined`;
         unpinReason += `\nby ${member.displayName}`;
@@ -96,5 +97,9 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

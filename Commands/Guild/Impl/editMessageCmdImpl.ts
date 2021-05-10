@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
 import { editMessage as _keyword } from '../../keywords.json';
 import { GeditMessage as _guide } from '../../guides.json';
 
@@ -7,7 +7,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
 import * as e from '../../../errorCodes.json'
 import { commandType } from "../../../Entities/Generic/commandType";
-
+import { guildMap } from '../../..';
 
 
 export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
@@ -61,8 +61,7 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
 
     async execute(
         { channel, mentions, guild, url }: Message,
-        { arg1, arg2, commandless2, commandless3 }: commandType,
-        addGuildLog
+        { arg1, arg2, commandless2, commandless3 }: commandType
     ): Promise<any> {
 
         try {
@@ -108,6 +107,10 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 
 }

@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, TextChannel } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord.js';
 import { messageChannel as _keyword } from '../../keywords.json';
 import { GmessageChannel as _guide } from '../../guides.json';
 
@@ -7,6 +7,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { guildMap } from '../../..';
 
 
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
@@ -56,11 +57,11 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
 
     }
 
-    async execute({ guild, mentions }: Message, { commandless2 }: commandType, addGuildLog: guildLoggerType) {
+    async execute({ guild, mentions }: Message, { commandless2 }: commandType) {
         const sendChannel = mentions.channels.first() as Discord.TextChannel;
         if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
             return sendChannel.send(commandless2)
-                .then(() => addGuildLog(`sent ${commandless2} to ${sendChannel.name}`));
+                .then(() => this.addGuildLog(guild.id, `sent ${commandless2} to ${sendChannel.name}`));
         else
             throw new Error(`Channel not found`);
     }
@@ -75,5 +76,9 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

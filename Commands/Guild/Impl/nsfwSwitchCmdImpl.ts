@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, Message } from 'discord.js';
+import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { nsfwSwitch as _keyword } from '../../keywords.json';
 import { GnsfwSwitch as _guide } from '../../guides.json';
 
@@ -33,7 +33,7 @@ export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd 
         return interaction.editReply(`**${literal}** \`nsfw\` mode`);
     }
 
-    async execute(message: Message, { }: commandType, addGuildLog: guildLoggerType) {
+    async execute(message: Message, { }: commandType) {
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);
             const literal = oldSettings.nsfw_responses ? "Disabled" : "Enabled"
@@ -57,5 +57,9 @@ export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd 
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

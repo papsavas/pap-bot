@@ -1,18 +1,17 @@
 
 import { GenericCommand } from "./GenericCommand";
 import "reflect-metadata";
-import * as Discord from 'discord.js';
-import { Message } from 'discord.js';
+import { ApplicationCommandData, CommandInteraction, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { bugsChannel } from '../../index';
 import { commandType } from "../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../Entities/Generic/guildLoggerType";
 
 export abstract class AbstractCommand implements GenericCommand {
-    abstract getCommandData(): Discord.ApplicationCommandData;
+    abstract getCommandData(): ApplicationCommandData;
 
-    abstract execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any>;
+    abstract execute(receivedMessage: Message, receivedCommand: commandType): Promise<any>;
 
-    abstract interactiveExecute(interaction: Discord.CommandInteraction): Promise<any>;
+    abstract interactiveExecute(interaction: CommandInteraction): Promise<any>;
 
     abstract getKeyword(): string;
 
@@ -20,13 +19,15 @@ export abstract class AbstractCommand implements GenericCommand {
 
     abstract getGuide(): string;
 
+    abstract addGuildLog(guildID: Snowflake, log: string): string | void
+
     matchAliases(possibleCommand: string): boolean {
         return !!this.getAliases()
             .find((alias: string) => alias === possibleCommand.toLowerCase());
     }
 
-    logErrorOnBugsChannel(err: Error, guild: Discord.Guild, primaryCommandLiteral: string) {
-        const emb = new Discord.MessageEmbed({
+    logErrorOnBugsChannel(err: Error, guild: Guild, primaryCommandLiteral: string) {
+        const emb = new MessageEmbed({
             author: {
                 name: guild.name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"

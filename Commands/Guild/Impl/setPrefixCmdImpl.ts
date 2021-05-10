@@ -3,7 +3,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { pollCmd } from "../Interf/pollCmd";
 import { setPrefix as _keyword } from '../../keywords.json';
 import { GsetPrefix as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
@@ -48,7 +48,7 @@ export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
 
     }
 
-    execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(receivedMessage: Message, receivedCommand: commandType): Promise<any> {
         const guildHandler = guildMap.get(receivedMessage.guild.id);
         if (receivedCommand.arg1)
             return fetchGuildSettings(receivedMessage.guild.id)
@@ -71,6 +71,10 @@ export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
 
     getGuide(): string {
         return _guide;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 
 }

@@ -1,12 +1,13 @@
 import { AbstractCommand } from "../AbstractCommand";
 import { myresponses as _keyword } from '../../keywords.json';
 import { Gmyresponses as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, MessageEmbed } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 import { fetchAllGuildMemberResponses, fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
+import { guildMap } from "../../..";
 
 
 export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements showPersonalResponsesCmd {
@@ -32,7 +33,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
         return interaction.editReply(`\`\`\`${responsesArr.toString()}\`\`\``);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: commandType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const member_id = receivedMessage.member.id;
         const perPage = 10;
@@ -72,6 +73,10 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
 
     getGuide(): string {
         return _guide;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 
 }

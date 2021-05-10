@@ -1,11 +1,10 @@
-import { clearMessages as _keyword } from '../../keywords.json';
-import { GclearMessages as _guide } from '../../guides.json';
-import { AbstractCommand } from "../AbstractCommand";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, TextChannel } from 'discord.js';
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { guildMap } from '../../..';
 import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { GclearMessages as _guide } from '../../guides.json';
+import { clearMessages as _keyword } from '../../keywords.json';
+import { AbstractCommand } from "../AbstractCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
-import { APIGuildMember } from 'discord-api-types';
 
 
 export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
@@ -62,7 +61,7 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
 
     }
 
-    public execute({ channel, member }: Message, { arg1 }: commandType, addGuildLog: guildLoggerType) {
+    public execute({ channel, member }: Message, { arg1 }: commandType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;
@@ -105,5 +104,9 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
 
     getGuide(): string {
         return _guide;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

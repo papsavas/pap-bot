@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
 import { mock as _keyword } from '../../keywords.json';
 import { Gmock as _guide } from '../../guides.json';
 
@@ -8,6 +8,7 @@ import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { mockMessageCmd } from '../Interf/mockMessageCmd';
 import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
+import { guildMap } from '../../..';
 
 
 
@@ -37,7 +38,7 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
         return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
     }
 
-    execute(message: Message, { commandless1 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, { commandless1 }: commandType): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();
@@ -54,5 +55,9 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

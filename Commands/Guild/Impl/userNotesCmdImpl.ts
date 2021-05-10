@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, TextChannel } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord.js';
 import { userNotes as _keyword } from '../../keywords.json';
 import { GuserNotes as _guide } from '../../guides.json';
 
@@ -10,6 +10,7 @@ import { userNotesCmd } from '../Interf/userNotesCmd';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { userNote } from '../../../Entities/Generic/userNote';
 import { auth } from 'firebase-admin';
+import { guildMap } from '../../..';
 
 
 export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
@@ -125,7 +126,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     }
 
-    async execute({ author }: Message, { arg1, arg2, commandless3, commandless2 }: commandType, addGuildLog: guildLoggerType) {
+    async execute({ author }: Message, { arg1, commandless2 }: commandType) {
         const user_id = author.id;
         const user = author;
         switch (arg1) {
@@ -168,5 +169,9 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }
