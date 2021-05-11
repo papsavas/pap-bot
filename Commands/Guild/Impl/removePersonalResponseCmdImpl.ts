@@ -31,8 +31,9 @@ export class RemovePersonalResponseCmdImpl extends AbstractCommand implements re
         }
     }
 
-    async interactiveExecute({ guildID, member, options, reply }: CommandInteraction): Promise<any> {
-        return reply(await removeMemberResponse(guildID, (member as GuildMember).id, options[0].value as string), { ephemeral: true });
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const { guildID, member, options } = interaction;
+        return interaction.reply(await removeMemberResponse(guildID, (member as GuildMember).id, options[0].value as string), { ephemeral: true });
     }
 
     async execute(message: Message, { commandless1 }: commandType) {

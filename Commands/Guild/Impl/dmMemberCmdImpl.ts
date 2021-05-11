@@ -72,11 +72,12 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
     }
 
     public async execute(
-        { guild, attachments, mentions, reply, member }: Message,
+        message: Message,
         { commandless2 }: commandType
     ) {
+        const { guild, attachments, mentions, member } = message;
         if (!member.permissions.has(requiredPerm))
-            return reply(`\`\`\`{${permLiteral} permissions needed\`\`\``);
+            return message.reply.call(`\`\`\`{${permLiteral} permissions needed\`\`\``);
 
         const user = mentions.users.first();
         const text = commandless2;
@@ -98,7 +99,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
             timestamp: new Date()
         })
         return user.send(sendEmb)
-            .then((smsg) => reply(`message sent to ${user.toString()}\npreview:`, { embed: sendEmb }))
+            .then((smsg) => message.reply(`message sent to ${user.toString()}\npreview:`, { embed: sendEmb }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
                     throw new Error(`Could not dm ${user.username}`);

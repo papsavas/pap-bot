@@ -30,11 +30,12 @@ export class ShowLogsCmdImpl extends AbstractCommand implements unlockCommandCmd
 
     }
 
-    async execute({ member, reply, channel, guild }: Message, receivedCommand: commandType): Promise<any> {
+    async execute(message: Message, receivedCommand: commandType): Promise<any> {
+        const { member, channel, guild } = message;
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return reply(`\`MANAGE_GUILD permissions required\``);
+            return message.reply(`\`MANAGE_GUILD permissions required\``);
         else {
-            const msg = await channel.send(`are you sure you want to expose private actions on this channel? (Y/N)`)
+            const msg = await channel.send(`are you sure you want to expose __private__ actions on this channel? **(Y/N)**`)
             channel.awaitMessages(
                 (msg: Message) => msg.author === member.user && ['y', 'n'].some(c => msg.cleanContent.toLowerCase() === c),
                 {
