@@ -56,9 +56,10 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                     { ephemeral: true })
         }
 
+        if (fetchedMessage.pinned) return interaction.reply(`already pinned 😉`, { ephemeral: true });
         return fetchedMessage.pin({ reason: pinReason })
             .then((pinnedMessage) => {
-                //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                 interaction.reply(new MessageEmbed({
                     title: `Pinned Message 📌`,
                     description: pinnedMessage.content?.length > 0 ?
@@ -72,16 +73,26 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
             });
     }
 
-    execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
+    async execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
         const channel = message.channel;
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
         let pinningMessageID = extractId(arg1);
+        let fetchedMessage;
+        try {
+            fetchedMessage = await channel.messages.fetch(pinningMessageID);
+        } catch (error) {
+            if (error.code == e["Unknown message"])
+                return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
+        }
+        if (fetchedMessage.pinned)
+            return message.reply(`already pinned 😉`);
+
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {
                 fetchedMessage.pin({ reason: pinReason })
                     .then((pinnedMessage) => {
-                        //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                        this.addGuildLog(message.guild.id, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                         if (message.deletable)
                             message.client.setTimeout(() => message.delete().catch(), 3000);
                     });

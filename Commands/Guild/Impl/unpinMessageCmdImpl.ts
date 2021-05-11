@@ -55,6 +55,8 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                 return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
                     { ephemeral: true })
         }
+
+        if (!fetchedMessage.pinned) return interaction.reply(`message is not pinned`, { ephemeral: true });
         return fetchedMessage.unpin({ reason: unpinReason })
             .then((unpinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
@@ -71,16 +73,26 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
             });
     }
 
-    execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
+    async execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
         const [channel, member] = [message.channel, message.member];
         let unpinReason = commandless2 ? commandless2 : `undefined`;
         unpinReason += `\nby ${member.displayName}`;
-        let id = extractId(arg1);
-        return (channel as Discord.TextChannel).messages.fetch(id)
+        let unpinnedMessageId = extractId(arg1);
+        let fetchedMessage: Message;
+        try {
+            fetchedMessage = await channel.messages.fetch(unpinnedMessageId);
+        } catch (error) {
+            if (error.code == e["Unknown message"])
+                return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
+        }
+        if (!fetchedMessage.pinned)
+            return message.reply(`message is not pinned`);
+
+        return (channel as Discord.TextChannel).messages.fetch(unpinnedMessageId)
             .then((msg) => {
                 msg.unpin({ reason: unpinReason })
                     .then((msg) => {
-                        //addGuildLog(`message unpinned:\n${msg.url} with reason ${unpinReason}`);
+                        this.addGuildLog(message.guild.id, `message unpinned:\n${msg.url} with reason ${unpinReason}`);
                         if (message.deletable)
                             message.client.setTimeout(() => message.delete().catch(), 3000);
                     });
