@@ -50,27 +50,30 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
         let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
+            if (fetchedMessage.pinned)
+                return interaction.reply({
+                    embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
+                    ephemeral: true
+                });
+            return fetchedMessage.pin({ reason: pinReason })
+                .then((pinnedMessage) => {
+                    this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                    interaction.reply(new MessageEmbed({
+                        title: `Pinned Message 📌`,
+                        description: pinnedMessage.content?.length > 0 ?
+                            `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
+                            `[Click to jump](${pinnedMessage.url})`,
+                        footer: { text: pinReason }
+                    }))
+                })
+                .catch(err => {
+                    interaction.reply('could not pin message');
+                });
         } catch (error) {
             if (error.code == e["Unknown message"])
                 return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
                     { ephemeral: true })
         }
-
-        if (fetchedMessage.pinned) return interaction.reply(`already pinned 😉`, { ephemeral: true });
-        return fetchedMessage.pin({ reason: pinReason })
-            .then((pinnedMessage) => {
-                this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
-                interaction.reply(new MessageEmbed({
-                    title: `Pinned Message 📌`,
-                    description: pinnedMessage.content?.length > 0 ?
-                        `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
-                        `[Click to jump](${pinnedMessage.url})`,
-                    footer: { text: pinReason }
-                }))
-            })
-            .catch(err => {
-                interaction.reply('could not pin message');
-            });
     }
 
     async execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
@@ -86,7 +89,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (fetchedMessage.pinned)
-            return message.reply(`already pinned 😉`);
+            return message.reply({ embed: { description: `[message](${fetchedMessage.url}) already pinned 😉` } });
 
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {

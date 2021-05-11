@@ -56,7 +56,11 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                     { ephemeral: true })
         }
 
-        if (!fetchedMessage.pinned) return interaction.reply(`message is not pinned`, { ephemeral: true });
+        if (!fetchedMessage.pinned)
+            return interaction.reply({
+                embeds: [{ description: `[message](${fetchedMessage.url}) is not pinned` }],
+                ephemeral: true
+            });
         return fetchedMessage.unpin({ reason: unpinReason })
             .then((unpinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
@@ -86,7 +90,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (!fetchedMessage.pinned)
-            return message.reply(`message is not pinned`);
+            return message.reply({ embed: { description: `[message](${fetchedMessage.url}) is not pinned` } });
 
         return (channel as Discord.TextChannel).messages.fetch(unpinnedMessageId)
             .then((msg) => {
