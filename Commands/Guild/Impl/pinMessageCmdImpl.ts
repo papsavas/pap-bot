@@ -55,7 +55,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
                     embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
                     ephemeral: true
                 });
-            return fetchedMessage.pin({ reason: pinReason })
+            return fetchedMessage.pin()
                 .then((pinnedMessage) => {
                     this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                     interaction.reply(new MessageEmbed({
@@ -93,7 +93,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
 
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {
-                fetchedMessage.pin({ reason: pinReason })
+                fetchedMessage.pin()
                     .then((pinnedMessage) => {
                         this.addGuildLog(message.guild.id, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                         if (message.deletable)

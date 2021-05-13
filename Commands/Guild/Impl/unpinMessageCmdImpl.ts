@@ -61,7 +61,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
                 embeds: [{ description: `[message](${fetchedMessage.url}) is not pinned` }],
                 ephemeral: true
             });
-        return fetchedMessage.unpin({ reason: unpinReason })
+        return fetchedMessage.unpin()
             .then((unpinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                 interaction.reply(new Discord.MessageEmbed({
@@ -94,7 +94,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
 
         return (channel as Discord.TextChannel).messages.fetch(unpinnedMessageId)
             .then((msg) => {
-                msg.unpin({ reason: unpinReason })
+                msg.unpin()
                     .then((msg) => {
                         this.addGuildLog(message.guild.id, `message unpinned:\n${msg.url} with reason ${unpinReason}`);
                         if (message.deletable)
