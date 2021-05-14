@@ -6,7 +6,7 @@ import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { lockCommandCmd } from "../Interf/lockCommandCmd";
-import { overrideCommandPerms } from "../../../Queries/Generic/guildRolePerms";
+import { overrideCommandPerms } from "../../../Queries/Generic/guildCommandPerms";
 import { guildMap } from "../../..";
 
 

@@ -26,5 +26,7 @@ export interface GenericGuild {
 
     setPrefix(newPrefix: string): void;
 
+    fetchCommands(): Promise<Discord.Collection<string, Discord.ApplicationCommand>>;
+
     loadResponses(): Promise<string | void>;
 }

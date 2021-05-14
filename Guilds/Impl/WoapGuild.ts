@@ -8,5 +8,4 @@ export class WoapGuild extends AbstractGuild implements GenericGuild {
     }
 
 
-
 }

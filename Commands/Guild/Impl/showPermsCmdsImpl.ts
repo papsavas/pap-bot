@@ -6,7 +6,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { showPermsCmd } from "../Interf/showPermsCmd";
-import { fetchCommandPerms } from "../../../Queries/Generic/guildRolePerms";
+import { fetchCommandPerms } from "../../../Queries/Generic/guildCommandPerms";
 import { guildMap } from "../../../index";
 import { fetchAllOnCondition } from "../../../DB/CoreRepo";
 

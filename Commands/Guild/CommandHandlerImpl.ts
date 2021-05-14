@@ -1,28 +1,13 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, GuildApplicationCommandManager, Message, Snowflake } from 'discord.js';
+import {
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
+    Collection,
+    CommandInteraction,
+    GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+} from 'discord.js';
 import { commandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
-import * as _ from 'lodash';
 import { CommandHandler } from "./CommandHandler";
 import { GenericCommand } from "./GenericCommand";
-import { AddResponseCmdImpl } from './Impl/addResponseCmdImpl';
-import { ClearMessagesCmdImpl } from './Impl/clearMessagesCmdImpl';
-import { DmMemberCmdImpl } from './Impl/dmMemberCmdImpl';
-import { EditMessageCmdImpl } from './Impl/editMessageCmdImpl';
-import { LockCommandCmdImpl } from './Impl/lockCommandCmdImpl';
-import { MessageChannelCmdImpl } from './Impl/messageChannelCmdImpl';
-import { MockMessageCmdImpl } from './Impl/mockMessageCmdImpl';
-import { NsfwSwitchCmdImpl } from './Impl/nsfwSwitchCmdImpl';
-import { PinMessageCmdImpl } from './Impl/pinMessageCmdImpl';
-import { PollCmdImpl } from './Impl/pollCmdImpl';
-import { RemovePersonalResponseCmdImpl } from './Impl/removePersonalResponseCmdImpl';
-import { SetPrefixCmdImpl } from './Impl/setPrefixCmdImpl';
-import { ShowPermsCmdsImpl } from './Impl/showPermsCmdsImpl';
-import { ShowPersonalResponsesCmdImpl } from './Impl/showPersonalResponsesCmdImpl';
-import { UnlockCommandCmdImpl } from './Impl/unlockCommandCmdImpl';
-import { UnpinMessageCmdImpl } from './Impl/unpinMessageCmdImpl';
-import { userNotesCmdImpl } from './Impl/userNotesCmdImpl';
-import { ShowLogsCmdImpl } from './Impl/showLogsCmdImpl';
 require('dotenv').config();
 
 export default class CommandHandlerImpl implements CommandHandler {
@@ -30,24 +15,16 @@ export default class CommandHandlerImpl implements CommandHandler {
     private readonly commands: GenericCommand[];
     private _guildLogger;
 
-    constructor() {
-        this.commands = [
-            new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
-            new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
-            new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
-            new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
-            new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
-            new MockMessageCmdImpl(), new NsfwSwitchCmdImpl(), new userNotesCmdImpl(),
-            new ShowLogsCmdImpl()
-        ];
+    constructor(commands: GenericCommand[]) {
+        this.commands = commands;
     }
 
     public async refreshApplicationCommands(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager
-    ): Promise<ApplicationCommand[]> {
-        let applicationCommands: ApplicationCommand[] = [];
+    ): Promise<Collection<Snowflake, ApplicationCommand>> {
+        const applicationCommands: ApplicationCommandData[] = [];
 
-        const helpCommand: Discord.ApplicationCommandData = {
+        const helpCommand: ApplicationCommandData = {
             name: "help",
             description: "displays support for a certain command",
             options: [
@@ -61,27 +38,30 @@ export default class CommandHandlerImpl implements CommandHandler {
             ]
         }
 
-        const registeredCommands: ApplicationCommandData[] = (await commandManager.fetch()).map(cmd => Object.assign({}, { name: cmd.name, description: cmd.description, options: cmd.options }));
-        const currentCommands = this.commands.map(cmd => cmd.getCommandData());
-        currentCommands.push(helpCommand);
+        const registeredCommands = await commandManager.fetch();
         if (false) {
             console.log('Equal :)')
-            applicationCommands = registeredCommands as ApplicationCommand[];
+            return registeredCommands;
         }
         else {
 
             console.log(`commands changed. Refreshing...`);
             await commandManager.set([]);
-            for (const cc of currentCommands) {
+            const commandData: ApplicationCommandData[] = [];
+            for (const cmd of this.commands) {
                 try {
-                    applicationCommands.push(await commandManager.create(cc));
+                    //const registeredCmd = await commandManager.create(cmd.getCommandData())
+                    applicationCommands.push(cmd.getCommandData());
+                    //add to db
                 } catch (error) {
-                    console.log(cc.name, error);
+                    console.log(cmd.getCommandData().name, error);
                 }
             }
-        }
 
-        return Promise.resolve(applicationCommands);
+            applicationCommands.push(helpCommand);
+            //add to db
+            return commandManager.set(applicationCommands);
+        }
     }
 
     public getGuildLogger() {
@@ -137,11 +117,11 @@ export default class CommandHandlerImpl implements CommandHandler {
             return message.react('❔').catch();
     }
 
-    onSlashCommand(interaction: Discord.CommandInteraction): Promise<any> {
+    onSlashCommand(interaction: CommandInteraction): Promise<any> {
         if (interaction.commandName == 'help')
             return interaction.reply({
                 embeds: [
-                    new Discord.MessageEmbed({
+                    new MessageEmbed({
                         description: interaction.options[0].value as string
                     })
                 ]
@@ -178,8 +158,8 @@ export default class CommandHandlerImpl implements CommandHandler {
         }
     }
 
-    private invalidSlashCommand(err: Error, interaction: Discord.CommandInteraction, primaryCommandLiteral: string) {
-        const bugsChannelEmbed = new Discord.MessageEmbed({
+    private invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
+        const bugsChannelEmbed = new MessageEmbed({
             author: {
                 name: interaction.guild.name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
@@ -196,7 +176,7 @@ export default class CommandHandlerImpl implements CommandHandler {
         bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
 
-        const interactionEmb = new Discord.MessageEmbed(
+        const interactionEmb = new MessageEmbed(
             {
                 author: {
                     name: `Error on Command`,
@@ -216,8 +196,8 @@ export default class CommandHandlerImpl implements CommandHandler {
     }
 
 
-    private invalidCommand(err: Error, commandMessage: Discord.Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
-        const bugsChannelEmbed = new Discord.MessageEmbed({
+    private invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
+        const bugsChannelEmbed = new MessageEmbed({
             author: {
                 name: commandMessage.guild.name,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
@@ -233,7 +213,7 @@ export default class CommandHandlerImpl implements CommandHandler {
         bugsChannelEmbed.addField(`caused by`, commandMessage.url);
         bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
-        commandMessage.reply(new Discord.MessageEmbed(
+        commandMessage.reply(new MessageEmbed(
             {
                 author: {
                     name: `Error on Command`,
@@ -250,7 +230,7 @@ export default class CommandHandlerImpl implements CommandHandler {
     }
 
     private helpCmd(message: Message, command: GenericCommand): Promise<any> {
-        return message.reply(new Discord.MessageEmbed({
+        return message.reply(new MessageEmbed({
             title: command.getKeyword(),
             description: command.getGuide(),
             footer: { text: command.getAliases().toString() }

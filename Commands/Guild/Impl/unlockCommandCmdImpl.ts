@@ -5,7 +5,7 @@ import { GunlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { overrideCommandPerms } from "../../../Queries/Generic/guildRolePerms";
+import { overrideCommandPerms } from "../../../Queries/Generic/guildCommandPerms";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 import { guildMap } from "../../..";
 

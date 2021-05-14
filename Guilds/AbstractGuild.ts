@@ -1,6 +1,6 @@
 import { GenericGuild } from "./GenericGuild";
 import * as Discord from 'discord.js';
-import { Guild, Snowflake } from 'discord.js';
+import { ApplicationCommandPermissionData, Guild, Snowflake } from 'discord.js';
 import { mentionRegex } from "../botconfig.json";
 import { randomArrayValue } from "../toolbox/randomArrayValue";
 import { genericGuildResponses } from "../Queries/Generic/GenericGuildResponses";
@@ -10,17 +10,48 @@ import { memberResponses } from "../Entities/Generic/MemberResponsesType";
 import { fetchAllGuildMemberResponses } from "../Queries/Generic/MemberResponses";
 import CommandHandlerImpl from "../Commands/Guild/CommandHandlerImpl";
 import { addLog } from "../Queries/Generic/guildLogs";
-
-const commandHandler = new CommandHandlerImpl()
+import { CommandHandler } from "../Commands/Guild/CommandHandler";
+import { AddResponseCmdImpl } from "../Commands/Guild/Impl/addResponseCmdImpl";
+import { ClearMessagesCmdImpl } from "../Commands/Guild/Impl/clearMessagesCmdImpl";
+import { DmMemberCmdImpl } from "../Commands/Guild/Impl/dmMemberCmdImpl";
+import { EditMessageCmdImpl } from "../Commands/Guild/Impl/editMessageCmdImpl";
+import { LockCommandCmdImpl } from "../Commands/Guild/Impl/lockCommandCmdImpl";
+import { MessageChannelCmdImpl } from "../Commands/Guild/Impl/messageChannelCmdImpl";
+import { MockMessageCmdImpl } from "../Commands/Guild/Impl/mockMessageCmdImpl";
+import { NsfwSwitchCmdImpl } from "../Commands/Guild/Impl/nsfwSwitchCmdImpl";
+import { PinMessageCmdImpl } from "../Commands/Guild/Impl/pinMessageCmdImpl";
+import { PollCmdImpl } from "../Commands/Guild/Impl/pollCmdImpl";
+import { RemovePersonalResponseCmdImpl } from "../Commands/Guild/Impl/removePersonalResponseCmdImpl";
+import { SetPrefixCmdImpl } from "../Commands/Guild/Impl/setPrefixCmdImpl";
+import { ShowLogsCmdImpl } from "../Commands/Guild/Impl/showLogsCmdImpl";
+import { ShowPermsCmdsImpl } from "../Commands/Guild/Impl/showPermsCmdsImpl";
+import { ShowPersonalResponsesCmdImpl } from "../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
+import { UnlockCommandCmdImpl } from "../Commands/Guild/Impl/unlockCommandCmdImpl";
+import { UnpinMessageCmdImpl } from "../Commands/Guild/Impl/unpinMessageCmdImpl";
+import { userNotesCmdImpl } from "../Commands/Guild/Impl/userNotesCmdImpl";
+import { GenericCommand } from "../Commands/Guild/GenericCommand";
 
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
-    private _responses: string[];
-    private _settings: guildSettings;
-
     protected constructor(guild_id: Discord.Snowflake) {
         this.guildID = guild_id;
     }
+    private _responses: string[];
+    private _settings: guildSettings;
+
+    protected _commands: GenericCommand[] = [
+        new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
+        new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
+        new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
+        new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
+        new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
+        new MockMessageCmdImpl(), new NsfwSwitchCmdImpl(), new userNotesCmdImpl(),
+        new ShowLogsCmdImpl()
+    ]
+
+    private _commandHandler: CommandHandler = new CommandHandlerImpl(this._commands);
+
+
 
     private _guild: Guild;
 
@@ -58,12 +89,12 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onSlashCommand(interaction: Discord.CommandInteraction): Promise<any> {
-        return commandHandler.onSlashCommand(interaction);
+        return this._commandHandler.onSlashCommand(interaction);
     }
 
     async onMessage(message: Discord.Message): Promise<any> {
         if ([this._settings.prefix].some((pr: string) => message.content.startsWith(pr))) {
-            return commandHandler.onCommand(message);
+            return this._commandHandler.onCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {
@@ -104,6 +135,10 @@ export abstract class AbstractGuild implements GenericGuild {
 
     setPrefix(newPrefix: string): void {
         this._settings.prefix = newPrefix;
+    }
+
+    fetchCommands() {
+        return this._commandHandler.refreshApplicationCommands(this.guild.commands);
     }
 
     async loadResponses() {
