@@ -3,9 +3,10 @@ import { sendEmail } from '../../toolbox/Google/Gmail';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
+const specifiedCommands = []; //add guild specific commands
 export class KepGuild extends AbstractGuild implements GenericGuild {
     constructor(id: Discord.Snowflake) {
-        super(id);
+        super(id, specifiedCommands);
     }
 
     onMessage(message: Discord.Message): Promise<any> {

@@ -6,22 +6,23 @@ import {
 } from 'discord.js';
 import { commandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
-import { CommandHandler } from "./CommandHandler";
+import { GuildCommandHandler } from "./GuildCommandHandler";
 import { GenericCommand } from "./GenericCommand";
 require('dotenv').config();
 
-export default class CommandHandlerImpl implements CommandHandler {
+export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
     private readonly commands: GenericCommand[];
-    private _guildLogger;
+    private guildID: Snowflake;
 
-    constructor(commands: GenericCommand[]) {
+    constructor(guild_id: Snowflake, commands: GenericCommand[]) {
+        this.guildID = guild_id;
         this.commands = commands;
     }
 
-    public async refreshApplicationCommands(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager
-    ): Promise<Collection<Snowflake, ApplicationCommand>> {
+    public async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
+        : Promise<Collection<Snowflake, ApplicationCommand>> {
+
         const applicationCommands: ApplicationCommandData[] = [];
 
         const helpCommand: ApplicationCommandData = {
@@ -64,10 +65,6 @@ export default class CommandHandlerImpl implements CommandHandler {
         }
     }
 
-    public getGuildLogger() {
-        return this._guildLogger;
-    }
-
     public onCommand(message: Message): Promise<any> {
         /* FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
         ALSO CONNECT 'commands with command_perms' with foreign key on commands Completion
@@ -88,19 +85,15 @@ export default class CommandHandlerImpl implements CommandHandler {
 
         const guildHandler = guildMap.get(message.guild.id);
         const prefix = guildHandler.getSettings().prefix;
-
-
-
         const commandMessage = message;
         const candidateCommand = this.returnCommand(message);
-        this.setGuildLogger(message.guild.id);
-
-        const commandImpl = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
-
-        if (message.content.startsWith(`${prefix}help`))
-            return this.helpCmd(message, commandImpl);
+        const commandImpl = this.commands
+            .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
         if (typeof commandImpl !== "undefined") {
+            if (['help', 'h'].includes(candidateCommand.primaryCommand))
+                return this.helpCmd(message, commandImpl);
+
             return commandImpl.execute(commandMessage, candidateCommand)
                 .then(execution => commandMessage
                     ?.react('✅')
@@ -135,13 +128,8 @@ export default class CommandHandlerImpl implements CommandHandler {
 
     }
 
-    private setGuildLogger(guildID: Snowflake) {
-        this._guildLogger = guildMap.get(guildID).addGuildLog;
-    }
-
     private returnCommand(receivedMessage: Message): commandType {
         const receivedMessageContent = receivedMessage.content;
-        //const prefix: string = receivedMessageContent.charAt(0);
         const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id).getSettings().prefix.length); // Remove the prefix;
         const splitCommand: string[] = fullCommand.split(/(\s+)/).filter(e => e.trim().length > 0) //split command from space(s);
         return {
@@ -184,7 +172,7 @@ export default class CommandHandlerImpl implements CommandHandler {
                 },
                 title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
                 fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
-                color: "RED"
+                color: 'RED'
             })
 
         const interactionPromise: Promise<any> = interaction.replied ?

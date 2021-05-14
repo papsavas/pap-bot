@@ -3,7 +3,7 @@ import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
 import { mock as _keyword } from '../../keywords.json';
 import { Gmock as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractCommand } from "../../Guild/AbstractCommand";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { mockMessageCmd } from '../Interf/mockMessageCmd';

@@ -3,7 +3,7 @@ import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord
 import { userNotes as _keyword } from '../../keywords.json';
 import { GuserNotes as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractCommand } from "../../Guild/AbstractCommand";
 import { commandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { userNotesCmd } from '../Interf/userNotesCmd';
