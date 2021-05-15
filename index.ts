@@ -32,6 +32,17 @@ export const PAP = new Discord.Client({
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
+async function runScript(): Promise<void> {
+    //-----insert script--------
+    /*
+    const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
+    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    const botGuildcmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
+    console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+    */
+    //-------------------------
+    return
+}
 
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
@@ -56,17 +67,7 @@ PAP.on('guildUnavailable', (guild) => {
             .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
-async function runScript(): Promise<void> {
-    //-----insert script--------
-    /*
-    const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
-    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    const botGuildcmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
-    console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
-    */
-    //-------------------------
-    return
-}
+
 
 
 PAP.on('ready', async () => {
@@ -95,7 +96,6 @@ PAP.on('ready', async () => {
     } catch (err) {
         console.log('ERROR\n' + err.stack);
     }
-
     console.log(`___Initiated___`);
 });
 
@@ -105,9 +105,13 @@ PAP.on('interaction', interaction => {
     if (!interaction.isCommand()) return;
 
     if (!!interaction.guildID)
-        guildMap.get(interaction.guildID)
-            ?.onSlashCommand(interaction)
-            .catch(err => console.log(err));
+        try {
+            guildMap.get(interaction.guildID)
+                ?.onSlashCommand(interaction)
+        } catch (error) {
+            console.log(error)
+        }
+
 });
 
 

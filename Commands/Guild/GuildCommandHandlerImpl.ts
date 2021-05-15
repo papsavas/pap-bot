@@ -122,10 +122,12 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
 
 
-        return this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
-            .interactiveExecute(interaction)
-            .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
-
+        const candidateCommand = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
+        if (typeof candidateCommand !== "undefined")
+            return candidateCommand.interactiveExecute(interaction)
+                .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
+        else
+            return interaction.reply(`Command not found`);
     }
 
     private returnCommand(receivedMessage: Message): commandType {
