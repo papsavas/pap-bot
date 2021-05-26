@@ -8,7 +8,7 @@ import { guildLoggerType } from "../../Entities/Generic/guildLoggerType";
 
 export abstract class AbstractCommand implements GenericCommand {
     abstract readonly id: Snowflake | undefined;
-    abstract getCommandData(): ApplicationCommandData;
+    abstract getCommandData(guildID: Snowflake): ApplicationCommandData;
 
     abstract execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
 

@@ -35,3 +35,8 @@ export function fetchCommandID(commandName: string): Snowflake {
         .then((res: CommandType) => id = res.id);
     return id;
 }
+
+export async function overrideCommands(newCommands: CommandType[]): Promise<CommandType[]> {
+    await dropRows('commands', true);
+    return addRows('commands', newCommands, '*');
+}

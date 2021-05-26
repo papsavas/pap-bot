@@ -143,7 +143,9 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     fetchCommands() {
-        return this._commandHandler.fetchGuildCommands(this.guild.commands);
+        //this refreshes every time
+        //return this._commandHandler.fetchGuildCommands(this.guild.commands); 
+        return this.guild.commands.fetch();
     }
 
     async loadResponses() {

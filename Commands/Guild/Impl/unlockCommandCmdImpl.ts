@@ -2,12 +2,13 @@
 import { AbstractCommand } from "../AbstractCommand";
 import { unlockCommand as _keyword } from '../../keywords.json';
 import { GunlockCommand as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionChoice, CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 import { guildMap } from "../../..";
+import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 
 
 export class UnlockCommandCmdImpl extends AbstractCommand implements unlockCommandCmd {
@@ -20,7 +21,12 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
             _keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+        let choices: ApplicationCommandOptionChoice[];
+        (async function () {
+            const cmds = await guildMap.get(guild_id).fetchCommands();
+            choices = cmds.map(cmd => Object.assign({}, { name: cmd.name, value: cmd.name }))
+        }())
         return {
             name: `unlockCommand`,
             description: this.getGuide(),
@@ -29,10 +35,12 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
                     name: 'command_name',
                     description: 'command name to unlock',
                     type: 'STRING',
-                    required: true
+                    required: true,
+                    choices: choices
                 }
             ]
         }
+
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {

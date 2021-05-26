@@ -8,6 +8,7 @@ import { literalCommandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
 import { GuildCommandHandler } from "./GuildCommandHandler";
 import { GenericCommand } from "./GenericCommand";
+import { overrideCommands } from '../../Queries/Generic/Commands';
 require('dotenv').config();
 
 export default class GuildCommandHandlerImpl implements GuildCommandHandler {
@@ -52,16 +53,25 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             for (const cmd of this.commands) {
                 try {
                     //const registeredCmd = await commandManager.create(cmd.getCommandData())
-                    applicationCommands.push(cmd.getCommandData());
+                    applicationCommands.push(cmd.getCommandData(this.guildID));
                     //add to db
                 } catch (error) {
-                    console.log(cmd.getCommandData().name, error);
+                    console.log(cmd.getCommandData(this.guildID).name, error);
                 }
             }
 
             applicationCommands.push(helpCommand);
             //add to db
-            return commandManager.set(applicationCommands);
+            const newCommands = await commandManager.set(applicationCommands);
+            await overrideCommands(newCommands.array().map(cmd => Object.assign({}, {
+                keyword: cmd.name,
+                id: cmd.id,
+                guide: cmd.description,
+                aliases: this.commands
+                    .find((cmds) => cmds.matchAliases(cmd.name)).getAliases()
+
+            })))
+            return Promise.resolve(newCommands);
         }
     }
 
