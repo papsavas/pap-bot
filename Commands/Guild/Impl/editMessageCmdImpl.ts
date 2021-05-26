@@ -6,11 +6,14 @@ import { GeditMessage as _guide } from '../../guides.json';
 import { AbstractCommand } from "../AbstractCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
 import * as e from '../../../errorCodes.json'
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
 export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
@@ -61,7 +64,7 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
 
     async execute(
         { channel, mentions, guild, url }: Message,
-        { arg1, arg2, commandless2, commandless3 }: commandType
+        { arg1, arg2, commandless2, commandless3 }: literalCommandType
     ): Promise<any> {
 
         try {

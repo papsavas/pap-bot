@@ -4,14 +4,18 @@ import { pollCmd } from "../Interf/pollCmd";
 import { setPrefix as _keyword } from '../../keywords.json';
 import { GsetPrefix as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
 import { addRow } from "../../../DB/CoreRepo";
 import { guildMap } from "../../../index";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['prefix', 'setprefix'],
@@ -48,7 +52,7 @@ export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
 
     }
 
-    execute(receivedMessage: Message, receivedCommand: commandType): Promise<any> {
+    execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
         const guildHandler = guildMap.get(receivedMessage.guild.id);
         if (receivedCommand.arg1)
             return fetchGuildSettings(receivedMessage.guild.id)

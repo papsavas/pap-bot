@@ -6,13 +6,17 @@ import { AbstractCommand } from "../AbstractCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
 import { extractId } from "../../../toolbox/extractMessageId";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import * as e from '../../../errorCodes.json';
 import { guildMap } from "../../..";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['unpin', 'ανπιν'],
@@ -77,7 +81,7 @@ export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessage
             });
     }
 
-    async execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
+    async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
         const [channel, member] = [message.channel, message.member];
         let unpinReason = commandless2 ? commandless2 : `undefined`;
         unpinReason += `\nby ${member.displayName}`;

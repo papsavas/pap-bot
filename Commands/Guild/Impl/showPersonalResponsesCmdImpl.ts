@@ -2,15 +2,20 @@ import { AbstractCommand } from "../AbstractCommand";
 import { myresponses as _keyword } from '../../keywords.json';
 import { Gmyresponses as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 import { fetchAllGuildMemberResponses, fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
 import { guildMap } from "../../..";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements showPersonalResponsesCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
@@ -30,10 +35,10 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
         const member_id = (interaction.member as GuildMember).id;
         const responses = await fetchGuildMemberResponses(guild_id, member_id);
         const responsesArr = responses.map(resObj => resObj['response']);
-        return interaction.editReply(`\`\`\`${responsesArr.toString()}\`\`\``);
+        return interaction.followUp(`\`\`\`${responsesArr.toString()}\`\`\``);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: commandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const member_id = receivedMessage.member.id;
         const perPage = 10;

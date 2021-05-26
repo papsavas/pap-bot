@@ -4,7 +4,7 @@ import {
     CommandInteraction,
     GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from 'discord.js';
-import { commandType } from "../../Entities/Generic/commandType";
+import { literalCommandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
 import { GuildCommandHandler } from "./GuildCommandHandler";
 import { GenericCommand } from "./GenericCommand";
@@ -12,7 +12,7 @@ require('dotenv').config();
 
 export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
-    private readonly commands: GenericCommand[];
+    readonly commands: GenericCommand[];
     private guildID: Snowflake;
 
     constructor(guild_id: Snowflake, commands: GenericCommand[]) {
@@ -130,7 +130,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             return interaction.reply(`Command not found`);
     }
 
-    private returnCommand(receivedMessage: Message): commandType {
+    private returnCommand(receivedMessage: Message): literalCommandType {
         const receivedMessageContent = receivedMessage.content;
         const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id).getSettings().prefix.length); // Remove the prefix;
         const splitCommand: string[] = fullCommand.split(/(\s+)/).filter(e => e.trim().length > 0) //split command from space(s);

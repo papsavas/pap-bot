@@ -1,6 +1,7 @@
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
 import { GremoveResponse as _guide } from '../../guides.json';
 import { removeResponse as _keyword } from '../../keywords.json';
@@ -10,6 +11,9 @@ import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 
 
 export class RemovePersonalResponseCmdImpl extends AbstractCommand implements removePersonalResponseCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['removeresponse', 'rresponse', 'remove_response', 'rr'],
@@ -36,7 +40,7 @@ export class RemovePersonalResponseCmdImpl extends AbstractCommand implements re
         return interaction.reply(await removeMemberResponse(guildID, (member as GuildMember).id, options[0].value as string), { ephemeral: true });
     }
 
-    async execute(message: Message, { commandless1 }: commandType) {
+    async execute(message: Message, { commandless1 }: literalCommandType) {
         return message.reply(await removeMemberResponse(message.guild.id, message.member.id, commandless1));
     }
 

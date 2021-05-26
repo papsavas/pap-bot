@@ -1,6 +1,7 @@
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { guildMap } from '../../..';
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { GclearMessages as _guide } from '../../guides.json';
 import { clearMessages as _keyword } from '../../keywords.json';
 import { AbstractCommand } from "../AbstractCommand";
@@ -8,6 +9,8 @@ import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 
 
 export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['clear', 'clean', 'purge'],
@@ -61,7 +64,7 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
 
     }
 
-    public execute({ channel, member }: Message, { arg1 }: commandType) {
+    public execute({ channel, member }: Message, { arg1 }: literalCommandType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;

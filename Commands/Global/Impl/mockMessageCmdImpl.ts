@@ -4,7 +4,7 @@ import { mock as _keyword } from '../../keywords.json';
 import { Gmock as _guide } from '../../guides.json';
 
 import { AbstractCommand } from "../../Guild/AbstractCommand";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { mockMessageCmd } from '../Interf/mockMessageCmd';
 import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
@@ -38,7 +38,7 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
         return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
     }
 
-    execute(message: Message, { commandless1 }: commandType): Promise<any> {
+    execute(message: Message, { commandless1 }: literalCommandType): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();

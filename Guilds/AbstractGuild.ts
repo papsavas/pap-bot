@@ -36,6 +36,9 @@ import { GenericGuild } from "./GenericGuild";
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
     private _commandHandler: GuildCommandHandler;
+    get commandHandler(): GuildCommandHandler {
+        return this._commandHandler;
+    }
     protected _commands: GenericCommand[] = [
         new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
         new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),

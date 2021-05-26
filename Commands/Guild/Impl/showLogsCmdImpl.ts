@@ -3,9 +3,9 @@ import { AbstractCommand } from "../AbstractCommand";
 import { logChanges as _keyword } from '../../keywords.json';
 import { GlogChanges as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { overrideCommandPerms } from "../../../Queries/Generic/guildCommandPerms";
+import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 import { guildMap } from "../../..";
 import { messaging } from "firebase-admin";
@@ -13,6 +13,9 @@ import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 
 
 export class ShowLogsCmdImpl extends AbstractCommand implements unlockCommandCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['log', 'logs'],
@@ -30,7 +33,7 @@ export class ShowLogsCmdImpl extends AbstractCommand implements unlockCommandCmd
 
     }
 
-    async execute(message: Message, receivedCommand: commandType): Promise<any> {
+    async execute(message: Message, receivedCommand: literalCommandType): Promise<any> {
         const { member, channel, guild } = message;
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return message.reply(`\`MANAGE_GUILD permissions required\``);

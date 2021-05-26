@@ -3,13 +3,14 @@ import { GenericCommand } from "./GenericCommand";
 import "reflect-metadata";
 import { ApplicationCommandData, CommandInteraction, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { bugsChannel } from '../../index';
-import { commandType } from "../../Entities/Generic/commandType";
+import { literalCommandType } from "../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../Entities/Generic/guildLoggerType";
 
 export abstract class AbstractCommand implements GenericCommand {
+    abstract readonly id: Snowflake | undefined;
     abstract getCommandData(): ApplicationCommandData;
 
-    abstract execute(receivedMessage: Message, receivedCommand: commandType): Promise<any>;
+    abstract execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
 
     abstract interactiveExecute(interaction: CommandInteraction): Promise<any>;
 

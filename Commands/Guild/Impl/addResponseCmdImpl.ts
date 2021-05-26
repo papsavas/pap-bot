@@ -3,15 +3,18 @@ import { Gaddresponse as _guide } from '../../guides.json';
 import { AbstractCommand } from "../AbstractCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
 import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed, Snowflake } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
 import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
 export class AddResponseCmdImpl extends AbstractCommand implements addResponseCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (
@@ -55,7 +58,7 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         }))
     }
 
-    public async execute({ guild, member }: Message, { commandless1 }: commandType) {
+    public async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             commandless1.includes(swear['swear_word'])) ||

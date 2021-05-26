@@ -42,11 +42,11 @@ export function fetchAllOnCondition(tableName: string, objClause: {}, returningF
         .where(objClause);
 }
 
-export function fetchFirstOnCondition(tableName: string, columnName: string, value: any, returningFields = ['*']): Promise<object> {
+export function fetchFirstOnCondition(tableName: string, clause: {}, returningFields = ['*']): Promise<object> {
     return knexClient
         .select(...returningFields)
         .table(tableName)
-        .where(columnName, value)
+        .where(clause)
         .first();
 }
 

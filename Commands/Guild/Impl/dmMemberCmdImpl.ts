@@ -6,14 +6,18 @@ import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
 import { ApplicationCommandData, Message, Snowflake, User } from 'discord.js';
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
 const requiredPerm = Discord.Permissions.FLAGS.ADMINISTRATOR;
 const permLiteral = 'ADMINISTRATOR'
 export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['directmessage', 'message', 'dm'],
@@ -73,7 +77,7 @@ export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
 
     public async execute(
         message: Message,
-        { commandless2 }: commandType
+        { commandless2 }: literalCommandType
     ) {
         const { guild, attachments, mentions, member } = message;
         if (!member.permissions.has(requiredPerm))

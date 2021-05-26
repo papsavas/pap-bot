@@ -4,7 +4,7 @@ import { userNotes as _keyword } from '../../keywords.json';
 import { GuserNotes as _guide } from '../../guides.json';
 
 import { AbstractCommand } from "../../Guild/AbstractCommand";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { userNotesCmd } from '../Interf/userNotesCmd';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
@@ -126,7 +126,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     }
 
-    async execute({ author }: Message, { arg1, commandless2 }: commandType) {
+    async execute({ author }: Message, { arg1, commandless2 }: literalCommandType) {
         const user_id = author.id;
         const user = author;
         switch (arg1) {

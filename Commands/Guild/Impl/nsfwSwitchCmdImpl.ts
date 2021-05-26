@@ -3,14 +3,18 @@ import { nsfwSwitch as _keyword } from '../../keywords.json';
 import { GnsfwSwitch as _guide } from '../../guides.json';
 
 import { AbstractCommand } from "../AbstractCommand";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
 import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
 export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['nsfw', 'nsfwswitch'],
@@ -33,7 +37,7 @@ export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd 
         return interaction.editReply(`**${literal}** \`nsfw\` mode`);
     }
 
-    async execute(message: Message, { }: commandType) {
+    async execute(message: Message, { }: literalCommandType) {
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);
             const literal = oldSettings.nsfw_responses ? "Disabled" : "Enabled"

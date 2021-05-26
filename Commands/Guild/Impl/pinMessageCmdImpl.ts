@@ -4,15 +4,19 @@ import { pinMessage as _keyword } from "../../keywords.json";
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
 import { AbstractCommand } from "../AbstractCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import * as e from '../../../errorCodes.json';
 import { guildMap } from "../../..";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 
 export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['pin', 'πιν'],
@@ -76,7 +80,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
         }
     }
 
-    async execute(message: Message, { arg1, commandless2 }: commandType): Promise<any> {
+    async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
         const channel = message.channel;
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;

@@ -7,7 +7,7 @@ export async function fetchStudent(column: keyof Student, value: Student[keyof S
 }
 
 export async function fetchStudentOnCondition(column: keyof Student, value: Student[keyof Student], returnings?: string[]): Promise<{}> {
-    return fetchFirstOnCondition('student', column, value, returnings);
+    return fetchFirstOnCondition('student', { [column]: value }, returnings);
 
 }
 

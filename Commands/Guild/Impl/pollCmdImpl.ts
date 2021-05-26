@@ -4,14 +4,18 @@ import { simplePoll as _keyword } from '../../keywords.json';
 import { GsimplePoll as _guide } from '../../guides.json';
 
 import { pollCmd } from "../Interf/pollCmd";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { ApplicationCommandData, GuildMember, Snowflake, TextChannel } from "discord.js";
 import { guildMap } from "../../..";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 
 export class PollCmdImpl extends AbstractCommand implements pollCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['poll', 'πολλ'],
@@ -63,7 +67,7 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
     }
 
 
-    execute(message: Discord.Message, { commandless1 }: commandType) {
+    execute(message: Discord.Message, { commandless1 }: literalCommandType) {
         const commandMsg = message;
         return (commandMsg.channel as Discord.TextChannel).send(
             new Discord.MessageEmbed(

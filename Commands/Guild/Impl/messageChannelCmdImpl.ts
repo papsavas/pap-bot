@@ -5,12 +5,15 @@ import { GmessageChannel as _guide } from '../../guides.json';
 
 import { AbstractCommand } from "../AbstractCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
 export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['send', 'msgchannel', 'messagechannel', 'message_channel'],
@@ -57,7 +60,7 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
 
     }
 
-    async execute({ guild, mentions }: Message, { commandless2 }: commandType) {
+    async execute({ guild, mentions }: Message, { commandless2 }: literalCommandType) {
         const sendChannel = mentions.channels.first() as Discord.TextChannel;
         if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
             return sendChannel.send(commandless2)

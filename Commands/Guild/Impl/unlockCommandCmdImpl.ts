@@ -3,14 +3,17 @@ import { AbstractCommand } from "../AbstractCommand";
 import { unlockCommand as _keyword } from '../../keywords.json';
 import { GunlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { overrideCommandPerms } from "../../../Queries/Generic/guildCommandPerms";
+import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 import { guildMap } from "../../..";
 
 
 export class UnlockCommandCmdImpl extends AbstractCommand implements unlockCommandCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['unlockcmd', 'unlockcommand', 'unlock_command', 'unlock_cmd'],
@@ -40,10 +43,23 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
         return interaction.editReply(`Command ${command_id} unlocked`);
     }
 
-    execute(receivedMessage: Message, receivedCommand: commandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
+        const commands = guildMap.get(guild_id).commandHandler.commands;
         const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
-        return overrideCommandPerms(guild_id, command_id, [guild_id]);
+        const candidateCommand = commands.find((cmds) => cmds.matchAliases(command_id))
+        //override perms for manual command in DB
+        await overrideCommandPerms(guild_id, command_id, [guild_id]);
+        if (typeof candidateCommand !== "undefined")
+            //override perms for interaction
+            return receivedMessage.guild.commands.setPermissions(command_id, [{
+                id: guild_id,
+                type: 'ROLE',
+                permission: true
+            }])
+        else
+            return receivedMessage.reply(`Command not found`);
+
     }
 
     getKeyword(): string {

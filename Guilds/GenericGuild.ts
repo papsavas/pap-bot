@@ -1,4 +1,6 @@
 import * as Discord from 'discord.js';
+import { GuildCommandHandler } from '../Commands/Guild/GuildCommandHandler';
+import GuildCommandHandlerImpl from '../Commands/Guild/GuildCommandHandlerImpl';
 import { guildSettings } from "../Entities/Generic/guildSettingsType";
 
 export interface GenericGuild {
@@ -23,6 +25,8 @@ export interface GenericGuild {
     addGuildLog(log: string): string;
 
     getSettings(): guildSettings;
+
+    readonly commandHandler: GuildCommandHandler;
 
     setPrefix(newPrefix: string): void;
 
