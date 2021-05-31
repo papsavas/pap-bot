@@ -46,7 +46,7 @@ export class UnlockCommandCmdImpl extends AbstractCommand implements unlockComma
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const guild_id = interaction.guildID;
         const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
-        await interaction.defer(true);
+        await interaction.defer({ ephemeral: true });
         await overrideCommandPerms(guild_id, command_id, [guild_id]);
         return interaction.editReply(`Command ${command_id} unlocked`);
     }

@@ -46,7 +46,7 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
         const nsfw = swears.some((swear) =>
             memberResponse.includes(swear['swear_word'])) ||
             Profanity.isProfane(memberResponse);
-        await interaction.defer(true);
+        await interaction.defer({ ephemeral: true });
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
         return interaction.editReply(new MessageEmbed({
             title: `Response Added`,

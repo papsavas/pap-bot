@@ -85,7 +85,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        await interaction.defer(true);
+        await interaction.defer({ ephemeral: true });
         const user_id = interaction.user.id;
         const cmdOptions = interaction.options[0].options;
         try {

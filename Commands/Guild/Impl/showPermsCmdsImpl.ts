@@ -39,7 +39,7 @@ export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const command_id = interaction.options[0].value as string;
         const guild_prefix = guildMap.get(interaction.guildID).getSettings().prefix;
-        await interaction.defer(true);
+        await interaction.defer({ ephemeral: true });
         const commandPerms = await fetchCommandPerms(interaction.guildID, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => interaction.guild.roles.fetch(cp.role_id)))
         return interaction.editReply(new MessageEmbed({
