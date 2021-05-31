@@ -2,7 +2,7 @@ import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed, Snow
 import { showPerms as _keyword } from '../../keywords.json';
 import { GshowPerms as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { showPermsCmd } from "../Interf/showPermsCmd";
@@ -11,7 +11,7 @@ import { guildMap } from "../../../index";
 import { fetchAllOnCondition } from "../../../DB/CoreRepo";
 
 
-export class ShowPermsCmdsImpl extends AbstractCommand implements showPermsCmd {
+export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

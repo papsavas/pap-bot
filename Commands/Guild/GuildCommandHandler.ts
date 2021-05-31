@@ -2,7 +2,7 @@ import {
     ApplicationCommand, ApplicationCommandManager, Collection,
     CommandInteraction, GuildApplicationCommandManager, Message, Snowflake
 } from "discord.js";
-import { GenericCommand } from "./GenericCommand";
+import { GenericCommand } from "../GenericCommand";
 
 export interface GuildCommandHandler {
     readonly commands: GenericCommand[];

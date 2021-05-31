@@ -1,4 +1,4 @@
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { myresponses as _keyword } from '../../keywords.json';
 import { Gmyresponses as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
@@ -11,7 +11,7 @@ import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
-export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements showPersonalResponsesCmd {
+export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

@@ -2,7 +2,7 @@ import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from '
 import { nsfwSwitch as _keyword } from '../../keywords.json';
 import { GnsfwSwitch as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
@@ -11,7 +11,7 @@ import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
-export class NsfwSwitchCmdImpl extends AbstractCommand implements nsfwSwitchCmd {
+export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

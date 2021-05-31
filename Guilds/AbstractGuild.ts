@@ -6,7 +6,7 @@ import {
 import { mentionRegex } from "../botconfig.json";
 import { GuildCommandHandler } from "../Commands/Guild/GuildCommandHandler";
 import GuildCommandHandlerImpl from "../Commands/Guild/GuildCommandHandlerImpl";
-import { GenericCommand } from "../Commands/Guild/GenericCommand";
+import { GenericCommand } from "../Commands/GenericCommand";
 import { AddResponseCmdImpl } from "../Commands/Guild/Impl/addResponseCmdImpl";
 import { ClearMessagesCmdImpl } from "../Commands/Guild/Impl/clearMessagesCmdImpl";
 import { DmMemberCmdImpl } from "../Commands/Guild/Impl/dmMemberCmdImpl";
@@ -32,6 +32,7 @@ import { fetchGuildSettings } from "../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../toolbox/randomArrayValue";
 import { GenericGuild } from "./GenericGuild";
+import GenericGuildCommand from '../Commands/Guild/GenericGuildCommand';
 
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
@@ -39,7 +40,7 @@ export abstract class AbstractGuild implements GenericGuild {
     get commandHandler(): GuildCommandHandler {
         return this._commandHandler;
     }
-    protected _commands: GenericCommand[] = [
+    protected _commands: GenericGuildCommand[] = [
         new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
         new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
         new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
@@ -48,7 +49,7 @@ export abstract class AbstractGuild implements GenericGuild {
         new NsfwSwitchCmdImpl(), new ShowLogsCmdImpl()
     ]
 
-    protected constructor(guild_id: Snowflake, specifiedCommands?: GenericCommand[]) {
+    protected constructor(guild_id: Snowflake, specifiedCommands?: GenericGuildCommand[]) {
         this.guildID = guild_id;
         this._commandHandler = new GuildCommandHandlerImpl(
             guild_id,

@@ -5,12 +5,12 @@ import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
 import { GremoveResponse as _guide } from '../../guides.json';
 import { removeResponse as _keyword } from '../../keywords.json';
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 
 
 
-export class RemovePersonalResponseCmdImpl extends AbstractCommand implements removePersonalResponseCmd {
+export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implements removePersonalResponseCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

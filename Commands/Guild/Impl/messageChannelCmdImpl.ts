@@ -3,7 +3,7 @@ import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord
 import { messageChannel as _keyword } from '../../keywords.json';
 import { GmessageChannel as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -11,7 +11,7 @@ import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
-export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
+export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
     readonly id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases

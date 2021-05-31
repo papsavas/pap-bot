@@ -2,7 +2,7 @@ import { GunpinMessage as _guide } from "../../guides.json";
 import { unpinMessage as _keyword } from "../../keywords.json";
 import * as Discord from "discord.js";
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
 import { extractId } from "../../../toolbox/extractMessageId";
@@ -13,7 +13,7 @@ import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
-export class UnpinMessageCmdImpl extends AbstractCommand implements unpinMessageCmd {
+export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

@@ -1,5 +1,5 @@
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unlockCommand as _keyword } from '../../keywords.json';
 import { GunlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, ApplicationCommandOptionChoice, CommandInteraction, Message, Snowflake } from "discord.js";
@@ -11,7 +11,7 @@ import { guildMap } from "../../..";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 
 
-export class UnlockCommandCmdImpl extends AbstractCommand implements unlockCommandCmd {
+export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

@@ -2,7 +2,7 @@ import { GpinMessage as _guide } from "../../guides.json";
 import { pinMessage as _keyword } from "../../keywords.json";
 
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -13,7 +13,7 @@ import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 
-export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd {
+export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

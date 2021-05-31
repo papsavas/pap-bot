@@ -1,6 +1,6 @@
 import { ApplicationCommandData, Message, InteractionReplyOptions, Interaction, CommandInteraction, Snowflake } from "discord.js";
-import { literalCommandType } from "../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../Entities/Generic/guildLoggerType";
+import { literalCommandType } from "../Entities/Generic/commandType";
+import { guildLoggerType } from "../Entities/Generic/guildLoggerType";
 
 export interface GenericCommand {
     execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
@@ -10,8 +10,6 @@ export interface GenericCommand {
     getKeyword(): string;
 
     getAliases(): string[];
-
-    getCommandData(guildID: Snowflake): ApplicationCommandData;
 
     interactiveExecute(interaction: CommandInteraction): Promise<any>;
 

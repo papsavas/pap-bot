@@ -1,5 +1,5 @@
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { lockCommand as _keyword } from '../../keywords.json';
 import { GlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
@@ -10,7 +10,7 @@ import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/C
 import { guildMap } from "../../..";
 
 
-export class LockCommandCmdImpl extends AbstractCommand implements lockCommandCmd {
+export class LockCommandCmdImpl extends AbstractGuildCommand implements lockCommandCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

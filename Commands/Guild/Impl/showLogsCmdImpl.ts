@@ -1,5 +1,5 @@
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { logChanges as _keyword } from '../../keywords.json';
 import { GlogChanges as _guide } from '../../guides.json';
 import { ApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
@@ -12,7 +12,7 @@ import { messaging } from "firebase-admin";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 
 
-export class ShowLogsCmdImpl extends AbstractCommand implements unlockCommandCmd {
+export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

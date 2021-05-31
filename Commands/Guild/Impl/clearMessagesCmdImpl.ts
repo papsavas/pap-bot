@@ -4,11 +4,11 @@ import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { GclearMessages as _guide } from '../../guides.json';
 import { clearMessages as _keyword } from '../../keywords.json';
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 
 
-export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
+export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
     readonly id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases

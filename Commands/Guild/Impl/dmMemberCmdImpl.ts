@@ -1,7 +1,7 @@
 import { dmMember as _keyword } from '../../keywords.json';
 import { GdmMember as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
@@ -14,7 +14,7 @@ import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 const requiredPerm = Discord.Permissions.FLAGS.ADMINISTRATOR;
 const permLiteral = 'ADMINISTRATOR'
-export class DmMemberCmdImpl extends AbstractCommand implements dmMemberCmd {
+export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

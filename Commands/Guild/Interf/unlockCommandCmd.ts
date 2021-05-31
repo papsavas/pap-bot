@@ -1,4 +1,4 @@
-import { GenericCommand } from "Commands/Guild/GenericCommand";
+import { GenericCommand } from "Commands/GenericCommand";
 
 export interface unlockCommandCmd extends GenericCommand {
 

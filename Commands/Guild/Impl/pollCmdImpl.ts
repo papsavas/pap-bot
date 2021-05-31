@@ -1,4 +1,4 @@
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import * as Discord from 'discord.js';
 import { simplePoll as _keyword } from '../../keywords.json';
 import { GsimplePoll as _guide } from '../../guides.json';
@@ -12,7 +12,7 @@ import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
 
-export class PollCmdImpl extends AbstractCommand implements pollCmd {
+export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

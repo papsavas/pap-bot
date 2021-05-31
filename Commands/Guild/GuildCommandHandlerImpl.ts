@@ -7,16 +7,17 @@ import {
 import { literalCommandType } from "../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../index";
 import { GuildCommandHandler } from "./GuildCommandHandler";
-import { GenericCommand } from "./GenericCommand";
+import { GenericCommand } from "../GenericCommand";
 import { overrideCommands } from '../../Queries/Generic/Commands';
+import GenericGuildCommand from './GenericGuildCommand';
 require('dotenv').config();
 
 export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
-    readonly commands: GenericCommand[];
+    readonly commands: GenericGuildCommand[];
     private guildID: Snowflake;
 
-    constructor(guild_id: Snowflake, commands: GenericCommand[]) {
+    constructor(guild_id: Snowflake, commands: GenericGuildCommand[]) {
         this.guildID = guild_id;
         this.commands = commands;
     }

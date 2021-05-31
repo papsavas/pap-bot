@@ -3,7 +3,7 @@ import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord
 import { userNotes as _keyword } from '../../keywords.json';
 import { GuserNotes as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../../Guild/AbstractCommand";
+import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { userNotesCmd } from '../Interf/userNotesCmd';
@@ -11,9 +11,14 @@ import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../
 import { userNote } from '../../../Entities/Generic/userNote';
 import { auth } from 'firebase-admin';
 import { guildMap } from '../../..';
+import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
-export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
+export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],

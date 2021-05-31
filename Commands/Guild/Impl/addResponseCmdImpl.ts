@@ -1,6 +1,6 @@
 import { addresponse as _keyword } from '../../keywords.json';
 import { Gaddresponse as _guide } from '../../guides.json';
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
 import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
@@ -12,7 +12,7 @@ import { fetchCommandID } from '../../../Queries/Generic/Commands';
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
-export class AddResponseCmdImpl extends AbstractCommand implements addResponseCmd {
+export class AddResponseCmdImpl extends AbstractGuildCommand implements addResponseCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

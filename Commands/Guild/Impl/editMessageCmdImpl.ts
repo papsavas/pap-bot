@@ -3,7 +3,7 @@ import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
 import { editMessage as _keyword } from '../../keywords.json';
 import { GeditMessage as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
 import * as e from '../../../errorCodes.json'
 import { literalCommandType } from "../../../Entities/Generic/commandType";
@@ -11,7 +11,7 @@ import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
-export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
+export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
     readonly id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases

@@ -1,5 +1,5 @@
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
 import { setPrefix as _keyword } from '../../keywords.json';
 import { GsetPrefix as _guide } from '../../guides.json';
@@ -12,7 +12,7 @@ import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
-export class SetPrefixCmdImpl extends AbstractCommand implements pollCmd {
+export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
 

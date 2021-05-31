@@ -1,5 +1,5 @@
-import {GenericCommand} from "Commands/Guild/GenericCommand";
+import { GenericCommand } from "Commands/GenericCommand";
 
-export interface pinMessageCmd extends GenericCommand{
+export interface pinMessageCmd extends GenericCommand {
 
 }
