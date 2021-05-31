@@ -12,7 +12,7 @@ export abstract class AbstractGuildCommand implements GenericGuildCommand {
 
     abstract execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
 
-    abstract interactiveExecute(interaction: CommandInteraction): Promise<any>;
+    abstract interactiveExecute(commandInteraction: CommandInteraction): Promise<any>;
 
     abstract getKeyword(): string;
 

@@ -11,7 +11,7 @@ export interface GenericCommand {
 
     getAliases(): string[];
 
-    interactiveExecute(interaction: CommandInteraction): Promise<any>;
+    interactiveExecute(commandInteraction: CommandInteraction): Promise<any>;
 
     matchAliases(possibleCommand: string): boolean;
 
