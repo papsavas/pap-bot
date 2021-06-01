@@ -28,7 +28,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
             choices = cmds.map(cmd => Object.assign({}, { name: cmd.name, value: cmd.name }))
         }())
         return {
-            name: `unlockCommand`,
+            name: _keyword,
             description: this.getGuide(),
             options: [
                 {

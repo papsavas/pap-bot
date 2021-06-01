@@ -1,6 +1,6 @@
 {
     "help": "help",
-    "setPrefix": "setPrefix",
+    "setPrefix": "setprefix",
     "dmMember": "dm",
     "showPerms": "perms",
     "lockCommand": "lockcmd",

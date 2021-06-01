@@ -47,7 +47,6 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             return registeredCommands;
         }
         else {
-
             console.log(`commands changed. Refreshing...`);
             await commandManager.set([]);
             const commandData: ApplicationCommandData[] = [];
@@ -63,13 +62,14 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
             applicationCommands.push(helpCommand);
             //add to db
+            console.table(applicationCommands);
             const newCommands = await commandManager.set(applicationCommands);
             await overrideCommands(newCommands.array().map(cmd => Object.assign({}, {
                 keyword: cmd.name,
                 id: cmd.id,
                 guide: cmd.description,
                 aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name)).getAliases()
+                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
 
             })))
             return Promise.resolve(newCommands);

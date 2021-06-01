@@ -30,10 +30,10 @@ export function fetchCommandPerms(guild_id: Snowflake, command_id: string): Prom
 }
 
 export function fetchCommandID(commandName: string): Snowflake {
-    let id: Snowflake;
-    fetchFirstOnCondition('commands', { "keyword": commandName }, ['id'])
-        .then((res: CommandType) => id = res.id);
-    return id;
+    return void (async function () {
+        return fetchFirstOnCondition('commands', { "keyword": commandName }, ['id']);
+    })()
+        .then(r => (r as CommandType).id);
 }
 
 export async function overrideCommands(newCommands: CommandType[]): Promise<CommandType[]> {

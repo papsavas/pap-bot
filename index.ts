@@ -34,11 +34,13 @@ export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
 async function runScript(): Promise<void> {
     //-----insert script--------
+
     /*
     const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
-    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    const botGuildcmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
+    const botGuildcmds = await guildMap.get(botGuildID).commandHandler.fetchGuildCommands(botCmdManager);
     console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    
     */
     //-------------------------
     return

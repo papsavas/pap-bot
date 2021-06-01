@@ -22,7 +22,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
 
     getCommandData(): ApplicationCommandData {
         return {
-            name: `lockCommand`,
+            name: _keyword,
             description: this.getGuide(),
             options: [
                 {

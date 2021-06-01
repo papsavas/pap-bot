@@ -24,7 +24,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
 
     getCommandData(): ApplicationCommandData {
         return {
-            name: `logs`,
+            name: _keyword,
             description: this.getGuide()
         }
     }
