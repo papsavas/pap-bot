@@ -54,7 +54,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
     async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const commands = guildMap.get(guild_id).commandHandler.commands;
-        const command_id = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
+        const command_id = receivedCommand.arg1 as Snowflake; //cannot retrieve command from aliases, must be exact
         const candidateCommand = commands.find((cmds) => cmds.matchAliases(command_id))
         //override perms for manual command in DB
         await overrideCommandPerms(guild_id, command_id, [guild_id]);

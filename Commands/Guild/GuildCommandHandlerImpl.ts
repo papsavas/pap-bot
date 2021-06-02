@@ -1,6 +1,6 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
-    Collection,
+    ApplicationCommand,
+    Collection, ApplicationCommandData,
     CommandInteraction,
     GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from 'discord.js';
@@ -111,8 +111,8 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                     .then(msgReaction => {
                         //msgReaction.remove().catch()
                         const userReactions = msgReaction.message.reactions.cache
-                            .filter(reaction => reaction.users.cache.has(process.env.BOT_ID));
-                        userReactions.forEach(reaction => reaction.users.remove(process.env.BOT_ID).catch());
+                            .filter(reaction => reaction.users.cache.has(process.env.BOT_ID as Snowflake));
+                        userReactions.forEach(reaction => reaction.users.remove(process.env.BOT_ID as Snowflake).catch());
                     })
                     .catch(err => {
                     }))
@@ -172,7 +172,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             color: "DARK_RED",
             timestamp: new Date()
         });
-        bugsChannelEmbed.setDescription(err);
+        bugsChannelEmbed.setDescription(err.message);
         bugsChannelEmbed.addField(`caused by`, interaction.id);
         bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
@@ -210,7 +210,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             color: "DARK_RED",
             timestamp: new Date()
         });
-        bugsChannelEmbed.setDescription(err);
+        bugsChannelEmbed.setDescription(err.message);
         bugsChannelEmbed.addField(`caused by`, commandMessage.url);
         bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member

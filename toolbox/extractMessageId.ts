@@ -5,5 +5,5 @@ export function extractId(s: string): Snowflake {
         const linkContents = s.split('/');
         s = linkContents[linkContents.length - 1];
     }
-    return s;
+    return s as Snowflake;
 }

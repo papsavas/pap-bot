@@ -68,7 +68,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     ): Promise<any> {
 
         try {
-            const fetchedMessage = await channel.messages.fetch(arg1)
+            const fetchedMessage = await channel.messages.fetch(arg1 as Snowflake)
             const editedMessage = await fetchedMessage
                 .edit(commandless2)
             await channel.send({
@@ -83,7 +83,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
                     const targetChannel: Discord.GuildChannel = guild.channels.cache
                         .find(c => c.id == mentions.channels?.firstKey())
 
-                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2);
+                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2 as Snowflake);
 
                     const editedMessage = await targetMessage?.edit(commandless3);
                     const sendLinkMessage = await channel.send(new Discord.MessageEmbed(

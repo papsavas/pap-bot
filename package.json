@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/uuid": "^8.3.0",
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.0.0-dev.652c683da7032a147313b4a8db043be5385e0656",
+    "discord.js": "^13.0.0-dev.086c3f0799d65c64c4e60d6370246a37a27a1eab",
     "dotenv": "^8.2.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",
@@ -22,6 +22,7 @@
     "knex": "^0.95.4",
     "lodash": "^4.17.21",
     "node": "^15.12.0",
+    "npm": "^7.15.1",
     "pg": "^8.5.1",
     "profanity-js": "^0.1.2",
     "readline": "^1.3.0",

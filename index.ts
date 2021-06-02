@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { GuildMember, Message, User } from 'discord.js';
+import { GuildMember, Message, Snowflake, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
@@ -18,7 +18,7 @@ if (inDevelopment)
 console.log("running in " + process.env.NODE_ENV + " mode\n");
 
 export const PAP = new Discord.Client({
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: [
         'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
         'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
@@ -34,13 +34,11 @@ export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-
     /*
     const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
     const botGuildcmds = await guildMap.get(botGuildID).commandHandler.fetchGuildCommands(botCmdManager);
     console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
     const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    
     */
     //-------------------------
     return
@@ -70,8 +68,6 @@ PAP.on('guildUnavailable', (guild) => {
 });
 
 
-
-
 PAP.on('ready', async () => {
     if (inDevelopment) {
         await runScript();
@@ -88,7 +84,7 @@ PAP.on('ready', async () => {
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
         /*PAP.guilds.cache.keyArray()*/
-        [botGuildID].forEach((guildID) => {
+        [botGuildID].forEach((guildID: Snowflake) => {
             if (!guildMap.has(guildID))
                 guildMap.set(guildID, new DefaultGuild(guildID));
             guildMap.get(guildID).onReady(PAP);
@@ -103,17 +99,30 @@ PAP.on('ready', async () => {
 
 
 PAP.on('interaction', interaction => {
-    // If the interaction isn't a slash command, return
-    if (!interaction.isCommand()) return;
+    switch (interaction.type) {
+        case "APPLICATION_COMMAND":
+            if (interaction.channel.type === "text") {
+                try {
+                    guildMap.get(interaction.guildID)
+                        ?.onSlashCommand(interaction)
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+            else if (interaction.channel.type === 'dm') {
+                console.log(`dm interaction received\n${(interaction as Discord.CommandInteraction).commandName}
+                from ${interaction.user.tag}`)
+            }
+            else {
+                console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
+            }
+            break;
 
-    if (!!interaction.guildID)
-        try {
-            guildMap.get(interaction.guildID)
-                ?.onSlashCommand(interaction)
-        } catch (error) {
-            console.log(error)
-        }
+        //case "MESSAGE_COMPONENT":
 
+        default:
+            console.error(`unhandled interaction received\nTYPE:${interaction.type}\n${interaction.toJSON()}`)
+    }
 });
 
 
