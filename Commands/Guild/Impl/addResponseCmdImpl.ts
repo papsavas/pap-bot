@@ -22,7 +22,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             _keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: _keyword,
             description: this.getGuide(),

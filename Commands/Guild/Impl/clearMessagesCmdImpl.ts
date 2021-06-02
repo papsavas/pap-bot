@@ -17,7 +17,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
             _keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: _keyword,
             description: this.getGuide(),

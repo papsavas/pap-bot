@@ -24,7 +24,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             _keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: _keyword,
             description: this.getGuide(),

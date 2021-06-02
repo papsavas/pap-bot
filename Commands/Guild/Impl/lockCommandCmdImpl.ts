@@ -2,7 +2,7 @@
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { lockCommand as _keyword } from '../../keywords.json';
 import { GlockCommand as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionChoice, CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { lockCommandCmd } from "../Interf/lockCommandCmd";
@@ -20,7 +20,12 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             _keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+        let choices: ApplicationCommandOptionChoice[];
+        (async function () {
+            const cmds = await guildMap.get(guild_id).fetchCommands();
+            choices = cmds.map(cmd => Object.assign({}, { name: cmd.name, value: cmd.name }))
+        }())
         return {
             name: _keyword,
             description: this.getGuide(),
@@ -29,7 +34,8 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
                     name: 'command_name',
                     description: 'command name to override perms',
                     type: 'STRING',
-                    required: true
+                    required: true,
+                    choices: choices
                 },
                 {
                     name: 'role1',
@@ -57,8 +63,13 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
                     type: 'ROLE',
                     required: false
                 },
-
-            ]
+                {
+                    name: 'role5',
+                    description: 'allowed role',
+                    type: 'ROLE',
+                    required: false
+                },
+            ],
         }
     }
 
