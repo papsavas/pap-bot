@@ -16,7 +16,7 @@ const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

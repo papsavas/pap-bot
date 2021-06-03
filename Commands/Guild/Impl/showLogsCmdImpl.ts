@@ -14,7 +14,7 @@ import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

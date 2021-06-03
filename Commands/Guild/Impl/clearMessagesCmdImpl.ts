@@ -9,7 +9,7 @@ import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 
 const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

@@ -30,18 +30,19 @@ export const PAP = new Discord.Client({
     }
 });
 
-export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
+export const guildMap = new Map<Snowflake, GenericGuild>();
 
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    /*
-    const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
-    const botGuildcmds = await guildMap.get(botGuildID).commandHandler.fetchGuildCommands(botCmdManager);
-    console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+
+    const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
+    const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
+    /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
     const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
     */
     //-------------------------
+    console.log('done');
     return
 }
 
@@ -70,10 +71,7 @@ PAP.on('guildUnavailable', (guild) => {
 
 
 PAP.on('ready', async () => {
-    if (inDevelopment) {
-        await runScript();
-        //process.exit(132);
-    }
+
     try {
         // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
@@ -96,6 +94,11 @@ PAP.on('ready', async () => {
         console.log('ERROR\n' + err.stack);
     }
     console.log(`___Initiated___`);
+
+    if (inDevelopment) {
+        await runScript();
+        //process.exit(132);
+    }
 });
 
 

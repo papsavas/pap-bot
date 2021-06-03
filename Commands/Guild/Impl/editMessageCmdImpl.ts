@@ -14,7 +14,7 @@ const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

@@ -12,7 +12,7 @@ import { pollCmd } from "../Interf/pollCmd";
 const prefixOptionLiteral: ApplicationCommandOptionData['name'] = 'prefix';
 export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

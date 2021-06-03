@@ -3,6 +3,8 @@ import { literalCommandType } from "../Entities/Generic/commandType";
 import { guildLoggerType } from "../Entities/Generic/guildLoggerType";
 
 export interface GenericCommand {
+    id: Snowflake;
+
     execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
 
     getGuide(): string;

@@ -11,7 +11,7 @@ import { showPermsCmd } from "../Interf/showPermsCmd";
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

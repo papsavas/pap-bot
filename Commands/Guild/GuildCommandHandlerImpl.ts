@@ -62,7 +62,6 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
             applicationCommands.push(helpCommand);
             //add to db
-            console.table(applicationCommands);
             const newCommands = await commandManager.set(applicationCommands);
             await overrideCommands(newCommands.array().map(cmd => Object.assign({}, {
                 keyword: cmd.name,

@@ -3,7 +3,7 @@ import { Snowflake } from "discord.js";
 import { guildRolePermission } from "../../Entities/Generic/guildRolePermissionType";
 import { CommandType } from "../../Entities/Generic/commandType";
 
-export async function overrideCommandPerms(guild_id: Snowflake, command_id: string, roleIDs: Snowflake[]): Promise<guildRolePermission[]> {
+export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snowflake, roleIDs: Snowflake[]): Promise<guildRolePermission[]> {
     await dropRows('command_perms',
         {
             "guild_id": guild_id,

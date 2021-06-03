@@ -13,7 +13,7 @@ import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

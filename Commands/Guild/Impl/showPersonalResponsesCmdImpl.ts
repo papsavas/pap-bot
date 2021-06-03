@@ -12,7 +12,7 @@ import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
 export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
 
     private readonly _aliases = this.addKeywordToAliases

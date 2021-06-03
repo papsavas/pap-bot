@@ -12,7 +12,7 @@ import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 const respOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implements removePersonalResponseCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (

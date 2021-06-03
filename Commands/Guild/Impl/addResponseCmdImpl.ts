@@ -15,7 +15,7 @@ const Profanity = new profanity();
 const responeOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class AddResponseCmdImpl extends AbstractGuildCommand implements addResponseCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    readonly _id: Snowflake = fetchCommandID(_keyword);
 
     private readonly _aliases = this.addKeywordToAliases
         (
