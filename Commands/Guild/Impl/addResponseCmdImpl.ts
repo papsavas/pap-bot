@@ -9,13 +9,21 @@ import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
 import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { GenericCommand } from '../../GenericCommand';
+import GenericGuildCommand from '../GenericGuildCommand';
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
 const responeOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class AddResponseCmdImpl extends AbstractGuildCommand implements addResponseCmd {
+    protected _id: Snowflake;
+    private constructor() { super() }
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    static async init(): Promise<addResponseCmd> {
+        const cmd = new AddResponseCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

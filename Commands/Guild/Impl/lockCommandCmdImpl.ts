@@ -13,7 +13,14 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 
 export class LockCommandCmdImpl extends AbstractGuildCommand implements lockCommandCmd {
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<lockCommandCmd> {
+        const cmd = new LockCommandCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

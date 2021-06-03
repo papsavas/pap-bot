@@ -11,7 +11,14 @@ import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<unlockCommandCmd> {
+        const cmd = new UnlockCommandCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

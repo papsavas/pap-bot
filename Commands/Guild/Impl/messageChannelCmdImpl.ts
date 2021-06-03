@@ -13,7 +13,14 @@ const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
 const msgOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 
 export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<messageChannelCmd> {
+        const cmd = new MessageChannelCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

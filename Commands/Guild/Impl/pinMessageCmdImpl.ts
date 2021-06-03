@@ -16,7 +16,14 @@ const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<pinMessageCmd> {
+        const cmd = new PinMessageCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

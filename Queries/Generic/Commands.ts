@@ -27,12 +27,11 @@ export function fetchCommandPerms(guild_id: Snowflake, command_id: string): Prom
     );
 }
 
-export function fetchCommandID(commandName: string): Snowflake {
-    return void (function () {
-        return fetchFirstOnCondition('commands', { "keyword": commandName }, ['id']);
-    })()
-        .then(r => (r as CommandType).id)
-        .catch(err => console.log(err));
+export async function fetchCommandID(commandName: string): Promise<Snowflake> {
+    const res = await fetchFirstOnCondition('commands', { "keyword": commandName }, ['id']) as CommandType;
+    return res.id;
+
+
 }
 
 export async function overrideCommands(newCommands: CommandType[]): Promise<CommandType[]> {

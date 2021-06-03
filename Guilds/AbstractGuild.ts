@@ -36,18 +36,6 @@ import GenericGuildCommand from '../Commands/Guild/GenericGuildCommand';
 
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
-    private _commandHandler: GuildCommandHandler;
-    get commandHandler(): GuildCommandHandler {
-        return this._commandHandler;
-    }
-    protected _commands: GenericGuildCommand[] = [
-        new PollCmdImpl(), new DmMemberCmdImpl(), new SetPrefixCmdImpl(),
-        new PinMessageCmdImpl(), new UnpinMessageCmdImpl(),
-        new MessageChannelCmdImpl(), new ClearMessagesCmdImpl(), new EditMessageCmdImpl(),
-        new LockCommandCmdImpl(), new UnlockCommandCmdImpl(), new ShowPermsCmdsImpl(),
-        new AddResponseCmdImpl(), new ShowPersonalResponsesCmdImpl(), new RemovePersonalResponseCmdImpl(),
-        new NsfwSwitchCmdImpl(), new ShowLogsCmdImpl()
-    ]
 
     protected constructor(guild_id: Snowflake, specifiedCommands?: GenericGuildCommand[]) {
         this.guildID = guild_id;
@@ -56,6 +44,20 @@ export abstract class AbstractGuild implements GenericGuild {
             this._commands.concat(specifiedCommands ?? []) //merge specified commands if any
         );
     }
+
+    private _commandHandler: GuildCommandHandler;
+    get commandHandler(): GuildCommandHandler {
+        return this._commandHandler;
+    }
+    protected _commands: Promise<GenericGuildCommand>[] = [
+        PollCmdImpl.init(), DmMemberCmdImpl.init(), SetPrefixCmdImpl.init(),
+        PinMessageCmdImpl.init(), UnpinMessageCmdImpl.init(),
+        MessageChannelCmdImpl.init(), ClearMessagesCmdImpl.init(), EditMessageCmdImpl.init(),
+        LockCommandCmdImpl.init(), UnlockCommandCmdImpl.init(), ShowPermsCmdsImpl.init(),
+        AddResponseCmdImpl.init(), ShowPersonalResponsesCmdImpl.init(), RemovePersonalResponseCmdImpl.init(),
+        NsfwSwitchCmdImpl.init(), ShowLogsCmdImpl.init()
+    ]
+
 
     private _responses: string[];
     private _settings: guildSettings;

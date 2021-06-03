@@ -5,13 +5,16 @@ import { bugsChannel } from '../../index';
 import { literalCommandType } from "../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../Entities/Generic/guildLoggerType";
 import GenericGuildCommand from "./GenericGuildCommand";
+import { GenericCommand } from "../GenericCommand";
 
 export abstract class AbstractGuildCommand implements GenericGuildCommand {
-    abstract readonly _id: Snowflake;
-
+    protected abstract _id: Snowflake;
+    protected constructor() { }
     get id() {
         return this._id;
     }
+
+    static init() { }
 
     abstract getCommandData(guildID: Snowflake): ApplicationCommandData;
 

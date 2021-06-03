@@ -8,11 +8,19 @@ import { GsetPrefix as _guide } from '../../guides.json';
 import { setPrefix as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
+import { setPrefixCmd } from "../Interf/setPrefixCmd";
 
 const prefixOptionLiteral: ApplicationCommandOptionData['name'] = 'prefix';
 export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<setPrefixCmd> {
+        const cmd = new SetPrefixCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

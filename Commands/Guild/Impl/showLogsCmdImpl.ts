@@ -10,11 +10,19 @@ import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 import { guildMap } from "../../..";
 import { messaging } from "firebase-admin";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
+import { showLogsCmd } from "../Interf/showLogsCmd";
 
 
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<showLogsCmd> {
+        const cmd = new ShowLogsCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (

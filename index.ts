@@ -1,8 +1,10 @@
 import * as Discord from 'discord.js';
 import { GuildMember, Message, Snowflake, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json';
+import { addRow } from './DB/CoreRepo';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
+import { fetchCommandID } from './Queries/Generic/Commands';
 
 
 
@@ -35,12 +37,23 @@ export const guildMap = new Map<Snowflake, GenericGuild>();
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-
-    const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
-    const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
-    /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
-    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    */
+    guildMap.get(botGuildID as Snowflake).commandHandler.commands.forEach(async cmd =>
+        /*await addRow(
+            'command_perms', Object.assign({}, {
+                "guild_id": botGuildID,
+                "role_id": botGuildID,
+                "command_id": cmd.id
+            }))
+            */
+        console.log(cmd.id)
+    )
+    console.log(fetchCommandID('dm'));
+    /*
+        const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
+        const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
+        /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+        const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+        */
     //-------------------------
     console.log('done');
     return

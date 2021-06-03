@@ -12,7 +12,14 @@ import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
 export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {
 
-    readonly _id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    private constructor() { super() }
+
+    static async init(): Promise<showPersonalResponsesCmd> {
+        const cmd = new ShowPersonalResponsesCmdImpl();
+        cmd._id = await fetchCommandID(_keyword);
+        return cmd;
+    }
 
 
     private readonly _aliases = this.addKeywordToAliases
