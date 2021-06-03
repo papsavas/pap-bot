@@ -1,16 +1,14 @@
 
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { unlockCommand as _keyword } from '../../keywords.json';
-import { GunlockCommand as _guide } from '../../guides.json';
-import { ApplicationCommandData, ApplicationCommandOptionChoice, CommandInteraction, Message, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
-import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
+import { ApplicationCommandData, ApplicationCommandOptionChoice, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
-import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
+import { GunlockCommand as _guide } from '../../guides.json';
+import { unlockCommand as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
-
+const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -32,7 +30,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
             description: this.getGuide(),
             options: [
                 {
-                    name: 'command_name',
+                    name: cmdOptionLiteral,
                     description: 'command name to unlock',
                     type: 'STRING',
                     required: true,
@@ -45,7 +43,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const guild_id = interaction.guildID;
-        const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
+        const command_id = interaction.options.get(cmdOptionLiteral).value as string; //cannot retrieve command from aliases, must be exact
         await interaction.defer({ ephemeral: true });
         await overrideCommandPerms(guild_id, command_id, [guild_id]);
         return interaction.editReply(`Command ${command_id} unlocked`);

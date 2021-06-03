@@ -2,8 +2,6 @@ import { addRows, dropRows, fetchAllOnCondition, fetchFirstOnCondition } from ".
 import { Snowflake } from "discord.js";
 import { guildRolePermission } from "../../Entities/Generic/guildRolePermissionType";
 import { CommandType } from "../../Entities/Generic/commandType";
-import { rest } from "lodash";
-
 
 export async function overrideCommandPerms(guild_id: Snowflake, command_id: string, roleIDs: Snowflake[]): Promise<guildRolePermission[]> {
     await dropRows('command_perms',
@@ -30,10 +28,11 @@ export function fetchCommandPerms(guild_id: Snowflake, command_id: string): Prom
 }
 
 export function fetchCommandID(commandName: string): Snowflake {
-    return void (async function () {
+    return void (function () {
         return fetchFirstOnCondition('commands', { "keyword": commandName }, ['id']);
     })()
-        .then(r => (r as CommandType).id);
+        .then(r => (r as CommandType).id)
+        .catch(err => console.log(err));
 }
 
 export async function overrideCommands(newCommands: CommandType[]): Promise<CommandType[]> {

@@ -1,17 +1,14 @@
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import * as Discord from 'discord.js';
-import { simplePoll as _keyword } from '../../keywords.json';
-import { GsimplePoll as _guide } from '../../guides.json';
-
-import { pollCmd } from "../Interf/pollCmd";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, GuildMember, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, GuildMember, Snowflake, TextChannel } from "discord.js";
 import { guildMap } from "../../..";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
+import { GsimplePoll as _guide } from '../../guides.json';
+import { simplePoll as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { pollCmd } from "../Interf/pollCmd";
 
-
-
+const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -28,7 +25,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             description: this.getGuide(),
             options: [
                 {
-                    name: 'text',
+                    name: textOptionLiteral,
                     description: 'text to poll',
                     type: 'STRING',
                     required: true
@@ -45,7 +42,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
                 {
                     title: `Vote`,
                     color: '#D8F612',
-                    description: interaction.options[0].value as string,
+                    description: interaction.options.get(textOptionLiteral).value as string,
                     author: {
                         name: member.displayName,
                         icon_url: member.user.avatarURL({ format: 'png' })
@@ -65,7 +62,6 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             })
             .catch(err => interaction.reply(`something went wrong`))
     }
-
 
     execute(message: Discord.Message, { commandless1 }: literalCommandType) {
         const commandMsg = message;

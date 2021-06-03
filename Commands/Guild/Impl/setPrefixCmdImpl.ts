@@ -1,17 +1,15 @@
 
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { pollCmd } from "../Interf/pollCmd";
-import { setPrefix as _keyword } from '../../keywords.json';
-import { GsetPrefix as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
-import { addRow } from "../../../DB/CoreRepo";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
+import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
+import { GsetPrefix as _guide } from '../../guides.json';
+import { setPrefix as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { pollCmd } from "../Interf/pollCmd";
 
-
+const prefixOptionLiteral: ApplicationCommandOptionData['name'] = 'prefix';
 export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -28,10 +26,10 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
             description: this.getGuide(),
             options: [
                 {
-                    name: 'prefix',
+                    name: prefixOptionLiteral,
                     description: 'new prefix',
                     type: 'STRING',
-                    required: true
+                    required: false
                 }
             ]
         }
@@ -39,7 +37,7 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const guildHandler = guildMap.get(interaction.guildID);
-        const newPrefix = interaction.options[0].value as string | undefined;
+        const newPrefix = interaction.options.get(prefixOptionLiteral).value as string | undefined;
         await interaction.defer();
         if (!!newPrefix) {
             const oldSettings = await fetchGuildSettings(interaction.guildID);

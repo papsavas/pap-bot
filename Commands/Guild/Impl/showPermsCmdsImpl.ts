@@ -1,16 +1,14 @@
-import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed, Snowflake } from 'discord.js';
-import { showPerms as _keyword } from '../../keywords.json';
-import { GshowPerms as _guide } from '../../guides.json';
-
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { showPermsCmd } from "../Interf/showPermsCmd";
-import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { guildMap } from "../../../index";
-import { fetchAllOnCondition } from "../../../DB/CoreRepo";
+import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
+import { GshowPerms as _guide } from '../../guides.json';
+import { showPerms as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { showPermsCmd } from "../Interf/showPermsCmd";
 
 
+const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -27,7 +25,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
             description: this.getGuide(),
             options: [
                 {
-                    name: 'command',
+                    name: cmdOptionLiteral,
                     description: 'permissions for command',
                     type: 'STRING',
                     required: true
@@ -37,7 +35,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const command_id = interaction.options[0].value as string;
+        const command_id = interaction.options.get(cmdOptionLiteral).value as string;
         const guild_prefix = guildMap.get(interaction.guildID).getSettings().prefix;
         await interaction.defer({ ephemeral: true });
         const commandPerms = await fetchCommandPerms(interaction.guildID, command_id);

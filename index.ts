@@ -32,6 +32,7 @@ export const PAP = new Discord.Client({
 
 export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
 
+
 async function runScript(): Promise<void> {
     //-----insert script--------
     /*

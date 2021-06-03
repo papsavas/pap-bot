@@ -2,7 +2,7 @@ import { addresponse as _keyword } from '../../keywords.json';
 import { Gaddresponse as _guide } from '../../guides.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { addResponseCmd } from "../Interf/addResponseCmd";
-import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Interaction, Message, MessageEmbed, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
@@ -12,6 +12,7 @@ import { fetchCommandID } from '../../../Queries/Generic/Commands';
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
+const responeOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class AddResponseCmdImpl extends AbstractGuildCommand implements addResponseCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -28,7 +29,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             description: this.getGuide(),
             options: [
                 {
-                    name: 'response',
+                    name: responeOptionLiteral,
                     description: 'your response',
                     type: 'STRING',
                     required: true
@@ -39,7 +40,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
     }
 
     async interactiveExecute(interaction: CommandInteraction) {
-        const memberResponse = interaction.options[0].value as string;
+        const memberResponse = interaction.options.get(responeOptionLiteral).value as string;
         const guildID = interaction.guildID;
         const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();

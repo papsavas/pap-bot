@@ -6,13 +6,14 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import * as e from '../../../errorCodes.json';
 import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
-
+const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
+const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -29,13 +30,13 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
             description: this.getGuide(),
             options: [
                 {
-                    name: 'message_id',
+                    name: msgidOptionLiteral,
                     description: 'targeted message id or link',
                     type: 'STRING',
                     required: true
                 },
                 {
-                    name: 'reason',
+                    name: reasonOptionLiteral,
                     description: 'reason for pinning',
                     type: 'STRING',
                     required: false
@@ -46,11 +47,11 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
-        const reason = interaction.options[1];
+        const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember
         let pinReason = reason ? reason.value as string : ``;
         pinReason += `\nby ${member.displayName}`;
-        let pinningMessageID = extractId(interaction.options[0].value as string);
+        let pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
         let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);

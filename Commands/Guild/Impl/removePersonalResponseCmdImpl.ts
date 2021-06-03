@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -9,7 +9,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 
 
-
+const respOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implements removePersonalResponseCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -26,7 +26,7 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
             description: this.getGuide(),
             options: [
                 {
-                    name: 'response',
+                    name: respOptionLiteral,
                     description: 'exact personal response',
                     type: 'STRING',
                     required: true
@@ -37,7 +37,13 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const { guildID, member, options } = interaction;
-        return interaction.reply(await removeMemberResponse(guildID, (member as GuildMember).id, options[0].value as string), { ephemeral: true });
+        return interaction.reply(
+            await removeMemberResponse(
+                guildID, (member as GuildMember).id,
+                options.get(respOptionLiteral).value as string
+            ),
+            { ephemeral: true }
+        );
     }
 
     async execute(message: Message, { commandless1 }: literalCommandType) {

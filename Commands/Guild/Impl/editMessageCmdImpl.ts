@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, GuildChannel, Message, Snowflake } from 'discord.js';
 import { editMessage as _keyword } from '../../keywords.json';
 import { GeditMessage as _guide } from '../../guides.json';
 
@@ -10,7 +10,9 @@ import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
-
+const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
+const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
+const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
     readonly id: Snowflake = fetchCommandID(_keyword);
 
@@ -26,19 +28,19 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
             description: this.getGuide(),
             options: [
                 {
-                    name: 'channel',
+                    name: channelOptionLiteral,
                     description: 'target channel',
                     type: 'CHANNEL',
                     required: true
                 },
                 {
-                    name: 'message_id',
+                    name: msgidOptionLiteral,
                     description: 'the id of the message',
                     type: 'STRING',
                     required: true
                 },
                 {
-                    name: 'edit',
+                    name: editedMsgOptionLiteral,
                     description: 'new message',
                     type: 'STRING',
                     required: true
@@ -48,13 +50,13 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        const targetChannel = interaction.options[0].channel as Discord.GuildChannel;
-        const messageID = interaction.options[1].value as Discord.Snowflake
+        const targetChannel = interaction.options.get(channelOptionLiteral).channel as GuildChannel;
+        const messageID = interaction.options.get(msgidOptionLiteral).value as Snowflake
         await interaction.defer({ ephemeral: true });
         const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(messageID);
         if (targetMessage.author != interaction.client.user)
             return interaction.reply('Cannot edit a message authored by another user');
-        const editedMessage = await targetMessage?.edit(interaction.options[2].value as string);
+        const editedMessage = await targetMessage?.edit(interaction.options.get(editedMsgOptionLiteral).value as string);
         return interaction.editReply(
             new Discord.MessageEmbed({
                 description: `[edited message](${editedMessage.url})`

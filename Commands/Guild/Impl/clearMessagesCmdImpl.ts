@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { guildMap } from '../../..';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -7,7 +7,7 @@ import { clearMessages as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 
-
+const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
     readonly id: Snowflake = fetchCommandID(_keyword);
 
@@ -23,7 +23,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
             description: this.getGuide(),
             options: [
                 {
-                    name: 'number',
+                    name: numberOptionLiteral,
                     description: 'number of messages to delete',
                     type: 'INTEGER',
                     required: true
@@ -34,7 +34,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const number = interaction.options[0].value as number;
+        const number = interaction.options.get(numberOptionLiteral).value as number;
         const member = interaction.member as GuildMember;
 
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {

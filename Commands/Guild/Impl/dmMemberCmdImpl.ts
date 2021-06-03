@@ -5,7 +5,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import * as e from '../../../errorCodes.json'
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake, User } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, Message, Snowflake, User } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { guildMap } from '../../..';
@@ -13,7 +13,9 @@ import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
 const requiredPerm = Discord.Permissions.FLAGS.ADMINISTRATOR;
-const permLiteral = 'ADMINISTRATOR'
+const permLiteral = 'ADMINISTRATOR';
+
+const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -36,7 +38,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                     required: true
                 },
                 {
-                    name: 'message',
+                    name: messageOptionLiteral,
                     description: 'message to user',
                     type: 'STRING',
                     required: true
@@ -51,8 +53,8 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             return interaction.reply(`\`\`\`${permLiteral} permissions needed\`\`\``,
                 { ephemeral: true });
 
-        const user = interaction.options[0].user;
-        const messageContent = interaction.options[1].value as string;
+        const user = interaction.options.find(op => op.type == "USER").user;
+        const messageContent = interaction.options.get(messageOptionLiteral).value as string;
         const sendEmb = new Discord.MessageEmbed({
             author: {
                 name: "from: " + interaction.guild.name,

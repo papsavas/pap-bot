@@ -4,7 +4,7 @@ import * as Discord from "discord.js";
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -12,7 +12,8 @@ import * as e from '../../../errorCodes.json';
 import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
-
+const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
+const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -29,13 +30,13 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
             description: this.getGuide(),
             options: [
                 {
-                    name: 'message_id',
+                    name: msgidOptionLiteral,
                     description: 'targeted message id or link',
                     type: 'STRING',
                     required: true
                 },
                 {
-                    name: 'reason',
+                    name: reasonOptionLiteral,
                     description: 'reason for unpinning',
                     type: 'STRING',
                     required: false
@@ -46,11 +47,11 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as Discord.TextChannel;
-        const reason = interaction.options[1];
+        const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
         let unpinReason = reason ? reason.value as string : ``;
         unpinReason += `\nby ${member?.displayName}`;
-        let pinningMessageID = extractId(interaction.options[0].value as string);
+        let pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
         let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);

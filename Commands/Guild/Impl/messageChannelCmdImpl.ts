@@ -1,15 +1,16 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord.js';
-import { messageChannel as _keyword } from '../../keywords.json';
+import { ApplicationCommandData, ApplicationCommandOptionData, Message, Snowflake, TextChannel } from 'discord.js';
+import { guildMap } from '../../..';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { GmessageChannel as _guide } from '../../guides.json';
-
+import { messageChannel as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { guildMap } from '../../..';
-import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
+
+const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
+const msgOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 
 export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -26,13 +27,13 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
             description: this.getGuide(),
             options: [
                 {
-                    name: 'channel',
+                    name: channelOptionLiteral,
                     description: 'targeted channel',
                     type: 'CHANNEL',
                     required: true
                 },
                 {
-                    name: 'message',
+                    name: msgOptionLiteral,
                     description: 'the message',
                     type: 'STRING',
                     required: true
@@ -42,8 +43,8 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        const sendChannel = interaction.options[0].channel as TextChannel;
-        const messageContent = interaction.options[1].value as string;
+        const sendChannel = interaction.options.get(channelOptionLiteral).channel as TextChannel;
+        const messageContent = interaction.options.get(msgOptionLiteral).value as string;
         await sendChannel.send(messageContent, { split: true });
         const emb = new Discord.MessageEmbed({
             title: `Message send`,

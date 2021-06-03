@@ -1,14 +1,13 @@
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { myresponses as _keyword } from '../../keywords.json';
-import { Gmyresponses as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
-import { fetchAllGuildMemberResponses, fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
-import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
+import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
+import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
+import { Gmyresponses as _guide } from '../../guides.json';
+import { myresponses as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
 
 export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {

@@ -2,14 +2,14 @@
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { lockCommand as _keyword } from '../../keywords.json';
 import { GlockCommand as _guide } from '../../guides.json';
-import { ApplicationCommandData, ApplicationCommandOptionChoice, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionChoice, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { lockCommandCmd } from "../Interf/lockCommandCmd";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { guildMap } from "../../..";
 
-
+const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 export class LockCommandCmdImpl extends AbstractGuildCommand implements lockCommandCmd {
 
     readonly id: Snowflake = fetchCommandID(_keyword);
@@ -31,7 +31,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             description: this.getGuide(),
             options: [
                 {
-                    name: 'command_name',
+                    name: cmdOptionLiteral,
                     description: 'command name to override perms',
                     type: 'STRING',
                     required: true,
@@ -75,12 +75,14 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const guild_id = interaction.guildID;
-        const filteredRoles = interaction.options.filter(option => option.role);
+        const filteredRoles = interaction.options.filter(option => option.type == "ROLE");
         const rolesKeyArr = filteredRoles.map(filteredOptions => filteredOptions.role.id);
-        const command_id = interaction.options[0].value as string; //cannot retrieve command from aliases, must be exact
+        const command_literal = interaction.options[0]?.value as string; //cannot retrieve command from aliases, must be exact
+        if (!command_literal)
+            return interaction.reply(`invalid command ${JSON.stringify(interaction.options[0])}`);
         await interaction.defer({ ephemeral: true });
-        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
-        return interaction.editReply(`Command ${command_id} locked for ${filteredRoles.map(ro => ro.role).toString()}`);
+        await overrideCommandPerms(guild_id, command_literal, [...new Set(rolesKeyArr)]);
+        return interaction.editReply(`Command ${command_literal} locked for ${filteredRoles.map(ro => ro.role).toString()}`);
     }
 
     execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
