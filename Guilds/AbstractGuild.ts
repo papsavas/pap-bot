@@ -37,19 +37,19 @@ import GenericGuildCommand from '../Commands/Guild/GenericGuildCommand';
 export abstract class AbstractGuild implements GenericGuild {
     protected readonly guildID: Snowflake;
 
-    protected constructor(guild_id: Snowflake, specifiedCommands?: GenericGuildCommand[]) {
+    protected constructor(guild_id: Snowflake) {
         this.guildID = guild_id;
-        this._commandHandler = new GuildCommandHandlerImpl(
-            guild_id,
-            this._commands.concat(specifiedCommands ?? []) //merge specified commands if any
-        );
     }
 
-    private _commandHandler: GuildCommandHandler;
-    get commandHandler(): GuildCommandHandler {
-        return this._commandHandler;
+    static init(guild_id: Snowflake) {
     }
-    protected _commands: Promise<GenericGuildCommand>[] = [
+
+    public commandHandler: GuildCommandHandler;
+    protected specifiedCommands?: GenericGuildCommand[]
+
+
+    protected _commands: GenericGuildCommand[];
+    protected _commandPromises: Promise<GenericGuildCommand>[] = [
         PollCmdImpl.init(), DmMemberCmdImpl.init(), SetPrefixCmdImpl.init(),
         PinMessageCmdImpl.init(), UnpinMessageCmdImpl.init(),
         MessageChannelCmdImpl.init(), ClearMessagesCmdImpl.init(), EditMessageCmdImpl.init(),
@@ -98,12 +98,12 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onSlashCommand(interaction: CommandInteraction): Promise<any> {
-        return this._commandHandler.onSlashCommand(interaction);
+        return this.commandHandler.onSlashCommand(interaction);
     }
 
     async onMessage(message: Message): Promise<any> {
         if (message.content.startsWith(this._settings.prefix)) {
-            return this._commandHandler.onCommand(message);
+            return this.commandHandler.onCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {

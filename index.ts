@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { GuildMember, Message, Snowflake, User } from 'discord.js';
+import { CommandInteraction, GuildMember, Message, MessageActionRow, MessageButton, MessageComponent, Snowflake, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json';
 import { addRow } from './DB/CoreRepo';
 import { GenericGuild } from "./Guilds/GenericGuild";
@@ -37,17 +37,15 @@ export const guildMap = new Map<Snowflake, GenericGuild>();
 
 async function runScript(): Promise<void> {
     //-----insert script--------
+    /*
     guildMap.get(botGuildID as Snowflake).commandHandler.commands.forEach(async cmd =>
-        /*await addRow(
+        await addRow(
             'command_perms', Object.assign({}, {
                 "guild_id": botGuildID,
                 "role_id": botGuildID,
                 "command_id": cmd.id
             }))
-            */
-        console.log(cmd.id)
-    )
-    console.log(fetchCommandID('dm'));
+    );
     /*
         const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
         const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
@@ -96,11 +94,11 @@ PAP.on('ready', async () => {
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
         /*PAP.guilds.cache.keyArray()*/
-        [botGuildID].forEach((guildID: Snowflake) => {
+        for (const guildID of [botGuildID] as Snowflake[]) {
             if (!guildMap.has(guildID))
-                guildMap.set(guildID, new DefaultGuild(guildID));
+                guildMap.set(guildID, await DefaultGuild.init(guildID));
             guildMap.get(guildID).onReady(PAP);
-        });
+        };
         console.log('smooth init')
 
     } catch (err) {
@@ -115,7 +113,7 @@ PAP.on('ready', async () => {
 });
 
 
-PAP.on('interaction', interaction => {
+PAP.on('interaction', async interaction => {
     switch (interaction.type) {
         case "APPLICATION_COMMAND":
             if (interaction.channel.type === "text") {
@@ -135,8 +133,8 @@ PAP.on('interaction', interaction => {
             }
             break;
 
-        //case "MESSAGE_COMPONENT":
-
+        case "MESSAGE_COMPONENT":
+            console.log(`message component receivied: ${interaction.id}`);
         default:
             console.error(`unhandled interaction received\nTYPE:${interaction.type}\n${interaction.toJSON()}`)
     }
