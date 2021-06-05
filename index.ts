@@ -42,13 +42,13 @@ async function runScript(): Promise<void> {
                 "role_id": botGuildID,
                 "command_id": cmd.id
             }))
-    );
+    );*/
     /*
-        const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
-        const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
-        /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
-        const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-        */
+    const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
+    const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
+    /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    */
     //-------------------------
     console.log('done');
     return

@@ -17,7 +17,7 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snow
     return addRows('command_perms', rows, '*');
 }
 
-export function fetchCommandPerms(guild_id: Snowflake, command_id: string): Promise<guildRolePermission[]> {
+export function fetchCommandPerms(guild_id: Snowflake, command_id: Snowflake): Promise<guildRolePermission[]> {
     return fetchAllOnCondition('command_perms',
         {
             "guild_id": guild_id,
