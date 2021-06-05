@@ -55,7 +55,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
         await interaction.reply(`Select accordingly for nsfw responses`, { components: [row] });
         const filter = (componentInteraction: MessageComponentInteraction) =>
             ['on', 'off'].includes(componentInteraction.customID) &&
-            interaction.user.id === interaction.user.id;
+            componentInteraction.user.id === interaction.user.id;
         const collected = await interaction.channel.awaitMessageComponentInteractions
             (
                 filter, { time: 10000, max: 1 }
@@ -74,11 +74,36 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     async execute(message: Message, { }: literalCommandType) {
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);
-            const literal = oldSettings.nsfw_responses ? "Disabled" : "Enabled"
-            await message.reply(`**${literal}** \`nsfw\` mode`);
-            await updateGuildSettings(message.guild.id, Object.assign(oldSettings, { "nsfw_responses": !oldSettings.nsfw_responses }));
+            const row = new MessageActionRow()
+                .addComponents(
+                    new MessageButton({
+                        "customID": "on",
+                        "label": "enable",
+                        "style": "SUCCESS"
+                    }),
+                    new MessageButton({
+                        "customID": "off",
+                        "label": "disable",
+                        "style": "DANGER"
+                    })
+                );
+            const reply = await message.reply(`Select accordingly for nsfw responses`, { components: [row] });
+            const filter = (componentInteraction: MessageComponentInteraction) =>
+                ['on', 'off'].includes(componentInteraction.customID) &&
+                componentInteraction.user.id === message.author.id;
+            const collected = await message.channel.awaitMessageComponentInteractions
+                (
+                    filter, { time: 10000, max: 1 }
+                );
+
+            const btn = collected.first();
+            if (!btn)
+                return reply.edit(`failed to respond in time`, { components: [] });
+            const enabled = btn.customID === 'on';
+            const literal = enabled ? "Enabled" : "Disabled";
+            await updateGuildSettings(message.guild.id, Object.assign(oldSettings, { "nsfw_responses": enabled }));
             await guildMap.get(message.guild.id).loadResponses();
-            return Promise.resolve();
+            return reply.edit(`**${literal}** \`nsfw\` mode`, { components: [] });
         } catch (error) {
             return Promise.reject(error)
         }
