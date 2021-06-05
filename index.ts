@@ -1,7 +1,7 @@
 import * as Discord from 'discord.js';
 import { CommandInteraction, GuildMember, Message, MessageActionRow, MessageButton, MessageComponent, Snowflake, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json';
-import { addRow } from './DB/CoreRepo';
+import { addRow, addRows } from './DB/CoreRepo';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 import { fetchCommandID } from './Queries/Generic/Commands';
@@ -62,7 +62,16 @@ PAP.on('guildCreate', (guild) => {
     /* implement DB writes */
     /*
     * - guild table add id
-    * - command_perms add @everyone role id in every command
+    * - command_perms add @everyone role id in every command 👇
+    await addRows(
+        'command_perms',
+        guildMap.get(botGuildID as Snowflake).commandHandler.commands.map(async cmd =>
+            Object.assign({}, {
+                "guild_id": guild.id,
+                "role_id": guild.id,
+                "command_id": cmd.id
+            }))
+    );
     * - add guild settings
     * */
     //onGuildJoin(guild);
@@ -135,6 +144,7 @@ PAP.on('interaction', async interaction => {
 
         case "MESSAGE_COMPONENT":
             console.log(`message component receivied: ${interaction.id}`);
+            break;
         default:
             console.error(`unhandled interaction received\nTYPE:${interaction.type}\n${interaction.toJSON()}`)
     }
@@ -173,7 +183,6 @@ PAP.on('messageDelete', async (deletedMessage) => {
                 .catch(err => console.log(err));
             break;
     }
-
 })
 
 PAP.on('messageReactionAdd', async (messageReaction, user) => {

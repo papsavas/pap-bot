@@ -1,6 +1,5 @@
-import { ApplicationCommandData, Message, InteractionReplyOptions, Interaction, CommandInteraction, Snowflake } from "discord.js";
+import { CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../Entities/Generic/commandType";
-import { guildLoggerType } from "../Entities/Generic/guildLoggerType";
 
 export interface GenericCommand {
     id: Snowflake;

@@ -11,7 +11,7 @@ export class DefaultGuild extends AbstractGuild implements GenericGuild {
     static async init(guild_id: Snowflake): Promise<GenericGuild> {
         const guild = new DefaultGuild(guild_id);
         guild._commands = await Promise.all(guild._commandPromises);
-        guild.specifiedCommands = undefined;
+        guild.specifiedCommands = undefined //await Promise.all([commandPromises.init()]);
         guild.commandHandler = new GuildCommandHandlerImpl(
             guild_id,
             guild._commands.concat(guild.specifiedCommands ?? []) //merge specified commands if any

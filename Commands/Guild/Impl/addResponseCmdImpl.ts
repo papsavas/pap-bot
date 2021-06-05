@@ -1,16 +1,13 @@
-import { addresponse as _keyword } from '../../keywords.json';
-import { Gaddresponse as _guide } from '../../guides.json';
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { addResponseCmd } from "../Interf/addResponseCmd";
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Interaction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { guildMap } from '../../..';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
-import { guildMap } from '../../..';
-import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { GenericCommand } from '../../GenericCommand';
-import GenericGuildCommand from '../GenericGuildCommand';
+import { Gaddresponse as _guide } from '../../guides.json';
+import { addresponse as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { addResponseCmd } from "../Interf/addResponseCmd";
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
