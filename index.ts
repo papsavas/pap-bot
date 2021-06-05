@@ -1,15 +1,12 @@
-import * as Discord from 'discord.js';
-import { CommandInteraction, GuildMember, Message, MessageActionRow, MessageButton, MessageComponent, Snowflake, User } from 'discord.js';
+import { Client, CommandInteraction, GuildChannelManager, GuildMember, Message, Snowflake, TextChannel, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json';
-import { addRow, addRows } from './DB/CoreRepo';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
-import { fetchCommandID } from './Queries/Generic/Commands';
 
 
 
-export let bugsChannel: Discord.TextChannel;
-export let logsChannel: Discord.TextChannel;
+export let bugsChannel: TextChannel;
+export let logsChannel: TextChannel;
 
 export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
 
@@ -19,7 +16,7 @@ if (inDevelopment)
 
 console.log("running in " + process.env.NODE_ENV + " mode\n");
 
-export const PAP = new Discord.Client({
+export const PAP = new Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: [
         'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
@@ -77,7 +74,7 @@ PAP.on('guildCreate', (guild) => {
     //onGuildJoin(guild);
 })
 
-PAP.on('guildDelete', (guild) => {
+PAP.on('guildDelete', guild => {
     console.log(`left ${guild.name} guild`);
     /* implement DB writes */
     //onGuildLeave(guild);
@@ -95,10 +92,10 @@ PAP.on('ready', async () => {
     try {
         // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
-        const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
-        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
-        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
-        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
+        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
+        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
+        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
+        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
         if (!inDevelopment)
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
@@ -134,7 +131,7 @@ PAP.on('interaction', async interaction => {
                 }
             }
             else if (interaction.channel.type === 'dm') {
-                console.log(`dm interaction received\n${(interaction as Discord.CommandInteraction).commandName}
+                console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
                 from ${interaction.user.tag}`)
             }
             else {

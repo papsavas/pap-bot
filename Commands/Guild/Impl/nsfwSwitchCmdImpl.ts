@@ -9,6 +9,7 @@ import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
 import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { APIPartialEmoji } from 'discord-api-types';
 
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
@@ -41,18 +42,19 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
         const row = new MessageActionRow()
             .addComponents(
                 new MessageButton({
-                    "customID": "on",
-                    "label": "enable",
-                    "style": "SUCCESS"
-                }),
-                new MessageButton({
                     "customID": "off",
-                    "label": "disable",
-                    "style": "DANGER"
-                })
+                    "label": "SFW responses",
+                    "style": "PRIMARY"
+                }).setEmoji("👼"),
+
+                new MessageButton({
+                    "customID": "on",
+                    "label": "NSFW responses",
+                    "style": "DANGER",
+                }).setEmoji("🔞")
             );
 
-        await interaction.reply(`Select accordingly for nsfw responses`, { components: [row] });
+        await interaction.reply(`Select accordingly for guild response type`, { components: [row] });
         const filter = (componentInteraction: MessageComponentInteraction) =>
             ['on', 'off'].includes(componentInteraction.customID) &&
             componentInteraction.user.id === interaction.user.id;
@@ -79,13 +81,13 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                     new MessageButton({
                         "customID": "on",
                         "label": "enable",
-                        "style": "SUCCESS"
-                    }),
+                        "style": "DANGER",
+                    }).setEmoji("🔞"),
                     new MessageButton({
                         "customID": "off",
                         "label": "disable",
-                        "style": "DANGER"
-                    })
+                        "style": "PRIMARY"
+                    }).setEmoji("👼")
                 );
             const reply = await message.reply(`Select accordingly for nsfw responses`, { components: [row] });
             const filter = (componentInteraction: MessageComponentInteraction) =>

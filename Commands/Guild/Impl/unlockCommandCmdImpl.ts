@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
@@ -45,16 +45,40 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const member = (interaction.member instanceof GuildMember) ?
+            interaction.member :
+            await interaction.guild.members.fetch(interaction.member.user.id);
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return interaction.reply(`\`MANAGE_GUILD permissions required\``, { ephemeral: true });
+
         const guild_id = interaction.guildID;
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
         await interaction.defer({ ephemeral: true });
         const command_id: Snowflake = guildMap.get(guild_id).commandHandler.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
+        /**
+        * override perms for manual command in DB
+        */
         await overrideCommandPerms(guild_id, command_id, [guild_id]);
+
+        /**
+         * override perms for interaction
+         */
+        await interaction.guild.commands.setPermissions(command_id,
+            [
+                {
+                    id: guild_id,
+                    type: 'ROLE',
+                    permission: true
+                }
+            ] as ApplicationCommandPermissions[]
+        );
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
     async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+        if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
         const guild_id = receivedMessage.guild.id;
         const commands = guildMap.get(guild_id).commandHandler.commands;
         const commandLiteral = receivedCommand.arg1 as Snowflake;
