@@ -101,9 +101,6 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
         if (typeof commandImpl !== "undefined") {
-            if (['help', 'h'].includes(candidateCommand.primaryCommand))
-                return this.helpCmd(message, commandImpl);
-
             return commandImpl.execute(commandMessage, candidateCommand)
                 .then(execution => commandMessage
                     ?.react('✅')
@@ -116,7 +113,13 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                     .catch(err => {
                     }))
                 .catch(err => this.invalidCommand(err, commandMessage, commandImpl, candidateCommand.primaryCommand));
-        } else
+        }
+        else if (['help', 'h'].includes(candidateCommand.primaryCommand))
+            return this.helpCmd(
+                message,
+                this.commands
+                    .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.arg1)));
+        else
             return message.react('❔').catch();
     }
 
@@ -125,7 +128,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             return interaction.reply({
                 embeds: [
                     new MessageEmbed({
-                        description: interaction.options[0].value as string
+                        description: interaction.options.get('command').value as string
                     })
                 ]
                 , ephemeral: true
@@ -230,10 +233,13 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
     }
 
     private helpCmd(message: Message, command: GenericCommand): Promise<any> {
-        return message.reply(new MessageEmbed({
-            title: command.getKeyword(),
-            description: command.getGuide(),
-            footer: { text: command.getAliases().toString() }
-        }))
+        if (command)
+            return message.reply(new MessageEmbed({
+                title: command.getKeyword(),
+                description: command.getGuide(),
+                footer: { text: command.getAliases().toString() }
+            }))
+        else
+            return message.reply(`command not found`);
     }
 }

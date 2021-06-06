@@ -16,10 +16,10 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
 
-    async registration(message: Discord.Message): Promise<any> {
+    async registration(message: Discord.Message): Promise<unknown> {
         if (message.channel.id == 'send_email') {
             const email = message.cleanContent//.match(/*emailRegex*/)
-            return email ? await emailStudent(email) : message.react('❌');
+            return email ? emailStudent(email) : message.react('❌');
         }
         else if (message.channel.id == 'verification') {
 
