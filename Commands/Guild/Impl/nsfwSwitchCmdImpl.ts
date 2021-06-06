@@ -1,4 +1,8 @@
-import { ApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, Snowflake } from 'discord.js';
+import {
+    ApplicationCommandData, CommandInteraction, Message,
+    MessageActionRow, MessageButton, MessageComponentInteraction,
+    Snowflake
+} from 'discord.js';
 import { nsfwSwitch as _keyword } from '../../keywords.json';
 import { GnsfwSwitch as _guide } from '../../guides.json';
 
@@ -45,13 +49,15 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                     "customID": "off",
                     "label": "SFW responses",
                     "style": "PRIMARY"
-                }).setEmoji("👼"),
+                })
+                    .setEmoji("👼"),
 
                 new MessageButton({
                     "customID": "on",
                     "label": "NSFW responses",
                     "style": "DANGER",
-                }).setEmoji("🔞")
+                })
+                    .setEmoji("🔞")
             );
 
         await interaction.reply(`Select accordingly for guild response type`, { components: [row] });

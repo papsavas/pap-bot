@@ -50,7 +50,7 @@ async function runScript(): Promise<void> {
     const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
     */
     //-------------------------
-    console.log('done');
+    console.log('script done');
     return
 }
 
@@ -92,7 +92,7 @@ PAP.on('ready', async () => {
     try {
         // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
-        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
+        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
         logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
