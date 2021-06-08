@@ -9,7 +9,7 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snow
             "guild_id": guild_id,
             "command_id": command_id
         })
-    const rows = roleIDs.map(roleID => Object.assign({}, {
+    const rows = roleIDs.map(roleID => ({
         "guild_id": guild_id,
         "command_id": command_id,
         "role_id": roleID

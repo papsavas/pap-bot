@@ -37,7 +37,7 @@ async function runScript(): Promise<void> {
     /*
     guildMap.get(botGuildID as Snowflake).commandHandler.commands.forEach(async cmd =>
         await addRow(
-            'command_perms', Object.assign({}, {
+            'command_perms', ({
                 "guild_id": botGuildID,
                 "role_id": botGuildID,
                 "command_id": cmd.id
@@ -63,7 +63,7 @@ PAP.on('guildCreate', (guild) => {
     await addRows(
         'command_perms',
         guildMap.get(botGuildID as Snowflake).commandHandler.commands.map(async cmd =>
-            Object.assign({}, {
+            ( {
                 "guild_id": guild.id,
                 "role_id": guild.id,
                 "command_id": cmd.id

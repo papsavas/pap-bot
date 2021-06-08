@@ -40,8 +40,8 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const oldSettings = await fetchGuildSettings(interaction.guildID);
+    async interactiveExecute(commandInteraction: CommandInteraction): Promise<any> {
+        const oldSettings = await fetchGuildSettings(commandInteraction.guildID);
 
         const row = new MessageActionRow()
             .addComponents(
@@ -60,23 +60,23 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                     .setEmoji("🔞")
             );
 
-        await interaction.reply(`Select accordingly for guild response type`, { components: [row] });
+        await commandInteraction.reply(`Select accordingly for guild response type`, { components: [row] });
         const filter = (componentInteraction: MessageComponentInteraction) =>
             ['on', 'off'].includes(componentInteraction.customID) &&
-            componentInteraction.user.id === interaction.user.id;
-        const collected = await interaction.channel.awaitMessageComponentInteractions
+            componentInteraction.user.id === commandInteraction.user.id;
+        const collected = await commandInteraction.channel.awaitMessageComponentInteractions
             (
                 filter, { time: 10000, max: 1 }
             );
 
         const btn = collected.first();
         if (!btn)
-            return interaction.editReply(`failed to respond in time`, { components: [] });
+            return commandInteraction.editReply(`failed to respond in time`, { components: [] });
         const enabled = btn.customID === 'on';
         const literal = enabled ? "Enabled" : "Disabled";
-        await updateGuildSettings(interaction.guildID, Object.assign(oldSettings, { "nsfw_responses": enabled }));
-        await guildMap.get(interaction.guildID).loadResponses();
-        return interaction.editReply(`**${literal}** \`nsfw\` mode`, { components: [] });
+        await updateGuildSettings(commandInteraction.guildID, Object.assign(oldSettings, { "nsfw_responses": enabled }));
+        await guildMap.get(commandInteraction.guildID).loadResponses();
+        return commandInteraction.editReply(`**${literal}** \`nsfw\` mode`, { components: [] });
     }
 
     async execute(message: Message, { }: literalCommandType) {

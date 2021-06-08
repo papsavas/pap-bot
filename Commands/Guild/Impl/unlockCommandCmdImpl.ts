@@ -37,7 +37,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
                     type: 'STRING',
                     required: true,
                     choices: guildMap.get(guild_id).commandHandler.commands
-                        .map(cmd => Object.assign({}, { name: cmd.getKeyword(), value: cmd.getKeyword() }))
+                        .map(cmd => ({ name: cmd.getKeyword(), value: cmd.getKeyword() }))
                 }
             ]
         }
@@ -64,15 +64,10 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         /**
          * override perms for interaction
          */
-        await interaction.guild.commands.setPermissions(command_id,
-            [
-                {
-                    id: guild_id,
-                    type: 'ROLE',
-                    permission: true
-                }
-            ] as ApplicationCommandPermissions[]
-        );
+        let command = await interaction.guild.commands.fetch(command_id);
+        //enable for @everyone
+        command = await command.edit(Object.assign(command, { defaultPermission: true }));
+        await command.setPermissions([]);
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
@@ -93,11 +88,11 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         /**
          * override perms for interaction
          */
-        return receivedMessage.guild.commands.setPermissions(command_id, [{
-            id: guild_id,
-            type: 'ROLE',
-            permission: true
-        }]);
+        let command = await receivedMessage.guild.commands.fetch(command_id);
+        //enable for @everyone
+        command = await command.edit(Object.assign(command, { defaultPermission: true }));
+        await command.setPermissions([]);
+        return Promise.resolve()
     }
 
     getKeyword(): string {

@@ -35,7 +35,10 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                     name: `command`,
                     description: `the specified command`,
                     type: 'STRING',
-                    choices: this.commands.map(cmd => Object.assign({}, { name: cmd.getKeyword(), value: cmd.getGuide().substring(0, 99) })),
+                    choices: this.commands.map(cmd => ({
+                        name: cmd.getKeyword(),
+                        value: cmd.getGuide().substring(0, 99)
+                    })),
                     required: true
                 }
             ]
@@ -63,7 +66,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             applicationCommands.push(helpCommand);
             //add to db
             const newCommands = await commandManager.set(applicationCommands);
-            await overrideCommands(newCommands.array().map(cmd => Object.assign({}, {
+            await overrideCommands(newCommands.array().map(cmd => ({
                 keyword: cmd.name,
                 id: cmd.id,
                 guide: cmd.description,

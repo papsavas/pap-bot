@@ -37,7 +37,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                     type: 'STRING',
                     required: true,
                     choices: guildMap.get(guild_id).commandHandler.commands
-                        .map(cmd => Object.assign({}, { name: cmd.getKeyword(), value: cmd.getKeyword() }))
+                        .map(cmd => ({ name: cmd.getKeyword(), value: cmd.getKeyword() }))
                 }
             ]
         }
