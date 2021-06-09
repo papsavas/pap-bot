@@ -64,12 +64,12 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
         const filter = (componentInteraction: MessageComponentInteraction) =>
             ['on', 'off'].includes(componentInteraction.customID) &&
             componentInteraction.user.id === commandInteraction.user.id;
-        const collected = await commandInteraction.channel.awaitMessageComponentInteractions
+        const btn = await commandInteraction.channel.awaitMessageComponentInteraction
             (
-                filter, { time: 10000, max: 1 }
+                filter,
+                10000
             );
 
-        const btn = collected.first();
         if (!btn)
             return commandInteraction.editReply(`failed to respond in time`, { components: [] });
         const enabled = btn.customID === 'on';
@@ -99,12 +99,12 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
             const filter = (componentInteraction: MessageComponentInteraction) =>
                 ['on', 'off'].includes(componentInteraction.customID) &&
                 componentInteraction.user.id === message.author.id;
-            const collected = await message.channel.awaitMessageComponentInteractions
+            const btn = await message.channel.awaitMessageComponentInteraction
                 (
-                    filter, { time: 10000, max: 1 }
+                    filter,
+                    10000
                 );
 
-            const btn = collected.first();
             if (!btn)
                 return reply.edit(`failed to respond in time`, { components: [] });
             const enabled = btn.customID === 'on';
