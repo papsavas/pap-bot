@@ -64,8 +64,10 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
             if (error.code == e["Unknown message"])
-                return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
-                    { ephemeral: true })
+                return interaction.reply({
+                    content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
+                    ephemeral: true
+                });
         }
 
         if (!fetchedMessage.pinned)

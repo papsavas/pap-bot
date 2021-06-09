@@ -44,12 +44,13 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const { guildID, member, options } = interaction;
-        return interaction.reply(
-            await removeMemberResponse(
+        return interaction.reply({
+            content: await removeMemberResponse(
                 guildID, (member as GuildMember).id,
                 options.get(respOptionLiteral).value as string
             ),
-            { ephemeral: true }
+            ephemeral: true
+        }
         );
     }
 

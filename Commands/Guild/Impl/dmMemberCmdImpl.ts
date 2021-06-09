@@ -57,8 +57,10 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
 
         if (!(interaction.member as Discord.GuildMember).permissions.has(requiredPerm))
-            return interaction.reply(`\`\`\`${permLiteral} permissions needed\`\`\``,
-                { ephemeral: true });
+            return interaction.reply({
+                content: `\`\`\`${permLiteral} permissions needed\`\`\``,
+                ephemeral: true
+            });
 
         const user = interaction.options.find(op => op.type == "USER").user;
         const messageContent = interaction.options.get(messageOptionLiteral).value as string;
@@ -76,7 +78,11 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             timestamp: new Date()
         })
         return user.send(sendEmb)
-            .then((smsg) => interaction.reply(`message send to ${user.toString()}\npreview`, { ephemeral: true, embeds: [sendEmb] }))
+            .then((smsg) => interaction.reply({
+                content: `message send to ${user.toString()}\npreview`,
+                ephemeral: true,
+                embeds: [sendEmb]
+            }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
                     interaction.reply(`Could not dm ${user.username}`);
@@ -112,7 +118,10 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             timestamp: new Date()
         })
         return user.send(sendEmb)
-            .then((smsg) => message.reply(`message sent to ${user.toString()}\npreview:`, { embed: sendEmb }))
+            .then((smsg) => message.reply({
+                content: `message sent to ${user.toString()}\npreview:`,
+                embed: sendEmb
+            }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {
                     throw new Error(`Could not dm ${user.username}`);

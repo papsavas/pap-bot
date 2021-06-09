@@ -67,7 +67,10 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
                     return updateGuildSettings(receivedMessage.guild.id, newSettings).then(() => guildHandler.setPrefix(receivedCommand.arg1))
                 });
         else
-            return receivedMessage.reply(`Current prefix is "${guildHandler.getSettings().prefix}"`, { code: true });
+            return receivedMessage.reply({
+                content: `Current prefix is "${guildHandler.getSettings().prefix}"`,
+                code: true
+            });
 
     }
 

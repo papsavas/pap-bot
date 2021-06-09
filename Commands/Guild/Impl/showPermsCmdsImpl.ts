@@ -49,29 +49,36 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         const command_id: Snowflake = guildMap.get(interaction.guildID).commandHandler.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
-            return interaction.reply(`command ${commandLiteral} not found`, { ephemeral: true });
+            return interaction.reply({
+                content: `command ${commandLiteral} not found`,
+                ephemeral: true
+            });
         const guild_prefix = guildMap.get(interaction.guildID).getSettings().prefix;
         await interaction.defer({ ephemeral: true });
         const commandPerms = await fetchCommandPerms(interaction.guildID, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => interaction.guild.roles.fetch(cp.role_id)));
         const apiPerms = await interaction.guild.commands.fetchPermissions();
-        return interaction.editReply(new MessageEmbed({
-            title: guild_prefix + commandLiteral,
-            description: `Enabled for :`,
-            fields: [
-                {
-                    name: `Slash Command: **\`/${commandLiteral}\`**`,
-                    /* if command is not locked, permissions will be empty*/
-                    value: apiPerms.get(command_id)?.
-                        filter(perm => perm.permission)
-                        .map(perm => `<@&${perm.id}>`).toString() ?? `<@&${interaction.guildID}>`
-                },
-                {
-                    name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
-                    value: reqRoles.toString()
-                }
+        return interaction.editReply({
+            embeds: [
+                new MessageEmbed({
+                    title: guild_prefix + commandLiteral,
+                    description: `Enabled for :`,
+                    fields: [
+                        {
+                            name: `Slash Command: **\`/${commandLiteral}\`**`,
+                            /* if command is not locked, permissions will be empty*/
+                            value: apiPerms.get(command_id)?.
+                                filter(perm => perm.permission)
+                                .map(perm => `<@&${perm.id}>`).toString() ?? `<@&${interaction.guildID}>`
+                        },
+                        {
+                            name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
+                            value: reqRoles.toString()
+                        }
+                    ]
+                })
             ]
-        }));
+        });
     }
 
     async execute(message: Message, { arg1 }: literalCommandType) {

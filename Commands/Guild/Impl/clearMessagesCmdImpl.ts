@@ -67,7 +67,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
             });
         }
         else
-            return interaction.reply('You need `MANAGE_MESSAGES` permissions', { ephemeral: true })
+            return interaction.reply({ content: 'You need `MANAGE_MESSAGES` permissions', ephemeral: true })
 
     }
 

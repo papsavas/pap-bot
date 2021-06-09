@@ -65,7 +65,10 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                interaction.reply('poll created', { ephemeral: true }).catch();
+                interaction.reply({
+                    content: 'poll created',
+                    ephemeral: true
+                }).catch();
             })
             .catch(err => interaction.reply(`something went wrong`))
     }

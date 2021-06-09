@@ -83,8 +83,10 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                 });
         } catch (error) {
             if (error.code == e["Unknown message"])
-                return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
-                    { ephemeral: true })
+                return interaction.reply({
+                    content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
+                    ephemeral: true
+                })
         }
     }
 

@@ -44,24 +44,33 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             await guild.members.fetch(interaction.member.user.id);
 
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return interaction.reply(`\`MANAGE_GUILD permissions required\``, { ephemeral: true });
+            return interaction.reply({
+                content: `\`MANAGE_GUILD permissions required\``,
+                ephemeral: true
+            });
 
         try {
-            await interaction.reply('fetching logs', { ephemeral: true });
+            await interaction.reply({
+                content: 'fetching logs',
+                ephemeral: true
+            });
             const res = await loadGuildLogs(guild.id);
             if (res.length < 1)
-                return interaction.followUp(`no logs found`, { ephemeral: true });
+                return interaction.followUp({
+                    content: `no logs found`,
+                    ephemeral: true
+                });
             let literal: string = ``;
             for (const el of res)
                 literal += `${el.member_id ? `<@${el.member_id}> | ` : ``}${el.log} | ${el.date.toString()}\n`;
-            return interaction.followUp(
-                //last 2000 characters
-                literal.slice(Math.max(literal.length - 2000, 0)),
-                {
-                    code: true,
-                    allowedMentions: { parse: [] },
-                    ephemeral: true
-                }
+            return interaction.followUp({
+                content:
+                    //last 2000 characters
+                    literal.slice(Math.max(literal.length - 2000, 0)),
+                code: true,
+                allowedMentions: { parse: [] },
+                ephemeral: true
+            }
             )
         } catch (error) {
             return console.log(error);
@@ -89,8 +98,16 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                             let literal = ``;
                             for (const el of res)
                                 literal += `<@${el.member_id}> | ${el.log} | ${el.date.toString}\n`;
-                            return channel.send(literal.toString(),
-                                { split: true, code: true, allowedMentions: { users: [], roles: [], repliedUser: false } }
+                            return channel.send({
+                                content: literal.toString(),
+                                split: true,
+                                code: true,
+                                allowedMentions: {
+                                    users: [],
+                                    roles: [],
+                                    repliedUser: false
+                                }
+                            }
                             )
                         } catch (error) {
                             return console.log(error);

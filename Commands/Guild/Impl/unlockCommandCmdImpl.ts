@@ -49,7 +49,10 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
             interaction.member :
             await interaction.guild.members.fetch(interaction.member.user.id);
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return interaction.reply(`\`MANAGE_GUILD permissions required\``, { ephemeral: true });
+            return interaction.reply({
+                content: `\`MANAGE_GUILD permissions required\``,
+                ephemeral: true
+            });
 
         const guild_id = interaction.guildID;
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;

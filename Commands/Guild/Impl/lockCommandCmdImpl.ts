@@ -86,7 +86,10 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             await interaction.guild.members.fetch(interaction.member.user.id);
 
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return interaction.reply(`\`MANAGE_GUILD permissions required\``, { ephemeral: true });
+            return interaction.reply({
+                content: `\`MANAGE_GUILD permissions required\``,
+                ephemeral: true
+            });
         const guild_id = interaction.guildID;
         const filteredRoles = interaction.options.filter(option => option.type == "ROLE");
         const rolesKeyArr = filteredRoles.map(filteredOptions => filteredOptions.role.id);
