@@ -1,4 +1,5 @@
 import {
+    ButtonInteraction,
     Client, CommandInteraction, Guild,
     GuildMember, Message, MessageReaction,
     Snowflake, User
@@ -40,6 +41,7 @@ export abstract class AbstractGuild implements GenericGuild {
     protected constructor(guild_id: Snowflake) {
         this.guildID = guild_id;
     }
+
 
     static init(guild_id: Snowflake) {
     }
@@ -99,6 +101,10 @@ export abstract class AbstractGuild implements GenericGuild {
 
     onSlashCommand(interaction: CommandInteraction): Promise<any> {
         return this.commandHandler.onSlashCommand(interaction);
+    }
+
+    onButton(interaction: ButtonInteraction): Promise<any> {
+        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customID} button`);
     }
 
     async onMessage(message: Message): Promise<any> {

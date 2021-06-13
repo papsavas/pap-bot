@@ -120,31 +120,37 @@ PAP.on('ready', async () => {
 
 
 PAP.on('interaction', async interaction => {
-    switch (interaction.type) {
-        case "APPLICATION_COMMAND":
-            if (interaction.channel.type === "text") {
-                try {
-                    guildMap.get(interaction.guildID)
-                        ?.onSlashCommand(interaction)
-                } catch (error) {
-                    console.log(error)
-                }
+    if (interaction.isCommand()) {
+        if (interaction.channel.type === "text") {
+            try {
+                guildMap.get(interaction.guildID)
+                    ?.onSlashCommand(interaction)
+            } catch (error) {
+                console.log(error)
             }
-            else if (interaction.channel.type === 'dm') {
-                console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
-                from ${interaction.user.tag}`)
-            }
-            else {
-                console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
-            }
-            break;
-
-        case "MESSAGE_COMPONENT":
-            console.log(`message component receivied: ${interaction.id}`);
-            break;
-        default:
-            console.error(`unhandled interaction received\nTYPE:${interaction.type}\n${interaction.toJSON()}`)
+        }
+        else if (interaction.channel.type === 'dm') {
+            console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
+            from ${interaction.user.tag}`)
+        }
+        else {
+            console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
+        }
     }
+
+    else if (interaction.isButton()) {
+        if (!!interaction.guild) {
+            try {
+                guildMap.get(interaction.guildID)
+                    ?.onButton(interaction)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    else
+        console.log(`unhandled interaction type in ${interaction.channel.id} channel. TYPE = ${interaction.type}`);
 });
 
 
