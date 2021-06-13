@@ -50,7 +50,7 @@ export abstract class AbstractGuildCommand implements GenericGuildCommand {
 
         })
         emb.setDescription(`\`\`\`${err}\`\`\``)
-        bugsChannel.send(emb).catch(internalErr => console.log(internalErr));
+        bugsChannel.send({ embeds: [emb] }).catch(internalErr => console.log(internalErr));
     }
 
     protected addKeywordToAliases(aliases: string[], keyword: string): string[] {

@@ -70,13 +70,17 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
             return fetchedMessage.pin()
                 .then((pinnedMessage) => {
                     this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
-                    interaction.reply(new MessageEmbed({
-                        title: `Pinned Message 📌`,
-                        description: pinnedMessage.content?.length > 0 ?
-                            `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
-                            `[Click to jump](${pinnedMessage.url})`,
-                        footer: { text: pinReason }
-                    }))
+                    interaction.reply({
+                        embeds: [
+                            new MessageEmbed({
+                                title: `Pinned Message 📌`,
+                                description: pinnedMessage.content?.length > 0 ?
+                                    `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
+                                    `[Click to jump](${pinnedMessage.url})`,
+                                footer: { text: pinReason }
+                            })
+                        ]
+                    })
                 })
                 .catch(err => {
                     interaction.reply('could not pin message');
@@ -103,7 +107,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (fetchedMessage.pinned)
-            return message.reply({ embed: { description: `[message](${fetchedMessage.url}) already pinned 😉` } });
+            return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }] });
 
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {

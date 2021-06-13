@@ -93,10 +93,10 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
                     });
                     if (descr.length > 2048) return
                     return channel.send({
-                        embed: {
+                        embeds: [{
                             title: `🗑️ Deleted ${number} messages`,
                             description: descr
-                        }
+                        }]
                     });
                 })
                 .catch()

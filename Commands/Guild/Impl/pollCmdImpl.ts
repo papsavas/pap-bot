@@ -44,24 +44,27 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
         const member = interaction.member as GuildMember;
-        return channel.send(
-            new Discord.MessageEmbed(
-                {
-                    title: `Vote`,
-                    color: '#D8F612',
-                    description: interaction.options.get(textOptionLiteral).value as string,
-                    author: {
-                        name: member.displayName,
-                        icon_url: member.user.avatarURL({ format: 'png' })
-                    },
-                    //add blank
-                    fields: [{
-                        name: '\u200B',
-                        value: '\u200B',
-                    },],
+        return channel.send({
+            embeds: [
+                new Discord.MessageEmbed(
+                    {
+                        title: `Vote`,
+                        color: '#D8F612',
+                        description: interaction.options.get(textOptionLiteral).value as string,
+                        author: {
+                            name: member.displayName,
+                            icon_url: member.user.avatarURL({ format: 'png' })
+                        },
+                        //add blank
+                        fields: [{
+                            name: '\u200B',
+                            value: '\u200B',
+                        },],
 
-                    footer: { text: 'Poll📊' }
-                }))
+                        footer: { text: 'Poll📊' }
+                    })
+            ]
+        })
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
@@ -75,24 +78,27 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     execute(message: Discord.Message, { commandless1 }: literalCommandType) {
         const commandMsg = message;
-        return (commandMsg.channel as Discord.TextChannel).send(
-            new Discord.MessageEmbed(
-                {
-                    title: `Ψηφίστε`,
-                    color: '#D8F612',
-                    description: commandless1,
-                    author: {
-                        name: commandMsg.member.displayName,
-                        icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
-                    },
-                    //add blank
-                    fields: [{
-                        name: '\u200B',
-                        value: '\u200B',
-                    },],
+        return (commandMsg.channel as Discord.TextChannel).send({
+            embeds: [
+                new Discord.MessageEmbed(
+                    {
+                        title: `Ψηφίστε`,
+                        color: '#D8F612',
+                        description: commandless1,
+                        author: {
+                            name: commandMsg.member.displayName,
+                            icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
+                        },
+                        //add blank
+                        fields: [{
+                            name: '\u200B',
+                            value: '\u200B',
+                        },],
 
-                    footer: { text: 'Poll📊' }
-                }))
+                        footer: { text: 'Poll📊' }
+                    })
+            ]
+        })
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');

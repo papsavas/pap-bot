@@ -78,13 +78,17 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         return fetchedMessage.unpin()
             .then((unpinnedMessage) => {
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
-                interaction.reply(new Discord.MessageEmbed({
-                    title: `Unpinned Message 📌`,
-                    description: unpinnedMessage.content?.length > 0 ?
-                        `[${unpinnedMessage.content.substring(0, 40)}...](${unpinnedMessage.url})` :
-                        `[Click to jump](${unpinnedMessage.url})`,
-                    footer: { text: unpinReason }
-                }))
+                interaction.reply({
+                    embeds: [
+                        new Discord.MessageEmbed({
+                            title: `Unpinned Message 📌`,
+                            description: unpinnedMessage.content?.length > 0 ?
+                                `[${unpinnedMessage.content.substring(0, 40)}...](${unpinnedMessage.url})` :
+                                `[Click to jump](${unpinnedMessage.url})`,
+                            footer: { text: unpinReason }
+                        })
+                    ]
+                })
             })
             .catch(err => {
                 interaction.reply('could not pin message');
@@ -104,7 +108,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (!fetchedMessage.pinned)
-            return message.reply({ embed: { description: `[message](${fetchedMessage.url}) is not pinned` } });
+            return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) is not pinned` }] });
 
         return (channel as Discord.TextChannel).messages.fetch(unpinnedMessageId)
             .then((msg) => {

@@ -92,23 +92,27 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         const commandPerms = await fetchCommandPerms(message.guild.id, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => message.guild.roles.fetch(cp.role_id)));
         const apiPerms = await message.guild.commands.fetchPermissions();
-        return message.reply(new MessageEmbed({
-            title: guild_prefix + commandLiteral,
-            description: `Enabled for :`,
-            fields: [
-                {
-                    name: `Slash Command: **\`/${commandLiteral}\`**`,
-                    /* if command is not locked, permissions will be empty*/
-                    value: apiPerms.get(command_id)?.
-                        filter(perm => perm.permission)
-                        .map(perm => `<@&${perm.id}>`).toString() ?? `<@&${message.guild.id}>`
-                },
-                {
-                    name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
-                    value: reqRoles.toString()
-                }
+        return message.reply({
+            embeds: [
+                new MessageEmbed({
+                    title: guild_prefix + commandLiteral,
+                    description: `Enabled for :`,
+                    fields: [
+                        {
+                            name: `Slash Command: **\`/${commandLiteral}\`**`,
+                            /* if command is not locked, permissions will be empty*/
+                            value: apiPerms.get(command_id)?.
+                                filter(perm => perm.permission)
+                                .map(perm => `<@&${perm.id}>`).toString() ?? `<@&${message.guild.id}>`
+                        },
+                        {
+                            name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
+                            value: reqRoles.toString()
+                        }
+                    ]
+                })
             ]
-        }));
+        });
     }
 
     getAliases(): string[] {

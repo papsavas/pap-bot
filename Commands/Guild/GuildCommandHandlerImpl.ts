@@ -179,7 +179,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
         });
         bugsChannelEmbed.setDescription(err.message);
         bugsChannelEmbed.addField(`caused by`, interaction.id);
-        bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
+        bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
 
         const interactionEmb = new MessageEmbed(
@@ -194,7 +194,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             })
 
         const interactionPromise: Promise<any> = interaction.replied ?
-            interaction.editReply(interactionEmb) : interaction.reply(interactionEmb);
+            interaction.editReply({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
         interactionPromise
             .then(() => interaction.client.setTimeout(() => interaction.deleteReply().catch(), 15000))
             .catch();
@@ -217,31 +217,40 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
         });
         bugsChannelEmbed.setDescription(err.message);
         bugsChannelEmbed.addField(`caused by`, commandMessage.url);
-        bugsChannel.send(bugsChannelEmbed).catch(internalErr => console.log("internal error\n", internalErr));
+        bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
-        commandMessage.reply(new MessageEmbed(
-            {
-                author: {
-                    name: `Error on Command`,
-                    icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
-                },
-                title: guildMap.get(commandMessage.guild.id).getSettings().prefix + commandImpl.getKeyword(),
-                description: commandImpl.getGuide(),
-                fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
-                footer: { text: commandImpl.getAliases().toString() },
-                color: "RED"
-            })
+        commandMessage.reply({
+            embeds: [
+                new MessageEmbed(
+                    {
+                        author: {
+                            name: `Error on Command`,
+                            icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
+                        },
+                        title: guildMap.get(commandMessage.guild.id).getSettings().prefix + commandImpl.getKeyword(),
+                        description: commandImpl.getGuide(),
+                        fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
+                        footer: { text: commandImpl.getAliases().toString() },
+                        color: "RED"
+                    })
+            ]
+        }
         ).then(msg => msg.client.setTimeout(() => msg.delete(), 15000));
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
     private helpCmd(message: Message, command: GenericCommand): Promise<any> {
         if (command)
-            return message.reply(new MessageEmbed({
-                title: command.getKeyword(),
-                description: command.getGuide(),
-                footer: { text: command.getAliases().toString() }
-            }))
+            return message.reply({
+                embeds:
+                    [
+                        new MessageEmbed({
+                            title: command.getKeyword(),
+                            description: command.getGuide(),
+                            footer: { text: command.getAliases().toString() }
+                        })
+                    ]
+            })
         else
             return message.reply(`command not found`);
     }

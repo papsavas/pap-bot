@@ -77,7 +77,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
             timestamp: new Date()
         })
-        return user.send(sendEmb)
+        return user.send({ embeds: [sendEmb] })
             .then((smsg) => interaction.reply({
                 content: `message send to ${user.toString()}\npreview`,
                 ephemeral: true,
@@ -117,10 +117,10 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
             timestamp: new Date()
         })
-        return user.send(sendEmb)
+        return user.send({ embeds: [sendEmb] })
             .then((smsg) => message.reply({
                 content: `message sent to ${user.toString()}\npreview:`,
-                embed: sendEmb
+                embeds: [sendEmb]
             }))
             .catch(err => {
                 if (err.code == e["Cannot send messages to this user"]) {

@@ -1,10 +1,10 @@
-import {Message, MessageEmbed} from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 
 export function paginationEmbed(
     userMessage: Message, targetStructure: string[], perPage: number,
     headerEmbed: MessageEmbed, fieldBuilder: (resp: string, index: number, start: number) => string[],
     timeout: number, targetChannel = userMessage.channel
-) :Promise<void | Error> {
+): Promise<void | Error> {
     if (perPage > 25) perPage = 25;
 
     const generateEmbed = start => {
@@ -22,32 +22,32 @@ export function paginationEmbed(
         return embed
     }
 
-    return userMessage.reply(generateEmbed(0))
+    return userMessage.reply({ embeds: [generateEmbed(0)] })
         .then(message => {
-                if (targetStructure.length <= perPage) return
-                // react with the right arrow (so that the user can click it) (left arrow isn't needed because it is the start)
-                message.react('⬅️').then(r => message.react('➡️'));
-                const collector = message.createReactionCollector(
-                    // only collect left and right arrow reactions from the message author
-                    (reaction, user) => ['⬅️', '➡️'].includes(reaction.emoji.name) && user.id === userMessage.author.id,
-                    {time: timeout});
+            if (targetStructure.length <= perPage) return
+            // react with the right arrow (so that the user can click it) (left arrow isn't needed because it is the start)
+            message.react('⬅️').then(r => message.react('➡️'));
+            const collector = message.createReactionCollector(
+                // only collect left and right arrow reactions from the message author
+                (reaction, user) => ['⬅️', '➡️'].includes(reaction.emoji.name) && user.id === userMessage.author.id,
+                { time: timeout });
 
-                let currentIndex = 0;
-                collector.on('collect', async reaction => {
-                    if (reaction.emoji.name === '⬅️' && currentIndex === 0) return
-                    if (reaction.emoji.name === '➡️' && currentIndex + perPage >= targetStructure.length) return
-                    // remove the existing reactions
-                    // message.reactions.removeAll().then(async () => {
-                    // increase/decrease index
-                    reaction.emoji.name === '⬅️' ? currentIndex -= perPage : currentIndex += perPage
-                    // edit message with new embed
-                    await message.edit(generateEmbed(currentIndex))
-                    // react with left arrow if it isn't the start (await is used so that the right arrow always goes after the left)
-                    if (currentIndex !== 0) await message.react('⬅️');
-                    // react with right arrow if it isn't the end
-                    if (currentIndex + perPage < targetStructure.length) await message.react('➡️');
-                    // })
-                })
-            }
+            let currentIndex = 0;
+            collector.on('collect', async reaction => {
+                if (reaction.emoji.name === '⬅️' && currentIndex === 0) return
+                if (reaction.emoji.name === '➡️' && currentIndex + perPage >= targetStructure.length) return
+                // remove the existing reactions
+                // message.reactions.removeAll().then(async () => {
+                // increase/decrease index
+                reaction.emoji.name === '⬅️' ? currentIndex -= perPage : currentIndex += perPage
+                // edit message with new embed
+                await message.edit({ embeds: [generateEmbed(currentIndex)] })
+                // react with left arrow if it isn't the start (await is used so that the right arrow always goes after the left)
+                if (currentIndex !== 0) await message.react('⬅️');
+                // react with right arrow if it isn't the end
+                if (currentIndex + perPage < targetStructure.length) await message.react('➡️');
+                // })
+            })
+        }
         ).catch(err => new Error(err));
 }

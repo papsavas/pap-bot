@@ -54,14 +54,19 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             Profanity.isProfane(memberResponse);
         await interaction.defer({ ephemeral: true });
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
-        return interaction.editReply(new MessageEmbed({
-            title: `Response Added`,
-            description: ` your response has been added`,
-            fields: [
-                { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
-                { name: `marked as nsfw`, value: nsfw.toString(), inline: true }
-            ]
-        }))
+        return interaction.editReply({
+            embeds:
+                [
+                    new MessageEmbed({
+                        title: `Response Added`,
+                        description: ` your response has been added`,
+                        fields: [
+                            { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
+                            { name: `marked as nsfw`, value: nsfw.toString(), inline: true }
+                        ]
+                    })
+                ]
+        })
     }
 
     public async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {

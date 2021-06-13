@@ -64,11 +64,14 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         if (targetMessage.author != interaction.client.user)
             return interaction.reply('Cannot edit a message authored by another user');
         const editedMessage = await targetMessage?.edit(interaction.options.get(editedMsgOptionLiteral).value as string);
-        return interaction.editReply(
-            new Discord.MessageEmbed({
-                description: `[edited message](${editedMessage.url})`
-            })
-        );
+        return interaction.editReply({
+            embeds:
+                [
+                    new Discord.MessageEmbed({
+                        description: `[edited message](${editedMessage.url})`
+                    })
+                ]
+        });
     }
 
     async execute(
@@ -81,9 +84,9 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
             const editedMessage = await fetchedMessage
                 .edit(commandless2)
             await channel.send({
-                embed: {
+                embeds: [{
                     description: `[edited message](${editedMessage.url})`
-                }
+                }]
             });
             return new Promise((res, rej) => res('edit message success'));
         } catch (err) {
@@ -95,9 +98,13 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
                     const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2 as Snowflake);
 
                     const editedMessage = await targetMessage?.edit(commandless3);
-                    const sendLinkMessage = await channel.send(new Discord.MessageEmbed(
-                        { description: `[edited message](${editedMessage.url})` }
-                    ));
+                    const sendLinkMessage = await channel.send({
+                        embeds: [
+                            new Discord.MessageEmbed(
+                                { description: `[edited message](${editedMessage.url})` }
+                            )
+                        ]
+                    });
                     return new Promise((res, rej) => res('edit message success'));
                 } catch (err) {
                     return new Promise((res, rej) => rej(`edit message failed\n${url}`));
