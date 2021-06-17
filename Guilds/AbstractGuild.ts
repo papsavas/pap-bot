@@ -44,14 +44,13 @@ export abstract class AbstractGuild implements GenericGuild {
 
 
     static init(guild_id: Snowflake) {
+
     }
 
     public commandHandler: GuildCommandHandler;
     protected specifiedCommands?: GenericGuildCommand[]
 
-
-    protected _commands: GenericGuildCommand[];
-    protected _commandPromises: Promise<GenericGuildCommand>[] = [
+    protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl.init(), DmMemberCmdImpl.init(), SetPrefixCmdImpl.init(),
         PinMessageCmdImpl.init(), UnpinMessageCmdImpl.init(),
         MessageChannelCmdImpl.init(), ClearMessagesCmdImpl.init(), EditMessageCmdImpl.init(),
