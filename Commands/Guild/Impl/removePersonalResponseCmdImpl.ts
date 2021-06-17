@@ -3,8 +3,6 @@ import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
-import { GremoveResponse as _guide } from '../../guides.json';
-import { removeResponse as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 
@@ -13,24 +11,27 @@ const respOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implements removePersonalResponseCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `removeresponse`;
+    protected _guide = `Removes an added response`;
+    protected _usage = `removeresponse <response>`;
     private constructor() { super() }
 
     static async init(): Promise<removePersonalResponseCmd> {
         const cmd = new RemovePersonalResponseCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['removeresponse', 'rresponse', 'remove_response', 'rr'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: respOptionLiteral,
@@ -60,14 +61,6 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

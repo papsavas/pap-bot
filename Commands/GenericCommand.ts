@@ -3,14 +3,13 @@ import { literalCommandType } from "../Entities/Generic/commandType";
 
 export interface GenericCommand {
     id: Snowflake;
+    keyword: string;
+    guide: string;
+    usage: string;
 
     //init(): Promise<GenericCommand>;
 
     execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
-
-    getGuide(): string;
-
-    getKeyword(): string;
 
     getAliases(): string[];
 

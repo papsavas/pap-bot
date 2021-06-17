@@ -3,8 +3,6 @@ import { ApplicationCommandData, ApplicationCommandOptionData, GuildMember, Snow
 import { guildMap } from "../../..";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { GsimplePoll as _guide } from '../../guides.json';
-import { simplePoll as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
 
@@ -12,24 +10,27 @@ const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `poll`;
+    protected _guide = `Creates a simple poll using 👍-👎`;
+    protected _usage = `poll <text>`;
     private constructor() { super() }
 
     static async init(): Promise<pollCmd> {
         const cmd = new PollCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['poll', 'πολλ'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: textOptionLiteral,
@@ -110,16 +111,8 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             })
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
         return this._aliases
-    }
-
-    getGuide(): string {
-        return _guide;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

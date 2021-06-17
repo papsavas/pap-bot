@@ -17,24 +17,28 @@ const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `unpin`;
+    protected _guide = `Unpins a message`;
+    protected _usage = `unpin <msg_id> [reason]`;
+
     private constructor() { super() }
 
     static async init(): Promise<unpinMessageCmd> {
         const cmd = new UnpinMessageCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['unpin', 'ανπιν'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: _keyword,
-            description: this.getGuide(),
+            description: this.guide,
             options: [
                 {
                     name: msgidOptionLiteral,
@@ -123,14 +127,6 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

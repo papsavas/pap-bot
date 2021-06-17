@@ -3,8 +3,6 @@ import { ApplicationCommandData, ApplicationCommandOptionData, Message, Snowflak
 import { guildMap } from '../../..';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { GmessageChannel as _guide } from '../../guides.json';
-import { messageChannel as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
 
@@ -14,24 +12,27 @@ const msgOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 
 export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
     protected _id: Snowflake;
+    protected _keyword = `send`;
+    protected _guide = `Messages a specific channel on the guild`;
+    protected _usage = `send <channel> <text>`;
     private constructor() { super() }
 
     static async init(): Promise<messageChannelCmd> {
         const cmd = new MessageChannelCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['send', 'msgchannel', 'messagechannel', 'message_channel'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: channelOptionLiteral,
@@ -82,14 +83,6 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

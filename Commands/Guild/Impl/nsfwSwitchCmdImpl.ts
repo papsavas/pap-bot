@@ -3,40 +3,38 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction,
     Snowflake
 } from 'discord.js';
-import { nsfwSwitch as _keyword } from '../../keywords.json';
-import { GnsfwSwitch as _guide } from '../../guides.json';
-
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
 import { guildMap } from '../../..';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { APIPartialEmoji } from 'discord-api-types';
 
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `nsfw`;
+    protected _guide = `Enables/Disables nsfw responses`;
+    protected _usage = `nsfw`;
     private constructor() { super() }
 
     static async init(): Promise<nsfwSwitchCmd> {
         const cmd = new NsfwSwitchCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['nsfw', 'nsfwswitch'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide()
+            name: this.keyword,
+            description: this.guide
         }
     }
 
@@ -70,7 +68,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
         const btn = await commandInteraction.channel.awaitMessageComponentInteraction
             (
                 filter,
-                10000
+                { time: 10000 }
             );
 
         if (!btn)
@@ -114,7 +112,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
             const btn = await message.channel.awaitMessageComponentInteraction
                 (
                     filter,
-                    10000
+                    { time: 10000 }
                 );
 
             if (!btn)
@@ -138,14 +136,6 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

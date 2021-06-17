@@ -1,7 +1,5 @@
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { lockCommand as _keyword } from '../../keywords.json';
-import { GlockCommand as _guide } from '../../guides.json';
 import { ApplicationCommandData, ApplicationCommandOptionChoice, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -14,24 +12,27 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 export class LockCommandCmdImpl extends AbstractGuildCommand implements lockCommandCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `lockcmd`;
+    protected _guide = `Locks command for certain roles`;
+    protected _usage = `lockcmd <cmd> <role1> [<role2>...]`;
     private constructor() { super() }
 
     static async init(): Promise<lockCommandCmd> {
         const cmd = new LockCommandCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['lockcmd', 'lockcommand', 'lock_command', 'lock_cmd'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: cmdOptionLiteral,
@@ -40,8 +41,8 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
                     required: true,
                     choices: guildMap.get(guild_id).commandHandler.commands
                         .map(cmd => ({
-                            name: cmd.getKeyword(),
-                            value: cmd.getKeyword()
+                            name: cmd.keyword,
+                            value: cmd.keyword
                         }))
                 },
                 {
@@ -145,16 +146,8 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         await command.setPermissions(allowedPerms);
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
-        return this._aliases
-    }
-
-    getGuide(): string {
-        return _guide;
+        return this._aliases;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

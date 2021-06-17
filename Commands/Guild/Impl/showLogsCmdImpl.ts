@@ -1,8 +1,6 @@
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { logChanges as _keyword } from '../../keywords.json';
-import { GlogChanges as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, GuildManager, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
@@ -16,24 +14,28 @@ import { showLogsCmd } from "../Interf/showLogsCmd";
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `logs`;
+    protected _guide = `Prints guilds logs`;
+    protected _usage = `logs`;
+
     private constructor() { super() }
 
     static async init(): Promise<showLogsCmd> {
         const cmd = new ShowLogsCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['log', 'logs'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide()
+            name: this.keyword,
+            description: this.guide
         }
     }
 
@@ -122,16 +124,8 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
         }
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
         return this._aliases
-    }
-
-    getGuide(): string {
-        return _guide;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

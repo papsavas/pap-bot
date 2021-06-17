@@ -1,7 +1,5 @@
 import * as Discord from 'discord.js';
 import { ApplicationCommandData, ApplicationCommandOptionData, GuildChannel, Message, Snowflake } from 'discord.js';
-import { editMessage as _keyword } from '../../keywords.json';
-import { GeditMessage as _guide } from '../../guides.json';
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
@@ -15,24 +13,27 @@ const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
     protected _id: Snowflake;
+    protected _keyword = `editmsg`;
+    protected _guide = `Edits a bot's text message`;
+    protected _usage = `editmessage <channel> <msg_id> <text>`;
     private constructor() { super() }
 
     static async init(): Promise<editMessageCmd> {
         const cmd = new EditMessageCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: channelOptionLiteral,
@@ -118,14 +119,6 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

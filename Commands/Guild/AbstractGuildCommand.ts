@@ -9,10 +9,28 @@ import { GenericCommand } from "../GenericCommand";
 
 export abstract class AbstractGuildCommand implements GenericGuildCommand {
     protected abstract _id: Snowflake;
+    protected abstract _keyword: string;
+    protected abstract _guide: string;
+    protected abstract _usage: string;
+
     protected constructor() { }
+
     get id() {
         return this._id;
     }
+
+    get keyword() {
+        return this._keyword;
+    }
+
+    get guide() {
+        return this._guide;
+    }
+
+    get usage() {
+        return this._usage;
+    }
+
 
     static init() { }
 
@@ -22,11 +40,7 @@ export abstract class AbstractGuildCommand implements GenericGuildCommand {
 
     abstract interactiveExecute(commandInteraction: CommandInteraction): Promise<any>;
 
-    abstract getKeyword(): string;
-
     abstract getAliases(): string[];
-
-    abstract getGuide(): string;
 
     abstract addGuildLog(guildID: Snowflake, log: string): string | void
 

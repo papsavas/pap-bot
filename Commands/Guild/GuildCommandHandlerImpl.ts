@@ -36,8 +36,8 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                     description: `the specified command`,
                     type: 'STRING',
                     choices: this.commands.map(cmd => ({
-                        name: cmd.getKeyword(),
-                        value: cmd.getGuide().substring(0, 99)
+                        name: cmd.keyword,
+                        value: cmd.guide.substring(0, 99)
                     })),
                     required: true
                 }
@@ -85,9 +85,9 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
     
                 try{
                     await addRow('commands', {
-                        "keyword" : cmd.getKeyword(),
+                        "keyword" : cmd.keyword,
                         "aliases" : cmd.getAliases(),
-                        "guide" : cmd.getGuide()
+                        "guide" : cmd.guide
                     });
                 }
                 catch (err){
@@ -203,6 +203,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
 
     private invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
+        const prefix = guildMap.get(commandMessage.guild.id).getSettings().prefix;
         const bugsChannelEmbed = new MessageEmbed({
             author: {
                 name: commandMessage.guild.name,
@@ -227,8 +228,8 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                             name: `Error on Command`,
                             icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                         },
-                        title: guildMap.get(commandMessage.guild.id).getSettings().prefix + commandImpl.getKeyword(),
-                        description: commandImpl.getGuide(),
+                        title: prefix + commandImpl.keyword,
+                        description: prefix + commandImpl.usage,
                         fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
                         footer: { text: commandImpl.getAliases().toString() },
                         color: "RED"
@@ -245,8 +246,8 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                 embeds:
                     [
                         new MessageEmbed({
-                            title: command.getKeyword(),
-                            description: command.getGuide(),
+                            title: command.keyword,
+                            description: command.guide,
                             footer: { text: command.getAliases().toString() }
                         })
                     ]

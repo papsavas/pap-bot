@@ -4,8 +4,6 @@ import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
-import { Gmyresponses as _guide } from '../../guides.json';
-import { myresponses as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
@@ -13,11 +11,15 @@ import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `myresponses`;
+    protected _guide = `Prints user submitted responses`;
+    protected _usage = `myresponses`;
+
     private constructor() { super() }
 
     static async init(): Promise<showPersonalResponsesCmd> {
         const cmd = new ShowPersonalResponsesCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
@@ -25,13 +27,13 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
     private readonly _aliases = this.addKeywordToAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide()
+            name: this.keyword,
+            description: this.guide
         }
     }
 
@@ -74,17 +76,10 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
         )
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
         return this._aliases
     }
 
-    getGuide(): string {
-        return _guide;
-    }
 
     addGuildLog(guildID: Snowflake, log: string) {
         return guildMap.get(guildID).addGuildLog(log);

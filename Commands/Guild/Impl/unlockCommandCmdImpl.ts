@@ -3,8 +3,6 @@ import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationComman
 import { guildMap } from "../../..";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
-import { GunlockCommand as _guide } from '../../guides.json';
-import { unlockCommand as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
@@ -12,24 +10,28 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `unlockcmd`;
+    protected _guide = `Unlocks command for everyone`;
+    protected _usage = `unlock <command>`;
+
     private constructor() { super() }
 
     static async init(): Promise<unlockCommandCmd> {
         const cmd = new UnlockCommandCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['unlockcmd', 'unlockcommand', 'unlock_command', 'unlock_cmd'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: cmdOptionLiteral,
@@ -37,7 +39,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
                     type: 'STRING',
                     required: true,
                     choices: guildMap.get(guild_id).commandHandler.commands
-                        .map(cmd => ({ name: cmd.getKeyword(), value: cmd.getKeyword() }))
+                        .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
                 }
             ]
         }
@@ -98,16 +100,8 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         return Promise.resolve()
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
         return this._aliases
-    }
-
-    getGuide(): string {
-        return _guide;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

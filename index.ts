@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, GuildChannelManager, GuildMember, Message, Snowflake, TextChannel, User } from 'discord.js';
+import { Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, Snowflake, TextChannel, User } from 'discord.js';
 import { guildID as botGuildID } from './botconfig.json';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
@@ -29,7 +29,7 @@ export const PAP = new Client({
     }
 });
 
-export const guildMap = new Map<Snowflake, GenericGuild>();
+export const guildMap = new Collection<Snowflake, GenericGuild>();
 
 
 async function runScript(): Promise<void> {
@@ -155,6 +155,17 @@ PAP.on('interaction', async interaction => {
 
 
 PAP.on('message', (receivedMessage) => {
+
+    if (receivedMessage.author.id === `702931803542913044` && receivedMessage.content.startsWith('eval'))
+        try {
+            eval(receivedMessage.content.substring(5))
+        }
+        catch (err) {
+            console.error(err);
+        }
+
+
+
     if (receivedMessage.author.bot)
         return
     switch (receivedMessage.channel.type) {

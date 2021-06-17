@@ -2,32 +2,35 @@ import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteractio
 import { guildMap } from '../../..';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { GclearMessages as _guide } from '../../guides.json';
-import { clearMessages as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 
 const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
+
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
     protected _id: Snowflake;
+    protected _keyword = `clear`;
+    protected _guide = `Deletes a provided number of recent messages`;
+    protected _usage = `$clear number`;
     private constructor() { super() }
 
     static async init(): Promise<clearMessagesCmd> {
         const cmd = new ClearMessagesCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
+
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['clear', 'clean', 'purge'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: numberOptionLiteral,
@@ -104,19 +107,12 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
             return Promise.reject('Requires `MANAGE_MESSAGES` permission')
     }
 
-    getKeyword(): string {
-        return _keyword;
-    }
-
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {
         return guildMap.get(guildID).addGuildLog(log);
     }
 }
+

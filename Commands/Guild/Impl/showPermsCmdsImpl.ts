@@ -2,8 +2,6 @@ import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationComman
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
-import { GshowPerms as _guide } from '../../guides.json';
-import { showPerms as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPermsCmd } from "../Interf/showPermsCmd";
 
@@ -12,24 +10,28 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `perms`;
+    protected _guide = `Shows permissions for specific command`;
+    protected _usage = `perms <command>`;
+
     private constructor() { super() }
 
     static async init(): Promise<showPermsCmd> {
         const cmd = new ShowPermsCmdsImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['perms', 'perm', 'showperms', 'show_perms'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: cmdOptionLiteral,
@@ -37,7 +39,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                     type: 'STRING',
                     required: true,
                     choices: guildMap.get(guild_id).commandHandler.commands
-                        .map(cmd => ({ name: cmd.getKeyword(), value: cmd.getKeyword() }))
+                        .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
                 }
             ]
         }
@@ -84,6 +86,8 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     async execute(message: Message, { arg1 }: literalCommandType) {
         await message.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = arg1;
+        if (!commandLiteral)
+            return message.reply({ embeds: [new MessageEmbed({ description: this.guide })] })
         const command_id: Snowflake = guildMap.get(message.guild.id).commandHandler.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
@@ -117,14 +121,6 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

@@ -1,6 +1,3 @@
-import { GpinMessage as _guide } from "../../guides.json";
-import { pinMessage as _keyword } from "../../keywords.json";
-
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
@@ -17,24 +14,27 @@ const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     protected _id: Snowflake;
+    protected _keyword = `pin`;
+    protected _guide = `Pins a message`;
+    protected _usage = `pin <msg_id> [reason]`;
     private constructor() { super() }
 
     static async init(): Promise<pinMessageCmd> {
         const cmd = new PinMessageCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['pin', 'πιν'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: msgidOptionLiteral,
@@ -122,14 +122,6 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {
