@@ -7,8 +7,6 @@ export interface GenericCommand {
     guide: string;
     usage: string;
 
-    //init(): Promise<GenericCommand>;
-
     execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
 
     getAliases(): string[];

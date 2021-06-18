@@ -16,18 +16,12 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
     readonly commands: GenericGuildCommand[];
     private guildID: Snowflake;
+    private helpCommandData: ApplicationCommandData;
 
     constructor(guild_id: Snowflake, commands: GenericGuildCommand[]) {
         this.guildID = guild_id;
         this.commands = commands;
-    }
-
-    public async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
-        : Promise<Collection<Snowflake, ApplicationCommand>> {
-
-        const applicationCommands: ApplicationCommandData[] = [];
-
-        const helpCommand: ApplicationCommandData = {
+        this.helpCommandData = {
             name: "help",
             description: "displays support for a certain command",
             options: [
@@ -43,44 +37,52 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                 }
             ]
         }
+    }
 
+    public async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
+        : Promise<Collection<Snowflake, ApplicationCommand>> {
+
+        const applicationCommands: ApplicationCommandData[] = [];
         const registeredCommands = await commandManager.fetch();
-        if (false) {
+
+        /**
+         * TODO: Implement Comparison for current & registered commands
+         */
+        if (false/*no update required*/) {
             console.log('Equal :)')
             return registeredCommands;
         }
-        else {
+        else /*commands changed, refresh*/ {
             console.log(`commands changed. Refreshing...`);
-            await commandManager.set([]);
-            const commandData: ApplicationCommandData[] = [];
+            await commandManager.set([]); //remove previous 
             for (const cmd of this.commands) {
                 try {
-                    //const registeredCmd = await commandManager.create(cmd.getCommandData())
                     applicationCommands.push(cmd.getCommandData(this.guildID));
-                    //add to db
                 } catch (error) {
                     console.log(cmd.getCommandData(this.guildID).name, error);
                 }
             }
-
-            applicationCommands.push(helpCommand);
-            //add to db
+            applicationCommands.push(this.helpCommandData);
             const newCommands = await commandManager.set(applicationCommands);
-            await overrideCommands(newCommands.array().map(cmd => ({
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+            //add to db
+            await overrideCommands(newCommands.array().map(cmd => (
+                {
+                    keyword: cmd.name,
+                    id: cmd.id,
+                    guide: cmd.description,
+                    aliases: this.commands
+                        .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
 
-            })))
-            return Promise.resolve(newCommands);
+                }
+            )));
+            return newCommands;
         }
     }
 
     public onCommand(message: Message): Promise<any> {
-        /* FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
-        ALSO CONNECT 'commands with command_perms' with foreign key on commands Completion
+        /*
+        TODO: FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
+        TODO: CONNECT 'commands with command_perms' with foreign key on commands Completion
         this.commands.forEach(async (cmd) => {
     
                 try{

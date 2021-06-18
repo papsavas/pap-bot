@@ -36,53 +36,53 @@ import { GenericGuild } from "./GenericGuild";
 import GenericGuildCommand from '../Commands/Guild/GenericGuildCommand';
 
 export abstract class AbstractGuild implements GenericGuild {
-    protected readonly guildID: Snowflake;
-
-    protected constructor(guild_id: Snowflake) {
-        this.guildID = guild_id;
-    }
-
-
-    static init(guild_id: Snowflake) {
-
-    }
-
-    public commandHandler: GuildCommandHandler;
-    protected specifiedCommands?: GenericGuildCommand[]
-
-    protected _genericCommands: Promise<GenericGuildCommand>[] = [
-        PollCmdImpl.init(), DmMemberCmdImpl.init(), SetPrefixCmdImpl.init(),
-        PinMessageCmdImpl.init(), UnpinMessageCmdImpl.init(),
-        MessageChannelCmdImpl.init(), ClearMessagesCmdImpl.init(), EditMessageCmdImpl.init(),
-        LockCommandCmdImpl.init(), UnlockCommandCmdImpl.init(), ShowPermsCmdsImpl.init(),
-        AddResponseCmdImpl.init(), ShowPersonalResponsesCmdImpl.init(), RemovePersonalResponseCmdImpl.init(),
-        NsfwSwitchCmdImpl.init(), ShowLogsCmdImpl.init()
-    ]
-
 
     private _responses: string[];
     private _settings: guildSettings;
-
+    private _userResponses: memberResponses;
     private _guild: Guild;
+    private _logs: string[] = [];
+
+    protected readonly guildID: Snowflake;
+    protected specifiedCommands?: GenericGuildCommand[];
+    protected _genericCommands: Promise<GenericGuildCommand>[] = [
+        PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
+        PinMessageCmdImpl, UnpinMessageCmdImpl,
+        MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
+        LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
+        AddResponseCmdImpl, ShowPersonalResponsesCmdImpl, RemovePersonalResponseCmdImpl,
+        NsfwSwitchCmdImpl, ShowLogsCmdImpl
+    ].map(cmd => cmd.init())
+
+    public commandHandler: GuildCommandHandler;
 
     get guild(): Guild {
         return this._guild;
     }
 
-    private _userResponses: memberResponses;
-
     get userResponses(): memberResponses {
         return this._userResponses;
     }
-
-    private _logs: string[] = [];
 
     get logs(): string[] {
         return this._logs;
     }
 
+    protected constructor(guild_id: Snowflake) {
+        this.guildID = guild_id;
+    }
+
+    static async init(guild_id: Snowflake): Promise<unknown> { return Promise.resolve() };
+
+
     getSettings(): guildSettings {
         return this._settings;
+    }
+
+    async onReady(client: Client): Promise<any> {
+        this._guild = client.guilds.cache.get(this.guildID);
+        await this.loadResponses()
+        return Promise.resolve(`loaded ${this.guild.name}`);
     }
 
     onGuildMemberAdd(member: GuildMember): Promise<any> {
@@ -133,11 +133,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`reaction removed`);
     }
 
-    async onReady(client: Client): Promise<any> {
-        this._guild = client.guilds.cache.get(this.guildID);
-        await this.loadResponses()
-        return Promise.resolve(`loaded ${this.guild.name}`);
-    }
+
 
     addGuildLog(log: string, member_id: Snowflake = null): string {
         this.logs.push(log);
@@ -151,7 +147,7 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     fetchCommands() {
-        //this refreshes every time
+        //this refreshes every time ⬇
         //return this._commandHandler.fetchGuildCommands(this.guild.commands); 
         return this.guild.commands.fetch();
     }

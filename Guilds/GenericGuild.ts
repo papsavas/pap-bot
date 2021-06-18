@@ -4,6 +4,9 @@ import GuildCommandHandlerImpl from '../Commands/Guild/GuildCommandHandlerImpl';
 import { guildSettings } from "../Entities/Generic/guildSettingsType";
 
 export interface GenericGuild {
+
+    readonly commandHandler: GuildCommandHandler;
+
     onReady(client: Discord.Client): Promise<any>;
 
     onSlashCommand(interaction: Discord.CommandInteraction): Promise<any>;
@@ -27,8 +30,6 @@ export interface GenericGuild {
     addGuildLog(log: string): string;
 
     getSettings(): guildSettings;
-
-    readonly commandHandler: GuildCommandHandler;
 
     setPrefix(newPrefix: string): void;
 
