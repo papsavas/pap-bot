@@ -7,11 +7,11 @@ export interface GenericCommand {
     guide: string;
     usage: string;
 
-    execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any>;
+    interactiveExecute(commandInteraction: CommandInteraction): Promise<unknown>;
+
+    execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<unknown>;
 
     getAliases(): string[];
-
-    interactiveExecute(commandInteraction: CommandInteraction): Promise<any>;
 
     matchAliases(possibleCommand: string): boolean;
 

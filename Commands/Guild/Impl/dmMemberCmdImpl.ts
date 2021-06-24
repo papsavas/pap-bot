@@ -95,7 +95,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             })
     }
 
-    public async execute(
+    async execute(
         message: Message,
         { commandless2 }: literalCommandType
     ) {

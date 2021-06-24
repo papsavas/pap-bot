@@ -71,7 +71,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
         })
     }
 
-    public async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {
+    async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             commandless1.includes(swear['swear_word'])) ||

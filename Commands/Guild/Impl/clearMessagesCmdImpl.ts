@@ -74,7 +74,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
 
     }
 
-    public execute({ channel, member }: Message, { arg1 }: literalCommandType) {
+    execute({ channel, member }: Message, { arg1 }: literalCommandType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;

@@ -45,6 +45,11 @@ export abstract class AbstractGuild implements GenericGuild {
 
     protected readonly guildID: Snowflake;
     protected specifiedCommands?: GenericGuildCommand[];
+    /*
+    TODO: move these to global scope on release
+    * global permissions are now available
+    * <ApplicationCommandManager>#setPermissions(commandResolvable, permissionData[], guildID)
+    */
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
         PinMessageCmdImpl, UnpinMessageCmdImpl,
@@ -54,7 +59,7 @@ export abstract class AbstractGuild implements GenericGuild {
         NsfwSwitchCmdImpl, ShowLogsCmdImpl
     ].map(cmd => cmd.init())
 
-    public commandHandler: GuildCommandHandler;
+    commandHandler: GuildCommandHandler;
 
     get guild(): Guild {
         return this._guild;
@@ -79,7 +84,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._settings;
     }
 
-    async onReady(client: Client): Promise<any> {
+    async onReady(client: Client): Promise<string> {
         this._guild = client.guilds.cache.get(this.guildID);
         await this.loadResponses()
         return Promise.resolve(`loaded ${this.guild.name}`);
@@ -155,9 +160,8 @@ export abstract class AbstractGuild implements GenericGuild {
     async loadResponses() {
         this._settings = await fetchGuildSettings(this.guildID);
         const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
-        const memberConcatResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
-        this._responses = memberConcatResponses.concat(genericResponses);
-        return Promise.resolve('responses reloaded')
+        const memberResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
+        this._responses = memberResponses.concat(genericResponses);
     }
 
 }

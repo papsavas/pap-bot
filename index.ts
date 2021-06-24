@@ -1,5 +1,5 @@
-import { Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, Snowflake, TextChannel, User } from 'discord.js';
-import { guildID as botGuildID } from './botconfig.json';
+import { Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, Snowflake, TextChannel, User } from 'discord.js';
+import { guildID as botGuildID, creatorID } from './botconfig.json';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 
@@ -14,7 +14,7 @@ if (inDevelopment)
     require('dotenv').config();  //load env variables
 
 
-console.log("running in " + process.env.NODE_ENV + " mode\n");
+console.log(`running in "${process.env.NODE_ENV}" mode\n`);
 
 export const PAP = new Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
@@ -56,7 +56,7 @@ async function runScript(): Promise<void> {
 
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
-    /* implement DB writes */
+    //TODO: implement DB writes
     /*
     * - guild table add id
     * - command_perms add @everyone role id in every command 👇
@@ -76,7 +76,7 @@ PAP.on('guildCreate', (guild) => {
 
 PAP.on('guildDelete', guild => {
     console.log(`left ${guild.name} guild`);
-    /* implement DB writes */
+    //TODO: implement DB writes
     //onGuildLeave(guild);
 })
 
@@ -86,7 +86,7 @@ PAP.on('guildUnavailable', (guild) => {
             .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
-
+//when cache is fully loaded
 PAP.on('ready', async () => {
 
     try {
@@ -99,11 +99,14 @@ PAP.on('ready', async () => {
         if (!inDevelopment)
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
-        /*PAP.guilds.cache.keyArray()*/
+        /*
+        TODO: Replace on release 
+        PAP.guilds.cache.keyArray()
+        */
         for (const guildID of [botGuildID] as Snowflake[]) {
             if (!guildMap.has(guildID))
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
-            guildMap.get(guildID).onReady(PAP);
+            await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
         };
         console.log('smooth init')
 
@@ -156,12 +159,14 @@ PAP.on('interaction', async interaction => {
 
 PAP.on('message', (receivedMessage) => {
 
-    if (receivedMessage.author.id === `702931803542913044` && receivedMessage.content.startsWith('eval'))
+    if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
-            eval(receivedMessage.content.substring(5))
+            eval(receivedMessage.cleanContent.substring(5));
         }
         catch (err) {
             console.error(err);
+            receivedMessage.reply({ content: err.toString(), code: true, split: true, allowedMentions: { parse: [] } })
+                .catch(internalErr => console.log(internalErr));
         }
 
 

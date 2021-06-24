@@ -14,13 +14,13 @@ require('dotenv').config();
 
 export default class GuildCommandHandlerImpl implements GuildCommandHandler {
 
+    private readonly guildID: Snowflake;
+    private readonly helpCommandData: ApplicationCommandData;
     readonly commands: GenericGuildCommand[];
-    private guildID: Snowflake;
-    private helpCommandData: ApplicationCommandData;
 
-    constructor(guild_id: Snowflake, commands: GenericGuildCommand[]) {
+    constructor(guild_id: Snowflake, guildCommands: GenericGuildCommand[]) {
         this.guildID = guild_id;
-        this.commands = commands;
+        this.commands = guildCommands;
         this.helpCommandData = {
             name: "help",
             description: "displays support for a certain command",
@@ -39,7 +39,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
         }
     }
 
-    public async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
+    async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand>> {
 
         const applicationCommands: ApplicationCommandData[] = [];
@@ -79,7 +79,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
         }
     }
 
-    public onCommand(message: Message): Promise<any> {
+    onCommand(message: Message): Promise<unknown> {
         /*
         TODO: FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
         TODO: CONNECT 'commands with command_perms' with foreign key on commands Completion
@@ -128,7 +128,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
             return message.react('❔').catch();
     }
 
-    onSlashCommand(interaction: CommandInteraction): Promise<any> {
+    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
         if (interaction.commandName == 'help')
             return interaction.reply({
                 embeds: [
@@ -195,7 +195,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
                 color: 'RED'
             })
 
-        const interactionPromise: Promise<any> = interaction.replied ?
+        const interactionPromise: Promise<unknown> = interaction.replied ?
             interaction.editReply({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
         interactionPromise
             .then(() => interaction.client.setTimeout(() => interaction.deleteReply().catch(), 15000))
@@ -242,15 +242,15 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
-    private helpCmd(message: Message, command: GenericCommand): Promise<any> {
-        if (command)
+    private helpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
+        if (providedCommand)
             return message.reply({
                 embeds:
                     [
                         new MessageEmbed({
-                            title: command.keyword,
-                            description: command.guide,
-                            footer: { text: command.getAliases().toString() }
+                            title: providedCommand.keyword,
+                            description: providedCommand.guide,
+                            footer: { text: providedCommand.getAliases().toString() }
                         })
                     ]
             })
