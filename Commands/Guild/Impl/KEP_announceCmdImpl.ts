@@ -3,8 +3,8 @@ import { AbstractGuildCommand } from '../AbstractGuildCommand';
 import { Snowflake, ApplicationCommandData, CommandInteraction, Message, MessageEmbed, Role, TextChannel, MessageActionRow, MessageButton } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
-import { guildMap, PAP } from '../../..';
-import { content } from 'googleapis/build/src/apis/content';
+import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 throw new Error('dummy ids, remove if attached');
 
@@ -26,7 +26,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
     }
     private readonly _aliases = this.addKeywordToAliases
         (
-            [], this.keyword
+            ['announce', 'ann'], this.keyword
         );
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
@@ -122,7 +122,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             });
 
     }
-    async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<unknown> {
+    async execute(message: Message, { }: literalCommandType): Promise<unknown> {
         return message.reply(`Χρησιμοποιήτε την εντολή ως slash command \`/${this.keyword}\` ώστε να μπορείτε να δηλώσετε και ρόλους για ping`);
     }
 
@@ -133,8 +133,4 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
     addGuildLog(guildID: Snowflake, log: string) {
         return guildMap.get(guildID).addGuildLog(log);
     }
-}
-
-function fetchCommandID(keyword: any): any {
-    throw new Error("Function not implemented.");
 }
