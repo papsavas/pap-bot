@@ -29,8 +29,11 @@ export function paginationEmbed(
             message.react('⬅️').then(r => message.react('➡️'));
             const collector = message.createReactionCollector(
                 // only collect left and right arrow reactions from the message author
-                (reaction, user) => ['⬅️', '➡️'].includes(reaction.emoji.name) && user.id === userMessage.author.id,
-                { time: timeout });
+
+                {
+                    filter: (reaction, user) => ['⬅️', '➡️'].includes(reaction.emoji.name) && user.id === userMessage.author.id,
+                    time: timeout
+                });
 
             let currentIndex = 0;
             collector.on('collect', async reaction => {

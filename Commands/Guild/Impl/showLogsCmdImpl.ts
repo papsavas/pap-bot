@@ -85,9 +85,10 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             return message.reply(`\`MANAGE_GUILD permissions required\``);
         else {
             const msg = await channel.send(`are you sure you want to expose __private__ actions on this channel? **(Y/N)**`)
+            const filter = (msg: Message) => msg.author === member.user && ['y', 'n'].some(c => msg.cleanContent.toLowerCase() === c);
             channel.awaitMessages(
-                (msg: Message) => msg.author === member.user && ['y', 'n'].some(c => msg.cleanContent.toLowerCase() === c),
                 {
+                    filter,
                     max: 1,
                     time: 10000
                 }

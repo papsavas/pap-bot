@@ -67,8 +67,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
             componentInteraction.user.id === commandInteraction.user.id;
         const btn = await commandInteraction.channel.awaitMessageComponentInteraction
             (
-                filter,
-                { time: 10000 }
+                { filter, time: 10000 }
             );
 
         if (!btn)
@@ -111,8 +110,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                 componentInteraction.user.id === message.author.id;
             const btn = await message.channel.awaitMessageComponentInteraction
                 (
-                    filter,
-                    { time: 10000 }
+                    { filter, time: 10000 }
                 );
 
             if (!btn)

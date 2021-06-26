@@ -152,6 +152,10 @@ PAP.on('interaction', async interaction => {
         }
     }
 
+    else if (interaction.isMessageComponent()) {
+        console.log(`non button messagecomponent received \n${interaction.toString()}`);
+    }
+
     else
         console.log(`unhandled interaction type in ${interaction.channel.id} channel. TYPE = ${interaction.type}`);
 });
