@@ -1,33 +1,52 @@
-import { AbstractCommand } from "../AbstractCommand";
-import { myresponses as _keyword } from '../../keywords.json';
-import { Gmyresponses as _guide } from '../../guides.json';
-import { ApplicationCommandData, CommandInteraction, Message, MessageEmbed } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
+import { guildMap } from "../../..";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
 
-export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements showPersonalResponsesCmd {
+export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {
+
+    protected _id: Snowflake;
+    protected _keyword = `myresponses`;
+    protected _guide = `Prints user submitted responses`;
+    protected _usage = `myresponses`;
+
+    private constructor() { super() }
+
+    static async init(): Promise<showPersonalResponsesCmd> {
+        const cmd = new ShowPersonalResponsesCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
+
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide()
+            name: this.keyword,
+            description: this.guide
         }
     }
 
-    interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        return interaction.reply('coming soon');
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        await interaction.defer({ ephemeral: true });
+        const guild_id = interaction.guildID;
+        const member_id = (interaction.member as GuildMember).id;
+        const responses = await fetchGuildMemberResponses(guild_id, member_id);
+        const responsesArr = responses.map(resObj => resObj['response']);
+        return interaction.followUp(`\`\`\`${responsesArr.toString()}\`\`\``);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const member_id = receivedMessage.member.id;
         const perPage = 10;
@@ -57,16 +76,13 @@ export class ShowPersonalResponsesCmdImpl extends AbstractCommand implements sho
         )
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
         return this._aliases
     }
 
-    getGuide(): string {
-        return _guide;
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 
 }

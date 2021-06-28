@@ -1,5 +1,6 @@
-import {GenericCommand} from "Commands/Guild/GenericCommand";
+import { GenericCommand } from "Commands/GenericCommand";
+import GenericGuildCommand from "../GenericGuildCommand";
 
-export interface pollCmd extends GenericCommand{
+export interface pollCmd extends GenericGuildCommand {
 
 }

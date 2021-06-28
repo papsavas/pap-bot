@@ -1,5 +1,6 @@
-import { GenericCommand } from "Commands/Guild/GenericCommand";
+import { GenericCommand } from "Commands/GenericCommand";
+import GenericGuildCommand from "../GenericGuildCommand";
 
-export interface lockCommandCmd extends GenericCommand {
+export interface lockCommandCmd extends GenericGuildCommand {
 
 }

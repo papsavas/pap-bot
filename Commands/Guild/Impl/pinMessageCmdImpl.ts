@@ -1,36 +1,49 @@
-import { GpinMessage as _guide } from "../../guides.json";
-import { pinMessage as _keyword } from "../../keywords.json";
-
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import * as e from '../../../errorCodes.json';
+import { guildMap } from "../../..";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 
 
+const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
+const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
+export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
-export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd {
+    protected _id: Snowflake;
+    protected _keyword = `pin`;
+    protected _guide = `Pins a message`;
+    protected _usage = `pin <msg_id> [reason]`;
+    private constructor() { super() }
+
+    static async init(): Promise<pinMessageCmd> {
+        const cmd = new PinMessageCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['pin', 'πιν'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
-                    name: 'message_id',
+                    name: msgidOptionLiteral,
                     description: 'targeted message id or link',
                     type: 'STRING',
                     required: true
                 },
                 {
-                    name: 'reason',
+                    name: reasonOptionLiteral,
                     description: 'reason for pinning',
                     type: 'STRING',
                     required: false
@@ -41,46 +54,66 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
-        const reason = interaction.options[1];
+        const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember
         let pinReason = reason ? reason.value as string : ``;
         pinReason += `\nby ${member.displayName}`;
-        let pinningMessageID = extractId(interaction.options[0].value as string);
+        let pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
         let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
+            if (fetchedMessage.pinned)
+                return interaction.reply({
+                    embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
+                    ephemeral: true
+                });
+            return fetchedMessage.pin()
+                .then((pinnedMessage) => {
+                    this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                    interaction.reply({
+                        embeds: [
+                            new MessageEmbed({
+                                title: `Pinned Message 📌`,
+                                description: pinnedMessage.content?.length > 0 ?
+                                    `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
+                                    `[Click to jump](${pinnedMessage.url})`,
+                                footer: { text: pinReason }
+                            })
+                        ]
+                    })
+                })
+                .catch(err => {
+                    interaction.reply('could not pin message');
+                });
         } catch (error) {
             if (error.code == e["Unknown message"])
-                return interaction.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`,
-                    { ephemeral: true })
+                return interaction.reply({
+                    content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
+                    ephemeral: true
+                })
         }
-
-        return fetchedMessage.pin({ reason: pinReason })
-            .then((pinnedMessage) => {
-                //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
-                interaction.reply(new MessageEmbed({
-                    title: `Pinned Message 📌`,
-                    description: pinnedMessage.content?.length > 0 ?
-                        `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
-                        `[Click to jump](${pinnedMessage.url})`,
-                    footer: { text: pinReason }
-                }))
-            })
-            .catch(err => {
-                interaction.reply('could not pin message');
-            });
     }
 
-    execute(message: Message, { arg1, commandless2 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
         const channel = message.channel;
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
         let pinningMessageID = extractId(arg1);
+        let fetchedMessage;
+        try {
+            fetchedMessage = await channel.messages.fetch(pinningMessageID);
+        } catch (error) {
+            if (error.code == e["Unknown message"])
+                return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
+        }
+        if (fetchedMessage.pinned)
+            return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }] });
+
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {
-                fetchedMessage.pin({ reason: pinReason })
+                fetchedMessage.pin()
                     .then((pinnedMessage) => {
-                        //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                        this.addGuildLog(message.guild.id, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                         if (message.deletable)
                             message.client.setTimeout(() => message.delete().catch(), 3000);
                     });
@@ -91,11 +124,7 @@ export class PinMessageCmdImpl extends AbstractCommand implements pinMessageCmd 
         return this._aliases;
     }
 
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

@@ -1,5 +1,6 @@
-import {GenericCommand} from "Commands/Guild/GenericCommand";
+import { GenericCommand } from "Commands/GenericCommand";
+import GenericGuildCommand from "../GenericGuildCommand";
 
-export interface dmMemberCmd extends GenericCommand{
+export interface dmMemberCmd extends GenericGuildCommand {
 
 }

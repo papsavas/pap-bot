@@ -1,30 +1,42 @@
-import { addresponse as _keyword } from '../../keywords.json';
-import { Gaddresponse as _guide } from '../../guides.json';
-import { AbstractCommand } from "../AbstractCommand";
-import { addResponseCmd } from "../Interf/addResponseCmd";
-import { ApplicationCommandData, CommandInteraction, Interaction, Message, MessageEmbed } from "discord.js";
-import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { guildMap } from '../../..';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { addResponseCmd } from "../Interf/addResponseCmd";
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
-export class AddResponseCmdImpl extends AbstractCommand implements addResponseCmd {
+const responeOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
+export class AddResponseCmdImpl extends AbstractGuildCommand implements addResponseCmd {
+    protected _id: Snowflake;
+    protected _keyword = `addresponse`;
+    protected _guide = `Adds a user response to bots replies`;
+    protected _usage = `$addresponse <response>`;
+
+    private constructor() { super() }
+
+    static async init(): Promise<addResponseCmd> {
+        const cmd = new AddResponseCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['addresponse', 'add_response', 'ar'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
-                    name: 'response',
+                    name: responeOptionLiteral,
                     description: 'your response',
                     type: 'STRING',
                     required: true
@@ -35,46 +47,49 @@ export class AddResponseCmdImpl extends AbstractCommand implements addResponseCm
     }
 
     async interactiveExecute(interaction: CommandInteraction) {
-        const memberResponse = interaction.options[0].value as string;
+        const memberResponse = interaction.options.get(responeOptionLiteral).value as string;
         const guildID = interaction.guildID;
         const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             memberResponse.includes(swear['swear_word'])) ||
             Profanity.isProfane(memberResponse);
-        await interaction.defer(true);
+        await interaction.defer({ ephemeral: true });
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
-        return interaction.editReply(new MessageEmbed({
-            title: `Response Added`,
-            description: ` your response has been added`,
-            fields: [
-                { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
-                { name: `marked as nsfw`, value: nsfw.toString(), inline: true }
-            ]
-        }))
+        return interaction.editReply({
+            embeds:
+                [
+                    new MessageEmbed({
+                        title: `Response Added`,
+                        description: ` your response has been added`,
+                        fields: [
+                            { name: `response`, value: `\`\`\`${memberResponse}\`\`\`` },
+                            { name: `marked as nsfw`, value: nsfw.toString(), inline: true }
+                        ]
+                    })
+                ]
+        })
     }
 
-    public async execute(receivedMessage: Message, receivedCommand: commandType, addGuildLog: guildLoggerType) {
+    async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
-            receivedMessage.content.includes(swear['swear_word'])) ||
-            Profanity.isProfane(receivedMessage.cleanContent);
+            commandless1.includes(swear['swear_word'])) ||
+            Profanity.isProfane(commandless1);
+        this.addGuildLog(guild.id, `${member.displayName} added response ${commandless1.substr(0, 100)}`);
         return addMemberResponse(
-            receivedMessage.guild.id,
-            receivedMessage.member.id,
-            receivedCommand.commandless1, nsfw
+            guild.id,
+            member.id,
+            commandless1, nsfw
         )
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     getAliases(): string[] {
         return this._aliases;
     }
 
-    getGuide(): string {
-        return _guide;
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
+
 }

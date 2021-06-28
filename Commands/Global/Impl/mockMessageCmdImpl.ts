@@ -1,17 +1,23 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
 import { mock as _keyword } from '../../keywords.json';
 import { Gmock as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { mockMessageCmd } from '../Interf/mockMessageCmd';
 import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
+import { guildMap } from '../../..';
+import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
 
-export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCmd {
+export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['mock'],
@@ -37,7 +43,7 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
         return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
     }
 
-    execute(message: Message, { commandless1 }: commandType, addGuildLog: guildLoggerType): Promise<any> {
+    execute(message: Message, { commandless1 }: literalCommandType): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();
@@ -54,5 +60,9 @@ export class MockMessageCmdImpl extends AbstractCommand implements mockMessageCm
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

@@ -1,29 +1,39 @@
-import { AbstractCommand } from "../AbstractCommand";
 import * as Discord from 'discord.js';
-import { simplePoll as _keyword } from '../../keywords.json';
-import { GsimplePoll as _guide } from '../../guides.json';
-
+import { ApplicationCommandData, ApplicationCommandOptionData, GuildMember, Snowflake, TextChannel } from "discord.js";
+import { guildMap } from "../../..";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
-import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, GuildMember, TextChannel } from "discord.js";
 
+const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
+export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
+    protected _id: Snowflake;
+    protected _keyword = `poll`;
+    protected _guide = `Creates a simple poll using 👍-👎`;
+    protected _usage = `poll <text>`;
+    private constructor() { super() }
 
-export class PollCmdImpl extends AbstractCommand implements pollCmd {
+    static async init(): Promise<pollCmd> {
+        const cmd = new PollCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['poll', 'πολλ'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
-                    name: 'text',
+                    name: textOptionLiteral,
                     description: 'text to poll',
                     type: 'STRING',
                     required: true
@@ -35,53 +45,61 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
         const member = interaction.member as GuildMember;
-        return channel.send(
-            new Discord.MessageEmbed(
-                {
-                    title: `Vote`,
-                    color: '#D8F612',
-                    description: interaction.options[0].value as string,
-                    author: {
-                        name: member.displayName,
-                        icon_url: member.user.avatarURL({ format: 'png' })
-                    },
-                    //add blank
-                    fields: [{
-                        name: '\u200B',
-                        value: '\u200B',
-                    },],
+        return channel.send({
+            embeds: [
+                new Discord.MessageEmbed(
+                    {
+                        title: `Vote`,
+                        color: '#D8F612',
+                        description: interaction.options.get(textOptionLiteral).value as string,
+                        author: {
+                            name: member.displayName,
+                            icon_url: member.user.avatarURL({ format: 'png' })
+                        },
+                        //add blank
+                        fields: [{
+                            name: '\u200B',
+                            value: '\u200B',
+                        },],
 
-                    footer: { text: 'Poll📊' }
-                }))
+                        footer: { text: 'Poll📊' }
+                    })
+            ]
+        })
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
-                interaction.reply('poll created', { ephemeral: true }).catch();
+                interaction.reply({
+                    content: 'poll created',
+                    ephemeral: true
+                }).catch();
             })
             .catch(err => interaction.reply(`something went wrong`))
     }
 
-
-    execute(message: Discord.Message, { commandless1 }: commandType, addGuildLog: guildLoggerType) {
+    execute(message: Discord.Message, { commandless1 }: literalCommandType) {
         const commandMsg = message;
-        return (commandMsg.channel as Discord.TextChannel).send(
-            new Discord.MessageEmbed(
-                {
-                    title: `Ψηφίστε`,
-                    color: '#D8F612',
-                    description: commandless1,
-                    author: {
-                        name: commandMsg.member.displayName,
-                        icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
-                    },
-                    //add blank
-                    fields: [{
-                        name: '\u200B',
-                        value: '\u200B',
-                    },],
+        return (commandMsg.channel as Discord.TextChannel).send({
+            embeds: [
+                new Discord.MessageEmbed(
+                    {
+                        title: `Ψηφίστε`,
+                        color: '#D8F612',
+                        description: commandless1,
+                        author: {
+                            name: commandMsg.member.displayName,
+                            icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
+                        },
+                        //add blank
+                        fields: [{
+                            name: '\u200B',
+                            value: '\u200B',
+                        },],
 
-                    footer: { text: 'Poll📊' }
-                }))
+                        footer: { text: 'Poll📊' }
+                    })
+            ]
+        })
             .then((botmsg) => {
                 botmsg.react('👍');
                 botmsg.react('👎');
@@ -93,15 +111,11 @@ export class PollCmdImpl extends AbstractCommand implements pollCmd {
             })
     }
 
-    getKeyword(): string {
-        return _keyword
-    }
-
     getAliases(): string[] {
         return this._aliases
     }
 
-    getGuide(): string {
-        return _guide;
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

@@ -1,4 +1,7 @@
-export type commandType = {
+import { Snowflake } from "discord.js";
+import { overArgs } from "lodash";
+
+export type literalCommandType = {
     //prefix: string;
     fullCommand: string;
     splitCommand: string[];
@@ -9,4 +12,12 @@ export type commandType = {
     commandless1: string | undefined;
     commandless2: string | undefined;
     commandless3: string | undefined;
+}
+
+export interface CommandType {
+    id: Snowflake;
+    keyword: string;
+    aliases?: string[],
+    guide: string;
+    uuid?: string;
 }

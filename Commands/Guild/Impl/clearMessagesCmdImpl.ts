@@ -1,27 +1,39 @@
-import { clearMessages as _keyword } from '../../keywords.json';
-import { GclearMessages as _guide } from '../../guides.json';
-import { AbstractCommand } from "../AbstractCommand";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, TextChannel } from 'discord.js';
-import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { guildMap } from '../../..';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
-import { APIGuildMember } from 'discord-api-types';
+
+const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
+
+export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
+    protected _id: Snowflake;
+    protected _keyword = `clear`;
+    protected _guide = `Deletes a provided number of recent messages`;
+    protected _usage = `$clear number`;
+    private constructor() { super() }
+
+    static async init(): Promise<clearMessagesCmd> {
+        const cmd = new ClearMessagesCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
 
 
-export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessagesCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
             ['clear', 'clean', 'purge'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
-                    name: 'number',
+                    name: numberOptionLiteral,
                     description: 'number of messages to delete',
                     type: 'INTEGER',
                     required: true
@@ -32,7 +44,7 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const number = interaction.options[0].value as number;
+        const number = interaction.options.get(numberOptionLiteral).value as number;
         const member = interaction.member as GuildMember;
 
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
@@ -58,11 +70,11 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
             });
         }
         else
-            return interaction.reply('You need `MANAGE_MESSAGES` permissions', { ephemeral: true })
+            return interaction.reply({ content: 'You need `MANAGE_MESSAGES` permissions', ephemeral: true })
 
     }
 
-    public execute({ channel, member }: Message, { arg1 }: commandType, addGuildLog: guildLoggerType) {
+    execute({ channel, member }: Message, { arg1 }: literalCommandType) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;
@@ -84,10 +96,10 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
                     });
                     if (descr.length > 2048) return
                     return channel.send({
-                        embed: {
+                        embeds: [{
                             title: `🗑️ Deleted ${number} messages`,
                             description: descr
-                        }
+                        }]
                     });
                 })
                 .catch()
@@ -95,15 +107,12 @@ export class ClearMessagesCmdImpl extends AbstractCommand implements clearMessag
             return Promise.reject('Requires `MANAGE_MESSAGES` permission')
     }
 
-    getKeyword(): string {
-        return _keyword;
-    }
-
     getAliases(): string[] {
         return this._aliases;
     }
 
-    getGuide(): string {
-        return _guide;
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }
+

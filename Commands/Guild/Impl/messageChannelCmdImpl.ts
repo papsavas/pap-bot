@@ -1,34 +1,47 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, TextChannel } from 'discord.js';
-import { messageChannel as _keyword } from '../../keywords.json';
-import { GmessageChannel as _guide } from '../../guides.json';
-
-import { AbstractCommand } from "../AbstractCommand";
+import { ApplicationCommandData, ApplicationCommandOptionData, Message, Snowflake, TextChannel } from 'discord.js';
+import { guildMap } from '../../..';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
-import { commandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 
 
-export class MessageChannelCmdImpl extends AbstractCommand implements messageChannelCmd {
+const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
+const msgOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
+
+export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
+    protected _id: Snowflake;
+    protected _keyword = `send`;
+    protected _guide = `Messages a specific channel on the guild`;
+    protected _usage = `send <channel> <text>`;
+    private constructor() { super() }
+
+    static async init(): Promise<messageChannelCmd> {
+        const cmd = new MessageChannelCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['send', 'msgchannel', 'messagechannel', 'message_channel'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
-                    name: 'channel',
+                    name: channelOptionLiteral,
                     description: 'targeted channel',
                     type: 'CHANNEL',
                     required: true
                 },
                 {
-                    name: 'message',
+                    name: msgOptionLiteral,
                     description: 'the message',
                     type: 'STRING',
                     required: true
@@ -38,9 +51,11 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        const sendChannel = interaction.options[0].channel as TextChannel;
-        const messageContent = interaction.options[1].value as string;
-        await sendChannel.send(messageContent, { split: true });
+        const sendChannel = interaction.options.get(channelOptionLiteral).channel as TextChannel;
+        const messageContent = interaction.options.get(msgOptionLiteral).value as string;
+        await sendChannel.send({
+            content: messageContent.substr(0, 2000),
+        });
         const emb = new Discord.MessageEmbed({
             title: `Message send`,
             fields: [
@@ -56,11 +71,11 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
 
     }
 
-    async execute({ guild, mentions }: Message, { commandless2 }: commandType, addGuildLog: guildLoggerType) {
+    async execute({ guild, mentions }: Message, { commandless2 }: literalCommandType) {
         const sendChannel = mentions.channels.first() as Discord.TextChannel;
         if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
             return sendChannel.send(commandless2)
-                .then(() => addGuildLog(`sent ${commandless2} to ${sendChannel.name}`));
+                .then(() => this.addGuildLog(guild.id, `sent ${commandless2} to ${sendChannel.name}`));
         else
             throw new Error(`Channel not found`);
     }
@@ -69,11 +84,7 @@ export class MessageChannelCmdImpl extends AbstractCommand implements messageCha
         return this._aliases;
     }
 
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

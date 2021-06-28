@@ -1,41 +1,54 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message } from 'discord.js';
-import { editMessage as _keyword } from '../../keywords.json';
-import { GeditMessage as _guide } from '../../guides.json';
+import { ApplicationCommandData, ApplicationCommandOptionData, GuildChannel, Message, Snowflake } from 'discord.js';
 
-import { AbstractCommand } from "../AbstractCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
 import * as e from '../../../errorCodes.json'
-import { commandType } from "../../../Entities/Generic/commandType";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from '../../..';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
+const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
+const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
+const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
+export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
+    protected _id: Snowflake;
+    protected _keyword = `editmsg`;
+    protected _guide = `Edits a bot's text message`;
+    protected _usage = `editmessage <channel> <msg_id> <text>`;
+    private constructor() { super() }
 
+    static async init(): Promise<editMessageCmd> {
+        const cmd = new EditMessageCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
 
-export class EditMessageCmdImpl extends AbstractCommand implements editMessageCmd {
     private readonly _aliases = this.addKeywordToAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
-                    name: 'channel',
+                    name: channelOptionLiteral,
                     description: 'target channel',
                     type: 'CHANNEL',
                     required: true
                 },
                 {
-                    name: 'message_id',
+                    name: msgidOptionLiteral,
                     description: 'the id of the message',
                     type: 'STRING',
                     required: true
                 },
                 {
-                    name: 'edit',
+                    name: editedMsgOptionLiteral,
                     description: 'new message',
                     type: 'STRING',
                     required: true
@@ -45,34 +58,36 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        const targetChannel = interaction.options[0].channel as Discord.GuildChannel;
-        const messageID = interaction.options[1].value as Discord.Snowflake
-        await interaction.defer(true);
+        const targetChannel = interaction.options.get(channelOptionLiteral).channel as GuildChannel;
+        const messageID = interaction.options.get(msgidOptionLiteral).value as Snowflake
+        await interaction.defer({ ephemeral: true });
         const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(messageID);
         if (targetMessage.author != interaction.client.user)
             return interaction.reply('Cannot edit a message authored by another user');
-        const editedMessage = await targetMessage?.edit(interaction.options[2].value as string);
-        return interaction.editReply(
-            new Discord.MessageEmbed({
-                description: `[edited message](${editedMessage.url})`
-            })
-        );
+        const editedMessage = await targetMessage?.edit(interaction.options.get(editedMsgOptionLiteral).value as string);
+        return interaction.editReply({
+            embeds:
+                [
+                    new Discord.MessageEmbed({
+                        description: `[edited message](${editedMessage.url})`
+                    })
+                ]
+        });
     }
 
     async execute(
         { channel, mentions, guild, url }: Message,
-        { arg1, arg2, commandless2, commandless3 }: commandType,
-        addGuildLog
+        { arg1, arg2, commandless2, commandless3 }: literalCommandType
     ): Promise<any> {
 
         try {
-            const fetchedMessage = await channel.messages.fetch(arg1)
+            const fetchedMessage = await channel.messages.fetch(arg1 as Snowflake)
             const editedMessage = await fetchedMessage
                 .edit(commandless2)
             await channel.send({
-                embed: {
+                embeds: [{
                     description: `[edited message](${editedMessage.url})`
-                }
+                }]
             });
             return new Promise((res, rej) => res('edit message success'));
         } catch (err) {
@@ -81,12 +96,16 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
                     const targetChannel: Discord.GuildChannel = guild.channels.cache
                         .find(c => c.id == mentions.channels?.firstKey())
 
-                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2);
+                    const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2 as Snowflake);
 
                     const editedMessage = await targetMessage?.edit(commandless3);
-                    const sendLinkMessage = await channel.send(new Discord.MessageEmbed(
-                        { description: `[edited message](${editedMessage.url})` }
-                    ));
+                    const sendLinkMessage = await channel.send({
+                        embeds: [
+                            new Discord.MessageEmbed(
+                                { description: `[edited message](${editedMessage.url})` }
+                            )
+                        ]
+                    });
                     return new Promise((res, rej) => res('edit message success'));
                 } catch (err) {
                     return new Promise((res, rej) => rej(`edit message failed\n${url}`));
@@ -102,12 +121,8 @@ export class EditMessageCmdImpl extends AbstractCommand implements editMessageCm
         return this._aliases;
     }
 
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 
 }

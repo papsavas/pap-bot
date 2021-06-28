@@ -1,5 +1,6 @@
-import {GenericCommand} from "Commands/Guild/GenericCommand";
+import { GenericCommand } from "Commands/GenericCommand";
+import GenericGuildCommand from "../GenericGuildCommand";
 
-export interface messageChannelCmd extends GenericCommand{
+export interface messageChannelCmd extends GenericGuildCommand {
 
 }

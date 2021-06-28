@@ -1,18 +1,24 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, TextChannel } from 'discord.js';
+import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord.js';
 import { userNotes as _keyword } from '../../keywords.json';
 import { GuserNotes as _guide } from '../../guides.json';
 
-import { AbstractCommand } from "../AbstractCommand";
-import { commandType } from "../../../Entities/Generic/commandType";
+import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { userNotesCmd } from '../Interf/userNotesCmd';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { userNote } from '../../../Entities/Generic/userNote';
 import { auth } from 'firebase-admin';
+import { guildMap } from '../../..';
+import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
+import { fetchCommandID } from '../../../Queries/Generic/Commands';
 
 
-export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
+export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
+
+    readonly id: Snowflake = fetchCommandID(_keyword);
+
     private readonly _aliases = this.addKeywordToAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],
@@ -84,7 +90,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
     }
 
     async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        await interaction.defer(true);
+        await interaction.defer({ ephemeral: true });
         const user_id = interaction.user.id;
         const cmdOptions = interaction.options[0].options;
         try {
@@ -125,7 +131,7 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     }
 
-    async execute({ author }: Message, { arg1, arg2, commandless3, commandless2 }: commandType, addGuildLog: guildLoggerType) {
+    async execute({ author }: Message, { arg1, commandless2 }: literalCommandType) {
         const user_id = author.id;
         const user = author;
         switch (arg1) {
@@ -168,5 +174,9 @@ export class userNotesCmdImpl extends AbstractCommand implements userNotesCmd {
 
     getKeyword(): string {
         return _keyword;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

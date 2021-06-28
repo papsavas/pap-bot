@@ -1,13 +1,12 @@
-import * as Discord from 'discord.js';
-import { GuildMember, Message, User } from 'discord.js';
-import { guildID as botGuildID } from './botconfig.json';
+import { Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, Snowflake, TextChannel, User } from 'discord.js';
+import { guildID as botGuildID, creatorID } from './botconfig.json';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 
 
 
-export let bugsChannel: Discord.TextChannel;
-export let logsChannel: Discord.TextChannel;
+export let bugsChannel: TextChannel;
+export let logsChannel: TextChannel;
 
 export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
 
@@ -15,10 +14,10 @@ if (inDevelopment)
     require('dotenv').config();  //load env variables
 
 
-console.log("running in " + process.env.NODE_ENV + " mode\n");
+console.log(`running in "${process.env.NODE_ENV}" mode\n`);
 
-export const PAP = new Discord.Client({
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER'],
+export const PAP = new Client({
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: [
         'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
         'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
@@ -30,23 +29,54 @@ export const PAP = new Discord.Client({
     }
 });
 
-export const guildMap = new Map<Discord.Snowflake, GenericGuild>();
+export const guildMap = new Collection<Snowflake, GenericGuild>();
 
+
+async function runScript(): Promise<void> {
+    //-----insert script--------
+    /*
+    guildMap.get(botGuildID as Snowflake).commandHandler.commands.forEach(async cmd =>
+        await addRow(
+            'command_perms', ({
+                "guild_id": botGuildID,
+                "role_id": botGuildID,
+                "command_id": cmd.id
+            }))
+    );*/
+    /*
+    const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
+    const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
+    /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
+    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
+    */
+    //-------------------------
+    console.log('script done');
+    return
+}
 
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
-    /* implement DB writes */
+    //TODO: implement DB writes
     /*
     * - guild table add id
-    * - command_perms add @everyone role id in every command
+    * - command_perms add @everyone role id in every command 👇
+    await addRows(
+        'command_perms',
+        guildMap.get(botGuildID as Snowflake).commandHandler.commands.map(async cmd =>
+            ( {
+                "guild_id": guild.id,
+                "role_id": guild.id,
+                "command_id": cmd.id
+            }))
+    );
     * - add guild settings
     * */
     //onGuildJoin(guild);
 })
 
-PAP.on('guildDelete', (guild) => {
+PAP.on('guildDelete', guild => {
     console.log(`left ${guild.name} guild`);
-    /* implement DB writes */
+    //TODO: implement DB writes
     //onGuildLeave(guild);
 })
 
@@ -56,64 +86,95 @@ PAP.on('guildUnavailable', (guild) => {
             .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
-async function runScript(): Promise<void> {
-    //-----insert script--------
-    /*
-    const botCmdManager = PAP.guilds.cache.get(botGuildID).commands;
-    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    const botGuildcmds = await PAP.guilds.cache.get(botGuildID).commands.fetch();
-    console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
-    */
-    //-------------------------
-    return
-}
-
-
+//when cache is fully loaded
 PAP.on('ready', async () => {
-    if (inDevelopment) {
-        await runScript();
-        //process.exit(132);
-    }
+
     try {
         // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
-        const PAPGuildChannels: Discord.GuildChannelManager = PAP.guilds.cache.get('746309734851674122').channels;
-        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as Discord.TextChannel;
-        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as Discord.TextChannel;
-        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as Discord.TextChannel
+        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
+        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
+        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
+        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
         if (!inDevelopment)
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
-        /*PAP.guilds.cache.keyArray()*/
-        [botGuildID].forEach((guildID) => {
+        /*
+        TODO: Replace on release 
+        PAP.guilds.cache.keyArray()
+        */
+        for (const guildID of [botGuildID] as Snowflake[]) {
             if (!guildMap.has(guildID))
-                guildMap.set(guildID, new DefaultGuild(guildID));
-            guildMap.get(guildID).onReady(PAP);
-        });
+                guildMap.set(guildID, await DefaultGuild.init(guildID));
+            await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
+        };
         console.log('smooth init')
 
     } catch (err) {
         console.log('ERROR\n' + err.stack);
     }
-
     console.log(`___Initiated___`);
+
+    if (inDevelopment) {
+        await runScript();
+        //process.exit(132);
+    }
 });
 
 
-PAP.on('interaction', interaction => {
-    // If the interaction isn't a slash command, return
-    if (!interaction.isCommand()) return;
+PAP.on('interaction', async interaction => {
+    if (interaction.isCommand()) {
+        if (interaction.channel.type === "text") {
+            try {
+                guildMap.get(interaction.guildID)
+                    ?.onSlashCommand(interaction)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        else if (interaction.channel.type === 'dm') {
+            console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
+            from ${interaction.user.tag}`)
+        }
+        else {
+            console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
+        }
+    }
 
-    if (!!interaction.guildID)
-        guildMap.get(interaction.guildID)
-            ?.onSlashCommand(interaction)
-            .catch(err => console.log(err));
+    else if (interaction.isButton()) {
+        if (!!interaction.guild) {
+            try {
+                guildMap.get(interaction.guildID)
+                    ?.onButton(interaction)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    else if (interaction.isMessageComponent()) {
+        console.log(`non button messagecomponent received \n${interaction.toString()}`);
+    }
+
+    else
+        console.log(`unhandled interaction type in ${interaction.channel.id} channel. TYPE = ${interaction.type}`);
 });
 
 
 PAP.on('message', (receivedMessage) => {
+    if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
+        try {
+            return eval(receivedMessage.cleanContent.substring(5));
+        }
+        catch (err) {
+            console.error(err);
+            receivedMessage.reply({ content: err.toString(), allowedMentions: { parse: [] } })
+                .catch(internalErr => console.log(internalErr));
+        }
+
     if (receivedMessage.author.bot)
         return
+
     switch (receivedMessage.channel.type) {
         case 'dm':
             break;
@@ -143,7 +204,6 @@ PAP.on('messageDelete', async (deletedMessage) => {
                 .catch(err => console.log(err));
             break;
     }
-
 })
 
 PAP.on('messageReactionAdd', async (messageReaction, user) => {
