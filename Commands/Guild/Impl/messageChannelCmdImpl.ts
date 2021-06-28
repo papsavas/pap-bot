@@ -54,8 +54,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         const sendChannel = interaction.options.get(channelOptionLiteral).channel as TextChannel;
         const messageContent = interaction.options.get(msgOptionLiteral).value as string;
         await sendChannel.send({
-            content: messageContent,
-            split: true
+            content: messageContent.substr(0, 2000),
         });
         const emb = new Discord.MessageEmbed({
             title: `Message send`,

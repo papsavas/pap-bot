@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake, Util } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -70,8 +70,7 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
                 });
         else
             return receivedMessage.reply({
-                content: `Current prefix is "${guildHandler.getSettings().prefix}"`,
-                code: true
+                content: `\`\`\`Current prefix is "${guildHandler.getSettings().prefix}"\`\`\``
             });
 
     }

@@ -1,6 +1,6 @@
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, Util } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
@@ -68,8 +68,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             return interaction.followUp({
                 content:
                     //last 2000 characters
-                    literal.slice(Math.max(literal.length - 2000, 0)),
-                code: true,
+                    `\`\`\`${literal.slice(Math.max(literal.length - 2000, 0))}\`\`\``,
                 allowedMentions: { parse: [] },
                 ephemeral: true
             }
@@ -103,8 +102,6 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                                 literal += `<@${el.member_id}> | ${el.log} | ${el.date.toString}\n`;
                             return channel.send({
                                 content: literal.toString(),
-                                split: true,
-                                code: true,
                                 allowedMentions: {
                                     users: [],
                                     roles: [],

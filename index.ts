@@ -162,21 +162,19 @@ PAP.on('interaction', async interaction => {
 
 
 PAP.on('message', (receivedMessage) => {
-
     if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
-            eval(receivedMessage.cleanContent.substring(5));
+            return eval(receivedMessage.cleanContent.substring(5));
         }
         catch (err) {
             console.error(err);
-            receivedMessage.reply({ content: err.toString(), code: true, split: true, allowedMentions: { parse: [] } })
+            receivedMessage.reply({ content: err.toString(), allowedMentions: { parse: [] } })
                 .catch(internalErr => console.log(internalErr));
         }
 
-
-
     if (receivedMessage.author.bot)
         return
+
     switch (receivedMessage.channel.type) {
         case 'dm':
             break;
