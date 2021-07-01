@@ -243,7 +243,7 @@ export default class GuildCommandHandlerImpl implements GuildCommandHandler {
     }
 
     private helpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
-        if (providedCommand)
+        if (typeof providedCommand !== 'undefined')
             return message.reply({
                 embeds:
                     [

@@ -39,6 +39,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     }
 
     async interactiveExecute(commandInteraction: CommandInteraction): Promise<any> {
+        //TODO: Fix behaviour, after update collector returns an error if time ends
         const oldSettings = await fetchGuildSettings(commandInteraction.guildID);
 
         const row = new MessageActionRow()
@@ -65,27 +66,35 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
         const filter = (componentInteraction: MessageComponentInteraction) =>
             ['on', 'off'].includes(componentInteraction.customID) &&
             componentInteraction.user.id === commandInteraction.user.id;
-        const btn = await commandInteraction.channel.awaitMessageComponentInteraction
-            (
-                { filter, time: 10000 }
-            );
 
-        if (!btn)
+        try {
+            const btn = await commandInteraction.channel.awaitMessageComponentInteraction
+                (
+                    { filter, time: 10000 }
+                );
+            const enabled = btn.customID === 'on';
+            const literal = enabled ? "Enabled" : "Disabled";
+            await updateGuildSettings(commandInteraction.guildID, Object.assign(oldSettings, { "nsfw_responses": enabled }));
+            await guildMap.get(commandInteraction.guildID).loadResponses();
             return commandInteraction.editReply({
-                content: `failed to respond in time`,
+                content: `**${literal}** \`nsfw\` mode`,
                 components: []
             });
-        const enabled = btn.customID === 'on';
-        const literal = enabled ? "Enabled" : "Disabled";
-        await updateGuildSettings(commandInteraction.guildID, Object.assign(oldSettings, { "nsfw_responses": enabled }));
-        await guildMap.get(commandInteraction.guildID).loadResponses();
-        return commandInteraction.editReply({
-            content: `**${literal}** \`nsfw\` mode`,
-            components: []
-        });
+        } catch (error) {
+            if (error.name === 'time')
+                return commandInteraction.editReply({
+                    content: `failed to respond in time`,
+                    components: []
+                });
+        }
+
+
+
+
     }
 
     async execute(message: Message, { }: literalCommandType) {
+        //TODO: Fix behaviour, after update collector returns an error if time ends
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);
             const row = new MessageActionRow()

@@ -1,5 +1,8 @@
-import { Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, Snowflake, TextChannel, User } from 'discord.js';
-import { guildID as botGuildID, creatorID } from './botconfig.json';
+import {
+    Client, Collection, CommandInteraction, GuildChannelManager,
+    GuildMember, Message, MessageEmbed, Snowflake, TextChannel, User
+} from 'discord.js';
+import { creatorID, guildID as botGuildID } from './botconfig.json';
 import { GenericGuild } from "./Guilds/GenericGuild";
 import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
 
@@ -34,21 +37,7 @@ export const guildMap = new Collection<Snowflake, GenericGuild>();
 
 async function runScript(): Promise<void> {
     //-----insert script--------
-    /*
-    guildMap.get(botGuildID as Snowflake).commandHandler.commands.forEach(async cmd =>
-        await addRow(
-            'command_perms', ({
-                "guild_id": botGuildID,
-                "role_id": botGuildID,
-                "command_id": cmd.id
-            }))
-    );*/
-    /*
-    const botCmdManager = PAP.guilds.cache.get(botGuildID as Snowflake).commands;
-    const botGuildcmds = await guildMap.get(botGuildID as Snowflake).commandHandler.fetchGuildCommands(botCmdManager);
-    /*console.table(botGuildcmds.map(cmd => [cmd.name, cmd.id, cmd.description]));
-    const appCommands = await new CommandHandlerImpl().refreshApplicationCommands(botCmdManager);
-    */
+
     //-------------------------
     console.log('script done');
     return
@@ -124,7 +113,7 @@ PAP.on('ready', async () => {
 
 PAP.on('interaction', async interaction => {
     if (interaction.isCommand()) {
-        if (interaction.channel.type === "text") {
+        if (interaction.inGuild()) {
             try {
                 guildMap.get(interaction.guildID)
                     ?.onSlashCommand(interaction)
@@ -142,7 +131,7 @@ PAP.on('interaction', async interaction => {
     }
 
     else if (interaction.isButton()) {
-        if (!!interaction.guild) {
+        if (interaction.inGuild()) {
             try {
                 guildMap.get(interaction.guildID)
                     ?.onButton(interaction)
@@ -152,12 +141,31 @@ PAP.on('interaction', async interaction => {
         }
     }
 
-    else if (interaction.isMessageComponent()) {
-        console.log(`non button messagecomponent received \n${interaction.toString()}`);
+    else if (interaction.isSelectMenu()) {
+        //TODO: implement guild handlers
+        console.log(`message component interaction received`);
+        await interaction.reply({
+            content: JSON.stringify(interaction.values),
+            ephemeral: true
+        }).catch(console.error)
     }
 
-    else
+    else {
         console.log(`unhandled interaction type in ${interaction.channel.id} channel. TYPE = ${interaction.type}`);
+        await bugsChannel.send({
+            embeds: [
+                new MessageEmbed({
+                    title: `Untracked Interaction`,
+                    description: `received untracked interaction in ${interaction.guild.name}`,
+                    fields: [
+                        { name: `Type`, value: interaction.type },
+                        { name: `Channel`, value: interaction.channel.toString() },
+                        { name: `Interaction ID`, value: interaction.id }
+                    ]
+                })
+            ]
+        })
+    }
 });
 
 
@@ -184,6 +192,13 @@ PAP.on('message', (receivedMessage) => {
                 ?.onMessage(receivedMessage)
                 .catch(err => console.log(err));
             break;
+
+        default:
+            bugsChannel.send(`received message from untracked channel type
+CHANNEL_TYPE:${receivedMessage.channel.type}
+ID:${receivedMessage.id}
+from: ${receivedMessage.member.displayName}
+content: ${receivedMessage.content}\n`).catch(console.error);
     }
 })
 
@@ -199,7 +214,7 @@ PAP.on('messageDelete', async (deletedMessage) => {
             break;
 
         case 'text':
-            guildMap.get(deletedMessage.guild.id)
+            guildMap.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(err => console.log(err));
             break;
@@ -213,7 +228,7 @@ PAP.on('messageReactionAdd', async (messageReaction, user) => {
     } catch (err) {
         console.error(err)
     }
-    guildMap.get(messageReaction.message.guild.id)
+    guildMap.get(messageReaction.message.guild?.id)
         ?.onMessageReactionAdd(messageReaction, user as User)
         .catch(err => console.log(err));
 
@@ -226,7 +241,7 @@ PAP.on('messageReactionRemove', async (messageReaction, user) => {
     } catch (err) {
         console.error(err)
     }
-    guildMap.get(messageReaction.message.guild.id)
+    guildMap.get(messageReaction.message.guild?.id)
         ?.onMessageReactionRemove(messageReaction, user as User)
         .catch(err => console.log(err));
 });

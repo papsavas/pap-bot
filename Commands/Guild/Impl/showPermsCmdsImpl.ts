@@ -1,4 +1,7 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, Message, MessageEmbed, Snowflake } from 'discord.js';
+import {
+    ApplicationCommandData, ApplicationCommandOptionData, APIErrors,
+    CommandInteraction, Message, MessageEmbed, Snowflake, Constants, ApplicationCommandPermissions
+} from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
@@ -59,7 +62,16 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         await interaction.defer({ ephemeral: true });
         const commandPerms = await fetchCommandPerms(interaction.guildID, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => interaction.guild.roles.fetch(cp.role_id)));
-        const apiPerms = await interaction.guild.commands.fetchPermissions();
+        let apiPerms: ApplicationCommandPermissions[];
+        try {
+            apiPerms = await interaction.guild.commands.permissions.fetch({ command: command_id })
+        } catch (err) {
+            if (err.code === Constants.APIErrors['UNKNOWN_APPLICATION_COMMAND_PERMISSIONS'])
+                apiPerms = [];
+            else
+                console.log(err);
+        }
+
         return interaction.editReply({
             embeds: [
                 new MessageEmbed({
@@ -69,9 +81,11 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                         {
                             name: `Slash Command: **\`/${commandLiteral}\`**`,
                             /* if command is not locked, permissions will be empty*/
-                            value: apiPerms.get(command_id)?.
-                                filter(perm => perm.permission)
-                                .map(perm => `<@&${perm.id}>`).toString() ?? `<@&${interaction.guildID}>`
+                            value: apiPerms.length > 0 ?
+                                apiPerms.
+                                    filter(perm => perm.permission)
+                                    .map(perm => `<@&${perm.id}>`).toString()
+                                : `<@&${interaction.guildID}>` //allowed for @everyone
                         },
                         {
                             name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
@@ -95,7 +109,15 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         const guild_prefix = guildMap.get(message.guild.id).getSettings().prefix;
         const commandPerms = await fetchCommandPerms(message.guild.id, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => message.guild.roles.fetch(cp.role_id)));
-        const apiPerms = await message.guild.commands.fetchPermissions();
+        let apiPerms: ApplicationCommandPermissions[];
+        try {
+            apiPerms = await message.guild.commands.permissions.fetch({ command: command_id })
+        } catch (err) {
+            if (err.code === Constants.APIErrors['UNKNOWN_APPLICATION_COMMAND_PERMISSIONS'])
+                apiPerms = []; //no specified roles
+            else
+                console.log(err);
+        }
         return message.reply({
             embeds: [
                 new MessageEmbed({
@@ -105,9 +127,11 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                         {
                             name: `Slash Command: **\`/${commandLiteral}\`**`,
                             /* if command is not locked, permissions will be empty*/
-                            value: apiPerms.get(command_id)?.
-                                filter(perm => perm.permission)
-                                .map(perm => `<@&${perm.id}>`).toString() ?? `<@&${message.guild.id}>`
+                            value: apiPerms.length > 0 ?
+                                apiPerms
+                                    .filter(perm => perm.permission) //filter out  allowed
+                                    .map(perm => `<@&${perm.id}>`).toString()
+                                : `<@&${message.guild.id}>` //allowed for everyone
                         },
                         {
                             name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,

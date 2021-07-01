@@ -72,7 +72,12 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         let command = await interaction.guild.commands.fetch(command_id);
         //enable for @everyone
         command = await command.edit(Object.assign(command, { defaultPermission: true }));
-        await command.setPermissions([]);
+        await interaction.guild.commands.permissions.set({
+            command: command_id,
+            permissions: []
+
+        });
+
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
@@ -96,7 +101,12 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         let command = await receivedMessage.guild.commands.fetch(command_id);
         //enable for @everyone
         command = await command.edit(Object.assign(command, { defaultPermission: true }));
-        await command.setPermissions([]);
+
+        await receivedMessage.guild.commands.permissions.set({
+            command: command_id,
+            permissions: []
+        });
+
         return Promise.resolve()
     }
 

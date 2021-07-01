@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
 import { guildMap } from '../../..';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -54,6 +54,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
         const nsfw = swears.some((swear) =>
             memberResponse.includes(swear['swear_word'])) ||
             Profanity.isProfane(memberResponse);
+        this.addGuildLog(guildID, `${(interaction.member as GuildMember).displayName} added response ${memberResponse.substr(0, 100)}`);
         await interaction.defer({ ephemeral: true });
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
         return interaction.editReply({

@@ -36,8 +36,8 @@ export abstract class AbstractCommand implements GenericCommand {
 
 
     matchAliases(possibleCommand: string): boolean {
-        return !!this.getAliases()
-            .find((alias: string) => alias === possibleCommand.toLowerCase());
+        return this.getAliases()
+            .some((alias: string) => alias === possibleCommand?.toLowerCase());
     }
 
     protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
