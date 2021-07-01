@@ -93,7 +93,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         } catch (err) {
             if (err.code == e["Unknown message"] || err.code == e["Invalid form body"]) {
                 try {
-                    const targetChannel: Discord.GuildChannel = guild.channels.cache
+                    const targetChannel = guild.channels.cache
                         .find(c => c.id == mentions.channels?.firstKey())
 
                     const targetMessage = await (targetChannel as Discord.TextChannel)?.messages.fetch(arg2 as Snowflake);

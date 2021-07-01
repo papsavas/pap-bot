@@ -13,6 +13,6 @@ export interface GenericCommand {
 
     getAliases(): string[];
 
-    matchAliases(possibleCommand: string): boolean;
+    matchAliases(possibleCommand: string | undefined): boolean;
 
 }
