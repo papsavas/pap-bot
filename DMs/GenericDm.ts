@@ -1,10 +1,10 @@
 import { Client, Interaction, Message, MessageReaction, User, GuildMember, Collection, ApplicationCommand } from "discord.js";
-import { DMCommandHandler } from "../Commands/DM/DMCommandHandler";
-import { GuildCommandHandler } from "../Commands/Guild/GuildCommandHandler";
+import { DMCommandManager } from "../Commands/Managers/Interf/DMCommandManager";
+import { GuildCommandManager } from "../Commands/Managers/Interf/GuildCommandManager";
 import { guildSettings } from "../Entities/Generic/guildSettingsType";
 
 export default interface GenericDm {
-    readonly commandHandler: DMCommandHandler;
+    readonly commandManager: DMCommandManager;
 
     onReady(client: Client): Promise<any>;
 

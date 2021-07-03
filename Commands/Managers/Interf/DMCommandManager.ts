@@ -3,7 +3,7 @@ import {
     CommandInteraction, GuildApplicationCommandManager, Message
 } from "discord.js";
 
-export interface GlobalCommandHandler {
+export interface DMCommandManager {
     onCommand(message: Message): Promise<any>;
     onSlashCommand(interaction: CommandInteraction): Promise<any>;
     fetchApplicationCommands(commandManager?: ApplicationCommandManager)

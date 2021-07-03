@@ -39,7 +39,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
                     description: 'command name to override perms',
                     type: 'STRING',
                     required: true,
-                    choices: guildMap.get(guild_id).commandHandler.commands
+                    choices: guildMap.get(guild_id).commandManager.commands
                         .map(cmd => ({
                             name: cmd.keyword,
                             value: cmd.keyword
@@ -98,9 +98,9 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             .filter(id => id !== guild_id); //filter out @everyone
 
         if (rolesKeyArr.length < 1)
-            return interaction.editReply(`no point on locking for \`@everyone\`, mind aswell unlock it ;)`)
+            return interaction.editReply(`no point on locking for \`@everyone\`, mind aswell unlock it 😉`)
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
-        const command_id: Snowflake = guildMap.get(guild_id).commandHandler.commands
+        const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
 
 
@@ -140,7 +140,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         if (rolesKeyArr.length < 1)
             return receivedMessage.reply(`you need to provide atleast 1 role.\n*\`@everyone\` doesn't count*`);
         const commandLiteral = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
-        const command_id: Snowflake = guildMap.get(guild_id).commandHandler.commands
+        const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
             return receivedMessage.reply(`command ${commandLiteral} not found`);

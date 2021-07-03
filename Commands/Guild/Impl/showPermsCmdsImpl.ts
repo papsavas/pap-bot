@@ -41,7 +41,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                     description: 'permissions for command',
                     type: 'STRING',
                     required: true,
-                    choices: guildMap.get(guild_id).commandHandler.commands
+                    choices: guildMap.get(guild_id).commandManager.commands
                         .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
                 }
             ]
@@ -51,7 +51,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
-        const command_id: Snowflake = guildMap.get(interaction.guildID).commandHandler.commands
+        const command_id: Snowflake = guildMap.get(interaction.guildID).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
             return interaction.reply({
@@ -102,7 +102,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         const commandLiteral = arg1;
         if (!commandLiteral)
             return message.reply({ embeds: [new MessageEmbed({ description: this.guide })] })
-        const command_id: Snowflake = guildMap.get(message.guild.id).commandHandler.commands
+        const command_id: Snowflake = guildMap.get(message.guild.id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
             return message.reply(`command ${commandLiteral} not found`);

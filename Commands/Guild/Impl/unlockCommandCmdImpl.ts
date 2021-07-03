@@ -38,7 +38,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
                     description: 'command name to unlock',
                     type: 'STRING',
                     required: true,
-                    choices: guildMap.get(guild_id).commandHandler.commands
+                    choices: guildMap.get(guild_id).commandManager.commands
                         .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
                 }
             ]
@@ -59,7 +59,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         const guild_id = interaction.guildID;
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
         await interaction.defer({ ephemeral: true });
-        const command_id: Snowflake = guildMap.get(guild_id).commandHandler.commands
+        const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         /**
         * override perms for manual command in DB
@@ -85,7 +85,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
         const guild_id = receivedMessage.guild.id;
-        const commands = guildMap.get(guild_id).commandHandler.commands;
+        const commands = guildMap.get(guild_id).commandManager.commands;
         const commandLiteral = receivedCommand.arg1 as Snowflake;
         const command_id = commands.find((cmds) => cmds.matchAliases(commandLiteral))?.id
         if (!command_id)

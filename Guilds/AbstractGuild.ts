@@ -5,8 +5,8 @@ import {
     Snowflake, User
 } from 'discord.js';
 import { mentionRegex } from "../botconfig.json";
-import { GuildCommandHandler } from "../Commands/Guild/GuildCommandHandler";
-import GuildCommandHandlerImpl from "../Commands/Guild/GuildCommandHandlerImpl";
+import { GuildCommandManager } from "../Commands/Managers/Interf/GuildCommandManager";
+import GuildCommandManagerImpl from "../Commands/Managers/Impl/GuildCommandManagerImpl";
 import { GenericCommand } from "../Commands/GenericCommand";
 import { AddResponseCmdImpl } from "../Commands/Guild/Impl/addResponseCmdImpl";
 import { ClearMessagesCmdImpl } from "../Commands/Guild/Impl/clearMessagesCmdImpl";
@@ -59,7 +59,7 @@ export abstract class AbstractGuild implements GenericGuild {
         NsfwSwitchCmdImpl, ShowLogsCmdImpl
     ].map(cmd => cmd.init())
 
-    commandHandler: GuildCommandHandler;
+    commandManager: GuildCommandManager;
 
     get guild(): Guild {
         return this._guild;
@@ -104,7 +104,7 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onSlashCommand(interaction: CommandInteraction): Promise<any> {
-        return this.commandHandler.onSlashCommand(interaction);
+        return this.commandManager.onSlashCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<any> {
@@ -113,7 +113,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     async onMessage(message: Message): Promise<any> {
         if (message.content.startsWith(this._settings.prefix)) {
-            return this.commandHandler.onCommand(message);
+            return this.commandManager.onCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {
