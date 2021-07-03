@@ -1,5 +1,5 @@
 import { Snowflake } from 'discord.js';
-import GuildCommandManagerImpl from '../../Commands/Managers/Impl/GuildCommandManagerImpl';
+import { GuildCommandManagerImpl } from '../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 

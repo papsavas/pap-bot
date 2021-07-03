@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 import { mentionRegex } from "../botconfig.json";
 import { GuildCommandManager } from "../Commands/Managers/Interf/GuildCommandManager";
-import GuildCommandManagerImpl from "../Commands/Managers/Impl/GuildCommandManagerImpl";
+import { GuildCommandManagerImpl } from "../Commands/Managers/Impl/GuildCommandManagerImpl";
 import { GenericCommand } from "../Commands/GenericCommand";
 import { AddResponseCmdImpl } from "../Commands/Guild/Impl/addResponseCmdImpl";
 import { ClearMessagesCmdImpl } from "../Commands/Guild/Impl/clearMessagesCmdImpl";
