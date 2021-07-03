@@ -1,12 +1,6 @@
 import { CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../Entities/Generic/commandType";
-import { AbstractDMCommand } from "./DM/AbstractDMCommand";
-import GenericDMCommand from "./DM/GenericDMCommand";
 import { GenericCommand } from "./GenericCommand";
-import { AbstractGlobalCommand } from "./Global/AbstractGlobalCommand";
-import GenericGlobalCommand from "./Global/GenericGlobalCommand";
-import { AbstractGuildCommand } from "./Guild/AbstractGuildCommand";
-import GenericGuildCommand from "./Guild/GenericGuildCommand";
 
 
 export abstract class AbstractCommand implements GenericCommand {
@@ -50,18 +44,5 @@ export abstract class AbstractCommand implements GenericCommand {
         return aliases.includes(keyword)
             ? [...aliases, keyword]
             : aliases
-    }
-
-
-    isGuildCommand(): this is GenericGuildCommand {
-        return this instanceof AbstractGuildCommand
-    }
-
-    isDMCommand(): this is GenericDMCommand {
-        return this instanceof AbstractDMCommand
-    }
-
-    isGlobalCommand(): this is GenericGlobalCommand {
-        return this instanceof AbstractGlobalCommand
     }
 }

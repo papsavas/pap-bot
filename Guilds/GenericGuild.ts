@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
 import { GuildCommandManager } from '../Commands/Managers/Interf/GuildCommandManager';
-import GuildCommandManagerImpl from '../Commands/Managers/Impl/GuildCommandManagerImpl';
+import { GuildCommandManagerImpl } from '../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { guildSettings } from "../Entities/Generic/guildSettingsType";
 
 export interface GenericGuild {

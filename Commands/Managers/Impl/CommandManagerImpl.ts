@@ -1,10 +1,11 @@
-import { Message, CommandInteraction, ApplicationCommandManager, GuildApplicationCommandManager, Snowflake, ApplicationCommandData, MessageEmbed, ApplicationCommand, Collection } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandManager, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake } from "discord.js";
 import { bugsChannel, guildMap } from "../../..";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
+import { AbstractDMCommand } from "../../DM/AbstractDMCommand";
 import { GenericCommand } from "../../GenericCommand";
+import { AbstractGlobalCommand } from "../../Global/AbstractGlobalCommand";
 import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
-import GenericGuildCommand from "../../Guild/GenericGuildCommand";
 import { CommandManager } from "../Interf/CommandManager";
 
 export abstract class CommandManagerImpl implements CommandManager {
@@ -40,11 +41,11 @@ export abstract class CommandManagerImpl implements CommandManager {
         await commandManager.set([]); //remove previous 
         for (const cmd of commands) {
             try {
-                if (cmd.isGuildCommand())
+                if (cmd instanceof AbstractGuildCommand)
                     applicationCommands.push(cmd.getCommandData(guildID));
-                else if (cmd.isDMCommand())
+                else if (cmd instanceof AbstractDMCommand)
                     applicationCommands.push(cmd.getCommandData());
-                else if (cmd.isGlobalCommand())
+                else if (cmd instanceof AbstractGlobalCommand)
                     applicationCommands.push(cmd.getCommandData());
 
             } catch (error) {
