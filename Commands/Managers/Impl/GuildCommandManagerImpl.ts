@@ -4,15 +4,15 @@ import {
     CommandInteraction,
     GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from 'discord.js';
-import { literalCommandType } from "../../Entities/Generic/commandType";
-import { bugsChannel, guildMap } from "../../index";
-import { GuildCommandHandler } from "./GuildCommandHandler";
-import { GenericCommand } from "../GenericCommand";
-import { overrideCommands } from '../../Queries/Generic/Commands';
-import GenericGuildCommand from './GenericGuildCommand';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { bugsChannel, guildMap } from "../../../index";
+import { GuildCommandManager } from "../Interf/GuildCommandManager";
+import { GenericCommand } from "../../GenericCommand";
+import { overrideCommands } from '../../../Queries/Generic/Commands';
+import GenericGuildCommand from '../../Guild/GenericGuildCommand';
 require('dotenv').config();
 
-export default class GuildCommandHandlerImpl implements GuildCommandHandler {
+export default class GuildCommandManagerImpl implements GuildCommandManager {
 
     private readonly guildID: Snowflake;
     private readonly helpCommandData: ApplicationCommandData;

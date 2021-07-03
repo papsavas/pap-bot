@@ -1,11 +1,11 @@
 import { Message, CommandInteraction, ApplicationCommandManager, GuildApplicationCommandManager, Client } from "discord.js";
-import { GenericCommand } from "../GenericCommand";
-import GenericGlobalCommand from "./GenericGlobalCommand";
-import { GlobalCommandHandler } from "./GlobalCommandHandler";
-import { MockMessageCmdImpl } from "./Impl/mockMessageCmdImpl";
-import { userNotesCmdImpl } from "./Impl/userNotesCmdImpl";
+import { GenericCommand } from "../../GenericCommand";
+import GenericGlobalCommand from "../../Global/GenericGlobalCommand";
+import { GlobalCommandManager } from "../Interf/GlobalCommandManager";
+import { MockMessageCmdImpl } from "../../Global/Impl/mockMessageCmdImpl";
+import { userNotesCmdImpl } from "../../Global/Impl/userNotesCmdImpl";
 
-export default class GlobalCommandHandlerImpl implements GlobalCommandHandler {
+export default class GlobalCommandManagerImpl implements GlobalCommandManager {
     private readonly commands: GenericGlobalCommand[];
     private readonly client: Client;
 

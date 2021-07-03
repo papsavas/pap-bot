@@ -1,5 +1,5 @@
 import { Snowflake } from 'discord.js';
-import GuildCommandHandlerImpl from '../../Commands/Guild/GuildCommandHandlerImpl';
+import GuildCommandManagerImpl from '../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
@@ -11,7 +11,7 @@ export class DefaultGuild extends AbstractGuild implements GenericGuild {
     static async init(guild_id: Snowflake): Promise<GenericGuild> {
         const guild = new DefaultGuild(guild_id);
         guild.specifiedCommands = undefined;
-        guild.commandHandler = new GuildCommandHandlerImpl(
+        guild.commandManager = new GuildCommandManagerImpl(
             guild_id,
             (await Promise.all(guild._genericCommands)).concat(guild.specifiedCommands ?? []) //merge specified commands if any
         );
