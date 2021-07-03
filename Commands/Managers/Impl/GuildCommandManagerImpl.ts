@@ -4,6 +4,7 @@ import {
     CommandInteraction,
     GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from 'discord.js';
+import { CommandManagerImpl } from './CommandManagerImpl';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { bugsChannel, guildMap } from "../../../index";
 import { GuildCommandManager } from "../Interf/GuildCommandManager";
@@ -12,13 +13,14 @@ import { overrideCommands } from '../../../Queries/Generic/Commands';
 import GenericGuildCommand from '../../Guild/GenericGuildCommand';
 require('dotenv').config();
 
-export default class GuildCommandManagerImpl implements GuildCommandManager {
+export class GuildCommandManagerImpl extends CommandManagerImpl implements GuildCommandManager {
 
     private readonly guildID: Snowflake;
     private readonly helpCommandData: ApplicationCommandData;
     readonly commands: GenericGuildCommand[];
 
     constructor(guild_id: Snowflake, guildCommands: GenericGuildCommand[]) {
+        super();
         this.guildID = guild_id;
         this.commands = guildCommands;
         this.helpCommandData = {
@@ -39,6 +41,7 @@ export default class GuildCommandManagerImpl implements GuildCommandManager {
         }
     }
 
+    //!deprecated
     async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand>> {
 
@@ -101,7 +104,7 @@ export default class GuildCommandManagerImpl implements GuildCommandManager {
         const guildHandler = guildMap.get(message.guild.id);
         const prefix = guildHandler.getSettings().prefix;
         const commandMessage = message;
-        const candidateCommand = this.returnCommand(message);
+        const candidateCommand = this.sliceCommandLiterals(message);
         const commandImpl = this.commands
             .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
@@ -148,113 +151,4 @@ export default class GuildCommandManagerImpl implements GuildCommandManager {
             return interaction.reply(`Command not found`);
     }
 
-    private returnCommand(receivedMessage: Message): literalCommandType {
-        const receivedMessageContent = receivedMessage.content;
-        const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id).getSettings().prefix.length); // Remove the prefix;
-        const splitCommand: string[] = fullCommand.split(/(\s+)/).filter(e => e.trim().length > 0) //split command from space(s);
-        return {
-            //prefix,
-            fullCommand,
-            splitCommand,
-            primaryCommand: splitCommand[0], // The first word directly after the exclamation is the command
-            arg1: splitCommand[1],
-            arg2: splitCommand[2],
-            arg3: splitCommand[3],
-            commandless1: splitCommand.slice(1).join(' '),
-            commandless2: splitCommand.slice(2).join(' '),
-            commandless3: splitCommand.slice(3).join(' ')
-        }
-    }
-
-    private invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
-        const bugsChannelEmbed = new MessageEmbed({
-            author: {
-                name: interaction.guild.name,
-                icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
-            },
-            thumbnail: {
-                proxy_url: interaction.guild.iconURL({ format: "png", size: 512 })
-            },
-            title: primaryCommandLiteral,
-            color: "DARK_RED",
-            timestamp: new Date()
-        });
-        bugsChannelEmbed.setDescription(err.message);
-        bugsChannelEmbed.addField(`caused by`, interaction.id);
-        bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
-        //send feedback to member
-
-        const interactionEmb = new MessageEmbed(
-            {
-                author: {
-                    name: `Error on Command`,
-                    icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
-                },
-                title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
-                fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
-                color: 'RED'
-            })
-
-        const interactionPromise: Promise<unknown> = interaction.replied ?
-            interaction.editReply({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
-        interactionPromise
-            .then(() => interaction.client.setTimeout(() => interaction.deleteReply().catch(), 15000))
-            .catch();
-        console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
-    }
-
-
-    private invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
-        const prefix = guildMap.get(commandMessage.guild.id).getSettings().prefix;
-        const bugsChannelEmbed = new MessageEmbed({
-            author: {
-                name: commandMessage.guild.name,
-                icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
-            },
-            thumbnail: {
-                proxy_url: commandMessage.guild.iconURL({ format: "png", size: 512 })
-            },
-            title: primaryCommandLiteral,
-            color: "DARK_RED",
-            timestamp: new Date()
-        });
-        bugsChannelEmbed.setDescription(err.message);
-        bugsChannelEmbed.addField(`caused by`, commandMessage.url);
-        bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
-        //send feedback to member
-        commandMessage.reply({
-            embeds: [
-                new MessageEmbed(
-                    {
-                        author: {
-                            name: `Error on Command`,
-                            icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
-                        },
-                        title: prefix + commandImpl.keyword,
-                        description: prefix + commandImpl.usage,
-                        fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
-                        footer: { text: commandImpl.getAliases().toString() },
-                        color: "RED"
-                    })
-            ]
-        }
-        ).then(msg => msg.client.setTimeout(() => msg.delete(), 15000));
-        console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
-    }
-
-    private helpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
-        if (typeof providedCommand !== 'undefined')
-            return message.reply({
-                embeds:
-                    [
-                        new MessageEmbed({
-                            title: providedCommand.keyword,
-                            description: providedCommand.guide,
-                            footer: { text: providedCommand.getAliases().toString() }
-                        })
-                    ]
-            })
-        else
-            return message.reply(`command not found`);
-    }
 }
