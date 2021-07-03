@@ -13,7 +13,8 @@ export class DefaultGuild extends AbstractGuild implements GenericGuild {
         guild.specifiedCommands = undefined;
         guild.commandManager = new GuildCommandManagerImpl(
             guild_id,
-            (await Promise.all(guild._genericCommands)).concat(guild.specifiedCommands ?? []) //merge specified commands if any
+            (await Promise.all(guild._genericCommands))
+                .concat(guild.specifiedCommands ?? []) //merge specified commands if any
         );
         return guild;
     }
