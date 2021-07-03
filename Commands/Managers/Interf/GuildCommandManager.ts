@@ -3,11 +3,9 @@ import {
     CommandInteraction, GuildApplicationCommandManager, Message, Snowflake
 } from "discord.js";
 import { GenericCommand } from "../../GenericCommand";
+import { CommandManager } from "./CommandManager";
 
-export interface GuildCommandManager {
-    readonly commands: GenericCommand[];
-    onCommand(message: Message): Promise<any>;
-    onSlashCommand(interaction: CommandInteraction): Promise<any>;
+export interface GuildCommandManager extends CommandManager {
     fetchGuildCommands(commandManager: GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand>>;
 

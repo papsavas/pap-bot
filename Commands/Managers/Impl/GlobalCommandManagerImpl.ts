@@ -6,7 +6,7 @@ import { MockMessageCmdImpl } from "../../Global/Impl/mockMessageCmdImpl";
 import { userNotesCmdImpl } from "../../Global/Impl/userNotesCmdImpl";
 
 export default class GlobalCommandManagerImpl implements GlobalCommandManager {
-    private readonly commands: GenericGlobalCommand[];
+    readonly commands: GenericGlobalCommand[];
     private readonly client: Client;
 
     constructor(client: Client) {
@@ -16,7 +16,7 @@ export default class GlobalCommandManagerImpl implements GlobalCommandManager {
         ];
     }
 
-    onCommand(message: Message): Promise<any> {
+    onManualCommand(message: Message): Promise<any> {
         throw new Error("Method not implemented.");
     }
     onSlashCommand(interaction: CommandInteraction): Promise<any> {

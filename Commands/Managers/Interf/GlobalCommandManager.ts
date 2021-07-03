@@ -2,10 +2,9 @@ import {
     ApplicationCommand, ApplicationCommandManager, Collection,
     CommandInteraction, GuildApplicationCommandManager, Message
 } from "discord.js";
+import { CommandManager } from "./CommandManager";
 
-export interface GlobalCommandManager {
-    onCommand(message: Message): Promise<any>;
-    onSlashCommand(interaction: CommandInteraction): Promise<any>;
+export interface GlobalCommandManager extends CommandManager {
     fetchApplicationCommands(commandManager?: ApplicationCommandManager)
         : Promise<Collection<string, ApplicationCommand>>
 }
