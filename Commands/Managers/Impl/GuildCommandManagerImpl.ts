@@ -79,7 +79,7 @@ export default class GuildCommandManagerImpl implements GuildCommandManager {
         }
     }
 
-    onCommand(message: Message): Promise<unknown> {
+    onManualCommand(message: Message): Promise<unknown> {
         /*
         TODO: FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
         TODO: CONNECT 'commands with command_perms' with foreign key on commands Completion

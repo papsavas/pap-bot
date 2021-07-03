@@ -113,7 +113,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     async onMessage(message: Message): Promise<any> {
         if (message.content.startsWith(this._settings.prefix)) {
-            return this.commandManager.onCommand(message);
+            return this.commandManager.onManualCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {
