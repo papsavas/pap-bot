@@ -4,36 +4,34 @@ import {
     GuildMember, Message, MessageReaction,
     Snowflake, User
 } from 'discord.js';
-import { mentionRegex } from "../botconfig.json";
-import { GuildCommandManager } from "../Commands/Managers/Interf/GuildCommandManager";
-import { GuildCommandManagerImpl } from "../Commands/Managers/Impl/GuildCommandManagerImpl";
-import { GenericCommand } from "../Commands/GenericCommand";
-import { AddResponseCmdImpl } from "../Commands/Guild/Impl/addResponseCmdImpl";
-import { ClearMessagesCmdImpl } from "../Commands/Guild/Impl/clearMessagesCmdImpl";
-import { DmMemberCmdImpl } from "../Commands/Guild/Impl/dmMemberCmdImpl";
-import { EditMessageCmdImpl } from "../Commands/Guild/Impl/editMessageCmdImpl";
-import { LockCommandCmdImpl } from "../Commands/Guild/Impl/lockCommandCmdImpl";
-import { MessageChannelCmdImpl } from "../Commands/Guild/Impl/messageChannelCmdImpl";
-import { NsfwSwitchCmdImpl } from "../Commands/Guild/Impl/nsfwSwitchCmdImpl";
-import { PinMessageCmdImpl } from "../Commands/Guild/Impl/pinMessageCmdImpl";
-import { PollCmdImpl } from "../Commands/Guild/Impl/pollCmdImpl";
-import { RemovePersonalResponseCmdImpl } from "../Commands/Guild/Impl/removePersonalResponseCmdImpl";
-import { SetPrefixCmdImpl } from "../Commands/Guild/Impl/setPrefixCmdImpl";
-import { ShowLogsCmdImpl } from "../Commands/Guild/Impl/showLogsCmdImpl";
-import { ShowPermsCmdsImpl } from "../Commands/Guild/Impl/showPermsCmdsImpl";
-import { ShowPersonalResponsesCmdImpl } from "../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
-import { UnlockCommandCmdImpl } from "../Commands/Guild/Impl/unlockCommandCmdImpl";
-import { UnpinMessageCmdImpl } from "../Commands/Guild/Impl/unpinMessageCmdImpl";
-
-import { guildSettings } from "../Entities/Generic/guildSettingsType";
-import { memberResponses } from "../Entities/Generic/MemberResponsesType";
-import { genericGuildResponses } from "../Queries/Generic/GenericGuildResponses";
-import { addLog } from "../Queries/Generic/guildLogs";
-import { fetchGuildSettings } from "../Queries/Generic/GuildSettings";
-import { fetchAllGuildMemberResponses } from "../Queries/Generic/MemberResponses";
-import { randomArrayValue } from "../toolbox/randomArrayValue";
+import { mentionRegex } from "../../botconfig.json";
+import GenericGuildCommand from '../../Commands/Guild/GenericGuildCommand';
+import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
+import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
+import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
+import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
+import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
+import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
+import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
+import { PinMessageCmdImpl } from "../../Commands/Guild/Impl/pinMessageCmdImpl";
+import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
+import { RemovePersonalResponseCmdImpl } from "../../Commands/Guild/Impl/removePersonalResponseCmdImpl";
+import { SetPrefixCmdImpl } from "../../Commands/Guild/Impl/setPrefixCmdImpl";
+import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
+import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
+import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
+import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
+import { UnpinMessageCmdImpl } from "../../Commands/Guild/Impl/unpinMessageCmdImpl";
+import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
+import { guildSettings } from "../../Entities/Generic/guildSettingsType";
+import { memberResponses } from "../../Entities/Generic/MemberResponsesType";
+import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
+import { addLog } from "../../Queries/Generic/guildLogs";
+import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
+import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
+import { randomArrayValue } from "../../toolbox/randomArrayValue";
 import { GenericGuild } from "./GenericGuild";
-import GenericGuildCommand from '../Commands/Guild/GenericGuildCommand';
+
 
 export abstract class AbstractGuild implements GenericGuild {
 

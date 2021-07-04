@@ -3,15 +3,22 @@ import {
     GuildMember, Message, MessageEmbed, Snowflake, TextChannel, User
 } from 'discord.js';
 import { creatorID, guildID as botGuildID } from './botconfig.json';
-import { GenericGuild } from "./Guilds/GenericGuild";
-import { DefaultGuild } from "./Guilds/Impl/DefaultGuild";
+import { DMHandlerImpl } from './Handlers/DMs/DM';
+import { DmHandler } from './Handlers/DMs/GenericDm';
+import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
+import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
+import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
+import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 
 
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
-
 export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
+export const guildMap = new Collection<Snowflake, GenericGuild>();
+let dmHandler: DmHandler;
+let globalCommandHandler: GlobalCommandHandler;
+
 
 if (inDevelopment)
     require('dotenv').config();  //load env variables
@@ -32,7 +39,6 @@ export const PAP = new Client({
     }
 });
 
-export const guildMap = new Collection<Snowflake, GenericGuild>();
 
 
 async function runScript(): Promise<void> {
@@ -97,6 +103,14 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
             await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
         };
+
+        /*
+        !untrack until re-registration
+        dmHandler = await DMHandlerImpl.init();
+        await dmHandler.onReady(PAP);
+
+        globalCommandHandler = await GlobalCommandHandlerImpl.init();
+        */
         console.log('smooth init')
 
     } catch (err) {

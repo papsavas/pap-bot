@@ -1,26 +1,20 @@
-import { ApplicationCommandData, ApplicationCommandManager, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed } from "discord.js";
 import { bugsChannel, guildMap } from "../../..";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { overrideCommands } from "../../../Queries/Generic/Commands";
-import { AbstractDMCommand } from "../../DM/AbstractDMCommand";
 import { GenericCommand } from "../../GenericCommand";
-import { AbstractGlobalCommand } from "../../Global/AbstractGlobalCommand";
-import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
 import { CommandManager } from "../Interf/CommandManager";
 
 export abstract class CommandManagerImpl implements CommandManager {
     readonly commands: GenericCommand[];
-    abstract onManualCommand(message: Message): Promise<unknown>
-    abstract onSlashCommand(interaction: CommandInteraction): Promise<unknown>
+    protected readonly helpCommandData: ApplicationCommandData;
+    abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
+    abstract onManualCommand(message: Message): Promise<unknown>;
+    abstract onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
+    abstract updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
+        : Promise<Collection<`${bigint}`, ApplicationCommand<{}>>>
 
-    protected async updateCommands(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
-        commands: GenericCommand[],
-        guildID?: Snowflake
-    ) {
-        const applicationCommands: ApplicationCommandData[] = [];
-        const registeredCommands = await commandManager.fetch();
-        const helpCommandData: ApplicationCommandData = {
+    constructor(commands: GenericCommand[]) {
+        this.helpCommandData = {
             name: "help",
             description: "displays support for a certain command",
             options: [
@@ -36,39 +30,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                 }
             ]
         }
-
-        console.log(`commands changed. Refreshing...`);
-        await commandManager.set([]); //remove previous 
-        for (const cmd of commands) {
-            try {
-                if (cmd instanceof AbstractGuildCommand)
-                    applicationCommands.push(cmd.getCommandData(guildID));
-                else if (cmd instanceof AbstractDMCommand)
-                    applicationCommands.push(cmd.getCommandData());
-                else if (cmd instanceof AbstractGlobalCommand)
-                    applicationCommands.push(cmd.getCommandData());
-
-            } catch (error) {
-                console.log(cmd.keyword, error);
-            }
-        }
-        applicationCommands.push(helpCommandData);
-        const newCommands = await commandManager.set(applicationCommands);
-        //add to db
-        await overrideCommands(newCommands.array().map(cmd => (
-            {
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                aliases: commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
-
-            }
-        )));
-        console.log(`commands refreshed`);
-        return newCommands;
     }
-
 
     protected sliceCommandLiterals(receivedMessage: Message): literalCommandType {
         const receivedMessageContent = receivedMessage.content;
