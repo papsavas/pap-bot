@@ -28,27 +28,4 @@ export default class GlobalDMCommandManagerImpl extends CommandManagerImpl imple
         return applicationCommands;
     }
 
-    async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
-        const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
-        const registeredCommands = await commandManager.fetch();
-
-        console.log(`guild commands changed. Refreshing...`);
-        await commandManager.set([]); //remove previous 
-        applicationCommands.push(this.helpCommandData);
-        const newCommands = await commandManager.set(applicationCommands);
-        //add to db
-        await overrideCommands(newCommands.array().map(cmd => (
-            {
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
-
-            }
-        )));
-        console.log(`---dm commands updated---`);
-        return newCommands;
-    }
-
 }
