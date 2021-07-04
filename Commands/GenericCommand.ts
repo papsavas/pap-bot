@@ -6,6 +6,7 @@ export interface GenericCommand {
     keyword: string;
     guide: string;
     usage: string;
+    type: "GUILD" | "GLOBAL" | "DM";
 
     interactiveExecute(commandInteraction: CommandInteraction): Promise<unknown>;
 
