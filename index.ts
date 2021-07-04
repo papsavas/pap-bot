@@ -12,6 +12,7 @@ import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 
 
 
+
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
 export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
@@ -149,9 +150,14 @@ PAP.on('interaction', async interaction => {
             try {
                 guildMap.get(interaction.guildID)
                     ?.onButton(interaction)
+                interaction.reply({ ephemeral: true, content: interaction.customID }).catch();
+
             } catch (error) {
                 console.log(error)
             }
+        }
+        else {
+            console.log('dm button received');
         }
     }
 
@@ -186,7 +192,10 @@ PAP.on('interaction', async interaction => {
 PAP.on('message', (receivedMessage) => {
     if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
-            return eval(receivedMessage.cleanContent.substring(5));
+            const D = require('discord.js');
+            return eval(receivedMessage.cleanContent
+                .substring('eval'.length + 1)
+                .replace(/(\r\n|\n|\r)/gm, "")); //remove all line breaks
         }
         catch (err) {
             console.error(err);

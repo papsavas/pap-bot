@@ -1,13 +1,17 @@
 import { CommandInteraction, Message, Snowflake } from "discord.js";
-import { literalCommandType } from "../Entities/Generic/commandType";
+import { commandSpecifier, literalCommandType } from "../Entities/Generic/commandType";
 import { GenericCommand } from "./GenericCommand";
-
 
 export abstract class AbstractCommand implements GenericCommand {
     protected abstract _id: Snowflake;
     protected abstract _keyword: string;
     protected abstract _guide: string;
     protected abstract _usage: string;
+    protected abstract _type: commandSpecifier;
+
+    get type() {
+        return this._type;
+    }
 
     get id() {
         return this._id;
