@@ -20,25 +20,6 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         this.commands = guildCommands;
     }
 
-    syncPermissions(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
-        commands: Collection<Snowflake, ApplicationCommand<{}>>
-    ) {
-
-        return Promise.all(commands.array().map(async cmd => {
-            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildID, cmd.id)).map(res => ({
-                id: res.role_id,
-                type: 'ROLE',
-                permission: true
-            }))
-            commandManager.permissions.set({
-                command: cmd.id,
-                guild: this.guildID,
-                permissions: dbPerms
-            })
-        }));
-    }
-
     onManualCommand(message: Message): Promise<unknown> {
         /*
         TODO: implement permission guard
@@ -118,27 +99,27 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     }
 
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
-        const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
-        const registeredCommands = await commandManager.fetch();
-
-        console.log(`guild commands changed. Refreshing...`);
-        await commandManager.set([]); //remove previous 
-        applicationCommands.push(this.helpCommandData);
-        const newCommands = await commandManager.set(applicationCommands);
-        //add to db
-        await overrideCommands(newCommands.array().map(cmd => (
-            {
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
-
-            }
-        )));
-        console.log(`---guild commands updated---`);
-
+        const newCommands = await super.updateCommands(commandManager);
         console.table(await this.syncPermissions(commandManager, newCommands));
         return newCommands;
+    }
+
+    private syncPermissions(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        commands: Collection<Snowflake, ApplicationCommand<{}>>
+    ) {
+
+        return Promise.all(commands.array().map(async cmd => {
+            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildID, cmd.id)).map(res => ({
+                id: res.role_id,
+                type: 'ROLE',
+                permission: true
+            }))
+            commandManager.permissions.set({
+                command: cmd.id,
+                guild: this.guildID,
+                permissions: dbPerms
+            })
+        }));
     }
 }

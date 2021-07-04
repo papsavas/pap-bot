@@ -1,6 +1,10 @@
-import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed } from "discord.js";
+import {
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
+    Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed
+} from "discord.js";
 import { bugsChannel, guildMap } from "../../..";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
 
@@ -10,8 +14,6 @@ export abstract class CommandManagerImpl implements CommandManager {
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
     abstract onManualCommand(message: Message): Promise<unknown>;
     abstract onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
-    abstract updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
-        : Promise<Collection<`${bigint}`, ApplicationCommand<{}>>>
 
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
@@ -30,6 +32,28 @@ export abstract class CommandManagerImpl implements CommandManager {
                 }
             ]
         }
+    }
+
+    async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
+        : Promise<Collection<`${bigint}`, ApplicationCommand<{}>>> {
+        const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
+        console.log(`guild commands changed. Refreshing...`);
+        await commandManager.set([]); //remove previous 
+        applicationCommands.push(this.helpCommandData);
+        const newCommands = await commandManager.set(applicationCommands);
+        //add to db
+        await overrideCommands(newCommands.array().map(cmd => (
+            {
+                keyword: cmd.name,
+                id: cmd.id,
+                guide: cmd.description,
+                aliases: this.commands
+                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+
+            })
+        ));
+        console.log(`---${this.commands[0].type} commands updated---`);
+        return newCommands;
     }
 
     protected sliceCommandLiterals(receivedMessage: Message): literalCommandType {
