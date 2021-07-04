@@ -1,12 +1,11 @@
 import { CommandInteraction, Message, Snowflake } from "discord.js";
-import { literalCommandType } from "../Entities/Generic/commandType";
-
+import { commandSpecifier, literalCommandType } from "../Entities/Generic/commandType";
 export interface GenericCommand {
     id: Snowflake;
     keyword: string;
     guide: string;
     usage: string;
-    type: "GUILD" | "GLOBAL" | "DM";
+    type: commandSpecifier;
 
     interactiveExecute(commandInteraction: CommandInteraction): Promise<unknown>;
 

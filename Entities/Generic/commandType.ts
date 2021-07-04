@@ -21,3 +21,10 @@ export interface CommandType {
     guide: string;
     uuid?: string;
 }
+
+
+export enum commandSpecifier {
+    GUILD,
+    GLOBAL,
+    DM
+}

@@ -9,12 +9,12 @@ import { addResponseCmd } from "../Interf/addResponseCmd";
 const profanity = require('profanity-js');
 const Profanity = new profanity();
 
-const responeOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
+const responseOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class AddResponseCmdImpl extends AbstractGuildCommand implements addResponseCmd {
     protected _id: Snowflake;
     protected _keyword = `addresponse`;
     protected _guide = `Adds a user response to bots replies`;
-    protected _usage = `$addresponse <response>`;
+    protected _usage = `addresponse <response>`;
 
     private constructor() { super() }
 
@@ -36,7 +36,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             description: this.guide,
             options: [
                 {
-                    name: responeOptionLiteral,
+                    name: responseOptionLiteral,
                     description: 'your response',
                     type: 'STRING',
                     required: true
@@ -47,7 +47,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
     }
 
     async interactiveExecute(interaction: CommandInteraction) {
-        const memberResponse = interaction.options.get(responeOptionLiteral).value as string;
+        const memberResponse = interaction.options.get(responseOptionLiteral).value as string;
         const guildID = interaction.guildID;
         const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();
