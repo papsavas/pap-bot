@@ -1,4 +1,4 @@
-import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, CommandInteraction, GuildApplicationCommandManager, GuildResolvable, Message } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandManager, CommandInteraction, GuildApplicationCommandManager, Message } from "discord.js";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";
