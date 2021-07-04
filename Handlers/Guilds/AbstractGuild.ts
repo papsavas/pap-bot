@@ -42,7 +42,7 @@ export abstract class AbstractGuild implements GenericGuild {
     private _logs: string[] = [];
 
     protected readonly guildID: Snowflake;
-    protected specifiedCommands?: GenericGuildCommand[];
+    protected specifiedCommands?: Promise<GenericGuildCommand>[];
     /*
     TODO: move these to global scope on release
     * global permissions are now available
