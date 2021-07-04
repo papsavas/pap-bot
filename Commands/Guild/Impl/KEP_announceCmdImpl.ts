@@ -18,7 +18,10 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
     protected _keyword = `announce`;
     protected _guide = `Ανακοινώνει ένα μήνυμα στα νέα-ενημερώσεις`;
     protected _usage = `announce <message> [<roles>]`;
-    private constructor() { super() }
+    private constructor() {
+        super()
+    }
+
     static async init(): Promise<KEP_announceCmd> {
         const cmd = new KEP_announceCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
@@ -28,6 +31,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         (
             ['announce', 'ann'], this.keyword
         );
+
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: this.keyword,
@@ -80,15 +84,15 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
         })
         await interaction.reply({
-            content: `Το μήνυμα σας αποστάλθηκε και αναμένει έγκριση`,
+            content: `Το μήνυμα σας υποβλήθηκε και αναμένει έγκριση`,
             embeds: [emb],
             ephemeral: true
         });
 
         const modChannel = interaction.guild.channels.cache.get('mod guild id' as Snowflake) as TextChannel;
-        const aprooveLiteral = 'aproove';
-        const aprooveBtn = new MessageButton()
-            .setCustomID(aprooveLiteral)
+        const approveLiteral = 'approve';
+        const approveBtn = new MessageButton()
+            .setCustomID(approveLiteral)
             .setEmoji('✅')
             .setStyle('SUCCESS');
         const rejectBtn = new MessageButton()
@@ -101,17 +105,17 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             embeds: [emb],
             components: [
                 new MessageActionRow()
-                    .addComponents(aprooveBtn, rejectBtn)
+                    .addComponents(approveBtn, rejectBtn)
             ]
         });
 
         const response = await modMsg.awaitMessageComponentInteraction({ filter: btnInt => !btnInt.user.bot });
-        if (response.customID === aprooveLiteral) {
+        if (response.customID === approveLiteral) {
             await newsChannel.send(`${roles.length > 0 ? roles.toString() + '\n' + literal : literal}`);
             await response.update({
                 content: `Εγκρίθηκε από ${response.user.tag}`,
                 embeds: [emb],
-                components: [new MessageActionRow().addComponents(aprooveBtn.setDisabled(true))]
+                components: [new MessageActionRow().addComponents(approveBtn.setDisabled(true))]
             });
         }
         else
@@ -122,8 +126,9 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             });
 
     }
+
     async execute(message: Message, { }: literalCommandType): Promise<unknown> {
-        return message.reply(`Χρησιμοποιήτε την εντολή ως slash command \`/${this.keyword}\` ώστε να μπορείτε να δηλώσετε και ρόλους για ping`);
+        return message.reply(`Χρησιμοποιείτε την εντολή ως slash command \`/${this.keyword}\` ώστε να μπορείτε να δηλώσετε και ρόλους για ping`);
     }
 
     getAliases(): string[] {
