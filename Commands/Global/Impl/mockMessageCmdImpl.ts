@@ -1,33 +1,40 @@
 import * as Discord from 'discord.js';
 import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
-import { mock as _keyword } from '../../keywords.json';
-import { Gmock as _guide } from '../../guides.json';
-
-import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { mockMessageCmd } from '../Interf/mockMessageCmd';
-import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
 import { guildMap } from '../../..';
-import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
+import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
+import { mockMessageCmd } from '../Interf/mockMessageCmd';
+import { AbstractDMCommand } from '../../DM/AbstractDMCommand';
 
 
 
-export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessageCmd {
+    protected _id: Snowflake;
+    protected _keyword = `mock`;
+    protected _guide = `Mocks text`;
+    protected _usage = `mock <text>`;
+
+    private constructor() { super() }
+
+    static async init(): Promise<mockMessageCmd> {
+        const cmd = new MockMessageCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['mock'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: 'text',
@@ -52,14 +59,6 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

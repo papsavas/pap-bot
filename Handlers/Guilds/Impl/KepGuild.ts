@@ -1,5 +1,9 @@
+// @ts-nocheck
+
+//WIP
+
 import * as Discord from 'discord.js';
-import { sendEmail } from '../../toolbox/Google/Gmail';
+import { sendEmail } from '../../../toolbox/Google/Gmail';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 

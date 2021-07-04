@@ -1,89 +1,47 @@
 import {
-    ApplicationCommand,
-    Collection, ApplicationCommandData,
-    CommandInteraction,
-    GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, CommandInteraction,
+    GuildApplicationCommandManager, GuildResolvable, Message, MessageEmbed, Snowflake
 } from 'discord.js';
-import { CommandManagerImpl } from './CommandManagerImpl';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { bugsChannel, guildMap } from "../../../index";
-import { GuildCommandManager } from "../Interf/GuildCommandManager";
+import { guildMap } from "../../../index";
+import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericCommand } from "../../GenericCommand";
-import { overrideCommands } from '../../../Queries/Generic/Commands';
 import GenericGuildCommand from '../../Guild/GenericGuildCommand';
+import { GuildCommandManager } from "../Interf/GuildCommandManager";
+import { CommandManagerImpl } from './CommandManagerImpl';
 require('dotenv').config();
 
 export class GuildCommandManagerImpl extends CommandManagerImpl implements GuildCommandManager {
-
     private readonly guildID: Snowflake;
-    private readonly helpCommandData: ApplicationCommandData;
     readonly commands: GenericGuildCommand[];
 
     constructor(guild_id: Snowflake, guildCommands: GenericGuildCommand[]) {
-        super();
+        super(guildCommands);
         this.guildID = guild_id;
         this.commands = guildCommands;
-        this.helpCommandData = {
-            name: "help",
-            description: "displays support for a certain command",
-            options: [
-                {
-                    name: `command`,
-                    description: `the specified command`,
-                    type: 'STRING',
-                    choices: this.commands.map(cmd => ({
-                        name: cmd.keyword,
-                        value: cmd.guide.substring(0, 99)
-                    })),
-                    required: true
-                }
-            ]
-        }
     }
 
-    //!deprecated
-    async fetchGuildCommands(commandManager: GuildApplicationCommandManager)
-        : Promise<Collection<Snowflake, ApplicationCommand>> {
+    syncPermissions(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        commands: Collection<Snowflake, ApplicationCommand<{}>>
+    ) {
 
-        const applicationCommands: ApplicationCommandData[] = [];
-        const registeredCommands = await commandManager.fetch();
-
-        /**
-         * TODO: Implement Comparison for current & registered commands
-         */
-        if (false/*no update required*/) {
-            console.log('Equal :)')
-            return registeredCommands;
-        }
-        else /*commands changed, refresh*/ {
-            console.log(`commands changed. Refreshing...`);
-            await commandManager.set([]); //remove previous 
-            for (const cmd of this.commands) {
-                try {
-                    applicationCommands.push(cmd.getCommandData(this.guildID));
-                } catch (error) {
-                    console.log(cmd.getCommandData(this.guildID).name, error);
-                }
-            }
-            applicationCommands.push(this.helpCommandData);
-            const newCommands = await commandManager.set(applicationCommands);
-            //add to db
-            await overrideCommands(newCommands.array().map(cmd => (
-                {
-                    keyword: cmd.name,
-                    id: cmd.id,
-                    guide: cmd.description,
-                    aliases: this.commands
-                        .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
-
-                }
-            )));
-            return newCommands;
-        }
+        return Promise.all(commands.array().map(async cmd => {
+            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildID, cmd.id)).map(res => ({
+                id: res.role_id,
+                type: 'ROLE',
+                permission: true
+            }))
+            commandManager.permissions.set({
+                command: cmd.id,
+                guild: this.guildID,
+                permissions: dbPerms
+            })
+        }));
     }
 
     onManualCommand(message: Message): Promise<unknown> {
         /*
+        TODO: implement permission guard
         TODO: FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
         TODO: CONNECT 'commands with command_perms' with foreign key on commands Completion
         this.commands.forEach(async (cmd) => {
@@ -151,4 +109,36 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
             return interaction.reply(`Command not found`);
     }
 
+    fetchCommandData(commands: GenericGuildCommand[]): ApplicationCommandData[] {
+        const applicationCommands: ApplicationCommandData[] = [];
+        for (const cmd of commands) {
+            applicationCommands.push(cmd.getCommandData(this.guildID));
+        }
+        return applicationCommands;
+    }
+
+    async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
+        const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
+        const registeredCommands = await commandManager.fetch();
+
+        console.log(`guild commands changed. Refreshing...`);
+        await commandManager.set([]); //remove previous 
+        applicationCommands.push(this.helpCommandData);
+        const newCommands = await commandManager.set(applicationCommands);
+        //add to db
+        await overrideCommands(newCommands.array().map(cmd => (
+            {
+                keyword: cmd.name,
+                id: cmd.id,
+                guide: cmd.description,
+                aliases: this.commands
+                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+
+            }
+        )));
+        console.log(`---guild commands updated---`);
+
+        console.table(await this.syncPermissions(commandManager, newCommands));
+        return newCommands;
+    }
 }

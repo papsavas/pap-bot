@@ -1,4 +1,5 @@
-import { ApplicationCommand, ApplicationCommandManager, Collection, CommandInteraction, GuildApplicationCommandManager, Message, Snowflake } from "discord.js";
+import { ApplicationCommandManager, CommandInteraction, Message } from "discord.js";
+import { commandPermission } from "../../../Entities/Generic/commandPermission";
 import { GenericCommand } from "../../GenericCommand";
 
 export interface CommandManager {
