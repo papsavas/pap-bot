@@ -48,7 +48,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
 
     async interactiveExecute(interaction: CommandInteraction) {
         const memberResponse = interaction.options.get(responseOptionLiteral).value as string;
-        const guildID = interaction.guildID;
+        const guildID = interaction.guildId;
         const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>

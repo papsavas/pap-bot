@@ -56,7 +56,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
                 ephemeral: true
             });
 
-        const guild_id = interaction.guildID;
+        const guild_id = interaction.guildId;
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
         await interaction.defer({ ephemeral: true });
         const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands

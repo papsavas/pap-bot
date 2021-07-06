@@ -92,11 +92,11 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         const modChannel = interaction.guild.channels.cache.get('mod guild id' as Snowflake) as TextChannel;
         const approveLiteral = 'approve';
         const approveBtn = new MessageButton()
-            .setCustomID(approveLiteral)
+            .setCustomId(approveLiteral)
             .setEmoji('✅')
             .setStyle('SUCCESS');
         const rejectBtn = new MessageButton()
-            .setCustomID('reject')
+            .setCustomId('reject')
             .setEmoji('❌')
             .setStyle('DANGER');
 
@@ -109,8 +109,8 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             ]
         });
 
-        const response = await modMsg.awaitMessageComponentInteraction({ filter: btnInt => !btnInt.user.bot });
-        if (response.customID === approveLiteral) {
+        const response = await modMsg.awaitMessageComponent({ filter: btnInt => !btnInt.user.bot });
+        if (response.customId === approveLiteral) {
             await newsChannel.send(`${roles.length > 0 ? roles.toString() + '\n' + literal : literal}`);
             await response.update({
                 content: `Εγκρίθηκε από ${response.user.tag}`,
