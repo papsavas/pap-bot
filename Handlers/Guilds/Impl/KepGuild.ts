@@ -1,4 +1,7 @@
 //WIP
+/*
+TODO: Replace with valid ids 
+*/
 
 import { Snowflake, Message, GuildChannel } from 'discord.js';
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
@@ -27,18 +30,18 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     onMessage(message: Message): Promise<any> {
-        if ((message.channel as GuildChannel).parentID == 'registration_Category_id') {
+        if ((message.channel as GuildChannel).parentId == '12345677889876654') {
             return this.registration(message);
         }
     }
 
 
     async registration(message: Message): Promise<unknown> {
-        if (message.channel.id == 'send_email') {
+        if (message.channel.id == '1232342352341') {
             const email = message.cleanContent//.match(/*emailRegex*/)
             return email ? emailStudent(email) : message.react('❌');
         }
-        else if (message.channel.id == 'verification') {
+        else if (message.channel.id == '132435235234234') {
 
         }
     }
