@@ -120,7 +120,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
                     .then((msg) => {
                         this.addGuildLog(message.guild.id, `message unpinned:\n${msg.url} with reason ${unpinReason}`);
                         if (message.deletable)
-                            message.client.setTimeout(() => message.delete().catch(), 3000);
+                            message.client.setTimeout(() => { message.delete().catch() }, 3000);
                     });
             })
     }

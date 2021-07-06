@@ -110,7 +110,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     ) {
 
         return Promise.all(commands.array().map(async cmd => {
-            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildID, cmd.id)).map(res => ({
+            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id)).map(res => ({
                 id: res.role_id,
                 type: 'ROLE',
                 permission: true

@@ -106,7 +106,7 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onButton(interaction: ButtonInteraction): Promise<any> {
-        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customID} button`);
+        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customId} button`);
     }
 
     async onMessage(message: Message): Promise<any> {

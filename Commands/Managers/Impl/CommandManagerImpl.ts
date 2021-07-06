@@ -150,7 +150,9 @@ export abstract class CommandManagerImpl implements CommandManager {
                     })
             ]
         }
-        ).then(msg => msg.client.setTimeout(() => msg.delete(), 15000));
+        ).then(msg => msg.client.setTimeout(() => {
+            msg.delete().catch()
+        }, 15000));
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 

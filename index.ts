@@ -126,11 +126,11 @@ PAP.on('ready', async () => {
 });
 
 
-PAP.on('interaction', async interaction => {
+PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
         if (interaction.inGuild()) {
             try {
-                guildMap.get(interaction.guildID)
+                guildMap.get(interaction.guildId)
                     ?.onSlashCommand(interaction)
             } catch (error) {
                 console.log(error)
@@ -148,9 +148,9 @@ PAP.on('interaction', async interaction => {
     else if (interaction.isButton()) {
         if (interaction.inGuild()) {
             try {
-                guildMap.get(interaction.guildID)
+                guildMap.get(interaction.guildId)
                     ?.onButton(interaction)
-                interaction.reply({ ephemeral: true, content: interaction.customID }).catch();
+                interaction.reply({ ephemeral: true, content: interaction.customId }).catch();
 
             } catch (error) {
                 console.log(error)
@@ -189,7 +189,7 @@ PAP.on('interaction', async interaction => {
 });
 
 
-PAP.on('message', (receivedMessage) => {
+PAP.on('messageCreate', (receivedMessage) => {
     if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
             const D = require('discord.js');

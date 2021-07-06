@@ -91,7 +91,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             return interaction.editReply({
                 content: `\`MANAGE_GUILD permissions required\``
             });
-        const guild_id = interaction.guildID;
+        const guild_id = interaction.guildId;
         const filteredRoles = interaction.options.filter(option => option.type == "ROLE");
         const rolesKeyArr = filteredRoles
             .map(filteredOptions => filteredOptions.role.id)

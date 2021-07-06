@@ -51,16 +51,16 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
-        const command_id: Snowflake = guildMap.get(interaction.guildID).commandManager.commands
+        const command_id: Snowflake = guildMap.get(interaction.guildId).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
             return interaction.reply({
                 content: `command ${commandLiteral} not found`,
                 ephemeral: true
             });
-        const guild_prefix = guildMap.get(interaction.guildID).getSettings().prefix;
+        const guild_prefix = guildMap.get(interaction.guildId).getSettings().prefix;
         await interaction.defer({ ephemeral: true });
-        const commandPerms = await fetchCommandPerms(interaction.guildID, command_id);
+        const commandPerms = await fetchCommandPerms(interaction.guildId, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => interaction.guild.roles.fetch(cp.role_id)));
         let apiPerms: ApplicationCommandPermissions[];
         try {
@@ -85,7 +85,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                                 apiPerms.
                                     filter(perm => perm.permission)
                                     .map(perm => `<@&${perm.id}>`).toString()
-                                : `<@&${interaction.guildID}>` //allowed for @everyone
+                                : `<@&${interaction.guildId}>` //allowed for @everyone
                         },
                         {
                             name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
