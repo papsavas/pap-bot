@@ -1,34 +1,41 @@
 import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake, TextChannel } from 'discord.js';
-import { userNotes as _keyword } from '../../keywords.json';
-import { GuserNotes as _guide } from '../../guides.json';
-
-import { AbstractGuildCommand } from "../../Guild/AbstractGuildCommand";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { userNotesCmd } from '../Interf/userNotesCmd';
-import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
-import { userNote } from '../../../Entities/Generic/userNote';
-import { auth } from 'firebase-admin';
+import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
 import { guildMap } from '../../..';
-import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
+import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { userNote } from '../../../Entities/Generic/userNote';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
+import { AbstractGlobalCommand } from '../../Global/AbstractGlobalCommand';
+import { userNotesCmd } from '../Interf/userNotesCmd';
+
 
 
 export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
 
-    readonly id: Snowflake = fetchCommandID(_keyword);
+    protected _id: Snowflake;
+    protected _keyword = `notes`;
+    protected _guide = `Your personal notes`;
+    protected _usage = `notes [add <note> / remove <index> / edit <index> <note> / clear]`;
+
+    private constructor() { super() }
+
+    static async init(): Promise<userNotesCmd> {
+        const cmd = new userNotesCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
+
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(): ApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
             options: [
                 {
                     name: "add",
@@ -166,14 +173,6 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
-    }
-
-    getKeyword(): string {
-        return _keyword;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

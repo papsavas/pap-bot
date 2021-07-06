@@ -46,13 +46,13 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const guildHandler = guildMap.get(interaction.guildID);
+        const guildHandler = guildMap.get(interaction.guildId);
         const newPrefix = interaction.options.get(prefixOptionLiteral)?.value as string;
         await interaction.defer();
         if (!!newPrefix) {
-            const oldSettings = await fetchGuildSettings(interaction.guildID);
+            const oldSettings = await fetchGuildSettings(interaction.guildId);
             const newSettings = Object.assign(oldSettings, { 'prefix': newPrefix });
-            await updateGuildSettings(interaction.guildID, newSettings).then(() => guildHandler.setPrefix(newPrefix));
+            await updateGuildSettings(interaction.guildId, newSettings).then(() => guildHandler.setPrefix(newPrefix));
             return interaction.editReply(`new prefix is set to \`${newPrefix}\``)
         }
         else

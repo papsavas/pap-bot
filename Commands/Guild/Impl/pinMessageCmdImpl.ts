@@ -69,7 +69,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                 });
             return fetchedMessage.pin()
                 .then((pinnedMessage) => {
-                    this.addGuildLog(interaction.guildID, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                    this.addGuildLog(interaction.guildId, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                     interaction.reply({
                         embeds: [
                             new MessageEmbed({
@@ -115,7 +115,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                     .then((pinnedMessage) => {
                         this.addGuildLog(message.guild.id, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                         if (message.deletable)
-                            message.client.setTimeout(() => message.delete().catch(), 3000);
+                            message.client.setTimeout(() => { message.delete().catch() }, 3000);
                     });
             })
     }

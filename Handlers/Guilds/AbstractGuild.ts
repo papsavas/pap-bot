@@ -4,36 +4,34 @@ import {
     GuildMember, Message, MessageReaction,
     Snowflake, User
 } from 'discord.js';
-import { mentionRegex } from "../botconfig.json";
-import { GuildCommandHandler } from "../Commands/Guild/GuildCommandHandler";
-import GuildCommandHandlerImpl from "../Commands/Guild/GuildCommandHandlerImpl";
-import { GenericCommand } from "../Commands/GenericCommand";
-import { AddResponseCmdImpl } from "../Commands/Guild/Impl/addResponseCmdImpl";
-import { ClearMessagesCmdImpl } from "../Commands/Guild/Impl/clearMessagesCmdImpl";
-import { DmMemberCmdImpl } from "../Commands/Guild/Impl/dmMemberCmdImpl";
-import { EditMessageCmdImpl } from "../Commands/Guild/Impl/editMessageCmdImpl";
-import { LockCommandCmdImpl } from "../Commands/Guild/Impl/lockCommandCmdImpl";
-import { MessageChannelCmdImpl } from "../Commands/Guild/Impl/messageChannelCmdImpl";
-import { NsfwSwitchCmdImpl } from "../Commands/Guild/Impl/nsfwSwitchCmdImpl";
-import { PinMessageCmdImpl } from "../Commands/Guild/Impl/pinMessageCmdImpl";
-import { PollCmdImpl } from "../Commands/Guild/Impl/pollCmdImpl";
-import { RemovePersonalResponseCmdImpl } from "../Commands/Guild/Impl/removePersonalResponseCmdImpl";
-import { SetPrefixCmdImpl } from "../Commands/Guild/Impl/setPrefixCmdImpl";
-import { ShowLogsCmdImpl } from "../Commands/Guild/Impl/showLogsCmdImpl";
-import { ShowPermsCmdsImpl } from "../Commands/Guild/Impl/showPermsCmdsImpl";
-import { ShowPersonalResponsesCmdImpl } from "../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
-import { UnlockCommandCmdImpl } from "../Commands/Guild/Impl/unlockCommandCmdImpl";
-import { UnpinMessageCmdImpl } from "../Commands/Guild/Impl/unpinMessageCmdImpl";
-
-import { guildSettings } from "../Entities/Generic/guildSettingsType";
-import { memberResponses } from "../Entities/Generic/MemberResponsesType";
-import { genericGuildResponses } from "../Queries/Generic/GenericGuildResponses";
-import { addLog } from "../Queries/Generic/guildLogs";
-import { fetchGuildSettings } from "../Queries/Generic/GuildSettings";
-import { fetchAllGuildMemberResponses } from "../Queries/Generic/MemberResponses";
-import { randomArrayValue } from "../toolbox/randomArrayValue";
+import { mentionRegex } from "../../botconfig.json";
+import GenericGuildCommand from '../../Commands/Guild/GenericGuildCommand';
+import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
+import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
+import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
+import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
+import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
+import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
+import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
+import { PinMessageCmdImpl } from "../../Commands/Guild/Impl/pinMessageCmdImpl";
+import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
+import { RemovePersonalResponseCmdImpl } from "../../Commands/Guild/Impl/removePersonalResponseCmdImpl";
+import { SetPrefixCmdImpl } from "../../Commands/Guild/Impl/setPrefixCmdImpl";
+import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
+import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
+import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
+import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
+import { UnpinMessageCmdImpl } from "../../Commands/Guild/Impl/unpinMessageCmdImpl";
+import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
+import { guildSettings } from "../../Entities/Generic/guildSettingsType";
+import { memberResponses } from "../../Entities/Generic/MemberResponsesType";
+import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
+import { addLog } from "../../Queries/Generic/guildLogs";
+import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
+import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
+import { randomArrayValue } from "../../toolbox/randomArrayValue";
 import { GenericGuild } from "./GenericGuild";
-import GenericGuildCommand from '../Commands/Guild/GenericGuildCommand';
+
 
 export abstract class AbstractGuild implements GenericGuild {
 
@@ -44,7 +42,7 @@ export abstract class AbstractGuild implements GenericGuild {
     private _logs: string[] = [];
 
     protected readonly guildID: Snowflake;
-    protected specifiedCommands?: GenericGuildCommand[];
+    protected specifiedCommands?: Promise<GenericGuildCommand>[];
     /*
     TODO: move these to global scope on release
     * global permissions are now available
@@ -59,7 +57,7 @@ export abstract class AbstractGuild implements GenericGuild {
         NsfwSwitchCmdImpl, ShowLogsCmdImpl
     ].map(cmd => cmd.init())
 
-    commandHandler: GuildCommandHandler;
+    commandManager: GuildCommandManager;
 
     get guild(): Guild {
         return this._guild;
@@ -104,16 +102,16 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onSlashCommand(interaction: CommandInteraction): Promise<any> {
-        return this.commandHandler.onSlashCommand(interaction);
+        return this.commandManager.onSlashCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<any> {
-        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customID} button`);
+        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customId} button`);
     }
 
     async onMessage(message: Message): Promise<any> {
         if (message.content.startsWith(this._settings.prefix)) {
-            return this.commandHandler.onCommand(message);
+            return this.commandManager.onManualCommand(message);
         }
 
         if (message.content.match(mentionRegex)) {

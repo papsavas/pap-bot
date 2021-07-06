@@ -1,7 +1,9 @@
 import {
-    ApplicationCommandData, CommandInteraction, Message,
+    ApplicationCommandData, CommandInteraction, GuildChannel, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
-    Snowflake
+    Snowflake,
+    TextChannel,
+    ThreadChannel
 } from 'discord.js';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
@@ -39,19 +41,20 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     }
 
     async interactiveExecute(commandInteraction: CommandInteraction): Promise<any> {
-        const oldSettings = await fetchGuildSettings(commandInteraction.guildID);
+        //TODO: Fix behavior, after update collector returns an error if time ends
+        const oldSettings = await fetchGuildSettings(commandInteraction.guildId);
 
         const row = new MessageActionRow()
             .addComponents(
                 new MessageButton({
-                    "customID": "off",
+                    "customId": "off",
                     "label": "SFW responses",
                     "style": "PRIMARY"
                 })
                     .setEmoji("👼"),
 
                 new MessageButton({
-                    "customID": "on",
+                    "customId": "on",
                     "label": "NSFW responses",
                     "style": "DANGER",
                 })
@@ -63,40 +66,48 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
             components: [row]
         });
         const filter = (componentInteraction: MessageComponentInteraction) =>
-            ['on', 'off'].includes(componentInteraction.customID) &&
+            ['on', 'off'].includes(componentInteraction.customId) &&
             componentInteraction.user.id === commandInteraction.user.id;
-        const btn = await commandInteraction.channel.awaitMessageComponentInteraction
-            (
-                { filter, time: 10000 }
-            );
 
-        if (!btn)
+        try {
+            const btn = await commandInteraction.channel.awaitMessageComponent
+                (
+                    { filter, time: 10000 }
+                );
+            const enabled = btn.customId === 'on';
+            const literal = enabled ? "Enabled" : "Disabled";
+            await updateGuildSettings(commandInteraction.guildId, Object.assign(oldSettings, { "nsfw_responses": enabled }));
+            await guildMap.get(commandInteraction.guildId).loadResponses();
             return commandInteraction.editReply({
-                content: `failed to respond in time`,
+                content: `**${literal}** \`nsfw\` mode`,
                 components: []
             });
-        const enabled = btn.customID === 'on';
-        const literal = enabled ? "Enabled" : "Disabled";
-        await updateGuildSettings(commandInteraction.guildID, Object.assign(oldSettings, { "nsfw_responses": enabled }));
-        await guildMap.get(commandInteraction.guildID).loadResponses();
-        return commandInteraction.editReply({
-            content: `**${literal}** \`nsfw\` mode`,
-            components: []
-        });
+        } catch (error) {
+            if (error.name === 'time')
+                return commandInteraction.editReply({
+                    content: `failed to respond in time`,
+                    components: []
+                });
+        }
+
+
+
+
     }
 
     async execute(message: Message, { }: literalCommandType) {
+        //TODO: Fix behaviour, after update collector returns an error if time ends
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);
             const row = new MessageActionRow()
                 .addComponents(
                     new MessageButton({
-                        "customID": "on",
+                        "customId": "on",
                         "label": "enable",
                         "style": "DANGER",
                     }).setEmoji("🔞"),
                     new MessageButton({
-                        "customID": "off",
+                        "customId": "off",
                         "label": "disable",
                         "style": "PRIMARY"
                     }).setEmoji("👼")
@@ -106,9 +117,9 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                 components: [row]
             });
             const filter = (componentInteraction: MessageComponentInteraction) =>
-                ['on', 'off'].includes(componentInteraction.customID) &&
+                ['on', 'off'].includes(componentInteraction.customId) &&
                 componentInteraction.user.id === message.author.id;
-            const btn = await message.channel.awaitMessageComponentInteraction
+            const btn = await message.channel.awaitMessageComponent
                 (
                     { filter, time: 10000 }
                 );
@@ -118,7 +129,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                     content: `failed to respond in time`,
                     components: []
                 });
-            const enabled = btn.customID === 'on';
+            const enabled = btn.customId === 'on';
             const literal = enabled ? "Enabled" : "Disabled";
             await updateGuildSettings(message.guild.id, Object.assign(oldSettings, { "nsfw_responses": enabled }));
             await guildMap.get(message.guild.id).loadResponses();

@@ -1,11 +1,11 @@
 import * as Discord from 'discord.js';
-import { GuildCommandHandler } from '../Commands/Guild/GuildCommandHandler';
-import GuildCommandHandlerImpl from '../Commands/Guild/GuildCommandHandlerImpl';
-import { guildSettings } from "../Entities/Generic/guildSettingsType";
+import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
+import { GuildCommandManagerImpl } from '../../Commands/Managers/Impl/GuildCommandManagerImpl';
+import { guildSettings } from "../../Entities/Generic/guildSettingsType";
 
 export interface GenericGuild {
 
-    readonly commandHandler: GuildCommandHandler;
+    readonly commandManager: GuildCommandManager;
 
     onReady(client: Discord.Client): Promise<string | void>;
 

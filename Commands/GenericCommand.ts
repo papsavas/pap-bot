@@ -1,11 +1,11 @@
 import { CommandInteraction, Message, Snowflake } from "discord.js";
-import { literalCommandType } from "../Entities/Generic/commandType";
-
+import { commandSpecifier, literalCommandType } from "../Entities/Generic/commandType";
 export interface GenericCommand {
     id: Snowflake;
     keyword: string;
     guide: string;
     usage: string;
+    type: commandSpecifier;
 
     interactiveExecute(commandInteraction: CommandInteraction): Promise<unknown>;
 
@@ -13,6 +13,6 @@ export interface GenericCommand {
 
     getAliases(): string[];
 
-    matchAliases(possibleCommand: string): boolean;
+    matchAliases(possibleCommand: string | undefined): boolean;
 
 }
