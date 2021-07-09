@@ -124,7 +124,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
                 case 'show':
                     const notes: userNote[] = await fetchAllNotes(user_id);
-                    await interaction.editReply(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
+                    return await interaction.editReply(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
 
 
                 case 'default':

@@ -136,7 +136,7 @@ PAP.on('interactionCreate', async interaction => {
                 console.log(error)
             }
         }
-        else if (interaction.channel.type === 'dm') {
+        else if (interaction.channel.type === "DM") {
             console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
             from ${interaction.user.tag}`)
         }
@@ -192,7 +192,7 @@ PAP.on('interactionCreate', async interaction => {
 PAP.on('messageCreate', (receivedMessage) => {
     if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
-            const D = require('discord.js');
+            const Discord = require('discord.js');
             return eval(receivedMessage.cleanContent
                 .substring('eval'.length + 1)
                 .replace(/(\r\n|\n|\r)/gm, "")); //remove all line breaks
@@ -207,10 +207,10 @@ PAP.on('messageCreate', (receivedMessage) => {
         return
 
     switch (receivedMessage.channel.type) {
-        case 'dm':
+        case 'DM':
             break;
 
-        case 'text':
+        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
             guildMap.get(receivedMessage.guild.id)
                 ?.onMessage(receivedMessage)
                 .catch(err => console.log(err));
@@ -233,10 +233,10 @@ PAP.on('messageDelete', async (deletedMessage) => {
         return
 
     switch (deletedMessage.channel.type) {
-        case 'dm':
+        case 'DM':
             break;
 
-        case 'text':
+        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
             guildMap.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(err => console.log(err));

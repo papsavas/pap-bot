@@ -9,6 +9,7 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { sendEmail } from '../../../toolbox/Google/Gmail';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
+import { channels } from "values/KEP/IDs.json"
 
 const specifiedCommands = [KEP_announceCmdImpl]; //add guild specific commands
 export class KepGuild extends AbstractGuild implements GenericGuild {
@@ -37,12 +38,9 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
 
     async registration(message: Message): Promise<unknown> {
-        if (message.channel.id == '1232342352341') {
+        if (message.channel.id === channels.registration) {
             const email = message.cleanContent//.match(/*emailRegex*/)
             return email ? emailStudent(email) : message.react('❌');
-        }
-        else if (message.channel.id == '132435235234234') {
-
         }
     }
 }

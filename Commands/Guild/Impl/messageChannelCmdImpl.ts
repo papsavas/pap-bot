@@ -72,10 +72,10 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
     }
 
     async execute({ guild, mentions }: Message, { commandless2 }: literalCommandType) {
-        const sendChannel = mentions.channels.first() as Discord.TextChannel;
-        if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.type === 'text')
+        const sendChannel = mentions.channels.first();
+        if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
             return sendChannel.send(commandless2)
-                .then(() => this.addGuildLog(guild.id, `sent ${commandless2} to ${sendChannel.name}`));
+                .then(() => this.addGuildLog(guild.id, `sent ${commandless2} to ${sendChannel.id}`));
         else
             throw new Error(`Channel not found`);
     }
