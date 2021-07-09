@@ -55,13 +55,11 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
         const reason = interaction.options.get(reasonOptionLiteral);
-        const member = interaction.member as GuildMember
-        let pinReason = reason ? reason.value as string : ``;
-        pinReason += `\nby ${member.displayName}`;
-        let pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
-        let fetchedMessage: Message;
+        const member = interaction.member as GuildMember;
+        const pinReason = reason ? reason.value as string : ``;
+        const pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
         try {
-            fetchedMessage = await channel.messages.fetch(pinningMessageID);
+            const fetchedMessage = await channel.messages.fetch(pinningMessageID);
             if (fetchedMessage.pinned)
                 return interaction.reply({
                     embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
@@ -73,17 +71,27 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                     interaction.reply({
                         embeds: [
                             new MessageEmbed({
-                                title: `Pinned Message 📌`,
+                                author: {
+                                    name: member.displayName,
+                                    iconURL: member.user.avatarURL()
+                                },
+                                title: `Pinned Message  📌`,
                                 description: pinnedMessage.content?.length > 0 ?
                                     `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
                                     `[Click to jump](${pinnedMessage.url})`,
+                                color: 'GREEN',
                                 footer: { text: pinReason }
                             })
                         ]
                     })
                 })
                 .catch(err => {
-                    interaction.reply('could not pin message');
+                    interaction.reply({
+                        content: 'could not pin message',
+                        embeds: [new MessageEmbed({
+                            description: err.toString()
+                        })]
+                    });
                 });
         } catch (error) {
             if (error.code == e["Unknown message"])

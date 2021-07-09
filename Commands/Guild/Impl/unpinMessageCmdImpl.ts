@@ -4,7 +4,7 @@ import * as Discord from "discord.js";
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
@@ -57,12 +57,11 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const channel = interaction.channel as Discord.TextChannel;
+        const channel = interaction.channel as TextChannel;
         const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
-        let unpinReason = reason ? reason.value as string : ``;
-        unpinReason += `\nby ${member?.displayName}`;
-        let pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
+        const unpinReason = reason ? reason.value as string : ``;
+        const pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
         let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
@@ -84,11 +83,16 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
                 //addGuildLog(`message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
                 interaction.reply({
                     embeds: [
-                        new Discord.MessageEmbed({
-                            title: `Unpinned Message 📌`,
+                        new MessageEmbed({
+                            author: {
+                                name: member.displayName,
+                                iconURL: member.user.avatarURL()
+                            },
+                            title: `Unpinned Message  📌`,
                             description: unpinnedMessage.content?.length > 0 ?
                                 `[${unpinnedMessage.content.substring(0, 40)}...](${unpinnedMessage.url})` :
                                 `[Click to jump](${unpinnedMessage.url})`,
+                            color: 'DARK_RED',
                             footer: { text: unpinReason }
                         })
                     ]
