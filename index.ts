@@ -1,12 +1,10 @@
 import {
     Client, Collection, CommandInteraction, GuildChannelManager,
-    GuildMember, Message, MessageEmbed, Snowflake, TextChannel, User
+    GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
 import { creatorID, guildID as botGuildID } from './botconfig.json';
-import { DMHandlerImpl } from './Handlers/DMs/DM';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
-import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 
@@ -244,29 +242,28 @@ PAP.on('messageDelete', async (deletedMessage) => {
     }
 })
 
-PAP.on('messageReactionAdd', async (messageReaction, user) => {
+PAP.on('messageReactionAdd', async (reaction, user) => {
     try {
-        if (messageReaction.partial) await messageReaction.fetch();
-        if (user.partial) await user.fetch();
+        guildMap.get(reaction.message.guild?.id)
+            ?.onMessageReactionAdd(
+                reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
+                user.partial ? await user.fetch() : user as User,
+            )
     } catch (err) {
         console.error(err)
     }
-    guildMap.get(messageReaction.message.guild?.id)
-        ?.onMessageReactionAdd(messageReaction, user as User)
-        .catch(err => console.log(err));
-
 });
 
-PAP.on('messageReactionRemove', async (messageReaction, user) => {
+PAP.on('messageReactionRemove', async (reaction, user) => {
     try {
-        if (messageReaction.partial) await messageReaction.fetch();
-        if (user.partial) await user.fetch();
+        guildMap.get(reaction.message.guild?.id)
+            ?.onMessageReactionRemove(
+                reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
+                user.partial ? await user.fetch() : user as User,
+            )
     } catch (err) {
         console.error(err)
     }
-    guildMap.get(messageReaction.message.guild?.id)
-        ?.onMessageReactionRemove(messageReaction, user as User)
-        .catch(err => console.log(err));
 });
 
 PAP.on('guildMemberAdd', (member) => {
