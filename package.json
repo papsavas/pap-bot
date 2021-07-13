@@ -2,7 +2,7 @@
   "name": "papbotts",
   "version": "2.0.0",
   "description": "PAPbot",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",

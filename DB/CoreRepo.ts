@@ -5,7 +5,7 @@ import knex, { Knex } from "knex";
 import { v4 } from "uuid";
 import TableBuilder = Knex.TableBuilder;
 
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 
 const knexClient = knex({
