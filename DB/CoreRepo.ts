@@ -3,6 +3,7 @@
 */
 import knex, { Knex } from "knex";
 import { v4 } from "uuid";
+import { inDevelopment } from "../src";
 import TableBuilder = Knex.TableBuilder;
 
 require('dotenv').config({ path: '../.env' });
@@ -10,7 +11,7 @@ require('dotenv').config({ path: '../.env' });
 
 const knexClient = knex({
     client: 'pg',
-    connection: process.env.NODE_ENV == 'development' ? {
+    connection: inDevelopment ? {
         host: process.env.DB_HOST,
         port: parseInt(process.env.DB_PORT),
         user: process.env.DB_USER,

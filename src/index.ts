@@ -11,7 +11,7 @@ import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
-export const inDevelopment: boolean = process.env.NODE_ENV == 'development';
+export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
 export const guildMap = new Collection<Snowflake, GenericGuild>();
 let dmHandler: DmHandler;
 let globalCommandHandler: GlobalCommandHandler;
