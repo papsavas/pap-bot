@@ -1,4 +1,0 @@
-this is for testing purposes (heroku deploy action)
-#1
-#2
-#3 (removed automatic deploys on heroku)
