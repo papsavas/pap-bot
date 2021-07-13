@@ -3,9 +3,9 @@ import { GdmMember as _guide } from '../../guides.json';
 
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
-import * as e from '../../../../errorCodes.json'
 import {
     ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction,
+    Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
@@ -89,7 +89,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 embeds: [sendEmb]
             }))
             .catch(err => {
-                if (err.code == e["Cannot send messages to this user"]) {
+                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
                     interaction.reply(`Could not dm ${user.username}`);
                 }
             })
@@ -128,7 +128,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 embeds: [sendEmb]
             }))
             .catch(err => {
-                if (err.code == e["Cannot send messages to this user"]) {
+                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
                     throw new Error(`Could not dm ${user.username}`);
                 }
             })

@@ -1,7 +1,4 @@
 //WIP
-/*
-TODO: Replace with valid ids 
-*/
 
 import { Snowflake, Message, GuildChannel } from 'discord.js';
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';

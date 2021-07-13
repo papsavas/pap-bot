@@ -1,16 +1,12 @@
-import { GunpinMessage as _guide } from "../../guides.json";
-import { unpinMessage as _keyword } from "../../keywords.json";
-import * as Discord from "discord.js";
-
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
-import { extractId } from "../../../toolbox/extractMessageId";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import * as e from '../../../../errorCodes.json';
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
+import { extractId } from "../../../toolbox/extractMessageId";
+import { unpinMessage as _keyword } from "../../keywords.json";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
+
 
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
@@ -66,7 +62,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
-            if (error.code == e["Unknown message"])
+            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
                 return interaction.reply({
                     content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
                     ephemeral: true
@@ -112,13 +108,13 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         try {
             fetchedMessage = await channel.messages.fetch(unpinnedMessageId);
         } catch (error) {
-            if (error.code == e["Unknown message"])
+            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (!fetchedMessage.pinned)
             return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) is not pinned` }] });
 
-        return (channel as Discord.TextChannel).messages.fetch(unpinnedMessageId)
+        return (channel as TextChannel).messages.fetch(unpinnedMessageId)
             .then((msg) => {
                 msg.unpin()
                     .then((msg) => {

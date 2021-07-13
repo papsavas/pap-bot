@@ -1,31 +1,32 @@
-import * as Discord from 'discord.js';
-import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
-import { GuildCommandManagerImpl } from '../../Commands/Managers/Impl/GuildCommandManagerImpl';
-import { guildSettings } from "../../Entities/Generic/guildSettingsType";
 
+import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, GuildMember, Message, MessageReaction, SelectMenuInteraction, User } from 'discord.js';
+import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
+import { guildSettings } from "../../Entities/Generic/guildSettingsType";
 export interface GenericGuild {
 
     readonly commandManager: GuildCommandManager;
 
-    onReady(client: Discord.Client): Promise<string | void>;
+    onReady(client: Client): Promise<string | void>;
 
-    onSlashCommand(interaction: Discord.CommandInteraction): Promise<unknown>;
+    onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
 
-    onButton(interaction: Discord.ButtonInteraction): Promise<unknown>;
+    onButton(interaction: ButtonInteraction): Promise<unknown>;
 
-    onMessage(message: Discord.Message): Promise<unknown>;
+    onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown>;
 
-    onMessageDelete(deletedMessage: Discord.Message): Promise<unknown>;
+    onMessage(message: Message): Promise<unknown>;
 
-    onMessageReactionAdd(messageReaction: Discord.MessageReaction, user: Discord.User): Promise<unknown>;
+    onMessageDelete(deletedMessage: Message): Promise<unknown>;
 
-    onMessageReactionRemove(messageReaction: Discord.MessageReaction, user: Discord.User): Promise<unknown>;
+    onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<unknown>;
 
-    onGuildMemberAdd(member: Discord.GuildMember): Promise<unknown>;
+    onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<unknown>;
 
-    onGuildMemberRemove(member: Discord.GuildMember): Promise<unknown>;
+    onGuildMemberAdd(member: GuildMember): Promise<unknown>;
 
-    onGuildMemberUpdate(oldMember: Discord.GuildMember, newMember: Discord.GuildMember): Promise<unknown>;
+    onGuildMemberRemove(member: GuildMember): Promise<unknown>;
+
+    onGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<unknown>;
 
     addGuildLog(log: string): string;
 
@@ -33,7 +34,7 @@ export interface GenericGuild {
 
     setPrefix(newPrefix: string): void;
 
-    fetchCommands(): Promise<Discord.Collection<string, Discord.ApplicationCommand>>;
+    fetchCommands(): Promise<Collection<string, ApplicationCommand>>;
 
     loadResponses(): Promise<void>;
 }

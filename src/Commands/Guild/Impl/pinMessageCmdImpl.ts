@@ -3,11 +3,9 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { extractId } from "../../../toolbox/extractMessageId";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
-import * as e from '../../../../errorCodes.json';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-
 
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
@@ -94,7 +92,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                     });
                 });
         } catch (error) {
-            if (error.code == e["Unknown message"])
+            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
                 return interaction.reply({
                     content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
                     ephemeral: true
@@ -111,7 +109,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
-            if (error.code == e["Unknown message"])
+            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (fetchedMessage.pinned)

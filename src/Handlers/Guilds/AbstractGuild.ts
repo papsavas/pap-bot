@@ -2,6 +2,7 @@ import {
     ButtonInteraction,
     Client, CommandInteraction, Guild,
     GuildMember, Message, MessageReaction,
+    SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
 import { mentionRegex } from "../../../botconfig.json";
@@ -106,7 +107,17 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onButton(interaction: ButtonInteraction): Promise<any> {
-        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customId} button`);
+        return interaction.reply({
+            content: interaction.customId,
+            ephemeral: true
+        })
+    }
+
+    onSelectMenu(interaction: SelectMenuInteraction): Promise<any> {
+        return interaction.reply({
+            content: interaction.customId,
+            ephemeral: true
+        })
     }
 
     async onMessage(message: Message): Promise<any> {
@@ -135,7 +146,6 @@ export abstract class AbstractGuild implements GenericGuild {
     onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<any> {
         return Promise.resolve(`reaction removed`);
     }
-
 
 
     addGuildLog(log: string, member_id: Snowflake = null): string {

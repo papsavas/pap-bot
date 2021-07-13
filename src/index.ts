@@ -117,10 +117,15 @@ PAP.on('ready', async () => {
 
     if (inDevelopment) {
         await runScript();
-        //process.exit(132);
     }
 });
 
+
+PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name} command`));
+PAP.on('applicationCommandDelete', (command) => console.log(`deleted ${command.name} command`));
+PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
+    console.log(`command ${newCommand.name} updated`);
+});
 
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
@@ -145,8 +150,7 @@ PAP.on('interactionCreate', async interaction => {
         if (interaction.inGuild()) {
             try {
                 guildMap.get(interaction.guildId)
-                    ?.onButton(interaction)
-                interaction.reply({ ephemeral: true, content: interaction.customId }).catch();
+                    ?.onButton(interaction);
 
             } catch (error) {
                 console.log(error)
@@ -158,12 +162,18 @@ PAP.on('interactionCreate', async interaction => {
     }
 
     else if (interaction.isSelectMenu()) {
-        //TODO: implement guild handlers
-        console.log(`message component interaction received`);
-        await interaction.reply({
-            content: JSON.stringify(interaction.values),
-            ephemeral: true
-        }).catch(console.error)
+        if (interaction.inGuild()) {
+            try {
+                guildMap.get(interaction.guildId)
+                    ?.onSelectMenu(interaction);
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        else if (interaction.channel.type === "DM") {
+            console.log('dm select received');
+        }
     }
 
     else {
@@ -278,11 +288,11 @@ PAP.on('guildMemberRemove', async (member) => {
 });
 
 PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
-    if (oldMember.partial) await oldMember.fetch().catch(console.error);
     guildMap.get(newMember.guild.id)
-        ?.onGuildMemberUpdate(oldMember as GuildMember, newMember)
+        ?.onGuildMemberUpdate(
+            oldMember.partial ? await oldMember.fetch() : oldMember as GuildMember,
+            newMember)
         .catch(err => console.log(err));
-
 });
 
 PAP.on('error', (error) => {
