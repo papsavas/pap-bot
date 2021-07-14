@@ -1,4 +1,5 @@
-import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, CommandInteraction, GuildApplicationCommandManager, GuildResolvable, Message } from "discord.js";
+import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { CommandType } from "../../../Entities/Generic/commandType";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import GenericGlobalCommand from "../../Global/GenericGlobalCommand";
 import { GlobalCommandManager } from "../Interf/GlobalCommandManager";
@@ -26,6 +27,20 @@ export default class GlobalCommandManagerImpl extends CommandManagerImpl impleme
             applicationCommands.push(cmd.getCommandData());
         }
         return applicationCommands;
+    }
+
+    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<CommandType[]> {
+        return overrideCommands(newCommands.array().map(cmd => (
+            {
+                keyword: cmd.name,
+                id: cmd.id,
+                guide: cmd.description,
+                global: true,
+                aliases: this.commands
+                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+
+            })
+        ));
     }
 
 }

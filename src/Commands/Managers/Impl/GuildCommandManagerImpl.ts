@@ -1,7 +1,8 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, CommandInteraction,
-    GuildApplicationCommandManager, GuildResolvable, Message, MessageEmbed, Snowflake
+    GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from 'discord.js';
+import { CommandType } from '../../../Entities/Generic/commandType';
 import { guildMap } from "../../../index";
 import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericCommand } from "../../GenericCommand";
@@ -96,6 +97,20 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
             applicationCommands.push(cmd.getCommandData(this.guildID));
         }
         return applicationCommands;
+    }
+
+    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<CommandType[]> {
+        return overrideCommands(newCommands.array().map(cmd => (
+            {
+                keyword: cmd.name,
+                id: cmd.id,
+                guide: cmd.description,
+                global: false,
+                aliases: this.commands
+                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+
+            })
+        ));
     }
 
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {

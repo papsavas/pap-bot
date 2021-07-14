@@ -38,3 +38,10 @@ export async function overrideCommands(newCommands: CommandType[]): Promise<Comm
     await dropRows('commands', true);
     return addRows('commands', newCommands, '*');
 }
+
+export async function fetchGlobalCommandIds(): Promise<Snowflake[]> {
+    const ret = await fetchAllOnCondition("commands", {
+        "global": true
+    }, ['id']);
+    return ret.map((res: CommandType) => res.id) as Snowflake[];
+}

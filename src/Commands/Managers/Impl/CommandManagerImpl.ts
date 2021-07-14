@@ -1,8 +1,8 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
-    Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed
+    Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
-import { bugsChannel, guildMap } from "../../../index";
+import { bugsChannel, globalCommandsIDs, guildMap } from "../../../index";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
@@ -12,6 +12,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     readonly commands: GenericCommand[];
     protected readonly helpCommandData: ApplicationCommandData;
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
+    abstract saveCommandData(commands: Collection<Snowflake, ApplicationCommand>): Promise<unknown>;
     abstract onManualCommand(message: Message): Promise<unknown>;
     abstract onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
 
@@ -42,16 +43,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         applicationCommands.push(this.helpCommandData);
         const newCommands = await commandManager.set(applicationCommands);
         //add to db
-        await overrideCommands(newCommands.array().map(cmd => (
-            {
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
-
-            })
-        ));
+        await this.saveCommandData(newCommands);
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
     }

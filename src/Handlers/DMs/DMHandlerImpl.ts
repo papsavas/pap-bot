@@ -1,4 +1,4 @@
-import { Client, Interaction, Message, MessageReaction, User, Collection, ApplicationCommand } from "discord.js";
+import { Client, Interaction, Message, MessageReaction, User, Collection, ApplicationCommand, ButtonInteraction, CommandInteraction, SelectMenuInteraction } from "discord.js";
 import { userNotesCmdImpl } from "../../Commands/DM/Impl/userNotesCmdImpl";
 import DMCommandManagerImpl from "../../Commands/Managers/Impl/DMCommandManagerImpl";
 import { DMCommandManager } from "../../Commands/Managers/Interf/DMCommandManager";
@@ -25,18 +25,31 @@ export class DMHandlerImpl implements DmHandler {
     onReady(client: Client): Promise<string> {
         return Promise.resolve('DM handler loaded');
     }
-    onSlashCommand(interaction: Interaction): Promise<unknown> {
+
+    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
+
+    onButton(interaction: ButtonInteraction): Promise<unknown> {
+        throw new Error("Method not implemented.");
+    }
+
+    onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown> {
+        throw new Error("Method not implemented.");
+    }
+
     onMessage(message: Message): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
+
     onMessageDelete(deletedMessage: Message): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
+
     onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
+
     onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<unknown> {
         throw new Error("Method not implemented.");
     }

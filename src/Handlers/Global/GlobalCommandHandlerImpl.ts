@@ -1,4 +1,4 @@
-import { Interaction } from 'discord.js';
+import { CommandInteraction, Interaction } from 'discord.js';
 import { MockMessageCmdImpl } from '../../Commands/Global/Impl/mockMessageCmdImpl';
 import GlobalCommandManagerImpl from '../../Commands/Managers/Impl/GlobalCommandManagerImpl';
 import { GlobalCommandManager } from '../../Commands/Managers/Interf/GlobalCommandManager';
@@ -21,7 +21,7 @@ export class GlobalCommandHandlerImpl implements GlobalCommandHandler {
         );
         return global;
     }
-    onSlashCommand(interaction: Interaction): Promise<any> {
+    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
         throw new Error('Method not implemented.');
     }
 }

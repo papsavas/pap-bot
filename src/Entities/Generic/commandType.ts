@@ -17,8 +17,9 @@ export type literalCommandType = {
 export interface CommandType {
     id: Snowflake;
     keyword: string;
-    aliases?: string[],
     guide: string;
+    aliases?: string[];
+    global?: boolean;
     uuid?: string;
 }
 

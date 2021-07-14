@@ -3,18 +3,25 @@ import {
     GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { fetchAllOnCondition } from '../DB/CoreRepo';
+import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
+import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
+import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
 
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
 export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
+
+console.log(`inDevelopment is ${inDevelopment}`);
 export const guildMap = new Collection<Snowflake, GenericGuild>();
 let dmHandler: DmHandler;
 let globalCommandHandler: GlobalCommandHandler;
+export let globalCommandsIDs: Snowflake[];
 
 
 if (inDevelopment)
@@ -102,13 +109,13 @@ PAP.on('ready', async () => {
         };
 
         /*
-        !untrack until re-registration
+        !untrack until re - registration, "notes" & "mock" missing from db
         dmHandler = await DMHandlerImpl.init();
-        await dmHandler.onReady(PAP);
-
+        await dmHandler.onReady(PAP);      
         globalCommandHandler = await GlobalCommandHandlerImpl.init();
-        */
-        console.log('smooth init')
+*/
+        globalCommandsIDs = await fetchGlobalCommandIds();
+        console.log('smooth init');
 
     } catch (err) {
         console.log('ERROR\n' + err.stack);
@@ -129,7 +136,12 @@ PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
 
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
-        if (interaction.inGuild()) {
+        //TODO: check if global
+        if (interaction.id in globalCommandsIDs) {
+            globalCommandHandler.onSlashCommand(interaction);
+        }
+
+        else if (interaction.inGuild()) {
             try {
                 guildMap.get(interaction.guildId)
                     ?.onSlashCommand(interaction)
@@ -138,8 +150,10 @@ PAP.on('interactionCreate', async interaction => {
             }
         }
         else if (interaction.channel.type === "DM") {
+            dmHandler.onSlashCommand(interaction)
+                .catch(console.error);
             console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
-            from ${interaction.user.tag}`)
+    from ${interaction.user.tag}`)
         }
         else {
             console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
@@ -157,6 +171,8 @@ PAP.on('interactionCreate', async interaction => {
             }
         }
         else {
+            dmHandler.onButton(interaction)
+                .catch(console.error);
             console.log('dm button received');
         }
     }
@@ -172,6 +188,8 @@ PAP.on('interactionCreate', async interaction => {
             }
         }
         else if (interaction.channel.type === "DM") {
+            dmHandler.onSelectMenu(interaction)
+                .catch(console.error);
             console.log('dm select received');
         }
     }
