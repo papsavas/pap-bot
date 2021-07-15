@@ -1,4 +1,4 @@
-import { Snowflake, SnowflakeUtil } from "discord.js";
+import { Snowflake } from "discord.js";
 import { addRow, dropRows, fetchAllOnCondition, updateRow } from "../../../DB/CoreRepo";
 import { userNote } from "../../Entities/Generic/userNote";
 

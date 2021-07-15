@@ -1,6 +1,6 @@
-import { Class } from "./Class";
 import { Collection } from "discord.js";
 import { URL } from "node:url";
+import { Class } from "./Class";
 
 export interface Teacher {
     username: string,

@@ -3,7 +3,7 @@
 		"scope": "typescript",
 		"prefix": "commandInterf",
 		"body": [
-			"import GenericGuildCommand from \"../GenericGuildCommand\"\n\n",
+			"import {GenericGuildCommand} from \"../GenericGuildCommand\"\n\n",
 			"export interface $1 extends GenericGuildCommand {\n\n}"
 		],
 		"description": "create a command interface boiler-plate code"

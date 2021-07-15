@@ -1,17 +1,16 @@
-import { dmMember as _keyword } from '../../keywords.json';
-import { GdmMember as _guide } from '../../guides.json';
-
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { dmMemberCmd } from "../Interf/dmMemberCmd";
 import {
     ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction,
     Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { GdmMember as _guide } from '../../guides.json';
+import { dmMember as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { dmMemberCmd } from "../Interf/dmMemberCmd";
+
 
 
 const requiredPerm = Permissions.FLAGS.ADMINISTRATOR;

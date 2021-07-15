@@ -1,14 +1,12 @@
 
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, Util } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
-import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 import { guildMap } from "../../../index";
-import { messaging } from "firebase-admin";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
+import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
 
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {

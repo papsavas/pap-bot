@@ -1,11 +1,10 @@
 
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { ApplicationCommandData, ApplicationCommandOptionChoice, ApplicationCommandOptionData, ApplicationCommandPermissionData, ApplicationCommandPermissions, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { lockCommandCmd } from "../Interf/lockCommandCmd";
-import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { guildMap } from "../../../index";
+import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { lockCommandCmd } from "../Interf/lockCommandCmd";
 
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 

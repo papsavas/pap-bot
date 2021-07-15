@@ -3,11 +3,8 @@ import {
     GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
-import { fetchAllOnCondition } from '../DB/CoreRepo';
-import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
-import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';

@@ -1,10 +1,10 @@
 
-import { AbstractGuildCommand } from '../AbstractGuildCommand';
-import { Snowflake, ApplicationCommandData, CommandInteraction, Message, MessageEmbed, Role, TextChannel, MessageActionRow, MessageButton } from "discord.js";
+import { ApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { AbstractGuildCommand } from '../AbstractGuildCommand';
+import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
 
 throw new Error('dummy ids, remove if attached');
 

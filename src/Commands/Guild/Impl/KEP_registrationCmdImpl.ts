@@ -1,6 +1,6 @@
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
-import { guildMap } from "../../../index";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_registrationCmd } from "../Interf/KEP_registrationCmd";

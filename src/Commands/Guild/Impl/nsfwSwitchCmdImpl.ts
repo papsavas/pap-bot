@@ -1,16 +1,14 @@
 import {
-    ApplicationCommandData, CommandInteraction, GuildChannel, Message,
+    ApplicationCommandData, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
-    Snowflake,
-    TextChannel,
-    ThreadChannel
+    Snowflake
 } from 'discord.js';
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
-import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {

@@ -1,6 +1,6 @@
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
-import { guildMap } from "../../../index";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";

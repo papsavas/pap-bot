@@ -2,9 +2,8 @@ import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
     Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
-import { bugsChannel, globalCommandsIDs, guildMap } from "../../../index";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { overrideCommands } from "../../../Queries/Generic/Commands";
+import { bugsChannel, guildMap } from "../../../index";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
 

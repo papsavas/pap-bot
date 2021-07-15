@@ -1,5 +1,5 @@
-import { addRow, addRows, dropRows, fetchFirstOnCondition, readFirstRow } from "../../../DB/CoreRepo";
 import { Snowflake } from "discord.js";
+import { addRow, addRows, dropRows, fetchFirstOnCondition, readFirstRow } from "../../../DB/CoreRepo";
 import { amType, Student } from "../../Entities/KEP/Student";
 
 export async function fetchStudent(column: keyof Student, value: Student[keyof Student]): Promise<Student> {

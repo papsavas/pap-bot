@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake, Util } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";

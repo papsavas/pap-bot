@@ -1,5 +1,4 @@
 import { Snowflake } from "discord.js";
-import { guildMap } from "../../index";
 import { addRow, fetchAllOnCondition } from "../../../DB/CoreRepo";
 import { guildLog } from "../../Entities/Generic/guildLog";
 

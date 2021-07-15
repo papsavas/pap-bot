@@ -1,6 +1,5 @@
 import {
-    ApplicationCommandData, ApplicationCommandOptionData, APIErrors,
-    CommandInteraction, Message, MessageEmbed, Snowflake, Constants, ApplicationCommandPermissions
+    ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, Constants, Message, MessageEmbed, Snowflake
 } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";

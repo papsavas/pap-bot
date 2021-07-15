@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { MockMessageCmdImpl } from '../../Commands/Global/Impl/mockMessageCmdImpl';
 import GlobalCommandManagerImpl from '../../Commands/Managers/Impl/GlobalCommandManagerImpl';
 import { GlobalCommandManager } from '../../Commands/Managers/Interf/GlobalCommandManager';

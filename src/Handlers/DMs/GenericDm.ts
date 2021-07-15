@@ -1,7 +1,5 @@
-import { Client, Interaction, Message, MessageReaction, User, GuildMember, Collection, ApplicationCommand, CommandInteraction, ButtonInteraction, SelectMenuInteraction } from "discord.js";
+import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
 import { DMCommandManager } from "../../Commands/Managers/Interf/DMCommandManager";
-import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
-import { guildSettings } from "../../Entities/Generic/guildSettingsType";
 
 export interface DmHandler {
     readonly commandManager: DMCommandManager;

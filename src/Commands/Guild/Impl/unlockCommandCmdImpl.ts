@@ -1,7 +1,7 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
-import { guildMap } from "../../../index";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from "../../../index";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";

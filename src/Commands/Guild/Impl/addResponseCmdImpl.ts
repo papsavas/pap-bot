@@ -1,6 +1,6 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
-import { guildMap } from '../../../index';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";

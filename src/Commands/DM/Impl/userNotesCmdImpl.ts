@@ -1,8 +1,7 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
-import { guildMap } from '../../../index';
+import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { userNote } from '../../../Entities/Generic/userNote';
+import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { AbstractGlobalCommand } from '../../Global/AbstractGlobalCommand';
@@ -96,7 +95,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.defer({ ephemeral: true });
         const user_id = interaction.user.id;
         const cmdOptions = interaction.options[0].options;

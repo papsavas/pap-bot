@@ -1,12 +1,10 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
-import { guildMap } from '../../../index';
+import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
-import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
-import { mockMessageCmd } from '../Interf/mockMessageCmd';
 import { AbstractDMCommand } from '../../DM/AbstractDMCommand';
+import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 
 
@@ -46,7 +44,7 @@ export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessage
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
     }
 

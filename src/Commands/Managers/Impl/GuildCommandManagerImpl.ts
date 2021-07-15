@@ -6,7 +6,7 @@ import { CommandType } from '../../../Entities/Generic/commandType';
 import { guildMap } from "../../../index";
 import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericCommand } from "../../GenericCommand";
-import GenericGuildCommand from '../../Guild/GenericGuildCommand';
+import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
 import { GuildCommandManager } from "../Interf/GuildCommandManager";
 import { CommandManagerImpl } from './CommandManagerImpl';
 require('dotenv').config();

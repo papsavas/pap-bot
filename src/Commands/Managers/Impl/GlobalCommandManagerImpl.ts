@@ -1,7 +1,7 @@
 import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { CommandType } from "../../../Entities/Generic/commandType";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
-import GenericGlobalCommand from "../../Global/GenericGlobalCommand";
+import { GenericGlobalCommand } from "../../Global/GenericGlobalCommand";
 import { GlobalCommandManager } from "../Interf/GlobalCommandManager";
 import { CommandManagerImpl } from "./CommandManagerImpl";
 

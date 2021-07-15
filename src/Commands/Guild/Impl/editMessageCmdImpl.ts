@@ -1,10 +1,10 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildChannel, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
-
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { editMessageCmd } from "../Interf/editMessageCmd";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { editMessageCmd } from "../Interf/editMessageCmd";
+
 
 const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';

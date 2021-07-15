@@ -1,5 +1,5 @@
-import { addRows, dropRows, fetchAllOnCondition, fetchFirstOnCondition } from "../../../DB/CoreRepo";
 import { Snowflake } from "discord.js";
+import { addRows, dropRows, fetchAllOnCondition, fetchFirstOnCondition } from "../../../DB/CoreRepo";
 import { commandPermission } from "../../Entities/Generic/commandPermission";
 import { CommandType } from "../../Entities/Generic/commandType";
 

@@ -1,7 +1,6 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommandData, ApplicationCommandOptionData, GuildMember, Snowflake, TextChannel } from "discord.js";
-import { guildMap } from "../../../index";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
@@ -42,12 +41,12 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
         const member = interaction.member as GuildMember;
         return channel.send({
             embeds: [
-                new Discord.MessageEmbed(
+                new MessageEmbed(
                     {
                         title: `Vote`,
                         color: '#D8F612',
@@ -77,11 +76,11 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             .catch(err => interaction.reply(`something went wrong`))
     }
 
-    execute(message: Discord.Message, { commandless1 }: literalCommandType) {
+    execute(message: Message, { commandless1 }: literalCommandType) {
         const commandMsg = message;
-        return (commandMsg.channel as Discord.TextChannel).send({
+        return (commandMsg.channel as TextChannel).send({
             embeds: [
-                new Discord.MessageEmbed(
+                new MessageEmbed(
                     {
                         title: `Ψηφίστε`,
                         color: '#D8F612',

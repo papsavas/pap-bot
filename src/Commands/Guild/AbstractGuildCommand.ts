@@ -4,7 +4,7 @@ import "reflect-metadata";
 import { commandSpecifier } from '../../Entities/Generic/commandType';
 import { bugsChannel } from '../../index';
 import { AbstractCommand } from "../AbstractCommand";
-import GenericGuildCommand from "./GenericGuildCommand";
+import { GenericGuildCommand } from "./GenericGuildCommand";
 
 export abstract class AbstractGuildCommand extends AbstractCommand implements GenericGuildCommand {
     protected _type = commandSpecifier.GUILD;

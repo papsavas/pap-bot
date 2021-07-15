@@ -6,7 +6,7 @@ import {
     Snowflake, User
 } from 'discord.js';
 import { mentionRegex } from "../../../botconfig.json";
-import GenericGuildCommand from '../../Commands/Guild/GenericGuildCommand';
+import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
 import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";

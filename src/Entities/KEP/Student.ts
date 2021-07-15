@@ -1,5 +1,5 @@
-import {Collection, Snowflake} from "discord.js";
-import {Class} from "./Class";
+import { Collection, Snowflake } from "discord.js";
+import { Class } from "./Class";
 
 type digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type digitZeroLess = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;

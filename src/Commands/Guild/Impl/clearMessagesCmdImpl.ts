@@ -1,6 +1,6 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
-import { guildMap } from '../../../index';
 import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
