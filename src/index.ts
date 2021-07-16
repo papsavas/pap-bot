@@ -138,7 +138,7 @@ PAP.on('interactionCreate', async interaction => {
             globalCommandHandler.onSlashCommand(interaction);
         }
 
-        else if (interaction.inGuild()) {
+        else if (interaction.guildId) {
             try {
                 guildMap.get(interaction.guildId)
                     ?.onSlashCommand(interaction)
@@ -158,7 +158,7 @@ PAP.on('interactionCreate', async interaction => {
     }
 
     else if (interaction.isButton()) {
-        if (interaction.inGuild()) {
+        if (interaction.guildId) {
             try {
                 guildMap.get(interaction.guildId)
                     ?.onButton(interaction);
@@ -175,7 +175,7 @@ PAP.on('interactionCreate', async interaction => {
     }
 
     else if (interaction.isSelectMenu()) {
-        if (interaction.inGuild()) {
+        if (interaction.guildId) {
             try {
                 guildMap.get(interaction.guildId)
                     ?.onSelectMenu(interaction);

@@ -126,9 +126,8 @@ export abstract class AbstractGuild implements GenericGuild {
         }
 
         if (message.content.match(mentionRegex)) {
-            message.channel.startTyping();
-            return message.reply(randomArrayValue(this._responses))
-                .then(msg => message.channel.stopTyping())
+            return message.channel.sendTyping()
+                .then(() => message.reply(randomArrayValue(this._responses)))
                 .catch(err => console.log(err));
         }
 
