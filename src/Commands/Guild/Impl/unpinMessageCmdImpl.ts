@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -58,6 +58,12 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         const channel = interaction.channel as TextChannel;
         const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
+        const botMember = interaction.guild.members.cache.get(interaction.client.user.id);
+        const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
+        const channelPerms = (channel as TextChannel).permissionsFor(botMember).has(Permissions.FLAGS.MANAGE_MESSAGES);
+        //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
+        if (!(globalPerms || channelPerms))
+            throw new Error('`MANAGE_MESSAGE` permissions required')
         const unpinReason = reason ? reason.value as string : ``;
         const pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
         let fetchedMessage: Message;
@@ -103,6 +109,12 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
 
     async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
         const [channel, member] = [message.channel, message.member];
+        const botMember = message.guild.members.cache.get(message.client.user.id);
+        const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
+        const channelPerms = (channel as TextChannel).permissionsFor(botMember).has(Permissions.FLAGS.MANAGE_MESSAGES);
+        //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
+        if (!(globalPerms || channelPerms))
+            throw new Error('`MANAGE_MESSAGE` permissions required')
         let unpinReason = commandless2 ? commandless2 : `undefined`;
         unpinReason += `\nby ${member.displayName}`;
         let unpinnedMessageId = extractId(arg1);
@@ -121,8 +133,24 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
                 msg.unpin()
                     .then((msg) => {
                         this.addGuildLog(message.guild.id, `message unpinned:\n${msg.url} with reason ${unpinReason}`);
+                        msg.channel.send({
+                            embeds: [
+                                new MessageEmbed({
+                                    author: {
+                                        name: member.displayName,
+                                        iconURL: member.user.avatarURL()
+                                    },
+                                    title: `Unpinned Message  📌`,
+                                    description: msg.content?.length > 0 ?
+                                        `[${msg.content.substring(0, 40)}...](${msg.url})` :
+                                        `[Click to jump](${msg.url})`,
+                                    color: 'DARK_RED',
+                                    footer: { text: unpinReason }
+                                })
+                            ]
+                        })
                         if (message.deletable)
-                            message.client.setTimeout(() => { message.delete().catch() }, 3000);
+                            setTimeout(() => { message.delete().catch() }, 3000);
                     });
             })
     }

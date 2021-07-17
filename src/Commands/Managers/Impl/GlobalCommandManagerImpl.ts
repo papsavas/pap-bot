@@ -1,4 +1,4 @@
-import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommand, ApplicationCommandData, Collection, Snowflake } from "discord.js";
 import { CommandType } from "../../../Entities/Generic/commandType";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericGlobalCommand } from "../../Global/GenericGlobalCommand";
@@ -12,13 +12,6 @@ export default class GlobalCommandManagerImpl extends CommandManagerImpl impleme
     constructor(globalCommands: GenericGlobalCommand[]) {
         super(globalCommands);
         this.commands = globalCommands;
-    }
-
-    onManualCommand(message: Message): Promise<any> {
-        throw new Error("Method not implemented.");
-    }
-    onSlashCommand(interaction: CommandInteraction): Promise<any> {
-        throw new Error("Method not implemented.");
     }
 
     fetchCommandData(commands: GenericGlobalCommand[]): ApplicationCommandData[] {

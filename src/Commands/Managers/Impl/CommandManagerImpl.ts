@@ -12,8 +12,6 @@ export abstract class CommandManagerImpl implements CommandManager {
     protected readonly helpCommandData: ApplicationCommandData;
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
     abstract saveCommandData(commands: Collection<Snowflake, ApplicationCommand>): Promise<unknown>;
-    abstract onManualCommand(message: Message): Promise<unknown>;
-    abstract onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
 
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
@@ -33,6 +31,79 @@ export abstract class CommandManagerImpl implements CommandManager {
             ]
         }
     }
+    //TODO: Implement base "onCommand" method and override on DM
+
+    async onManualCommand(message: Message): Promise<unknown> {
+        /*
+             TODO: implement permission guard
+             TODO: FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
+             TODO: CONNECT 'commands with command_perms' with foreign key on commands Completion
+             this.commands.forEach(async (cmd) => {
+         
+                     try{
+                         await addRow('commands', {
+                             "keyword" : cmd.keyword,
+                             "aliases" : cmd.getAliases(),
+                             "guide" : cmd.guide
+                         });
+                     }
+                     catch (err){
+                         console.log(err)
+                     }
+             })
+         */
+
+        const guildHandler = guildMap.get(message.guild.id);
+        const prefix = guildHandler.getSettings().prefix;
+        const commandMessage = message;
+        const candidateCommand = this.sliceCommandLiterals(message);
+        const commandImpl = this.commands
+            .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
+
+        if (typeof commandImpl !== "undefined") {
+            try {
+                await commandImpl.execute(commandMessage, candidateCommand);
+                commandMessage?.react('✅')
+                // .catch()
+            } catch (error) {
+                this.invalidCommand(error, commandMessage, commandImpl, candidateCommand.primaryCommand);
+                commandMessage?.react('❌');
+            }
+            finally {
+                await message?.reactions.removeAll();
+            }
+        }
+
+        else if (['help', 'h'].includes(candidateCommand.primaryCommand))
+            return this.helpCmd(
+                message,
+                this.commands
+                    .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.arg1)));
+        else
+            return message.react('❔').catch();
+    };
+
+    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
+        if (interaction.commandName == 'help')
+            return interaction.reply({
+                embeds: [
+                    new MessageEmbed({
+                        description: interaction.options.get('command').value as string
+                    })
+                ]
+                , ephemeral: true
+            }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
+
+
+        const candidateCommand = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
+        if (typeof candidateCommand !== "undefined")
+            return candidateCommand.interactiveExecute(interaction)
+                .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
+        else
+            return interaction.reply(`Command not found`);
+    };
+
+
 
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
         : Promise<Collection<`${bigint}`, ApplicationCommand<{}>>> {
@@ -101,13 +172,14 @@ export abstract class CommandManagerImpl implements CommandManager {
         const interactionPromise: Promise<unknown> = interaction.replied ?
             interaction.editReply({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
         interactionPromise
-            .then(() => interaction.client.setTimeout(() => interaction.deleteReply().catch(), 20000))
+            .then(() => setTimeout(() => interaction.deleteReply().catch(), 20000))
             .catch();
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
 
-    protected invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
+    protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
+        console.log(`Error on Command ${primaryCommandLiteral}\n${err.message}`);
         const prefix = guildMap.get(commandMessage.guild.id).getSettings().prefix;
         const bugsChannelEmbed = new MessageEmbed({
             author: {
@@ -123,9 +195,9 @@ export abstract class CommandManagerImpl implements CommandManager {
         });
         bugsChannelEmbed.setDescription(err.message);
         bugsChannelEmbed.addField(`caused by`, commandMessage.url);
-        bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
+        await bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
-        commandMessage.reply({
+        return commandMessage.reply({
             embeds: [
                 new MessageEmbed(
                     {
@@ -134,17 +206,17 @@ export abstract class CommandManagerImpl implements CommandManager {
                             icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                         },
                         title: prefix + commandImpl.keyword,
-                        description: prefix + commandImpl.usage,
+                        description: '**usage:** ' + prefix + commandImpl.usage,
                         fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
                         footer: { text: commandImpl.getAliases().toString() },
                         color: "RED"
                     })
             ]
         }
-        ).then(msg => msg.client.setTimeout(() => {
+        ).then(msg => setTimeout(() => {
             msg.delete().catch()
-        }, 15000));
-        console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
+        }, 30000));
+
     }
 
     protected helpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {

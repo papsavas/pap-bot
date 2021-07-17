@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from "discord.js";
 import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -52,6 +52,12 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const botMember = interaction.guild.members.cache.get(interaction.client.user.id);
+        const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
+        const channelPerms = (interaction.channel as TextChannel).permissionsFor(botMember).has(Permissions.FLAGS.MANAGE_MESSAGES);
+        //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
+        if (!(globalPerms || channelPerms))
+            throw new Error('`MANAGE_MESSAGE` permissions required')
         const channel = interaction.channel as TextChannel;
         const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
@@ -102,7 +108,13 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     }
 
     async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
-        const channel = message.channel;
+        const [channel, member] = [message.channel, message.member];
+        const botMember = message.guild.members.cache.get(message.client.user.id);
+        const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
+        const channelPerms = (channel as TextChannel).permissionsFor(botMember).has(Permissions.FLAGS.MANAGE_MESSAGES);
+        //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
+        if (!(globalPerms || channelPerms))
+            throw new Error('`MANAGE_MESSAGE` permissions required')
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
         let pinningMessageID = extractId(arg1);
@@ -121,8 +133,24 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                 fetchedMessage.pin()
                     .then((pinnedMessage) => {
                         this.addGuildLog(message.guild.id, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                        message.channel.send({
+                            embeds: [
+                                new MessageEmbed({
+                                    author: {
+                                        name: member.displayName,
+                                        iconURL: member.user.avatarURL()
+                                    },
+                                    title: `Pinned Message  📌`,
+                                    description: pinnedMessage.content?.length > 0 ?
+                                        `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
+                                        `[Click to jump](${pinnedMessage.url})`,
+                                    color: 'GREEN',
+                                    footer: { text: pinReason }
+                                })
+                            ]
+                        });
                         if (message.deletable)
-                            message.client.setTimeout(() => { message.delete().catch() }, 3000);
+                            setTimeout(() => { message.delete().catch() }, 5000);
                     });
             })
     }

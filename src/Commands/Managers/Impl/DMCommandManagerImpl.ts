@@ -15,10 +15,10 @@ export default class GlobalDMCommandManagerImpl extends CommandManagerImpl imple
     }
 
     onManualCommand(message: Message): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        throw new Error("Method not implemented. Need for implementation in order to skip super handler");
     }
     onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        throw new Error("Method not implemented. Need for implementation in order to skip super handler");
     }
 
     fetchCommandData(commands: GenericDMCommand[]) {
