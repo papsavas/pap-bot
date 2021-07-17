@@ -1,5 +1,5 @@
 import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
-import { CommandType } from "../../../Entities/Generic/commandType";
+import { CommandType } from "../../../Entities/Generic/command";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";

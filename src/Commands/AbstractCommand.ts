@@ -1,5 +1,5 @@
 import { CommandInteraction, Message, Snowflake } from "discord.js";
-import { commandSpecifier, literalCommandType } from "../Entities/Generic/commandType";
+import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
 export abstract class AbstractCommand implements GenericCommand {
@@ -32,7 +32,7 @@ export abstract class AbstractCommand implements GenericCommand {
 
     static init() { }
 
-    abstract execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<unknown>;
+    abstract execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
 
     abstract interactiveExecute(commandInteraction: CommandInteraction): Promise<unknown>;
 

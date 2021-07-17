@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -70,7 +70,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     }
 
-    async execute({ guild, mentions }: Message, { commandless2 }: literalCommandType) {
+    async execute({ guild, mentions }: Message, { commandless2 }: commandLiteral) {
         const sendChannel = mentions.channels.first();
         if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
             return sendChannel.send(commandless2)

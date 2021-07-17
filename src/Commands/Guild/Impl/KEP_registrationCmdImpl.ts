@@ -1,5 +1,5 @@
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -73,7 +73,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
 
         }
     }
-    async execute(message: Message, { }: literalCommandType): Promise<unknown> {
+    async execute(message: Message, { }: commandLiteral): Promise<unknown> {
         return Promise.reject('manual KEPregistration not implemented');
     }
     getAliases(): string[] {

@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildChannel, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -75,7 +75,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
 
     async execute(
         { channel, mentions, guild, url }: Message,
-        { arg1, arg2, commandless2, commandless3 }: literalCommandType
+        { arg1, arg2, commandless2, commandless3 }: commandLiteral
     ): Promise<any> {
 
         try {

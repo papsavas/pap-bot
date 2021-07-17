@@ -1,5 +1,5 @@
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
@@ -46,7 +46,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
         return interaction.followUp(`\`\`\`${responsesArr.toString()}\`\`\``);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const member_id = receivedMessage.member.id;
         const perPage = 10;

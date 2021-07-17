@@ -1,7 +1,7 @@
 
 import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, GuildMember, Message, MessageReaction, SelectMenuInteraction, User } from 'discord.js';
 import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
-import { guildSettings } from "../../Entities/Generic/guildSettingsType";
+import { guildSettings } from "../../Entities/Generic/guildSettings";
 export interface GenericGuild {
 
     readonly commandManager: GuildCommandManager;

@@ -2,7 +2,7 @@ import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
     Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
@@ -31,7 +31,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             ]
         }
     }
-    //TODO: Implement base "onCommand" method and override on DM
+
 
     async onManualCommand(message: Message): Promise<unknown> {
         /*
@@ -118,7 +118,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         return newCommands;
     }
 
-    protected sliceCommandLiterals(receivedMessage: Message): literalCommandType {
+    protected sliceCommandLiterals(receivedMessage: Message): commandLiteral {
         const receivedMessageContent = receivedMessage.content;
         const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id)
             .getSettings().prefix.length); // Remove the prefix;

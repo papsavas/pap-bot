@@ -1,7 +1,7 @@
 
 import { ApplicationCommandData, Guild, MessageEmbed, Snowflake } from 'discord.js';
 import "reflect-metadata";
-import { commandSpecifier } from '../../Entities/Generic/commandType';
+import { commandSpecifier } from '../../Entities/Generic/command';
 import { bugsChannel } from '../../index';
 import { AbstractCommand } from "../AbstractCommand";
 import { GenericGuildCommand } from "./GenericGuildCommand";

@@ -1,6 +1,6 @@
 
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
@@ -60,7 +60,7 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     }
 
-    execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         const guildHandler = guildMap.get(receivedMessage.guild.id);
         if (receivedCommand.arg1)
             return fetchGuildSettings(receivedMessage.guild.id)

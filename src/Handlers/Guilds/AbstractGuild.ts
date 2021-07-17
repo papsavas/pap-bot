@@ -24,8 +24,8 @@ import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPers
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
 import { UnpinMessageCmdImpl } from "../../Commands/Guild/Impl/unpinMessageCmdImpl";
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
-import { guildSettings } from "../../Entities/Generic/guildSettingsType";
-import { memberResponses } from "../../Entities/Generic/MemberResponsesType";
+import { guildSettings } from "../../Entities/Generic/guildSettings";
+import { memberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
 import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";

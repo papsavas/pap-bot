@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
@@ -72,7 +72,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
         })
     }
 
-    async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {
+    async execute({ guild, member }: Message, { commandless1 }: commandLiteral) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             commandless1.includes(swear['swear_word'])) ||

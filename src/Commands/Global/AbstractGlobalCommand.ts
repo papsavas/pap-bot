@@ -1,7 +1,7 @@
 
 import { ApplicationCommandData } from 'discord.js';
 import "reflect-metadata";
-import { commandSpecifier } from '../../Entities/Generic/commandType';
+import { commandSpecifier } from '../../Entities/Generic/command';
 import { AbstractCommand } from "../AbstractCommand";
 import { GenericGlobalCommand } from "./GenericGlobalCommand";
 

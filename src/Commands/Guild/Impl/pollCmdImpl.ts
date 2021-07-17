@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -76,7 +76,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             .catch(err => interaction.reply(`something went wrong`))
     }
 
-    execute(message: Message, { commandless1 }: literalCommandType) {
+    execute(message: Message, { commandless1 }: commandLiteral) {
         const commandMsg = message;
         return (commandMsg.channel as TextChannel).send({
             embeds: [

@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
 import { addRows, dropRows, fetchAllOnCondition, fetchFirstOnCondition } from "../../../DB/CoreRepo";
+import { CommandType } from "../../Entities/Generic/command";
 import { commandPermission } from "../../Entities/Generic/commandPermission";
-import { CommandType } from "../../Entities/Generic/commandType";
 
 export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snowflake, roleIDs: Snowflake[]): Promise<commandPermission[]> {
     await dropRows('command_perms',

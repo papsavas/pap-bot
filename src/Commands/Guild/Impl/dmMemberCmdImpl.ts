@@ -3,7 +3,7 @@ import {
     Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { GdmMember as _guide } from '../../guides.json';
@@ -96,7 +96,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
     async execute(
         message: Message,
-        { commandless2 }: literalCommandType
+        { commandless2 }: commandLiteral
     ) {
         const { guild, attachments, mentions, member } = message;
         if (!member.permissions.has(requiredPerm))

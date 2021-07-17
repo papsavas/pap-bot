@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -74,7 +74,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
 
     }
 
-    execute({ channel, member }: Message, { arg1 }: literalCommandType) {
+    execute({ channel, member }: Message, { arg1 }: commandLiteral) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;

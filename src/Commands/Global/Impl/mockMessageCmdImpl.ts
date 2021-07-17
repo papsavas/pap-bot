@@ -1,5 +1,5 @@
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
@@ -48,7 +48,7 @@ export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessage
         return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
     }
 
-    execute(message: Message, { commandless1 }: literalCommandType): Promise<any> {
+    execute(message: Message, { commandless1 }: commandLiteral): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();

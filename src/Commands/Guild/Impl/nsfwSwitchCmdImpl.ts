@@ -3,7 +3,7 @@ import {
     MessageActionRow, MessageButton, MessageComponentInteraction,
     Snowflake
 } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
@@ -93,7 +93,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
 
     }
 
-    async execute(message: Message, { }: literalCommandType) {
+    async execute(message: Message, { }: commandLiteral) {
         //TODO: Fix behaviour, after update collector returns an error if time ends
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);

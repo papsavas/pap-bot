@@ -1,6 +1,6 @@
 
 import { ApplicationCommandData } from 'discord.js';
-import { commandSpecifier } from '../../Entities/Generic/commandType';
+import { commandSpecifier } from '../../Entities/Generic/command';
 import { AbstractCommand } from "../AbstractCommand";
 import { GenericDMCommand } from './GenericDMCommand';
 

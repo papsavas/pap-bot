@@ -1,6 +1,6 @@
 
 import { ApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from '../AbstractGuildCommand';
@@ -127,7 +127,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
     }
 
-    async execute(message: Message, { }: literalCommandType): Promise<unknown> {
+    async execute(message: Message, { }: commandLiteral): Promise<unknown> {
         return message.reply(`Χρησιμοποιείτε την εντολή ως slash command \`/${this.keyword}\` ώστε να μπορείτε να δηλώσετε και ρόλους για ping`);
     }
 

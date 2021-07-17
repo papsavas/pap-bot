@@ -1,5 +1,5 @@
 import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { userNote } from '../../../Entities/Generic/userNote';
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -137,7 +137,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     }
 
-    async execute({ author }: Message, { arg1, commandless2 }: literalCommandType) {
+    async execute({ author }: Message, { arg1, commandless2 }: commandLiteral) {
         const user_id = author.id;
         const user = author;
         switch (arg1) {

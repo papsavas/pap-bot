@@ -1,6 +1,6 @@
 
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -81,7 +81,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
         const guild_id = receivedMessage.guild.id;

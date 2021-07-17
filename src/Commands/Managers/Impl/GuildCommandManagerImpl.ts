@@ -1,7 +1,7 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, GuildApplicationCommandManager, Snowflake
 } from 'discord.js';
-import { CommandType } from '../../../Entities/Generic/commandType';
+import { CommandType } from '../../../Entities/Generic/command';
 import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
 import { GuildCommandManager } from "../Interf/GuildCommandManager";

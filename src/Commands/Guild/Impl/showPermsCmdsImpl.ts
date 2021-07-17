@@ -1,7 +1,7 @@
 import {
     ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, Constants, Message, MessageEmbed, Snowflake
 } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -96,7 +96,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         });
     }
 
-    async execute(message: Message, { arg1 }: literalCommandType) {
+    async execute(message: Message, { arg1 }: commandLiteral) {
         await message.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = arg1;
         if (!commandLiteral)

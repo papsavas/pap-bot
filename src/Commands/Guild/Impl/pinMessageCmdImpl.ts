@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { extractId } from "../../../toolbox/extractMessageId";
@@ -107,7 +107,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         }
     }
 
-    async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
+    async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
         const [channel, member] = [message.channel, message.member];
         const botMember = message.guild.members.cache.get(message.client.user.id);
         const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);

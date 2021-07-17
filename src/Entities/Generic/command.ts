@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-export type literalCommandType = {
+export type commandLiteral = {
     //prefix: string;
     fullCommand: string;
     splitCommand: string[];

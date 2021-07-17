@@ -1,6 +1,6 @@
 
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
@@ -76,7 +76,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
         }
     }
 
-    async execute(message: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(message: Message, receivedCommand: commandLiteral): Promise<any> {
         const { member, channel, guild } = message;
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return message.reply(`\`MANAGE_GUILD permissions required\``);
