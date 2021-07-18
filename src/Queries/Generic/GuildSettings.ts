@@ -1,11 +1,13 @@
 import { Snowflake } from "discord.js";
-import { fetchFirstOnCondition, updateRow } from "../../../DB/CoreRepo";
+import { findOne, update } from "../../../DB/GenericCRUD";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 
-export function fetchGuildSettings(guildID: Snowflake): Promise<guildSettings> {
-    return fetchFirstOnCondition('guild_settings', { 'guild_id': guildID }) as Promise<guildSettings>;
+export async function fetchGuildSettings(guildID: Snowflake): Promise<guildSettings> {
+    type fields = keyof guildSettings;
+    const returnings: fields[] = ["guild_id", "nsfw_responses", "prefix"];
+    return findOne('guild_settings', { 'guild_id': guildID }, returnings) as Promise<guildSettings>;
 }
 
-export function updateGuildSettings(guildID: Snowflake, newData: {}): Promise<any> {
-    return updateRow('guild_settings', { 'guild_id': guildID }, newData, ['*'])
+export function updateGuildSettings(guildID: Snowflake, newData: {}) {
+    return update('guild_settings', { 'guild_id': guildID }, newData, ['*'])
 }

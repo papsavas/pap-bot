@@ -1,5 +1,7 @@
-import { fetchTable } from "../../../DB/CoreRepo";
+import { findAll } from "../../../DB/GenericCRUD";
 
-export function loadSwearWords(): Promise<string[]> {
-    return fetchTable('swear_words', ['swear_word']) as unknown as Promise<string[]>;
+
+export async function loadSwearWords(): Promise<string[]> {
+    return (await findAll('swear_words', ['swear_word']))
+        .map(res => res['swear_word']);
 }

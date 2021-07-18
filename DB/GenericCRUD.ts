@@ -51,14 +51,14 @@ class AbstractRepository {
             .first();
     }
 
-    updateRow(tableName: string, clause: {}, newRow: {}, returnings?: string[]): Promise<any> {
+    updateRow(tableName: string, clause: {}, newRow: {}, returnings?: string[]) {
         return this.knex(tableName)
             .where(clause)
             .update(newRow, returnings)
             .first()
     }
 
-    updateRows(tableName: string, clause: {}, newRow: {}, returnings?: string[]): Promise<any> {
+    updateRows(tableName: string, clause: {}, newRow: {}, returnings?: string[]) {
         return this.knex(tableName)
             .where(clause)
             .update(newRow, returnings)
@@ -88,8 +88,6 @@ class AbstractRepository {
 
 const DB = new AbstractRepository();
 
-type multitudeType = "one" | "1" | 1 | "all";
-
 type createType = "integer"
     | "bigInteger"
     | "text"
@@ -108,7 +106,7 @@ type createType = "integer"
     | "object"
     | "enum"
 
-export function createData(
+export function create(
     name: string,
     columns: {
         name: string,
@@ -132,49 +130,36 @@ export function createData(
     });
 }
 
-export function addData(tableName: string, rows: {}[], returning?: string) {
+export function saveBatch(tableName: string, rows: object[], returning: string = '*') {
     return DB.addRows(tableName, rows, returning);
 }
 
-export async function readData(multitude: multitudeType, tableName: string, clause: {}, returnings: string[]): Promise<object[]> {
-    if (multitude === "all")
-        return DB.fetchAllOnCondition(
-            tableName,
-            clause,
-            returnings
-        );
-    else if (multitude === "one" || multitude === "1" || multitude === 1)
-        return [
-            await DB.fetchFirstOnCondition(
-                tableName,
-                clause,
-                Array.isArray(returnings) ? returnings : [returnings])
-        ];
+export async function findOne(tableName: string, clause: {}, returnings: string[] = ['*']) {
+    return DB.fetchFirstOnCondition(tableName, clause, returnings);
 }
 
-export function updateData(multitude: multitudeType, tableName: string, clause: {}, newRow: {}, returnings?: string[]) {
-    if (multitude === "all")
-        return DB.updateRows(
-            tableName,
-            clause,
-            newRow,
-            returnings
-        );
-    else
-        return DB.updateRow(
-            tableName,
-            clause,
-            newRow,
-            returnings
-        );
+export async function findAll(tableName: string, clause: {}, returnings: string[] = ['*']) {
+    return DB.fetchAllOnCondition(tableName, clause, returnings);
 }
 
-export function deleteData(
-    multitude: multitudeType,
+export async function update(tableName: string, clause: {}, newRow: {}, returnings: string[] = ['*']) {
+    return DB.updateRows(
+        tableName,
+        clause,
+        newRow,
+        returnings
+    );
+}
+
+/**
+ * 
+ * @param multitude number of rows to affect
+ * @param tableName name of the table
+ * @param clause which rows to affect
+ * @returns number of affected rows
+ */
+export function deleteBatch(
     tableName: string,
     clause: {}) {
-    if (multitude === "all")
-        return DB.dropRows(tableName, clause);
-    else
-        return DB.dropRow(tableName, clause);
+    return DB.dropRows(tableName, clause);
 }

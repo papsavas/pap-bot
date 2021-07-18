@@ -1,8 +1,8 @@
 import { Snowflake } from "discord.js";
-import { fetchTable } from "../../../DB/CoreRepo";
+import { findAll } from "../../../DB/GenericCRUD";
 
 export async function genericGuildResponses(guildID: Snowflake, nsfwEnabled: boolean): Promise<string[]> {
-    const res = await fetchTable('generic_responses');
+    const res = await findAll('generic_responses', true, ['*']);
     const retArr = [];
     res.forEach((resp) => {
         if (nsfwEnabled)
