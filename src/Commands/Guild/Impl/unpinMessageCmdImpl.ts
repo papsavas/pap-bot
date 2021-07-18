@@ -56,7 +56,6 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
-        const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
         const botMember = interaction.guild.members.cache.get(interaction.client.user.id);
         const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
@@ -64,8 +63,8 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
         if (!(globalPerms || channelPerms))
             throw new Error('`MANAGE_MESSAGE` permissions required')
-        const unpinReason = reason ? reason.value as string : ``;
-        const pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
+        const unpinReason = interaction.options.getString(reasonOptionLiteral) ?? ``;
+        const pinningMessageID = extractId(interaction.options.getString(msgidOptionLiteral, true));
         let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);

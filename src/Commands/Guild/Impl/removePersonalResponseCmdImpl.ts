@@ -48,7 +48,7 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
         return interaction.reply({
             content: await removeMemberResponse(
                 guildId, (member as GuildMember).id,
-                options.get(respOptionLiteral).value as string
+                options.getString(respOptionLiteral, true)
             ),
             ephemeral: true
         }

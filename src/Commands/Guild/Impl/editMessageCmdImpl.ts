@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildChannel, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -56,13 +56,13 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const targetChannel = interaction.options.get(channelOptionLiteral).channel as GuildChannel;
-        const messageID = interaction.options.get(msgidOptionLiteral).value as Snowflake
+        const targetChannel = interaction.options.getChannel(channelOptionLiteral, true);
+        const messageID = interaction.options.getString(msgidOptionLiteral, true) as Snowflake;
         await interaction.defer({ ephemeral: true });
         const targetMessage = await (targetChannel as TextChannel)?.messages.fetch(messageID);
         if (targetMessage.author != interaction.client.user)
             return interaction.reply('Cannot edit a message authored by another user');
-        const editedMessage = await targetMessage?.edit(interaction.options.get(editedMsgOptionLiteral).value as string);
+        const editedMessage = await targetMessage?.edit(interaction.options.getString(editedMsgOptionLiteral, true));
         return interaction.editReply({
             embeds:
                 [

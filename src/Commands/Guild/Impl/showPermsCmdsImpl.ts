@@ -49,7 +49,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
-        const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
+        const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
         const command_id: Snowflake = guildMap.get(interaction.guildId).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)

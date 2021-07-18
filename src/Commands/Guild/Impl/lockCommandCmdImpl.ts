@@ -91,14 +91,14 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
                 content: `\`MANAGE_GUILD permissions required\``
             });
         const guild_id = interaction.guildId;
-        const filteredRoles = interaction.options.filter(option => option.type == "ROLE");
+        const filteredRoles = ["1", "2", "3", "4", "5"].map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
         const rolesKeyArr = filteredRoles
-            .map(filteredOptions => filteredOptions.role.id)
+            .map(role => role.id)
             .filter(id => id !== guild_id); //filter out @everyone
 
         if (rolesKeyArr.length < 1)
-            return interaction.editReply(`no point on locking for \`@everyone\`, mind aswell unlock it 😉`)
-        const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
+            return interaction.editReply(`no point on locking for \`@everyone\`, mind as well unlock it 😉`)
+        const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
         const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
 
@@ -126,7 +126,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             permissions: allowedPerms
         });
 
-        return interaction.editReply(`Command ${commandLiteral} locked for ${filteredRoles.map(ro => ro.role).toString()}`);
+        return interaction.editReply(`Command ${commandLiteral} locked for ${filteredRoles.toString()}`);
     }
 
     async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {

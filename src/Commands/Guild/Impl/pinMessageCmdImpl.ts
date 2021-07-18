@@ -59,10 +59,9 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         if (!(globalPerms || channelPerms))
             throw new Error('`MANAGE_MESSAGE` permissions required')
         const channel = interaction.channel as TextChannel;
-        const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
-        const pinReason = reason ? reason.value as string : ``;
-        const pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
+        const pinReason = interaction.options.getString(reasonOptionLiteral) ?? ``;
+        const pinningMessageID = extractId(interaction.options.getString(msgidOptionLiteral, true));
         try {
             const fetchedMessage = await channel.messages.fetch(pinningMessageID);
             if (fetchedMessage.pinned)

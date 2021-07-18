@@ -50,7 +50,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
                     {
                         title: `Vote`,
                         color: '#D8F612',
-                        description: interaction.options.get(textOptionLiteral).value as string,
+                        description: interaction.options.getString(textOptionLiteral, true),
                         author: {
                             name: member.displayName,
                             icon_url: member.user.avatarURL({ format: 'png' })

@@ -98,22 +98,23 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.defer({ ephemeral: true });
         const user_id = interaction.user.id;
-        const cmdOptions = interaction.options[0].options;
+        const subCommand = interaction.options.getSubCommand();
+        const options = interaction.options.get(subCommand).options;
         try {
-            switch (interaction.options[0].name) {
+            switch (subCommand) {
                 case 'add':
-                    const addedNote = cmdOptions[0].value as string;
+                    const addedNote = options.array()[0].value as string;
                     await addNote(user_id, addedNote);
                     return interaction.editReply(`you added: ${addedNote}`);
 
                 case 'edit':
-                    const oldNote = cmdOptions[0].value as string;
-                    const newNote = cmdOptions[1].value as string;
+                    const oldNote = options.array()[0].value as string;
+                    const newNote = options.array()[1].value as string;
                     const res = await editNote(user_id, oldNote, newNote);
                     return interaction.editReply(`note edited to ${res.note.substr(0, 10)}...`);
 
                 case 'remove':
-                    const removingNote = cmdOptions[0].value as string;
+                    const removingNote = options.array()[0].value as string;
                     const n = await deleteNote(user_id, removingNote);
                     return interaction.editReply(`removed **${n}** notes`);
 
@@ -127,7 +128,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
 
                 case 'default':
-                    return new Error(`returned wrong subcommand on notes: ${interaction.options[0].name} `);
+                    return new Error(`returned wrong subcommand on notes: ${interaction.options.getSubCommand()} `);
             }
         } catch (error) {
             return interaction.replied ? interaction.editReply(`\`\`\`${JSON.stringify(error)}\`\`\``) :

@@ -44,7 +44,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const number = interaction.options.get(numberOptionLiteral).value as number;
+        const number = interaction.options.getInteger(numberOptionLiteral, true);
         const member = interaction.member as GuildMember;
 
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {

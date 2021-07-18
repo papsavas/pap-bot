@@ -15,7 +15,7 @@ import { dmMemberCmd } from "../Interf/dmMemberCmd";
 
 const requiredPerm = Permissions.FLAGS.ADMINISTRATOR;
 const permLiteral: PermissionResolvable = 'ADMINISTRATOR';
-
+const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
@@ -43,7 +43,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             description: this.getGuide(),
             options: [
                 {
-                    name: 'user',
+                    name: userOptionLiteral,
                     description: 'user to dm',
                     type: 'USER',
                     required: true
@@ -66,8 +66,8 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 ephemeral: true
             });
 
-        const user = interaction.options.find(op => op.type == "USER").user;
-        const messageContent = interaction.options.get(messageOptionLiteral).value as string;
+        const user = interaction.options.getUser(userOptionLiteral, true);
+        const messageContent = interaction.options.getString(messageOptionLiteral, true);
         const sendEmb = new MessageEmbed({
             author: {
                 name: "from: " + interaction.guild.name,

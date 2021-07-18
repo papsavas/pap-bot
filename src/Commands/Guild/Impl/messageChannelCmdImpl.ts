@@ -50,8 +50,8 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const sendChannel = interaction.options.get(channelOptionLiteral).channel as TextChannel;
-        const messageContent = interaction.options.get(msgOptionLiteral).value as string;
+        const sendChannel = interaction.options.getChannel(channelOptionLiteral, true) as TextChannel;
+        const messageContent = interaction.options.getString(msgOptionLiteral, true);
         await sendChannel.send({
             content: messageContent.substr(0, 2000),
         });
