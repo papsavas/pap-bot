@@ -93,8 +93,8 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         const guild_id = interaction.guildId;
         const filteredRoles = ["1", "2", "3", "4", "5"].map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
         const rolesKeyArr = filteredRoles
-            .map(role => role.id)
-            .filter(id => id !== guild_id); //filter out @everyone
+            .map(role => role?.id) //TODO: remove this
+            .filter(id => id !== guild_id && typeof id !== "undefined"); //filter out @everyone & undeclared roles
 
         if (rolesKeyArr.length < 1)
             return interaction.editReply(`no point on locking for \`@everyone\`, mind as well unlock it 😉`)
@@ -126,7 +126,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             permissions: allowedPerms
         });
 
-        return interaction.editReply(`Command ${commandLiteral} locked for ${filteredRoles.toString()}`);
+        return interaction.editReply(`Command ${commandLiteral} locked for ${rolesKeyArr.map(id => `<@&${id}>`).toString()}`);
     }
 
     async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {

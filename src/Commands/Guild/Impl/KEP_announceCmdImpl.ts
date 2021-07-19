@@ -68,7 +68,9 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
     async interactiveExecute(interaction: CommandInteraction): Promise<void> {
         const literal = (interaction.options.getString(contentLiteral, true)).substring(0, 2000);
-        const roles = ["1", "2", "3"].map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
+        const roles = ["1", "2", "3"]
+            .map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
+            .filter(r => typeof r !== "undefined");
         const newsChannel = interaction.guild.channels.cache.get('newsChannelID' as Snowflake) as TextChannel;
         const emb = new MessageEmbed({
             author: {

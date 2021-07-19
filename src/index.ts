@@ -1,14 +1,13 @@
 import {
-    Client, Collection, CommandInteraction, GuildChannelManager,
-    GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
+    Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
+import * as _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
-
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
@@ -125,11 +124,23 @@ PAP.on('ready', async () => {
 });
 
 
-PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name} command`));
+PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name}-${command.id} command`));
 PAP.on('applicationCommandDelete', (command) => console.log(`deleted ${command.name} command`));
 PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
-    console.log(`command ${newCommand.name} updated`);
-});
+    const diff = {
+        name: oldCommand.name === newCommand.name,
+        description: oldCommand.description === newCommand.description,
+        perms: _.isEqual(oldCommand.permissions, newCommand.permissions),
+        defaultPermission: oldCommand.defaultPermission === newCommand.defaultPermission,
+        options: _.isEqual(oldCommand.options, newCommand.options),
+    }
+    console.log(`command ${newCommand.name} updated for ${newCommand.guild?.name}`);
+    for (const [k, v] of Object.entries(diff)) {
+        if (!v)
+            console.log(`${k} changed`);
+    }
+})
+
 
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
@@ -192,7 +203,7 @@ PAP.on('interactionCreate', async interaction => {
     }
 
     else {
-        console.log(`unhandled interaction type in ${interaction.channel.id} channel. TYPE = ${interaction.type}`);
+        console.log(`unhandled interaction type in ${interaction.channel.id} channel.TYPE = ${interaction.type}`);
         await bugsChannel.send({
             embeds: [
                 new MessageEmbed({
@@ -239,8 +250,8 @@ PAP.on('messageCreate', (receivedMessage) => {
 
         default:
             bugsChannel.send(`received message from untracked channel type
-CHANNEL_TYPE:${receivedMessage.channel.type}
-ID:${receivedMessage.id}
+CHANNEL_TYPE: ${receivedMessage.channel.type}
+ID: ${receivedMessage.id}
 from: ${receivedMessage.member.displayName}
 content: ${receivedMessage.content}\n`).catch(console.error);
     }
@@ -317,5 +328,5 @@ PAP.on('error', (error) => {
 
 
 PAP.login(process.env.BOT_TOKEN)
-    .then(r => console.log(`logged in`))
-    .catch(err => console.log(`ERROR ON LOGIN:\n${err}`));
+    .then(r => console.log(`logged in `))
+    .catch(err => console.log(`ERROR ON LOGIN: \n${err}`));
