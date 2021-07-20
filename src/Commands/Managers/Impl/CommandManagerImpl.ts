@@ -108,7 +108,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
         : Promise<Collection<`${bigint}`, ApplicationCommand<{}>>> {
         const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
-        console.log(`guild commands changed. Refreshing...`);
+        console.log(`updating commands`);
         await commandManager.set([]); //remove previous 
         applicationCommands.push(this.helpCommandData);
         const newCommands = await commandManager.set(applicationCommands);

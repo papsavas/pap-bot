@@ -42,7 +42,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
 
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
         const newCommands = await super.updateCommands(commandManager);
-        console.table(await this.syncPermissions(commandManager, newCommands));
+        await this.syncPermissions(commandManager, newCommands);
         return newCommands;
     }
 

@@ -66,7 +66,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             return interaction.followUp({
                 content:
                     //last 2000 characters
-                    `\`\`\`${literal.slice(Math.max(literal.length - 2000, 0))}\`\`\``,
+                    `\`\`\`${literal.substr(0, 2000)}\`\`\``,
                 allowedMentions: { parse: [] },
                 ephemeral: true
             }

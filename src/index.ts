@@ -3,8 +3,10 @@ import {
 } from 'discord.js';
 import * as _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
+import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
@@ -49,6 +51,44 @@ async function runScript(): Promise<void> {
     return
 }
 
+PAP.on('ready', async () => {
+    try {
+        // Creating a guild-specific command
+        PAP.user.setActivity('over you', { type: 'WATCHING' });
+        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
+        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
+        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
+        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
+        if (!inDevelopment)
+            await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+
+        /*
+        TODO: Replace on release 
+        PAP.guilds.cache.keyArray()
+        */
+        for (const guildID of [botGuildID] as Snowflake[]) {
+            if (!guildMap.has(guildID))
+                guildMap.set(guildID, await DefaultGuild.init(guildID));
+            await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
+        };
+
+        dmHandler = await DMHandlerImpl.init();
+        await dmHandler.onReady(PAP);
+        globalCommandHandler = await GlobalCommandHandlerImpl.init();
+        globalCommandsIDs = await fetchGlobalCommandIds();
+        console.log('smooth init');
+
+    } catch (err) {
+        console.log('ERROR\n' + err.stack);
+    }
+    console.log(`___Initiated___`);
+
+    if (inDevelopment) {
+        await runScript();
+    }
+});
+
+
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
     //TODO: implement DB writes
@@ -82,46 +122,7 @@ PAP.on('guildUnavailable', (guild) => {
 });
 
 //when cache is fully loaded
-PAP.on('ready', async () => {
 
-    try {
-        // Creating a guild-specific command
-        PAP.user.setActivity('over you', { type: 'WATCHING' });
-        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
-        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
-        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
-        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
-        if (!inDevelopment)
-            await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
-
-        /*
-        TODO: Replace on release 
-        PAP.guilds.cache.keyArray()
-        */
-        for (const guildID of [botGuildID] as Snowflake[]) {
-            if (!guildMap.has(guildID))
-                guildMap.set(guildID, await DefaultGuild.init(guildID));
-            await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
-        };
-
-        /*
-        !untrack until re - registration, "notes" & "mock" missing from db
-        dmHandler = await DMHandlerImpl.init();
-        await dmHandler.onReady(PAP);      
-        globalCommandHandler = await GlobalCommandHandlerImpl.init();
-*/
-        globalCommandsIDs = await fetchGlobalCommandIds();
-        console.log('smooth init');
-
-    } catch (err) {
-        console.log('ERROR\n' + err.stack);
-    }
-    console.log(`___Initiated___`);
-
-    if (inDevelopment) {
-        await runScript();
-    }
-});
 
 
 PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name}-${command.id} command`));
@@ -145,8 +146,10 @@ PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
         //TODO: check if global
-        if (interaction.id in globalCommandsIDs) {
-            globalCommandHandler.onSlashCommand(interaction);
+        if (globalCommandsIDs.includes(interaction.commandId)) {
+            console.log('global command received');
+            globalCommandHandler.onSlashCommand(interaction)
+                .catch(console.error);
         }
 
         else if (interaction.guildId) {

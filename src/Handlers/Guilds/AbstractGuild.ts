@@ -107,17 +107,11 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onButton(interaction: ButtonInteraction): Promise<any> {
-        return interaction.reply({
-            content: interaction.customId,
-            ephemeral: true
-        })
+        return Promise.resolve(`button ${interaction.customId} received from ${interaction.guild.name}`);
     }
 
     onSelectMenu(interaction: SelectMenuInteraction): Promise<any> {
-        return interaction.reply({
-            content: interaction.customId,
-            ephemeral: true
-        })
+        return Promise.resolve(`select ${interaction.customId} received from ${interaction.guild.name}`);
     }
 
     async onMessage(message: Message): Promise<any> {
