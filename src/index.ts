@@ -1,7 +1,7 @@
 import {
     Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
@@ -21,12 +21,10 @@ let dmHandler: DmHandler;
 let globalCommandHandler: GlobalCommandHandler;
 export let globalCommandsIDs: Snowflake[];
 
-
 if (inDevelopment)
     require('dotenv').config({ path: '../.env' });  //load env variables
 
-
-console.log(`running in "${process.env.NODE_ENV}" mode\n`);
+console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
 export const PAP = new Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
@@ -40,8 +38,6 @@ export const PAP = new Client({
         repliedUser: true
     }
 });
-
-
 
 async function runScript(): Promise<void> {
     //-----insert script--------
@@ -88,7 +84,6 @@ PAP.on('ready', async () => {
     }
 });
 
-
 PAP.on('guildCreate', (guild) => {
     console.log(`joined ${guild.name} guild`);
     //TODO: implement DB writes
@@ -121,10 +116,6 @@ PAP.on('guildUnavailable', (guild) => {
             .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
-//when cache is fully loaded
-
-
-
 PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name}-${command.id} command`));
 PAP.on('applicationCommandDelete', (command) => console.log(`deleted ${command.name} command`));
 PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
@@ -142,12 +133,10 @@ PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
     }
 })
 
-
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
         //TODO: check if global
         if (globalCommandsIDs.includes(interaction.commandId)) {
-            console.log('global command received');
             globalCommandHandler.onSlashCommand(interaction)
                 .catch(console.error);
         }
@@ -223,14 +212,17 @@ PAP.on('interactionCreate', async interaction => {
     }
 });
 
-
 PAP.on('messageCreate', (receivedMessage) => {
     if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
             const Discord = require('discord.js');
             return eval(receivedMessage.cleanContent
                 .substring('eval'.length + 1)
-                .replace(/(\r\n|\n|\r)/gm, "")); //remove all line breaks
+                .replace(/(\r\n|\n|\r)/gm, "") //remove all line breaks
+                .replace("```", "") //remove code blocks
+                .replace("`", "") //remove code quotes
+            );
+
         }
         catch (err) {
             console.error(err);
@@ -259,7 +251,6 @@ from: ${receivedMessage.member.displayName}
 content: ${receivedMessage.content}\n`).catch(console.error);
     }
 })
-
 
 PAP.on('messageDelete', async (deletedMessage) => {
     if (deletedMessage.partial) return; //cannot fetch deleted data
@@ -327,8 +318,6 @@ PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
 PAP.on('error', (error) => {
     console.error(error);
 });
-
-
 
 PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in `))
