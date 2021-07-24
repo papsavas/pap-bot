@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { deleteBatch, findAll, saveBatch } from "../../../DB/GenericCRUD";
+import { deleteBatch, findAll, saveBatch } from "../../DB/GenericCRUD";
 
 
 export async function fetchGuildMemberResponses(guildID: Snowflake, memberID: Snowflake): Promise<string[]> {

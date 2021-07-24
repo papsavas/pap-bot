@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { deleteBatch, findAll, findOne, saveBatch, update } from "../../../DB/GenericCRUD";
+import { deleteBatch, findAll, findOne, saveBatch, update } from "../../DB/GenericCRUD";
 import { CommandType } from "../../Entities/Generic/command";
 import { commandPermission } from "../../Entities/Generic/commandPermission";
 

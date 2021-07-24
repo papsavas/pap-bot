@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { findAll, saveBatch } from "../../../DB/GenericCRUD";
+import { findAll, saveBatch } from "../../DB/GenericCRUD";
 import { guildLog } from "../../Entities/Generic/guildLog";
 
 

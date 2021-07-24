@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { deleteBatch, findAll, saveBatch, update } from "../../../DB/GenericCRUD";
+import { deleteBatch, findAll, saveBatch, update } from "../../DB/GenericCRUD";
 import { userNote } from "../../Entities/Generic/userNote";
 
 export async function addNote(user_id: Snowflake, note: string): Promise<userNote> {

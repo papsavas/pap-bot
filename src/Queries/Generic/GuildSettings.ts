@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { findOne, update } from "../../../DB/GenericCRUD";
+import { findOne, update } from "../../DB/GenericCRUD";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 
 export async function fetchGuildSettings(guildID: Snowflake): Promise<guildSettings> {

@@ -1,4 +1,4 @@
-import { deleteBatch, findAll, findOne, saveBatch } from "../../../DB/GenericCRUD";
+import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Student } from "../../Entities/KEP/Student";
 import { RequireAtLeastOne } from "../../toolbox/types";
 

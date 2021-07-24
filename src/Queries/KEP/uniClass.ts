@@ -1,4 +1,4 @@
-import { deleteBatch, findOne, saveBatch } from "../../../DB/GenericCRUD";
+import { deleteBatch, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 import { uniClass } from "../../Entities/KEP/uniClass";
 

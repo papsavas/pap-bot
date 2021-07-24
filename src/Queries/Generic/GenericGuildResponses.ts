@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { findAll } from "../../../DB/GenericCRUD";
+import { findAll } from "../../DB/GenericCRUD";
 
 export async function genericGuildResponses(guildID: Snowflake, nsfwEnabled: boolean): Promise<string[]> {
     const res = await findAll('generic_responses', true, ['*']);

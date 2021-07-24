@@ -1,4 +1,4 @@
-import { findAll } from "../../../DB/GenericCRUD";
+import { findAll } from "../../DB/GenericCRUD";
 
 
 export async function loadSwearWords(): Promise<string[]> {
