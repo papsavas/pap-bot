@@ -1,6 +1,6 @@
 import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
 import { userNotesCmdImpl } from "../../Commands/DM/Impl/userNotesCmdImpl";
-import DMCommandManagerImpl from "../../Commands/Managers/Impl/DMCommandManagerImpl";
+import { DMCommandManagerImpl } from "../../Commands/Managers/Impl/DMCommandManagerImpl";
 import { DMCommandManager } from "../../Commands/Managers/Interf/DMCommandManager";
 import { DmHandler } from "./GenericDm";
 

@@ -5,9 +5,9 @@ import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";
 import { CommandManagerImpl } from "./CommandManagerImpl";
 
-export default class GlobalDMCommandManagerImpl extends CommandManagerImpl implements DMCommandManager {
+export class DMCommandManagerImpl extends CommandManagerImpl implements DMCommandManager {
 
-    readonly commands: GenericDMCommand[];
+    declare readonly commands: GenericDMCommand[];
 
     constructor(dmCommands: GenericDMCommand[]) {
         super(dmCommands);

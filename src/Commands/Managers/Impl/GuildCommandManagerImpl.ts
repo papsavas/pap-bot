@@ -10,7 +10,7 @@ require('dotenv').config();
 
 export class GuildCommandManagerImpl extends CommandManagerImpl implements GuildCommandManager {
     private readonly guildID: Snowflake;
-    readonly commands: GenericGuildCommand[];
+    declare readonly commands: GenericGuildCommand[];
 
     constructor(guild_id: Snowflake, guildCommands: GenericGuildCommand[]) {
         super(guildCommands);
