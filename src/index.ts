@@ -3,6 +3,7 @@ import {
 } from 'discord.js';
 import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { GuildMap } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
@@ -10,13 +11,14 @@ import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandler
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
+import { deleteGuild, saveGuild } from './Queries/Generic/Guild';
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
 export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
 
 console.log(`inDevelopment is ${inDevelopment}`);
-export const guildMap = new Collection<Snowflake, GenericGuild>();
+export const guildMap: GuildMap = new Collection<Snowflake, GenericGuild>();
 let dmHandler: DmHandler;
 let globalCommandHandler: GlobalCommandHandler;
 export let globalCommandsIDs: Snowflake[];
@@ -84,36 +86,26 @@ PAP.on('ready', async () => {
     }
 });
 
-PAP.on('guildCreate', (guild) => {
+PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
     //TODO: implement DB writes
-    /*
-    * - guild table add id
-    * - command_perms add @everyone role id in every command 👇
-    await addRows(
-        'command_perms',
-        guildMap.get(botGuildID as Snowflake).commandHandler.commands.map(async cmd =>
-            ( {
-                "guild_id": guild.id,
-                "role_id": guild.id,
-                "command_id": cmd.id
-            }))
-    );
-    * - add guild settings
-    * */
+    await saveGuild(guildMap, guild);
+    guildMap.set(guild.id, await DefaultGuild.init(guild.id));
+    await guildMap.get(guild.id).onReady(PAP);
     //onGuildJoin(guild);
 })
 
-PAP.on('guildDelete', guild => {
+PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
-    //TODO: implement DB writes
+    await deleteGuild(guild);
     //onGuildLeave(guild);
+    guildMap.sweep(g => g.getSettings().guild_id === guild.id);
 })
 
 PAP.on('guildUnavailable', (guild) => {
     if (guild.id !== botGuildID)
         logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`)
-            .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
+            .then(() => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
 });
 
 PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name}-${command.id} command`));
