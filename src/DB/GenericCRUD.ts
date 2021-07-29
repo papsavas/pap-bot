@@ -43,12 +43,13 @@ class AbstractRepository {
             .where(objClause);
     }
 
-    fetchFirstOnCondition(tableName: string, clause: {}, returningFields = ['*']): Promise<object> {
-        return this.knex
+    async fetchFirstOnCondition(tableName: string, clause: {}, returningFields = ['*']): Promise<object | null> {
+        const res = await this.knex
             .select(...returningFields)
             .table(tableName)
             .where(clause)
             .first();
+        return res ?? null;
     }
 
     updateRow(tableName: string, clause: {}, newRow: {}, returnings?: string[]) {
@@ -142,7 +143,7 @@ export async function findAll(tableName: string, clause: {}, returnings: string[
     return DB.fetchAllOnCondition(tableName, clause, returnings);
 }
 
-export async function update(tableName: string, clause: {}, newRow: {}, returnings: string[] = ['*']) {
+export async function updateAll(tableName: string, clause: {}, newRow: {}, returnings: string[] = ['*']) {
     return DB.updateRows(
         tableName,
         clause,

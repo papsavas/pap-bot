@@ -1,7 +1,6 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, GuildApplicationCommandManager, Snowflake
 } from 'discord.js';
-import { CommandType } from '../../../Entities/Generic/command';
 import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
 import { GuildCommandManager } from "../Interf/GuildCommandManager";
@@ -26,7 +25,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         return applicationCommands;
     }
 
-    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<CommandType[]> {
+    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
         return overrideCommands(newCommands.array().map(cmd => (
             {
                 keyword: cmd.name,

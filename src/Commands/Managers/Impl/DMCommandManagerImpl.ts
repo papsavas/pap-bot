@@ -1,5 +1,4 @@
 import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
-import { CommandType } from "../../../Entities/Generic/command";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";
@@ -29,7 +28,7 @@ export class DMCommandManagerImpl extends CommandManagerImpl implements DMComman
         return applicationCommands;
     }
 
-    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<CommandType[]> {
+    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
         return overrideCommands(newCommands.array().map(cmd => (
             {
                 keyword: cmd.name,

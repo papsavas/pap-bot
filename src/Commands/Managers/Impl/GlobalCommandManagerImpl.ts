@@ -1,5 +1,4 @@
 import { ApplicationCommand, ApplicationCommandData, Collection, Snowflake } from "discord.js";
-import { CommandType } from "../../../Entities/Generic/command";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericGlobalCommand } from "../../Global/GenericGlobalCommand";
 import { GlobalCommandManager } from "../Interf/GlobalCommandManager";
@@ -22,7 +21,7 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
         return applicationCommands;
     }
 
-    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<CommandType[]> {
+    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
         return overrideCommands(newCommands.array().map(cmd => (
             {
                 keyword: cmd.name,

@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { findOne, update } from "../../DB/GenericCRUD";
+import { findOne, updateAll } from "../../DB/GenericCRUD";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 
 export async function fetchGuildSettings(guildID: Snowflake): Promise<guildSettings> {
@@ -9,5 +9,5 @@ export async function fetchGuildSettings(guildID: Snowflake): Promise<guildSetti
 }
 
 export function updateGuildSettings(guildID: Snowflake, newData: {}) {
-    return update('guild_settings', { 'guild_id': guildID }, newData, ['*'])
+    return updateAll('guild_settings', { 'guild_id': guildID }, newData, ['*'])
 }
