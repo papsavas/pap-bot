@@ -133,7 +133,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
         const guild_id = receivedMessage.guild.id;
-        const rolesKeyArr: Snowflake[] = receivedMessage.mentions.roles.keyArray()
+        const rolesKeyArr: Snowflake[] = [...receivedMessage.mentions.roles.keys()]
             .filter(id => id !== guild_id); //filter out @everyone
 
         if (rolesKeyArr.length < 1)

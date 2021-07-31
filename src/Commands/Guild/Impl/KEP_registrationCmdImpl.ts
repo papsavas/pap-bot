@@ -59,7 +59,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const cmdOptions = interaction.options.get(registerName).options;
-        switch (interaction.options.getSubCommand()) {
+        switch (interaction.options.getSubcommand()) {
             case registerName:
 
                 break;

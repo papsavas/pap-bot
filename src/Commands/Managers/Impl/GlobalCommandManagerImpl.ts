@@ -22,17 +22,19 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
     }
 
     saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
-        return overrideCommands(newCommands.array().map(cmd => (
-            {
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                global: true,
-                aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+        return overrideCommands(
+            newCommands.map(cmd => (
+                {
+                    keyword: cmd.name,
+                    id: cmd.id,
+                    guide: cmd.description,
+                    global: true,
+                    aliases: this.commands
+                        .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
 
-            })
-        ));
+                })
+            )
+        );
     }
 
 }

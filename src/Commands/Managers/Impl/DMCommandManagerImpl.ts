@@ -29,7 +29,7 @@ export class DMCommandManagerImpl extends CommandManagerImpl implements DMComman
     }
 
     saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
-        return overrideCommands(newCommands.array().map(cmd => (
+        return overrideCommands([...newCommands.values()].map(cmd => (
             {
                 keyword: cmd.name,
                 id: cmd.id,

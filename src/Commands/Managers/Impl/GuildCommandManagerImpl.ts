@@ -26,17 +26,19 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     }
 
     saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
-        return overrideCommands(newCommands.array().map(cmd => (
-            {
-                keyword: cmd.name,
-                id: cmd.id,
-                guide: cmd.description,
-                global: false,
-                aliases: this.commands
-                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+        return overrideCommands(
+            newCommands.map(cmd => (
+                {
+                    keyword: cmd.name,
+                    id: cmd.id,
+                    guide: cmd.description,
+                    global: false,
+                    aliases: this.commands
+                        .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
 
-            })
-        ));
+                })
+            )
+        );
     }
 
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
@@ -50,17 +52,19 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         commands: Collection<Snowflake, ApplicationCommand<{}>>
     ) {
 
-        return Promise.all(commands.array().map(async cmd => {
-            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id)).map(res => ({
-                id: res.role_id,
-                type: 'ROLE',
-                permission: true
-            }))
-            commandManager.permissions.set({
-                command: cmd.id,
-                guild: this.guildID,
-                permissions: dbPerms
+        return Promise.all(
+            commands.map(async cmd => {
+                const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id)).map(res => ({
+                    id: res.role_id,
+                    type: 'ROLE',
+                    permission: true
+                }))
+                commandManager.permissions.set({
+                    command: cmd.id,
+                    guild: this.guildID,
+                    permissions: dbPerms
+                })
             })
-        }));
+        );
     }
 }

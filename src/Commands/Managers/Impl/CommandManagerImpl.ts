@@ -32,27 +32,8 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
     }
 
-
+    //TODO: implement permission guard
     async onManualCommand(message: Message): Promise<unknown> {
-        /*
-             TODO: implement permission guard
-             TODO: FLUSH 'commands' DB TABLE AND EXECUTE WHEN COMMANDS ARE COMPLETE
-             TODO: CONNECT 'commands with command_perms' with foreign key on commands Completion
-             this.commands.forEach(async (cmd) => {
-         
-                     try{
-                         await addRow('commands', {
-                             "keyword" : cmd.keyword,
-                             "aliases" : cmd.getAliases(),
-                             "guide" : cmd.guide
-                         });
-                     }
-                     catch (err){
-                         console.log(err)
-                     }
-             })
-         */
-
         const guildHandler = guildMap.get(message.guild.id);
         const prefix = guildHandler.getSettings().prefix;
         const commandMessage = message;
@@ -106,7 +87,7 @@ export abstract class CommandManagerImpl implements CommandManager {
 
 
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
-        : Promise<Collection<`${bigint}`, ApplicationCommand<{}>>> {
+        : Promise<Collection<Snowflake, ApplicationCommand<{}>>> {
         const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
         console.log(`updating commands`);
         await commandManager.set([]); //remove previous 

@@ -44,11 +44,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     protected readonly guildID: Snowflake;
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
-    /*
-    TODO: move these to global scope on release
-    * global permissions are now available
-    * <ApplicationCommandManager>#setPermissions(commandResolvable, permissionData[], guildID)
-    */
+
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
         PinMessageCmdImpl, UnpinMessageCmdImpl,

@@ -98,23 +98,23 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.defer({ ephemeral: true });
         const user_id = interaction.user.id;
-        const subCommand = interaction.options.getSubCommand();
+        const subCommand = interaction.options.getSubcommand();
         const options = interaction.options.get(subCommand).options;
         try {
             switch (subCommand) {
                 case 'add':
-                    const addedNote = options.array()[0].value as string;
+                    const addedNote = options[0].value as string;
                     await addNote(user_id, addedNote);
                     return interaction.editReply(`you added: ${addedNote}`);
 
                 case 'edit':
-                    const oldNote = options.array()[0].value as string;
-                    const newNote = options.array()[1].value as string;
+                    const oldNote = options[0].value as string;
+                    const newNote = options[1].value as string;
                     const res = await editNote(user_id, oldNote, newNote);
                     return interaction.editReply(`note edited to ${res.note.substr(0, 10)}...`);
 
                 case 'remove':
-                    const removingNote = options.array()[0].value as string;
+                    const removingNote = options[0].value as string;
                     const n = await deleteNote(user_id, removingNote);
                     return interaction.editReply(`removed **${n}** notes`);
 
@@ -128,7 +128,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
 
                 case 'default':
-                    return new Error(`returned wrong subcommand on notes: ${interaction.options.getSubCommand()} `);
+                    return new Error(`returned wrong subcommand on notes: ${interaction.options.getSubcommand()} `);
             }
         } catch (error) {
             return interaction.replied ? interaction.editReply(`\`\`\`${JSON.stringify(error)}\`\`\``) :

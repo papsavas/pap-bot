@@ -9,7 +9,6 @@ import { pinMessageCmd } from "../Interf/pinMessageCmd";
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
-//TODO: make this global
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     protected _id: Snowflake;

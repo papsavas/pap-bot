@@ -31,7 +31,7 @@ console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 export const PAP = new Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: [
-        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
+        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_MEMBERS',
         'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
         'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'
     ],
@@ -88,7 +88,6 @@ PAP.on('ready', async () => {
 
 PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
-    //TODO: implement DB writes
     await saveGuild(guildMap, guild);
     guildMap.set(guild.id, await DefaultGuild.init(guild.id));
     await guildMap.get(guild.id).onReady(PAP);

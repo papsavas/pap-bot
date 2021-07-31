@@ -52,7 +52,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
             //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
             let descr = '';
-            delMessages.array()/*.slice(1)*/.reverse().map(msg => {
+            [...delMessages.values()].reverse().map(msg => {
 
                 try {
                     if (!msg.content.startsWith('$clear') && msg.type !== 'APPLICATION_COMMAND')
@@ -86,7 +86,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
                 .then(delMessages => {
                     //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
                     let descr = '';
-                    delMessages.array()/*.slice(1)*/.reverse().map(msg => {
+                    [...delMessages.values()].reverse().map(msg => {
                         try {
                             if (!msg.content.startsWith('$clear'))
                                 descr += `**${msg.author.username}**: ${msg.content}\n`;
