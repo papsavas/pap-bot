@@ -36,6 +36,15 @@ class AbstractRepository {
             .table(tableName);
     }
 
+    fetchTables(): Promise<string[]> {
+        const query = 'SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() AND table_catalog = ?';
+        const bindings = [this.knex.client.database()];
+
+        return this.knex.raw(query, bindings)
+            .then(res => res.map(r => r.table_name));
+
+    }
+
     fetchAllOnCondition(tableName: string, objClause: {}, returningFields = ['*']): Promise<object[]> {
         return this.knex
             .select(...returningFields)
@@ -106,6 +115,10 @@ type createType = "integer"
     | "array"
     | "object"
     | "enum"
+
+export function getTableNames() {
+    return DB.fetchTables();
+}
 
 export function create(
     name: string,

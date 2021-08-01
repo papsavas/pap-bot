@@ -41,7 +41,7 @@ export const PAP = new Client({
     }
 });
 
-async function runScript(): Promise<void> {
+async function runScript() {
     //-----insert script--------
 
     //-------------------------
