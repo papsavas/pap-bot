@@ -40,9 +40,9 @@ class AbstractRepository {
         const query = 'SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() AND table_catalog = ?';
         const bindings = [this.knex.client.database()];
 
-        return this.knex.raw(query, bindings)
-            .then(res => res.map(r => r.table_name));
-
+        return this.knex.raw(query, bindings).then(function (results) {
+            return results.rows.map((row) => row.table_name);
+        });
     }
 
     fetchAllOnCondition(tableName: string, objClause: {}, returningFields = ['*']): Promise<object[]> {
