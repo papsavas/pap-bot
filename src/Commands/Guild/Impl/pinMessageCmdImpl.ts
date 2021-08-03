@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -51,12 +51,6 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const botMember = interaction.guild.members.cache.get(interaction.client.user.id);
-        const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
-        const channelPerms = (interaction.channel as TextChannel).permissionsFor(botMember).has(Permissions.FLAGS.MANAGE_MESSAGES);
-        //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
-        if (!(globalPerms || channelPerms))
-            throw new Error('`MANAGE_MESSAGE` permissions required')
         const channel = interaction.channel as TextChannel;
         const member = interaction.member as GuildMember;
         const pinReason = interaction.options.getString(reasonOptionLiteral) ?? ``;
@@ -68,6 +62,8 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                     embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
                     ephemeral: true
                 });
+            else if (!fetchedMessage.pinnable)
+                throw new Error('`MANAGE_MESSAGE` permissions required')
             return fetchedMessage.pin()
                 .then((pinnedMessage) => {
                     this.addGuildLog(interaction.guildId, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
@@ -107,16 +103,10 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
 
     async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
         const [channel, member] = [message.channel, message.member];
-        const botMember = message.guild.members.cache.get(message.client.user.id);
-        const globalPerms = botMember.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES);
-        const channelPerms = (channel as TextChannel).permissionsFor(botMember).has(Permissions.FLAGS.MANAGE_MESSAGES);
-        //TODO: Resolve behavior when global perms are enabled but channel overwrites are disabled
-        if (!(globalPerms || channelPerms))
-            throw new Error('`MANAGE_MESSAGE` permissions required')
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
         let pinningMessageID = extractId(arg1);
-        let fetchedMessage;
+        let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
@@ -125,6 +115,8 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         }
         if (fetchedMessage.pinned)
             return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }] });
+        else if (!fetchedMessage.pinnable)
+            throw new Error('`MANAGE_MESSAGE` permissions required')
 
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {

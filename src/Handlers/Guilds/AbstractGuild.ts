@@ -1,8 +1,7 @@
 import {
     ButtonInteraction,
     Client, CommandInteraction, Guild,
-    GuildMember, Message, MessageReaction,
-    SelectMenuInteraction,
+    GuildMember, Message, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
 import { mentionRegex } from "../../../botconfig.json";
@@ -56,6 +55,10 @@ export abstract class AbstractGuild implements GenericGuild {
 
     commandManager: GuildCommandManager;
 
+    protected constructor(guild_id: Snowflake) {
+        this.guildID = guild_id;
+    }
+
     get guild(): Guild {
         return this._guild;
     }
@@ -68,12 +71,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._logs;
     }
 
-    protected constructor(guild_id: Snowflake) {
-        this.guildID = guild_id;
-    }
-
     static async init(guild_id: Snowflake): Promise<unknown> { return Promise.resolve() };
-
 
     getSettings(): guildSettings {
         return this._settings;
@@ -128,11 +126,34 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(this.addGuildLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
     }
 
-    onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<any> {
+    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<any> {
+        switch (reaction.emoji.name) {
+            case "📌": case "📍":
+                let response: string;
+                if (!reaction.message.pinnable) {
+                    response = `*Missing \`MANAGE_MESSAGES\` permission to pin this message*`;
+                }
+                else if (reaction.message.pinned) {
+                    response = `Message is already pinned`
+                }
+                else
+                    return reaction.message.pin();
+                const msg = await reaction.message.channel.send(response);
+                await msg.react("🗑️");
+                const collected = await msg.awaitReactions({
+                    filter: (reaction, user) => ['🗑️', '🗑'].includes(reaction.emoji.name) && !user.bot,
+                    time: 10000,
+                    max: 1
+                })
+                await msg.delete();
+                break
+            default:
+                break
+        }
         return Promise.resolve(`reaction added`);
     }
 
-    onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<any> {
+    onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<any> {
         return Promise.resolve(`reaction removed`);
     }
 

@@ -29,17 +29,11 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     onMessage(message: Message): Promise<any> {
         if ((message.channel as GuildChannel).parentId == '12345677889876654') {
-            return this.registration(message);
+            return registration(message);
         }
     }
 
 
-    async registration(message: Message): Promise<unknown> {
-        if (message.channel.id === channels.registration) {
-            const email = message.cleanContent//.match(/*emailRegex*/)
-            return email ? emailStudent(email) : message.react('❌');
-        }
-    }
 }
 
 async function emailStudent(email: string) {
@@ -49,4 +43,11 @@ async function emailStudent(email: string) {
         "Επαλήθευση Λογαριασμού",
         "Προσθέστε αυτόν τον αριθμό..."
     )
+}
+
+async function registration(message: Message): Promise<unknown> {
+    if (message.channel.id === channels.registration) {
+        const email = message.cleanContent//.match(/*emailRegex*/)
+        return email ? emailStudent(email) : message.react('❌');
+    }
 }
