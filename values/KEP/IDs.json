@@ -1,6 +1,8 @@
 {
     "channels": {
-        "registration": "732517388024545321"
+        "registration": "732517388024545321",
+        "anonymous": "789502003562545164",
+        "anonymous_approval": "788431071875825674"
     },
     "roles": {},
     "categories": {}

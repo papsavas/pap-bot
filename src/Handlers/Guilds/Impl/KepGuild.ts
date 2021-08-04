@@ -1,7 +1,8 @@
 //WIP
 
-import { GuildChannel, Message, Snowflake } from 'discord.js';
+import { GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
 import { channels } from "values/KEP/IDs.json";
+import { channels as WOAPchannels } from "values/WOAP/IDs.json";
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { sendEmail } from '../../../toolbox/Google/Gmail';
@@ -27,13 +28,74 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         return guild;
     }
 
-    onMessage(message: Message): Promise<any> {
-        if ((message.channel as GuildChannel).parentId == '12345677889876654') {
-            return registration(message);
+    async onMessage(message: Message): Promise<unknown> {
+        switch (message.channel.id) { //channels
+            case channels.anonymous_approval:
+                if (message.embeds.length > 0) {
+                    await message.react('✅');
+                    await message.react('❌');
+                    await message.react('✝');
+                }
+                break;
+
+            case channels.anonymous:
+                if (message.embeds.length > 0) {
+                    await message.startThread({
+                        name: message.embeds[0].footer.text,
+                        autoArchiveDuration: 1440
+                    }).catch(err => console.log(`could not create anonymous thread\n` + err.toString()));
+
+                }
+                break;
+
+            default: return Promise.resolve('no referenced channel');
+        }
+
+        switch ((message.channel as GuildChannel).parentId) { //categories
+            case channels.registration: //!replace this with single registration channel
+                return registration(message);
         }
     }
 
+    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
+        try {
+            switch (reaction.message.channel.id) {
+                case channels.anonymous_approval: {
+                    const targetChannel = reaction.message.guild.channels.cache.get(channels.anonymous) as TextChannel;
+                    const emb = reaction.message.embeds[0];
+                    switch (reaction.emoji.name) {
+                        case '✅': {
+                            try {
+                                await targetChannel.send({ embeds: [emb] });
+                                await reaction.message.reactions.removeAll();
+                                reaction.message.react('☑');
 
+                            } catch (err) {
+                                console.log(err);
+                            }
+                            break;
+                        }
+                        case '❌': {
+                            await reaction.message.reactions.removeAll();
+                            reaction.message.react('✂');
+                            break;
+                        }
+                        case '✝': {
+                            await reaction.message.reactions.removeAll();
+                            reaction.message.react('✂');
+                            const channel = reaction.message.guild.channels.cache.get(WOAPchannels.cemetery);
+                            await (channel as TextChannel).send({ embeds: [emb] })
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            return Promise.resolve();
+        }
+    }
 }
 
 async function emailStudent(email: string) {
