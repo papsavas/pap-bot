@@ -1,7 +1,7 @@
 import {
     ButtonInteraction,
     Client, CommandInteraction, Guild,
-    GuildMember, Message, MessageReaction, SelectMenuInteraction,
+    GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
 import { mentionRegex } from "../../../botconfig.json";
@@ -147,6 +147,33 @@ export abstract class AbstractGuild implements GenericGuild {
                 })
                 await msg.delete();
                 break
+
+            case "🔖": case "📑":
+                return user.send({
+                    embeds: [
+                        new MessageEmbed({
+                            author: {
+                                name: reaction.message.author.tag,
+                                icon_url: reaction.message.author.avatarURL({ format: 'png' })
+                            },
+                            thumbnail: {
+                                url: reaction.message.guild.iconURL({ format: 'png', size: 256 })
+                            },
+                            title: `🔖 Message Bookmark`,
+                            description: `from ${reaction.message.channel.toString()} [${reaction.message.guild.name}]\n
+[${reaction.message.content.length > 1 ? reaction.message.content.substr(0, 500) + "..." : `Jump`}](${reaction.message.url})`,
+                            color: `#fe85a6`,
+                            image: { url: reaction.message.attachments.first()?.url },
+                            timestamp: new Date(),
+                        }), ...reaction.message.embeds.map(emb => new MessageEmbed(emb))
+                    ]
+
+
+                }).catch()
+
+            case '🗑️': case '🗑':
+                if (reaction.count >= 10 && reaction.message.deletable)
+                    return reaction.message.delete();
             default:
                 break
         }
