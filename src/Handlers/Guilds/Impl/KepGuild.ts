@@ -1,6 +1,7 @@
 //WIP
 
 import { GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
+import urlRegex from 'url-regex';
 import { channels } from "values/KEP/IDs.json";
 import { channels as WOAPchannels } from "values/WOAP/IDs.json";
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
@@ -38,7 +39,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 }
                 break;
 
-            case channels.anonymous:
+            case channels.anonymous: {
                 if (message.embeds.length > 0) {
                     await message.startThread({
                         name: message.embeds[0].footer.text,
@@ -47,6 +48,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
                 }
                 break;
+            }
+
+            case channels.memes: {
+                if (message.attachments.size === 0 || !urlRegex({ strict: true, exact: false }).test(message.content) && message.deletable)
+                    await message.delete();
+                break;
+            }
 
             default: return Promise.resolve('no referenced channel');
         }
