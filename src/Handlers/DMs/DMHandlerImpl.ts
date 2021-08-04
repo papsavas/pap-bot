@@ -46,11 +46,18 @@ export class DMHandlerImpl implements DmHandler {
         throw new Error("Method not implemented.");
     }
 
-    onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<unknown> {
-        throw new Error("Method not implemented.");
+    onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
+        switch (reaction.emoji.name) {
+            case '🗑️': case '🗑':
+                if (reaction.message.deletable)
+                    return reaction.message.delete();
+
+            default:
+                return Promise.resolve();
+        }
     }
 
-    onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<unknown> {
+    onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
 }
