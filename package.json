@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/uuid": "^8.3.0",
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.0.0-dev.t1627992462.35fa3b3",
+    "discord.js": "^13.0.0",
     "dotenv": "^8.2.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",
@@ -21,7 +21,7 @@
     "googleapis": "^73.0.0",
     "knex": "^0.95.4",
     "lodash": "^4.17.21",
-    "node": "^15.12.0",
+    "node": "^16.6.1",
     "npm": "^7.15.1",
     "pg": "^8.5.1",
     "profanity-js": "^0.1.2",

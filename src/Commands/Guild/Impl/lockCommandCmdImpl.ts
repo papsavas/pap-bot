@@ -81,7 +81,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const member = (interaction.member instanceof GuildMember) ?
             interaction.member :
             await interaction.guild.members.fetch(interaction.member.user.id);

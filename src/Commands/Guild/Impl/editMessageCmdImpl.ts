@@ -58,7 +58,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const targetChannel = interaction.options.getChannel(channelOptionLiteral, true);
         const messageID = interaction.options.getString(msgidOptionLiteral, true) as Snowflake;
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const targetMessage = await (targetChannel as TextChannel)?.messages.fetch(messageID);
         if (targetMessage.author != interaction.client.user)
             return interaction.reply('Cannot edit a message authored by another user');

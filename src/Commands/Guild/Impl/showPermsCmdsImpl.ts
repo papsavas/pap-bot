@@ -58,7 +58,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                 ephemeral: true
             });
         const guild_prefix = guildMap.get(interaction.guildId).getSettings().prefix;
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const commandPerms = await fetchCommandPerms(interaction.guildId, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => interaction.guild.roles.fetch(cp.role_id)));
         let apiPerms: ApplicationCommandPermissions[];

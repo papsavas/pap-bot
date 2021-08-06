@@ -96,7 +96,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const user_id = interaction.user.id;
         const subCommand = interaction.options.getSubcommand();
         const options = interaction.options.get(subCommand).options;

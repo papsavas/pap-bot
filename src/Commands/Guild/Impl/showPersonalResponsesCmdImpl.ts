@@ -38,7 +38,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const guild_id = interaction.guildId;
         const member_id = (interaction.member as GuildMember).id;
         const responses = await fetchGuildMemberResponses(guild_id, member_id);

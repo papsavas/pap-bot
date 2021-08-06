@@ -55,7 +55,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             memberResponse.includes(swear['swear_word'])) ||
             Profanity.isProfane(memberResponse);
         this.addGuildLog(guildID, `${(interaction.member as GuildMember).displayName} added response ${memberResponse.substr(0, 100)}`);
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
         return interaction.editReply({
             embeds:
