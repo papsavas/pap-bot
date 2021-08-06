@@ -1,6 +1,6 @@
-import { Client, Interaction, Message, MessageReaction, User, Collection, ApplicationCommand } from "discord.js";
+import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
 import { userNotesCmdImpl } from "../../Commands/DM/Impl/userNotesCmdImpl";
-import DMCommandManagerImpl from "../../Commands/Managers/Impl/DMCommandManagerImpl";
+import { DMCommandManagerImpl } from "../../Commands/Managers/Impl/DMCommandManagerImpl";
 import { DMCommandManager } from "../../Commands/Managers/Interf/DMCommandManager";
 import { DmHandler } from "./GenericDm";
 
@@ -25,19 +25,39 @@ export class DMHandlerImpl implements DmHandler {
     onReady(client: Client): Promise<string> {
         return Promise.resolve('DM handler loaded');
     }
-    onSlashCommand(interaction: Interaction): Promise<unknown> {
+
+    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
+
+    onButton(interaction: ButtonInteraction): Promise<unknown> {
+        throw new Error("Method not implemented.");
+    }
+
+    onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown> {
+        throw new Error("Method not implemented.");
+    }
+
     onMessage(message: Message): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
+
     onMessageDelete(deletedMessage: Message): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
-    onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<unknown> {
-        throw new Error("Method not implemented.");
+
+    onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
+        switch (reaction.emoji.name) {
+            case '🗑️': case '🗑':
+                if (reaction.message.deletable)
+                    return reaction.message.delete();
+
+            default:
+                return Promise.resolve();
+        }
     }
-    onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<unknown> {
+
+    onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<unknown> {
         throw new Error("Method not implemented.");
     }
 }

@@ -2,8 +2,8 @@ require('coffee-register');
 const fs = require('fs');
 const readline = require('readline');
 //const { google } = require('googleapis');
-import { google } from 'googleapis'
-import { authorization } from './Gauth'
+import { google } from 'googleapis';
+import { authorization } from './Gauth';
 
 
 const SCOPES = [

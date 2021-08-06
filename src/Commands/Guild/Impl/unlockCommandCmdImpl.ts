@@ -1,7 +1,7 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
@@ -57,8 +57,8 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
             });
 
         const guild_id = interaction.guildId;
-        const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
-        await interaction.defer({ ephemeral: true });
+        const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
+        await interaction.deferReply({ ephemeral: true });
         const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         /**
@@ -81,7 +81,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
         const guild_id = receivedMessage.guild.id;

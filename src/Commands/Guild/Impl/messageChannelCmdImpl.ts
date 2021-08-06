@@ -1,7 +1,6 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommandData, ApplicationCommandOptionData, Message, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
@@ -50,13 +49,13 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        const sendChannel = interaction.options.get(channelOptionLiteral).channel as TextChannel;
-        const messageContent = interaction.options.get(msgOptionLiteral).value as string;
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const sendChannel = interaction.options.getChannel(channelOptionLiteral, true) as TextChannel;
+        const messageContent = interaction.options.getString(msgOptionLiteral, true);
         await sendChannel.send({
             content: messageContent.substr(0, 2000),
         });
-        const emb = new Discord.MessageEmbed({
+        const emb = new MessageEmbed({
             title: `Message send`,
             fields: [
                 { name: `target`, value: sendChannel.toString() },
@@ -71,7 +70,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     }
 
-    async execute({ guild, mentions }: Message, { commandless2 }: literalCommandType) {
+    async execute({ guild, mentions }: Message, { commandless2 }: commandLiteral) {
         const sendChannel = mentions.channels.first();
         if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
             return sendChannel.send(commandless2)

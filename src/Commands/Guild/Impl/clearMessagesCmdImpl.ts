@@ -1,6 +1,6 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
@@ -44,7 +44,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const number = interaction.options.get(numberOptionLiteral).value as number;
+        const number = interaction.options.getInteger(numberOptionLiteral, true);
         const member = interaction.member as GuildMember;
 
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
@@ -52,7 +52,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
             //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
             let descr = '';
-            delMessages.array()/*.slice(1)*/.reverse().map(msg => {
+            [...delMessages.values()].reverse().map(msg => {
 
                 try {
                     if (!msg.content.startsWith('$clear') && msg.type !== 'APPLICATION_COMMAND')
@@ -74,7 +74,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
 
     }
 
-    execute({ channel, member }: Message, { arg1 }: literalCommandType) {
+    execute({ channel, member }: Message, { arg1 }: commandLiteral) {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;
@@ -86,7 +86,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
                 .then(delMessages => {
                     //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
                     let descr = '';
-                    delMessages.array()/*.slice(1)*/.reverse().map(msg => {
+                    [...delMessages.values()].reverse().map(msg => {
                         try {
                             if (!msg.content.startsWith('$clear'))
                                 descr += `**${msg.author.username}**: ${msg.content}\n`;

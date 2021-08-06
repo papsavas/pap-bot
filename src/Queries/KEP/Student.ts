@@ -1,27 +1,22 @@
-import { addRow, addRows, dropRows, fetchFirstOnCondition, readFirstRow } from "../../../DB/CoreRepo";
-import { Snowflake } from "discord.js";
-import { amType, Student } from "../../Entities/KEP/Student";
+import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
+import { Student } from "../../Entities/KEP/Student";
+import { RequireAtLeastOne } from "../../toolbox/types";
 
-export async function fetchStudent(column: keyof Student, value: Student[keyof Student]): Promise<Student> {
-    return readFirstRow('student', column, value as string);
+export async function fetchStudent(
+    clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">,
+    returnings?: (keyof Student)[]): Promise<Student> {
+    return findOne('student', clause, returnings) as Promise<Student>;
 }
 
-export async function fetchStudentOnCondition(column: keyof Student, value: Student[keyof Student], returnings?: string[]): Promise<{}> {
-    return fetchFirstOnCondition('student', { [column]: value }, returnings);
-
+export function fetchStudents(returnings?: (keyof Student)[]): Promise<Student[]> {
+    return findAll('student', true, returnings) as Promise<Student[]>;
 }
 
-export function addStudents(students: Student[], returnings?: keyof Student, size?: number): Promise<any> {
-    return addRows('student', students, returnings, size)
+export function addStudents(students: Student[], returnings?: keyof Student): Promise<unknown> {
+    return saveBatch("student", students, returnings);
 }
 
-export async function addStudent(student: Student, returnings?: (keyof Student)[]): Promise<any> {
-    return addRow('student',
-        student,
-        returnings?.length > 0 ? returnings : undefined
-    )
+export async function deleteStudents(clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">): Promise<number> {
+    return deleteBatch("student", clause);
 }
 
-export async function dropStudent(data: { field: "am" | "member_id" | "email", value: amType | Snowflake | `${amType}@uom.edu.gr` }): Promise<number> {
-    return dropRows('student', data)
-}

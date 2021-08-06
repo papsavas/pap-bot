@@ -1,11 +1,10 @@
 
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { ApplicationCommandData, ApplicationCommandOptionChoice, ApplicationCommandOptionData, ApplicationCommandPermissionData, ApplicationCommandPermissions, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { lockCommandCmd } from "../Interf/lockCommandCmd";
-import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
+import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissionData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
+import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { lockCommandCmd } from "../Interf/lockCommandCmd";
 
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 
@@ -82,7 +81,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const member = (interaction.member instanceof GuildMember) ?
             interaction.member :
             await interaction.guild.members.fetch(interaction.member.user.id);
@@ -92,14 +91,14 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
                 content: `\`MANAGE_GUILD permissions required\``
             });
         const guild_id = interaction.guildId;
-        const filteredRoles = interaction.options.filter(option => option.type == "ROLE");
+        const filteredRoles = ["1", "2", "3", "4", "5"].map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
         const rolesKeyArr = filteredRoles
-            .map(filteredOptions => filteredOptions.role.id)
-            .filter(id => id !== guild_id); //filter out @everyone
+            .map(role => role?.id) //TODO: remove this
+            .filter(id => id !== guild_id && typeof id !== "undefined"); //filter out @everyone & undeclared roles
 
         if (rolesKeyArr.length < 1)
-            return interaction.editReply(`no point on locking for \`@everyone\`, mind aswell unlock it 😉`)
-        const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
+            return interaction.editReply(`no point on locking for \`@everyone\`, mind as well unlock it 😉`)
+        const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
         const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
 
@@ -127,14 +126,14 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
             permissions: allowedPerms
         });
 
-        return interaction.editReply(`Command ${commandLiteral} locked for ${filteredRoles.map(ro => ro.role).toString()}`);
+        return interaction.editReply(`Command ${commandLiteral} locked for ${rolesKeyArr.map(id => `<@&${id}>`).toString()}`);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
         const guild_id = receivedMessage.guild.id;
-        const rolesKeyArr: Snowflake[] = receivedMessage.mentions.roles.keyArray()
+        const rolesKeyArr: Snowflake[] = [...receivedMessage.mentions.roles.keys()]
             .filter(id => id !== guild_id); //filter out @everyone
 
         if (rolesKeyArr.length < 1)

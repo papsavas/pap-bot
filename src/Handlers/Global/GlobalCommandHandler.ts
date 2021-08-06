@@ -1,5 +1,7 @@
-import { Interaction } from "discord.js";
+import { CommandInteraction } from "discord.js";
+import { GlobalCommandManager } from "../../Commands/Managers/Interf/GlobalCommandManager";
 
 export interface GlobalCommandHandler {
-    onSlashCommand(interaction: Interaction): Promise<any>;
+    readonly commandManager: GlobalCommandManager
+    onSlashCommand(interaction: CommandInteraction): Promise<any>;
 }

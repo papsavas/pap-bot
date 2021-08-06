@@ -1,6 +1,6 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse } from "../../../Queries/Generic/MemberResponses";
@@ -47,7 +47,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
     }
 
     async interactiveExecute(interaction: CommandInteraction) {
-        const memberResponse = interaction.options.get(responseOptionLiteral).value as string;
+        const memberResponse = interaction.options.getString(responseOptionLiteral, true)
         const guildID = interaction.guildId;
         const memberID = interaction.member.user.id;
         const swears = await loadSwearWords();
@@ -55,7 +55,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             memberResponse.includes(swear['swear_word'])) ||
             Profanity.isProfane(memberResponse);
         this.addGuildLog(guildID, `${(interaction.member as GuildMember).displayName} added response ${memberResponse.substr(0, 100)}`);
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         await addMemberResponse(guildID, memberID, memberResponse, nsfw);
         return interaction.editReply({
             embeds:
@@ -72,7 +72,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
         })
     }
 
-    async execute({ guild, member }: Message, { commandless1 }: literalCommandType) {
+    async execute({ guild, member }: Message, { commandless1 }: commandLiteral) {
         const swears = await loadSwearWords();
         const nsfw = swears.some((swear) =>
             commandless1.includes(swear['swear_word'])) ||

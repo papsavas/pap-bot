@@ -1,0 +1,22 @@
+{
+    "table_names": [
+        "student_fines",
+        "class",
+        "commands",
+        "teacher",
+        "guild",
+        "guild_responses",
+        "student_class",
+        "teacher_class",
+        "guild_logs",
+        "guild_settings",
+        "swear_words",
+        "generic_opinions",
+        "generic_responses",
+        "command_perms",
+        "student",
+        "user_notes",
+        "bot_config",
+        "secrets"
+    ]
+}

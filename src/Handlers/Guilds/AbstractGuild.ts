@@ -1,11 +1,11 @@
 import {
     ButtonInteraction,
     Client, CommandInteraction, Guild,
-    GuildMember, Message, MessageReaction,
+    GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
 import { mentionRegex } from "../../../botconfig.json";
-import GenericGuildCommand from '../../Commands/Guild/GenericGuildCommand';
+import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
 import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
@@ -23,8 +23,8 @@ import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPers
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
 import { UnpinMessageCmdImpl } from "../../Commands/Guild/Impl/unpinMessageCmdImpl";
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
-import { guildSettings } from "../../Entities/Generic/guildSettingsType";
-import { memberResponses } from "../../Entities/Generic/MemberResponsesType";
+import { guildSettings } from "../../Entities/Generic/guildSettings";
+import { memberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
 import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
@@ -43,11 +43,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     protected readonly guildID: Snowflake;
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
-    /*
-    TODO: move these to global scope on release
-    * global permissions are now available
-    * <ApplicationCommandManager>#setPermissions(commandResolvable, permissionData[], guildID)
-    */
+
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
         PinMessageCmdImpl, UnpinMessageCmdImpl,
@@ -58,6 +54,10 @@ export abstract class AbstractGuild implements GenericGuild {
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;
+
+    protected constructor(guild_id: Snowflake) {
+        this.guildID = guild_id;
+    }
 
     get guild(): Guild {
         return this._guild;
@@ -71,12 +71,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._logs;
     }
 
-    protected constructor(guild_id: Snowflake) {
-        this.guildID = guild_id;
-    }
-
     static async init(guild_id: Snowflake): Promise<unknown> { return Promise.resolve() };
-
 
     getSettings(): guildSettings {
         return this._settings;
@@ -106,7 +101,11 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onButton(interaction: ButtonInteraction): Promise<any> {
-        return Promise.resolve(`user ${interaction.member.user.username} pressed ${interaction.customId} button`);
+        return Promise.resolve(`button ${interaction.customId} received from ${interaction.guild.name}`);
+    }
+
+    onSelectMenu(interaction: SelectMenuInteraction): Promise<any> {
+        return Promise.resolve(`select ${interaction.customId} received from ${interaction.guild.name}`);
     }
 
     async onMessage(message: Message): Promise<any> {
@@ -115,9 +114,8 @@ export abstract class AbstractGuild implements GenericGuild {
         }
 
         if (message.content.match(mentionRegex)) {
-            message.channel.startTyping();
-            return message.reply(randomArrayValue(this._responses))
-                .then(msg => message.channel.stopTyping())
+            return message.channel.sendTyping()
+                .then(() => message.reply(randomArrayValue(this._responses)))
                 .catch(err => console.log(err));
         }
 
@@ -128,14 +126,63 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(this.addGuildLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
     }
 
-    onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<any> {
+    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<any> {
+        switch (reaction.emoji.name) {
+            case "📌": case "📍":
+                let response: string;
+                if (!reaction.message.pinnable) {
+                    response = `*Missing \`MANAGE_MESSAGES\` permission to pin this message*`;
+                }
+                else if (reaction.message.pinned) {
+                    response = `Message is already pinned`
+                }
+                else
+                    return reaction.message.pin();
+                const msg = await reaction.message.channel.send(response);
+                await msg.react("🗑️");
+                const collected = await msg.awaitReactions({
+                    filter: (reaction, user) => ['🗑️', '🗑'].includes(reaction.emoji.name) && !user.bot,
+                    time: 10000,
+                    max: 1
+                })
+                await msg.delete();
+                break
+
+            case "🔖": case "📑":
+                return user.send({
+                    embeds: [
+                        new MessageEmbed({
+                            author: {
+                                name: reaction.message.author.tag,
+                                icon_url: reaction.message.author.avatarURL({ format: 'png' })
+                            },
+                            thumbnail: {
+                                url: reaction.message.guild.iconURL({ format: 'png', size: 256 })
+                            },
+                            title: `🔖 Message Bookmark`,
+                            description: `from ${reaction.message.channel.toString()} [${reaction.message.guild.name}]\n
+[${reaction.message.content.length > 1 ? reaction.message.content.substr(0, 500) + "..." : `Jump`}](${reaction.message.url})`,
+                            color: `#fe85a6`,
+                            image: { url: reaction.message.attachments.first()?.url },
+                            timestamp: new Date(),
+                        }), ...reaction.message.embeds.map(emb => new MessageEmbed(emb))
+                    ]
+
+
+                }).catch()
+
+            case '🗑️': case '🗑':
+                if (reaction.count >= 10 && reaction.message.deletable)
+                    return reaction.message.delete();
+            default:
+                break
+        }
         return Promise.resolve(`reaction added`);
     }
 
-    onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<any> {
+    onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<any> {
         return Promise.resolve(`reaction removed`);
     }
-
 
 
     addGuildLog(log: string, member_id: Snowflake = null): string {

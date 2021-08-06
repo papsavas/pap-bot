@@ -1,6 +1,6 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake, Util } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
@@ -47,8 +47,8 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const guildHandler = guildMap.get(interaction.guildId);
-        const newPrefix = interaction.options.get(prefixOptionLiteral)?.value as string;
-        await interaction.defer();
+        const newPrefix = interaction.options.getString(prefixOptionLiteral);
+        await interaction.deferReply();
         if (!!newPrefix) {
             const oldSettings = await fetchGuildSettings(interaction.guildId);
             const newSettings = Object.assign(oldSettings, { 'prefix': newPrefix });
@@ -60,7 +60,7 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     }
 
-    execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         const guildHandler = guildMap.get(receivedMessage.guild.id);
         if (receivedCommand.arg1)
             return fetchGuildSettings(receivedMessage.guild.id)

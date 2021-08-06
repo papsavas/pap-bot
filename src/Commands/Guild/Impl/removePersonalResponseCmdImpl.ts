@@ -1,5 +1,5 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
@@ -48,14 +48,14 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
         return interaction.reply({
             content: await removeMemberResponse(
                 guildId, (member as GuildMember).id,
-                options.get(respOptionLiteral).value as string
+                options.getString(respOptionLiteral, true)
             ),
             ephemeral: true
         }
         );
     }
 
-    async execute(message: Message, { commandless1 }: literalCommandType) {
+    async execute(message: Message, { commandless1 }: commandLiteral) {
         return message.reply(await removeMemberResponse(message.guild.id, message.member.id, commandless1));
     }
 

@@ -1,8 +1,7 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
-import { guildMap } from '../../../index';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { userNote } from '../../../Entities/Generic/userNote';
+import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { AbstractGlobalCommand } from '../../Global/AbstractGlobalCommand';
@@ -96,25 +95,26 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        await interaction.defer({ ephemeral: true });
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        await interaction.deferReply({ ephemeral: true });
         const user_id = interaction.user.id;
-        const cmdOptions = interaction.options[0].options;
+        const subCommand = interaction.options.getSubcommand();
+        const options = interaction.options.get(subCommand).options;
         try {
-            switch (interaction.options[0].name) {
+            switch (subCommand) {
                 case 'add':
-                    const addedNote = cmdOptions[0].value as string;
+                    const addedNote = options[0].value as string;
                     await addNote(user_id, addedNote);
                     return interaction.editReply(`you added: ${addedNote}`);
 
                 case 'edit':
-                    const oldNote = cmdOptions[0].value as string;
-                    const newNote = cmdOptions[1].value as string;
+                    const oldNote = options[0].value as string;
+                    const newNote = options[1].value as string;
                     const res = await editNote(user_id, oldNote, newNote);
                     return interaction.editReply(`note edited to ${res.note.substr(0, 10)}...`);
 
                 case 'remove':
-                    const removingNote = cmdOptions[0].value as string;
+                    const removingNote = options[0].value as string;
                     const n = await deleteNote(user_id, removingNote);
                     return interaction.editReply(`removed **${n}** notes`);
 
@@ -128,7 +128,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
 
                 case 'default':
-                    return new Error(`returned wrong subcommand on notes: ${interaction.options[0].name} `);
+                    return new Error(`returned wrong subcommand on notes: ${interaction.options.getSubcommand()} `);
             }
         } catch (error) {
             return interaction.replied ? interaction.editReply(`\`\`\`${JSON.stringify(error)}\`\`\``) :
@@ -138,7 +138,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     }
 
-    async execute({ author }: Message, { arg1, commandless2 }: literalCommandType) {
+    async execute({ author }: Message, { arg1, commandless2 }: commandLiteral) {
         const user_id = author.id;
         const user = author;
         switch (arg1) {

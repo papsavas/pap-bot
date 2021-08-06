@@ -1,16 +1,13 @@
-import * as Discord from 'discord.js';
-import { ApplicationCommandData, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
-import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
-import { mockMessageCmd } from '../Interf/mockMessageCmd';
 import { AbstractDMCommand } from '../../DM/AbstractDMCommand';
+import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 
-
-
+const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessageCmd {
     protected _id: Snowflake;
     protected _keyword = `mock`;
@@ -37,7 +34,7 @@ export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessage
             description: this.guide,
             options: [
                 {
-                    name: 'text',
+                    name: textOptionLiteral,
                     description: 'text to mock',
                     type: 'STRING',
                     required: true
@@ -46,11 +43,11 @@ export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessage
         }
     }
 
-    async interactiveExecute(interaction: Discord.CommandInteraction): Promise<any> {
-        return interaction.reply(UpperLowerCaseSwitching(interaction.options[0].value as string));
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        return interaction.reply(UpperLowerCaseSwitching(interaction.options.getString(textOptionLiteral, true)));
     }
 
-    execute(message: Message, { commandless1 }: literalCommandType): Promise<any> {
+    execute(message: Message, { commandless1 }: commandLiteral): Promise<any> {
         return message.channel.send(UpperLowerCaseSwitching(commandless1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();

@@ -1,6 +1,6 @@
 import { ApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
 import { paginationEmbed } from "../../../toolbox/paginatedEmbed";
@@ -38,7 +38,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const guild_id = interaction.guildId;
         const member_id = (interaction.member as GuildMember).id;
         const responses = await fetchGuildMemberResponses(guild_id, member_id);
@@ -46,7 +46,7 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
         return interaction.followUp(`\`\`\`${responsesArr.toString()}\`\`\``);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
         const guild_id = receivedMessage.guild.id;
         const member_id = receivedMessage.member.id;
         const perPage = 10;

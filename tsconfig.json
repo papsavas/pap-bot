@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "experimentalDecorators": true,
-    "target": "ES2019",
+    "target": "ESNext",
     "module": "CommonJS",
     "strict": false,
     "moduleResolution": "Node",
@@ -15,5 +15,8 @@
     ],
     "resolveJsonModule": true,
     "baseUrl": "./",
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ],
 }

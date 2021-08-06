@@ -1,32 +1,37 @@
 import {
-    Client, Collection, CommandInteraction, GuildChannelManager,
-    GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
+    Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
+import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { GuildMap } from './Entities/Generic/guildMap';
+import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
+import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
-
+import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
+import { deleteGuild, saveGuild } from './Queries/Generic/Guild';
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
 export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
-export const guildMap = new Collection<Snowflake, GenericGuild>();
+
+console.log(`inDevelopment is ${inDevelopment}`);
+export const guildMap: GuildMap = new Collection<Snowflake, GenericGuild>();
 let dmHandler: DmHandler;
 let globalCommandHandler: GlobalCommandHandler;
-
+export let globalCommandsIDs: Snowflake[];
 
 if (inDevelopment)
     require('dotenv').config({ path: '../.env' });  //load env variables
 
-
-console.log(`running in "${process.env.NODE_ENV}" mode\n`);
+console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
 export const PAP = new Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: [
-        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS', 'GUILD_MEMBERS',
+        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_MEMBERS',
         'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
         'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'
     ],
@@ -36,9 +41,7 @@ export const PAP = new Client({
     }
 });
 
-
-
-async function runScript(): Promise<void> {
+async function runScript() {
     //-----insert script--------
 
     //-------------------------
@@ -46,41 +49,7 @@ async function runScript(): Promise<void> {
     return
 }
 
-PAP.on('guildCreate', (guild) => {
-    console.log(`joined ${guild.name} guild`);
-    //TODO: implement DB writes
-    /*
-    * - guild table add id
-    * - command_perms add @everyone role id in every command 👇
-    await addRows(
-        'command_perms',
-        guildMap.get(botGuildID as Snowflake).commandHandler.commands.map(async cmd =>
-            ( {
-                "guild_id": guild.id,
-                "role_id": guild.id,
-                "command_id": cmd.id
-            }))
-    );
-    * - add guild settings
-    * */
-    //onGuildJoin(guild);
-})
-
-PAP.on('guildDelete', guild => {
-    console.log(`left ${guild.name} guild`);
-    //TODO: implement DB writes
-    //onGuildLeave(guild);
-})
-
-PAP.on('guildUnavailable', (guild) => {
-    if (guild.id !== botGuildID)
-        logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`)
-            .then((msg) => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
-});
-
-//when cache is fully loaded
 PAP.on('ready', async () => {
-
     try {
         // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
@@ -101,14 +70,11 @@ PAP.on('ready', async () => {
             await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
         };
 
-        /*
-        !untrack until re-registration
         dmHandler = await DMHandlerImpl.init();
         await dmHandler.onReady(PAP);
-
         globalCommandHandler = await GlobalCommandHandlerImpl.init();
-        */
-        console.log('smooth init')
+        globalCommandsIDs = await fetchGlobalCommandIds();
+        console.log('smooth init');
 
     } catch (err) {
         console.log('ERROR\n' + err.stack);
@@ -117,14 +83,56 @@ PAP.on('ready', async () => {
 
     if (inDevelopment) {
         await runScript();
-        //process.exit(132);
     }
 });
 
+PAP.on('guildCreate', async (guild) => {
+    console.log(`joined ${guild.name} guild`);
+    await saveGuild(guildMap, guild);
+    guildMap.set(guild.id, await DefaultGuild.init(guild.id));
+    await guildMap.get(guild.id).onReady(PAP);
+    //onGuildJoin(guild);
+})
+
+PAP.on('guildDelete', async guild => {
+    console.log(`left ${guild.name} guild`);
+    await deleteGuild(guild);
+    //onGuildLeave(guild);
+    guildMap.sweep(g => g.getSettings().guild_id === guild.id);
+})
+
+PAP.on('guildUnavailable', (guild) => {
+    if (guild.id !== botGuildID)
+        logsChannel.send(`@here guild ${guild.name} with id: ${guild.id} is unavailable`)
+            .then(() => console.log(`${new Date().toString()} : guild ${guild.name} is unavailable.\n`));
+});
+
+PAP.on('applicationCommandCreate', (command) => console.log(`created ${command.name}-${command.id} command`));
+PAP.on('applicationCommandDelete', (command) => console.log(`deleted ${command.name} command`));
+PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
+    const diff = {
+        name: oldCommand.name === newCommand.name,
+        description: oldCommand.description === newCommand.description,
+        perms: _.isEqual(oldCommand.permissions, newCommand.permissions),
+        defaultPermission: oldCommand.defaultPermission === newCommand.defaultPermission,
+        options: _.isEqual(oldCommand.options, newCommand.options),
+    }
+    console.log(`command ${newCommand.name} updated for ${newCommand.guild?.name}`);
+    for (const [k, v] of Object.entries(diff)) {
+        if (!v)
+            console.log(`${k} changed`);
+    }
+})
 
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
-        if (interaction.inGuild()) {
+        //TODO: check if global
+        if (globalCommandsIDs.includes(interaction.commandId)) {
+            globalCommandHandler.onSlashCommand(interaction)
+                .catch(console.error);
+        }
+
+        else if (interaction.guildId) {
             try {
                 guildMap.get(interaction.guildId)
                     ?.onSlashCommand(interaction)
@@ -133,8 +141,10 @@ PAP.on('interactionCreate', async interaction => {
             }
         }
         else if (interaction.channel.type === "DM") {
+            dmHandler.onSlashCommand(interaction)
+                .catch(console.error);
             console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
-            from ${interaction.user.tag}`)
+    from ${interaction.user.tag}`)
         }
         else {
             console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
@@ -142,32 +152,41 @@ PAP.on('interactionCreate', async interaction => {
     }
 
     else if (interaction.isButton()) {
-        if (interaction.inGuild()) {
+        if (interaction.guildId) {
             try {
                 guildMap.get(interaction.guildId)
-                    ?.onButton(interaction)
-                interaction.reply({ ephemeral: true, content: interaction.customId }).catch();
+                    ?.onButton(interaction);
 
             } catch (error) {
                 console.log(error)
             }
         }
         else {
+            dmHandler.onButton(interaction)
+                .catch(console.error);
             console.log('dm button received');
         }
     }
 
     else if (interaction.isSelectMenu()) {
-        //TODO: implement guild handlers
-        console.log(`message component interaction received`);
-        await interaction.reply({
-            content: JSON.stringify(interaction.values),
-            ephemeral: true
-        }).catch(console.error)
+        if (interaction.guildId) {
+            try {
+                guildMap.get(interaction.guildId)
+                    ?.onSelectMenu(interaction);
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        else if (interaction.channel.type === "DM") {
+            dmHandler.onSelectMenu(interaction)
+                .catch(console.error);
+            console.log('dm select received');
+        }
     }
 
     else {
-        console.log(`unhandled interaction type in ${interaction.channel.id} channel. TYPE = ${interaction.type}`);
+        console.log(`unhandled interaction type in ${interaction.channel.id} channel.TYPE = ${interaction.type}`);
         await bugsChannel.send({
             embeds: [
                 new MessageEmbed({
@@ -184,14 +203,17 @@ PAP.on('interactionCreate', async interaction => {
     }
 });
 
-
 PAP.on('messageCreate', (receivedMessage) => {
     if (receivedMessage.author.id === creatorID && receivedMessage.content.startsWith('eval'))
         try {
             const Discord = require('discord.js');
             return eval(receivedMessage.cleanContent
                 .substring('eval'.length + 1)
-                .replace(/(\r\n|\n|\r)/gm, "")); //remove all line breaks
+                .replace(/(\r\n|\n|\r)/gm, "") //remove all line breaks
+                .replace("```", "") //remove code blocks
+                .replace("`", "") //remove code quotes
+            );
+
         }
         catch (err) {
             console.error(err);
@@ -214,13 +236,12 @@ PAP.on('messageCreate', (receivedMessage) => {
 
         default:
             bugsChannel.send(`received message from untracked channel type
-CHANNEL_TYPE:${receivedMessage.channel.type}
-ID:${receivedMessage.id}
+CHANNEL_TYPE: ${receivedMessage.channel.type}
+ID: ${receivedMessage.id}
 from: ${receivedMessage.member.displayName}
 content: ${receivedMessage.content}\n`).catch(console.error);
     }
 })
-
 
 PAP.on('messageDelete', async (deletedMessage) => {
     if (deletedMessage.partial) return; //cannot fetch deleted data
@@ -278,19 +299,17 @@ PAP.on('guildMemberRemove', async (member) => {
 });
 
 PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
-    if (oldMember.partial) await oldMember.fetch().catch(console.error);
     guildMap.get(newMember.guild.id)
-        ?.onGuildMemberUpdate(oldMember as GuildMember, newMember)
+        ?.onGuildMemberUpdate(
+            oldMember.partial ? await oldMember.fetch() : oldMember as GuildMember,
+            newMember)
         .catch(err => console.log(err));
-
 });
 
 PAP.on('error', (error) => {
     console.error(error);
 });
 
-
-
 PAP.login(process.env.BOT_TOKEN)
-    .then(r => console.log(`logged in`))
-    .catch(err => console.log(`ERROR ON LOGIN:\n${err}`));
+    .then(r => console.log(`logged in `))
+    .catch(err => console.log(`ERROR ON LOGIN: \n${err}`));

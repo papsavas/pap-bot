@@ -1,7 +1,6 @@
 import { Snowflake } from "discord.js";
-import { overArgs } from "lodash";
 
-export type literalCommandType = {
+export type commandLiteral = {
     //prefix: string;
     fullCommand: string;
     splitCommand: string[];
@@ -17,8 +16,9 @@ export type literalCommandType = {
 export interface CommandType {
     id: Snowflake;
     keyword: string;
-    aliases?: string[],
     guide: string;
+    aliases?: string[];
+    global?: boolean;
     uuid?: string;
 }
 

@@ -1,10 +1,10 @@
 
-import { AbstractGuildCommand } from '../AbstractGuildCommand';
-import { Snowflake, ApplicationCommandData, CommandInteraction, Message, MessageEmbed, Role, TextChannel, MessageActionRow, MessageButton } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
+import { ApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { AbstractGuildCommand } from '../AbstractGuildCommand';
+import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
 
 throw new Error('dummy ids, remove if attached');
 
@@ -67,9 +67,10 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
 
     async interactiveExecute(interaction: CommandInteraction): Promise<void> {
-        const literal = (interaction.options.get(contentLiteral).value as string).substring(0, 2000);
-        const roles = interaction.options.filter(opt => opt.type === "ROLE")
-            .mapValues(v => v.role).array();
+        const literal = (interaction.options.getString(contentLiteral, true)).substring(0, 2000);
+        const roles = ["1", "2", "3"]
+            .map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
+            .filter(r => typeof r !== "undefined");
         const newsChannel = interaction.guild.channels.cache.get('newsChannelID' as Snowflake) as TextChannel;
         const emb = new MessageEmbed({
             author: {
@@ -127,7 +128,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
     }
 
-    async execute(message: Message, { }: literalCommandType): Promise<unknown> {
+    async execute(message: Message, { }: commandLiteral): Promise<unknown> {
         return message.reply(`Χρησιμοποιείτε την εντολή ως slash command \`/${this.keyword}\` ώστε να μπορείτε να δηλώσετε και ρόλους για ping`);
     }
 

@@ -3,8 +3,8 @@
 		"scope": "typescript",
 		"prefix": "commandInterf",
 		"body": [
-			"import GenericGuildCommand from \"../GenericGuildCommand\"\n\n",
-			"export interface $1 extends GenericGuildCommand {\n\n}"
+			"import {$2} from \"../$2\"\n\n",
+			"export interface $1 extends ${2:interface} {\n\n}"
 		],
 		"description": "create a command interface boiler-plate code"
 	},
@@ -18,7 +18,7 @@
 			"private readonly _aliases = this.addKeywordToAliases\n(\n[],this.keyword\n);",
 			"getCommandData(guild_id: Snowflake): ApplicationCommandData { return {\nname: this.keyword,\ndescription: this.guide,\n}\n}",
 			"async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {\n\n}",
-			"async execute(message: Message, { }: literalCommandType): Promise<unknown> {\n\n}",
+			"async execute(message: Message, { }: commandLiteral): Promise<unknown> {\n\n}",
 			"getAliases(): string[] {\n\treturn this._aliases;\n}",
 			"addGuildLog(guildID: Snowflake, log: string) {\n\treturn guildMap.get(guildID).addGuildLog(log);\n}",
 			"}"

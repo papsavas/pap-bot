@@ -1,5 +1,5 @@
-import {Collection, Snowflake} from "discord.js";
-import {Class} from "./Class";
+import { Collection, Snowflake } from "discord.js";
+import { uniClass } from "./uniClass";
 
 type digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type digitZeroLess = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -15,7 +15,7 @@ export interface Student {
     email: `${amType}@uom.edu.gr`;
     member_id: Snowflake,
     name?: string | null;
-    classes?: Collection<Class['role_id'], Class[]>
+    classes?: Collection<uniClass['role_id'], uniClass[]>
     uuid?: string
 }
 

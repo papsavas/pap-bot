@@ -4,16 +4,16 @@
   "description": "PAPbot",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "start": "node dist/src/index.js",
-    "build": "tsc"
+    "test": "jest --passWithNoTests"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
   "dependencies": {
     "@types/uuid": "^8.3.0",
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.0.0-dev.1dcad05.1626091387",
+    "discord.js": "^13.0.0",
     "dotenv": "^8.2.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",
@@ -21,18 +21,22 @@
     "googleapis": "^73.0.0",
     "knex": "^0.95.4",
     "lodash": "^4.17.21",
-    "node": "^15.12.0",
+    "node": "^16.6.1",
     "npm": "^7.15.1",
     "pg": "^8.5.1",
     "profanity-js": "^0.1.2",
     "readline": "^1.3.0",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^9.1.1",
+    "url-regex": "^5.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.168",
     "@types/pg": "^7.14.11",
-    "typescript": "^4.2.4"
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "typescript": "^4.3.5"
   }
 }

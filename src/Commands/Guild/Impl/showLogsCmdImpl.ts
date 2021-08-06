@@ -1,14 +1,12 @@
 
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, Util } from "discord.js";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
-import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
+import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
-import { messaging } from "firebase-admin";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
+import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
 
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
@@ -68,7 +66,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             return interaction.followUp({
                 content:
                     //last 2000 characters
-                    `\`\`\`${literal.slice(Math.max(literal.length - 2000, 0))}\`\`\``,
+                    `\`\`\`${literal.substr(0, 2000)}\`\`\``,
                 allowedMentions: { parse: [] },
                 ephemeral: true
             }
@@ -78,7 +76,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
         }
     }
 
-    async execute(message: Message, receivedCommand: literalCommandType): Promise<any> {
+    async execute(message: Message, receivedCommand: commandLiteral): Promise<any> {
         const { member, channel, guild } = message;
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return message.reply(`\`MANAGE_GUILD permissions required\``);

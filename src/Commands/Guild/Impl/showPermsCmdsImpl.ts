@@ -1,8 +1,7 @@
 import {
-    ApplicationCommandData, ApplicationCommandOptionData, APIErrors,
-    CommandInteraction, Message, MessageEmbed, Snowflake, Constants, ApplicationCommandPermissions
+    ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, Constants, Message, MessageEmbed, Snowflake
 } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -50,7 +49,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
-        const commandLiteral = interaction.options.get(cmdOptionLiteral).value as string;
+        const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
         const command_id: Snowflake = guildMap.get(interaction.guildId).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
         if (!command_id)
@@ -59,7 +58,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                 ephemeral: true
             });
         const guild_prefix = guildMap.get(interaction.guildId).getSettings().prefix;
-        await interaction.defer({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const commandPerms = await fetchCommandPerms(interaction.guildId, command_id);
         const reqRoles = await Promise.all(commandPerms.map(cp => interaction.guild.roles.fetch(cp.role_id)));
         let apiPerms: ApplicationCommandPermissions[];
@@ -97,7 +96,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         });
     }
 
-    async execute(message: Message, { arg1 }: literalCommandType) {
+    async execute(message: Message, { arg1 }: commandLiteral) {
         await message.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = arg1;
         if (!commandLiteral)

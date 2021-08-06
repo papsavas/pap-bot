@@ -1,22 +1,21 @@
-import { dmMember as _keyword } from '../../keywords.json';
-import { GdmMember as _guide } from '../../guides.json';
-
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { dmMemberCmd } from "../Interf/dmMemberCmd";
-import * as e from '../../../../errorCodes.json'
 import {
     ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction,
+    Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { GdmMember as _guide } from '../../guides.json';
+import { dmMember as _keyword } from '../../keywords.json';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { dmMemberCmd } from "../Interf/dmMemberCmd";
+
 
 
 const requiredPerm = Permissions.FLAGS.ADMINISTRATOR;
 const permLiteral: PermissionResolvable = 'ADMINISTRATOR';
-
+const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
@@ -44,7 +43,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             description: this.getGuide(),
             options: [
                 {
-                    name: 'user',
+                    name: userOptionLiteral,
                     description: 'user to dm',
                     type: 'USER',
                     required: true
@@ -67,8 +66,8 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 ephemeral: true
             });
 
-        const user = interaction.options.find(op => op.type == "USER").user;
-        const messageContent = interaction.options.get(messageOptionLiteral).value as string;
+        const user = interaction.options.getUser(userOptionLiteral, true);
+        const messageContent = interaction.options.getString(messageOptionLiteral, true);
         const sendEmb = new MessageEmbed({
             author: {
                 name: "from: " + interaction.guild.name,
@@ -89,7 +88,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 embeds: [sendEmb]
             }))
             .catch(err => {
-                if (err.code == e["Cannot send messages to this user"]) {
+                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
                     interaction.reply(`Could not dm ${user.username}`);
                 }
             })
@@ -97,7 +96,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
     async execute(
         message: Message,
-        { commandless2 }: literalCommandType
+        { commandless2 }: commandLiteral
     ) {
         const { guild, attachments, mentions, member } = message;
         if (!member.permissions.has(requiredPerm))
@@ -128,7 +127,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 embeds: [sendEmb]
             }))
             .catch(err => {
-                if (err.code == e["Cannot send messages to this user"]) {
+                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
                     throw new Error(`Could not dm ${user.username}`);
                 }
             })

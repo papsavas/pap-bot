@@ -1,16 +1,14 @@
 import {
-    ApplicationCommandData, CommandInteraction, GuildChannel, Message,
+    ApplicationCommandData, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
-    Snowflake,
-    TextChannel,
-    ThreadChannel
+    Snowflake
 } from 'discord.js';
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
-import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { fetchGuildSettings, updateGuildSettings } from '../../../Queries/Generic/GuildSettings';
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
@@ -95,7 +93,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
 
     }
 
-    async execute(message: Message, { }: literalCommandType) {
+    async execute(message: Message, { }: commandLiteral) {
         //TODO: Fix behaviour, after update collector returns an error if time ends
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);

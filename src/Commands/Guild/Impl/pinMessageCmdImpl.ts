@@ -1,16 +1,14 @@
-import { pinMessageCmd } from "../Interf/pinMessageCmd";
-import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { extractId } from "../../../toolbox/extractMessageId";
-import { literalCommandType } from "../../../Entities/Generic/commandType";
-import { guildLoggerType } from "../../../Entities/Generic/guildLoggerType";
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, DiscordAPIError, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
-import * as e from '../../../../errorCodes.json';
+import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-
+import { extractId } from "../../../toolbox/extractMessageId";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { pinMessageCmd } from "../Interf/pinMessageCmd";
 
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
+
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     protected _id: Snowflake;
@@ -54,10 +52,9 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
-        const reason = interaction.options.get(reasonOptionLiteral);
         const member = interaction.member as GuildMember;
-        const pinReason = reason ? reason.value as string : ``;
-        const pinningMessageID = extractId(interaction.options.get(msgidOptionLiteral).value as string);
+        const pinReason = interaction.options.getString(reasonOptionLiteral) ?? ``;
+        const pinningMessageID = extractId(interaction.options.getString(msgidOptionLiteral, true));
         try {
             const fetchedMessage = await channel.messages.fetch(pinningMessageID);
             if (fetchedMessage.pinned)
@@ -65,6 +62,8 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                     embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
                     ephemeral: true
                 });
+            else if (!fetchedMessage.pinnable)
+                throw new Error('`MANAGE_MESSAGE` permissions required')
             return fetchedMessage.pin()
                 .then((pinnedMessage) => {
                     this.addGuildLog(interaction.guildId, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
@@ -94,7 +93,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
                     });
                 });
         } catch (error) {
-            if (error.code == e["Unknown message"])
+            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
                 return interaction.reply({
                     content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
                     ephemeral: true
@@ -102,28 +101,46 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         }
     }
 
-    async execute(message: Message, { arg1, commandless2 }: literalCommandType): Promise<any> {
-        const channel = message.channel;
+    async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
+        const [channel, member] = [message.channel, message.member];
         let pinReason = commandless2 ? commandless2 : ``;
         pinReason += `\nby ${message.member.displayName}`;
         let pinningMessageID = extractId(arg1);
-        let fetchedMessage;
+        let fetchedMessage: Message;
         try {
             fetchedMessage = await channel.messages.fetch(pinningMessageID);
         } catch (error) {
-            if (error.code == e["Unknown message"])
+            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
                 return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
         }
         if (fetchedMessage.pinned)
             return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }] });
+        else if (!fetchedMessage.pinnable)
+            throw new Error('`MANAGE_MESSAGE` permissions required')
 
         return channel.messages.fetch(pinningMessageID)
             .then((fetchedMessage) => {
                 fetchedMessage.pin()
                     .then((pinnedMessage) => {
                         this.addGuildLog(message.guild.id, `message pinned:\n${pinnedMessage.url} with reason ${pinReason}`);
+                        message.channel.send({
+                            embeds: [
+                                new MessageEmbed({
+                                    author: {
+                                        name: member.displayName,
+                                        iconURL: member.user.avatarURL()
+                                    },
+                                    title: `Pinned Message  📌`,
+                                    description: pinnedMessage.content?.length > 0 ?
+                                        `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
+                                        `[Click to jump](${pinnedMessage.url})`,
+                                    color: 'GREEN',
+                                    footer: { text: pinReason }
+                                })
+                            ]
+                        });
                         if (message.deletable)
-                            message.client.setTimeout(() => { message.delete().catch() }, 3000);
+                            setTimeout(() => { message.delete().catch() }, 5000);
                     });
             })
     }

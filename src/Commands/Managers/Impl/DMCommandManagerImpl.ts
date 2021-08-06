@@ -1,12 +1,12 @@
-import { ApplicationCommandData, ApplicationCommandManager, CommandInteraction, GuildApplicationCommandManager, Message } from "discord.js";
+import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";
 import { CommandManagerImpl } from "./CommandManagerImpl";
 
-export default class GlobalDMCommandManagerImpl extends CommandManagerImpl implements DMCommandManager {
+export class DMCommandManagerImpl extends CommandManagerImpl implements DMCommandManager {
 
-    readonly commands: GenericDMCommand[];
+    declare readonly commands: GenericDMCommand[];
 
     constructor(dmCommands: GenericDMCommand[]) {
         super(dmCommands);
@@ -14,10 +14,10 @@ export default class GlobalDMCommandManagerImpl extends CommandManagerImpl imple
     }
 
     onManualCommand(message: Message): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        throw new Error("Method not implemented. Need for implementation in order to skip super handler");
     }
     onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        throw new Error("Method not implemented. Need for implementation in order to skip super handler");
     }
 
     fetchCommandData(commands: GenericDMCommand[]) {
@@ -26,6 +26,20 @@ export default class GlobalDMCommandManagerImpl extends CommandManagerImpl imple
             applicationCommands.push(cmd.getCommandData());
         }
         return applicationCommands;
+    }
+
+    saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
+        return overrideCommands([...newCommands.values()].map(cmd => (
+            {
+                keyword: cmd.name,
+                id: cmd.id,
+                guide: cmd.description,
+                global: false,
+                aliases: this.commands
+                    .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+
+            })
+        ));
     }
 
 }
