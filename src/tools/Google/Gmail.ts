@@ -1,7 +1,3 @@
-//require('coffee-register');
-//const fs = require('fs');
-//const readline = require('readline');
-//const { google } = require('googleapis');
 import { google } from 'googleapis';
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets';
 import { Gauth } from './Gauth';

@@ -88,15 +88,15 @@ PAP.on('ready', async () => {
 
 PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
-    await saveGuild(guildMap, guild);
+    await saveGuild(guildMap, guild).catch(console.error);;
     guildMap.set(guild.id, await DefaultGuild.init(guild.id));
-    await guildMap.get(guild.id).onReady(PAP);
+    await guildMap.get(guild.id).onReady(PAP).catch(console.error);
     //onGuildJoin(guild);
 })
 
 PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
-    await deleteGuild(guild);
+    await deleteGuild(guild).catch(console.error);;
     //onGuildLeave(guild);
     guildMap.sweep(g => g.getSettings().guild_id === guild.id);
 })
@@ -133,12 +133,9 @@ PAP.on('interactionCreate', async interaction => {
         }
 
         else if (interaction.guildId) {
-            try {
-                guildMap.get(interaction.guildId)
-                    ?.onSlashCommand(interaction)
-            } catch (error) {
-                console.log(error)
-            }
+            guildMap.get(interaction.guildId)
+                ?.onSlashCommand(interaction)
+                .catch(console.error);
         }
         else if (interaction.channel.type === "DM") {
             dmHandler.onSlashCommand(interaction)
@@ -153,13 +150,10 @@ PAP.on('interactionCreate', async interaction => {
 
     else if (interaction.isButton()) {
         if (interaction.guildId) {
-            try {
-                guildMap.get(interaction.guildId)
-                    ?.onButton(interaction);
+            guildMap.get(interaction.guildId)
+                ?.onButton(interaction)
+                .catch(console.error);
 
-            } catch (error) {
-                console.log(error)
-            }
         }
         else {
             dmHandler.onButton(interaction)
@@ -170,13 +164,9 @@ PAP.on('interactionCreate', async interaction => {
 
     else if (interaction.isSelectMenu()) {
         if (interaction.guildId) {
-            try {
-                guildMap.get(interaction.guildId)
-                    ?.onSelectMenu(interaction);
-
-            } catch (error) {
-                console.log(error)
-            }
+            guildMap.get(interaction.guildId)
+                ?.onSelectMenu(interaction)
+                .catch(console.error);
         }
         else if (interaction.channel.type === "DM") {
             dmHandler.onSelectMenu(interaction)
@@ -231,7 +221,7 @@ PAP.on('messageCreate', (receivedMessage) => {
         case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
             guildMap.get(receivedMessage.guild.id)
                 ?.onMessage(receivedMessage)
-                .catch(err => console.log(err));
+                .catch(console.error);
             break;
 
         default:
@@ -256,45 +246,38 @@ PAP.on('messageDelete', async (deletedMessage) => {
         case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
             guildMap.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
-                .catch(err => console.log(err));
+                .catch(console.error);
             break;
     }
 })
 
 PAP.on('messageReactionAdd', async (reaction, user) => {
-    try {
-        guildMap.get(reaction.message.guild?.id)
-            ?.onMessageReactionAdd(
-                reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
-                user.partial ? await user.fetch() : user as User,
-            )
-    } catch (err) {
-        console.error(err)
-    }
+    guildMap.get(reaction.message.guild?.id)
+        ?.onMessageReactionAdd(
+            reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
+            user.partial ? await user.fetch() : user as User,
+        ).catch(console.error);
 });
 
 PAP.on('messageReactionRemove', async (reaction, user) => {
-    try {
-        guildMap.get(reaction.message.guild?.id)
-            ?.onMessageReactionRemove(
-                reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
-                user.partial ? await user.fetch() : user as User,
-            )
-    } catch (err) {
-        console.error(err)
-    }
+    guildMap.get(reaction.message.guild?.id)
+        ?.onMessageReactionRemove(
+            reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
+            user.partial ? await user.fetch() : user as User,
+        ).catch(console.error);
 });
 
 PAP.on('guildMemberAdd', (member) => {
     guildMap.get(member.guild.id)
         ?.onGuildMemberAdd(member)
-        .catch(err => console.log(err));
+        .catch(console.error);
 });
 
 PAP.on('guildMemberRemove', async (member) => {
     if (member.partial) await member.fetch().catch(console.error);
-    guildMap.get(member.guild.id).onGuildMemberRemove(member as GuildMember)
-        .catch(err => console.log(err));
+    guildMap.get(member.guild.id)
+        .onGuildMemberRemove(member as GuildMember)
+        .catch(console.error);
 
 });
 
@@ -303,7 +286,7 @@ PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
         ?.onGuildMemberUpdate(
             oldMember.partial ? await oldMember.fetch() : oldMember as GuildMember,
             newMember)
-        .catch(err => console.log(err));
+        .catch(console.error);
 });
 
 PAP.on('error', (error) => {
