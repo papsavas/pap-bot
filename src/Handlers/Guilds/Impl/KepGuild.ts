@@ -6,7 +6,7 @@ import { channels } from "values/KEP/IDs.json";
 import { channels as WOAPchannels } from "values/WOAP/IDs.json";
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
-import { sendEmail } from '../../../toolbox/Google/Gmail';
+import { sendEmail } from '../../../tools/Google/Gmail';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
@@ -53,6 +53,12 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             case channels.memes: {
                 if (message.attachments.size === 0 || !urlRegex({ strict: true, exact: false }).test(message.content) && message.deletable)
                     await message.delete();
+                break;
+            }
+
+            case channels.feedback: {
+                await message.react('👎');
+                await message.react('👍');
                 break;
             }
 

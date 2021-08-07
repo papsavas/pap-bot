@@ -1,6 +1,6 @@
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Student } from "../../Entities/KEP/Student";
-import { RequireAtLeastOne } from "../../toolbox/types";
+import { RequireAtLeastOne } from "../../tools/types";
 
 export async function fetchStudent(
     clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">,

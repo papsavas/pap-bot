@@ -29,7 +29,7 @@ import { genericGuildResponses } from "../../Queries/Generic/GenericGuildRespons
 import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
-import { randomArrayValue } from "../../toolbox/randomArrayValue";
+import { randomArrayValue } from "../../tools/randomArrayValue";
 import { GenericGuild } from "./GenericGuild";
 
 

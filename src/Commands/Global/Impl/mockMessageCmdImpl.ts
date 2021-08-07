@@ -2,7 +2,7 @@ import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteractio
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
+import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
 import { AbstractDMCommand } from '../../DM/AbstractDMCommand';
 import { mockMessageCmd } from '../Interf/mockMessageCmd';
 

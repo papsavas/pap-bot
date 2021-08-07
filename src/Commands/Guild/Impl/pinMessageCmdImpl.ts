@@ -2,7 +2,7 @@ import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteractio
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { extractId } from "../../../toolbox/extractMessageId";
+import { extractId } from "../../../tools/extractMessageId";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pinMessageCmd } from "../Interf/pinMessageCmd";
 
