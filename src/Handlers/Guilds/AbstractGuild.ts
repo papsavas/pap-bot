@@ -1,6 +1,6 @@
 import {
     ButtonInteraction,
-    Client, CommandInteraction, Guild,
+    Client, CommandInteraction, Constants, Guild,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
@@ -126,9 +126,9 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(this.addGuildLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
     }
 
-    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<any> {
+    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
         switch (reaction.emoji.name) {
-            case "📌": case "📍":
+            case "📌": case "📍": {
                 let response: string;
                 if (!reaction.message.pinnable) {
                     response = `*Missing \`MANAGE_MESSAGES\` permission to pin this message*`;
@@ -136,8 +136,18 @@ export abstract class AbstractGuild implements GenericGuild {
                 else if (reaction.message.pinned) {
                     response = `Message is already pinned`
                 }
-                else
-                    return reaction.message.pin();
+                else {
+                    try {
+                        await reaction.message.pin();
+                        return
+                    } catch (error) {
+                        if (error.code === Constants.APIErrors.MAXIMUM_PINS)
+                            response = `Maximum Number of pins reached`;
+                        else
+                            return console.log(error);
+                    }
+                }
+
                 const msg = await reaction.message.channel.send(response);
                 await msg.react("🗑️");
                 const collected = await msg.awaitReactions({
@@ -147,6 +157,7 @@ export abstract class AbstractGuild implements GenericGuild {
                 })
                 await msg.delete();
                 break
+            }
 
             case "🔖": case "📑":
                 return user.send({

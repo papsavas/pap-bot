@@ -29,11 +29,22 @@ if (inDevelopment)
 console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
 export const PAP = new Client({
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
+    partials: [
+        'MESSAGE',
+        'CHANNEL',
+        'REACTION',
+        'USER',
+        'GUILD_MEMBER',
+    ],
     intents: [
-        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_MEMBERS',
-        'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
-        'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'
+        'GUILDS',
+        'GUILD_BANS',
+        'GUILD_EMOJIS_AND_STICKERS',
+        'GUILD_MEMBERS',
+        'GUILD_MESSAGES',
+        'GUILD_MESSAGE_REACTIONS',
+        'DIRECT_MESSAGES',
+        'DIRECT_MESSAGE_REACTIONS',
     ],
     allowedMentions: {
         parse: ['users'],
