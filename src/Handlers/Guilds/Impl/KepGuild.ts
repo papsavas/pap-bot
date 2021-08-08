@@ -2,15 +2,16 @@
 
 import { GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
 import urlRegex from 'url-regex';
-import { channels } from "values/KEP/IDs.json";
-import { channels as WOAPchannels } from "values/WOAP/IDs.json";
+import { channels } from "../../../../values/KEP/IDs.json";
+import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
+import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { sendEmail } from '../../../tools/Google/Gmail';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
-const specifiedCommands = [KEP_announceCmdImpl]; //add guild specific commands
+const specifiedCommands = [KEP_announceCmdImpl, KEP_adminCmdImpl]; //add guild specific commands
 export class KepGuild extends AbstractGuild implements GenericGuild {
     private constructor(id: Snowflake) {
         super(id);
