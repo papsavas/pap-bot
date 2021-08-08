@@ -15,7 +15,6 @@
     "discord-api-types": "^0.18.1",
     "discord.js": "^13.0.1",
     "dotenv": "^8.2.0",
-    "email-regex": "^5.0.0",
     "find-config": "^1.0.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",

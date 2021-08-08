@@ -1,5 +1,6 @@
+import { Snowflake } from "discord.js";
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
-import { Student } from "../../Entities/KEP/Student";
+import { PendingStudent, Student } from "../../Entities/KEP/Student";
 import { RequireAtLeastOne } from "../../tools/types";
 
 export async function fetchStudent(
@@ -20,3 +21,16 @@ export async function deleteStudents(clause: RequireAtLeastOne<Student, "am" | "
     return deleteBatch("student", clause);
 }
 
+export async function savePendingStudent(student: PendingStudent) {
+    if (Boolean(await fetchPendingStudent(student.am)))
+        await deleteBatch("pending_student", { am: student.am }); //replace previous record
+    return saveBatch("pending_student", [student]);
+}
+
+export function fetchPendingStudent(member_id: Snowflake) {
+    return findOne('pending_student', { member_id }) as Promise<PendingStudent>;
+}
+
+export function dropPendingStudent(member_id: Snowflake) {
+    return deleteBatch("pending_student", { member_id });
+}

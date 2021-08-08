@@ -19,6 +19,8 @@ export interface Student {
     uuid?: string
 }
 
+export type PendingStudent = Omit<Student, "classes" | "uuid" | "name"> & { password: number, date?: Date };
+
 export interface StudentFine {
     student_id: amType;
     channel_id?: Snowflake;

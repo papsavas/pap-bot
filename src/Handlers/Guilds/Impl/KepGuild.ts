@@ -31,6 +31,15 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     async onMessage(message: Message): Promise<unknown> {
         switch (message.channel.id) { //channels
+            case channels.registration: {
+                if (message.type === "DEFAULT") {
+                    if (message.deletable) await message.delete();
+                    await message.member.send({ content: `Παρακαλώ χρησιμοποιείστε **slash command** πατώντας \`/\` στο κανάλι <#${channels.registration}> και επιλέγοντας \`/registration register\`` })
+                        .catch();
+                }
+                break;
+            }
+
             case channels.anonymous_approval:
                 if (message.embeds.length > 0) {
                     await message.react('✅');
@@ -62,12 +71,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 break;
             }
 
-            default: return Promise.resolve('no referenced channel');
+            default:
+                return Promise.resolve('no referenced channel');
         }
 
         switch ((message.channel as GuildChannel).parentId) { //categories
-            case channels.registration: //!replace this with single registration channel
-                return registration(message);
+
+            default:
+                return Promise.resolve('no referenced category');
         }
     }
 
