@@ -142,7 +142,6 @@ PAP.on('interactionCreate', async interaction => {
             globalCommandHandler.onSlashCommand(interaction)
                 .catch(console.error);
         }
-
         else if (interaction.guildId) {
             guildMap.get(interaction.guildId)
                 ?.onSlashCommand(interaction)

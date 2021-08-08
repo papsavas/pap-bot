@@ -15,7 +15,7 @@ export interface Student {
     email: `${amType}@uom.edu.gr`;
     member_id: Snowflake,
     name?: string | null;
-    classes?: Collection<uniClass['role_id'], uniClass[]>
+    classes?: Collection<uniClass['role_id'], uniClass>
     uuid?: string
 }
 

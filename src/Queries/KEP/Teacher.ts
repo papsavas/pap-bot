@@ -15,7 +15,7 @@ export async function addTeacher(teacher: Teacher) {
 
 export function deleteTeacher(username: Teacher['username']) {
     return findOne('teacher', { "username": username }, ['uuid']).then(async (teacher) => {
-        //!order matters, otherwise "teacher_class" will be violating foreign key constraint
+        //!order matters, otherwise "teacher_class" will be violating foreign key constraint, fixed with cascade
         await deleteBatch('teacher_class', { "teacher_id": teacher['uuid'] });
         await deleteBatch('teacher', { "uuid": teacher['uuid'] });
     });

@@ -4,7 +4,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { fetchPendingStudent, fetchStudent, savePendingStudent } from "../../../Queries/KEP/Student";
+import { dropPendingStudent, fetchPendingStudent, fetchStudent, savePendingStudent } from "../../../Queries/KEP/Student";
 import { sendEmail } from "../../../tools/Google/Gmail";
 import { generateRandomNumber } from "../../../tools/randomNumber";
 import { studentEmailregex } from "../../../tools/regexs";
@@ -108,6 +108,7 @@ ${pswd}\n
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
                     await member.user.send(`Καλώς ήρθες και επισήμως!\nΔιάβασε το <#${kepChannels.readme}> και τους κανόνες <#${kepChannels.rules}> ώστε να προσανατολιστείς`)
                         .catch()
+                    await dropPendingStudent(interaction.user.id);
                 }
                 else {
                     await interaction.editReply(`Λανθασμένος κωδικός. Σιγουρευτείτε ότι αντιγράψατε σωστά τον δεκαψήφιο κωδικό που σας απεστάλη στο ακαδημαϊκό σας email`);

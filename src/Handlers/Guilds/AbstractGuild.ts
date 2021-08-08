@@ -77,7 +77,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._settings;
     }
 
-    async onReady(client: Client): Promise<string> {
+    async onReady(client: Client): Promise<unknown> {
         this._guild = client.guilds.cache.get(this.guildID);
         await this.loadResponses()
         return Promise.resolve(`loaded ${this.guild.name}`);

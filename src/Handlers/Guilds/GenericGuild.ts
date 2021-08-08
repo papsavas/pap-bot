@@ -6,7 +6,7 @@ export interface GenericGuild {
 
     readonly commandManager: GuildCommandManager;
 
-    onReady(client: Client): Promise<string | void>;
+    onReady(client: Client): Promise<unknown>;
 
     onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
 

@@ -1,17 +1,21 @@
 import { GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
+import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
-import { sendEmail } from '../../../tools/Google/Gmail';
-import { studentEmailregex } from '../../../tools/regexs';
+import { Student } from '../../../Entities/KEP/Student';
+import { fetchStudents } from '../../../Queries/KEP/Student';
+import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
 const specifiedCommands = [KEP_announceCmdImpl, KEP_adminCmdImpl]; //add guild specific commands
 export class KepGuild extends AbstractGuild implements GenericGuild {
+    public events: calendar_v3.Schema$Event[];
+    public students: Student[];
     private constructor(id: Snowflake) {
         super(id);
     }
@@ -26,7 +30,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     .concat(guild.specifiedCommands ?? [])) //merge specified commands if any
 
         );
+        guild.events = await fetchEvents();
+        guild.students = await fetchStudents();
         return guild;
+    }
+
+    async onReady(client): Promise<unknown> {
+        return super.onReady(client);
+
     }
 
     async onMessage(message: Message): Promise<unknown> {
@@ -120,21 +131,5 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         } finally {
             return Promise.resolve();
         }
-    }
-}
-
-async function emailStudent(email: string) {
-    //await save rand number with email
-    return sendEmail(
-        email,
-        "Επαλήθευση Λογαριασμού",
-        "Προσθέστε αυτόν τον αριθμό..."
-    )
-}
-
-async function registration(message: Message): Promise<unknown> {
-    if (message.channel.id === channels.registration) {
-        const email = message.cleanContent.match(studentEmailregex);
-        return email ? emailStudent(email[0]) : message.react('❌');
     }
 }
