@@ -59,9 +59,6 @@ function send(auth, data) {
     })
 }
 
-
-
-
 //TODO: fix subject characters
 function makeBody(to, from, subject, message) {
     const str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",

@@ -10,7 +10,7 @@ const maxResults: number = 300;
 export async function fetchEvents(past = false) {
     const credentials: googleCredentials = {
         installed: {
-            client_id: process.env.GCALENDAR_CLIEND_ID,
+            client_id: process.env.GCALENDAR_CLIENT_ID,
             project_id: process.env.GCALENDAR_PROJECT_ID,
             auth_uri: "https://accounts.google.com/o/oauth2/auth",
             token_uri: "https://oauth2.googleapis.com/token",
