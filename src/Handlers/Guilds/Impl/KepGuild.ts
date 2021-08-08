@@ -1,5 +1,3 @@
-//WIP
-
 import { GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
@@ -8,6 +6,7 @@ import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl'
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { sendEmail } from '../../../tools/Google/Gmail';
+import { studentEmailregex } from '../../../tools/regexs';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
@@ -124,7 +123,7 @@ async function emailStudent(email: string) {
 
 async function registration(message: Message): Promise<unknown> {
     if (message.channel.id === channels.registration) {
-        const email = message.cleanContent//.match(/*emailRegex*/)
-        return email ? emailStudent(email) : message.react('❌');
+        const email = message.cleanContent.match(studentEmailregex);
+        return email ? emailStudent(email[0]) : message.react('❌');
     }
 }

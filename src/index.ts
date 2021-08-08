@@ -53,7 +53,7 @@ export const PAP = new Client({
 });
 
 async function runScript() {
-    //-----insert script--------
+    //-----insert script-------
 
     //-------------------------
     console.log('script done');
