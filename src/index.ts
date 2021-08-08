@@ -24,7 +24,7 @@ let globalCommandHandler: GlobalCommandHandler;
 export let globalCommandsIDs: Snowflake[];
 
 if (inDevelopment)
-    require('dotenv').config({ path: '../.env' });  //load env variables
+    require('dotenv').config({ path: require('find-config')('.env') })  //load env variables
 
 console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
