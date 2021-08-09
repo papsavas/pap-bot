@@ -15,6 +15,8 @@ import { deleteGuild, saveGuild } from './Queries/Generic/Guild';
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
+let testChannel: TextChannel;
+
 export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
 
 console.log(`inDevelopment is ${inDevelopment}`);
@@ -67,7 +69,8 @@ PAP.on('ready', async () => {
         const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
         bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
-        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
+        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel;
+        testChannel = PAPGuildChannels.cache.get('755136367935226098') as TextChannel
         if (!inDevelopment)
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 

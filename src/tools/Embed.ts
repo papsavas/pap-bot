@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from "discord.js";
+import { EmbedFieldData, Message, MessageEmbed } from "discord.js";
 
 export function paginationEmbed(
     userMessage: Message, targetStructure: string[], perPage: number,
@@ -53,4 +53,24 @@ export function paginationEmbed(
             })
         }
         ).catch(err => new Error(err));
+}
+
+
+export function sliceEmbeds(data: EmbedFieldData[],
+    options: {
+        author?: MessageEmbed["author"],
+        title?: MessageEmbed["title"],
+        description?: MessageEmbed["description"],
+        footer?: MessageEmbed["footer"],
+
+    },
+    size = 20
+): MessageEmbed[] {
+    if (size > 20) throw new Error("embed fields are 20 max");
+    const embeds = [new MessageEmbed(options)];
+    for (let i = 0; i < data.length; i += size) {
+        if (i >= size * 9) return embeds;
+        embeds.push(new MessageEmbed().addFields(data.slice(i, i + size)));
+    }
+    return embeds;
 }

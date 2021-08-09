@@ -1,4 +1,4 @@
-import { GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
+import { Collection, GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
@@ -15,7 +15,7 @@ import { GenericGuild } from "../GenericGuild";
 const specifiedCommands = [KEP_announceCmdImpl, KEP_adminCmdImpl]; //add guild specific commands
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
-    public students: Student[];
+    public students: Collection<Snowflake, Student>;
     private constructor(id: Snowflake) {
         super(id);
     }
@@ -105,7 +105,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                                 await targetChannel.send({ embeds: [emb] });
                                 await reaction.message.reactions.removeAll();
                                 reaction.message.react('☑');
-
                             } catch (err) {
                                 console.log(err);
                             }

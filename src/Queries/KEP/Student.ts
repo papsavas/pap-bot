@@ -11,8 +11,9 @@ export async function fetchStudent(
 }
 
 
-export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Student[]> {
+export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Collection<Snowflake, Student>> {
     const students = await findAll('student', true, returnings) as Student[];
+    const collection = new Collection<Snowflake, Student>();
     for (const student of students) {
         student.classes = new Collection<Snowflake, uniClass>();
         //TODO: use JOIN
@@ -23,8 +24,9 @@ export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Stu
             if (uniClass)
                 student.classes.set(uniClass.role_id, uniClass);
         }
+        collection.set(student.member_id, student);
     }
-    return students;
+    return collection;
 }
 
 export function addStudents(students: Student[], returnings?: keyof Student): Promise<unknown> {

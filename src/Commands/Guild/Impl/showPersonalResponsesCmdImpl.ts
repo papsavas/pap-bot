@@ -3,7 +3,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildMemberResponses } from "../../../Queries/Generic/MemberResponses";
-import { paginationEmbed } from "../../../tools/paginatedEmbed";
+import { paginationEmbed } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
