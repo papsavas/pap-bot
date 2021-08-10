@@ -6,7 +6,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { textSimilarity } from "../../../tools/cmptxt";
-import { sliceEmbeds } from "../../../tools/Embed";
+import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myExamsCmd } from "../Interf/KEP_myExamsCmd";
 
@@ -67,13 +67,13 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
                 )
             )
 
-        const responseEmbeds = sliceEmbeds(
-            studentClasses.map(ev => ({ name: ev.summary, value: ev.start.date })),
-            {
+        const responseEmbeds = sliceToEmbeds({
+            data: studentClasses.map(ev => ({ name: ev.summary, value: ev.start.date })),
+            headerEmbed: {
                 title: `MyExams`,
                 description: `Description`
             }
-        )
+        })
         await interaction.reply({
             content: `Που θα θέλατε να σας το στείλω;`,
         })
@@ -143,13 +143,13 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
                 )
             )
 
-        const responseEmbeds = sliceEmbeds(
-            studentClasses.map(ev => ({ name: ev.summary, value: ev.start.date })),
-            {
+        const responseEmbeds = sliceToEmbeds({
+            data: studentClasses.map(ev => ({ name: ev.summary, value: ev.start.date })),
+            headerEmbed: {
                 title: `MyExams`,
                 description: `Description`
             }
-        )
+        })
 
         try {
             return message.author.send({ embeds: responseEmbeds });

@@ -6,7 +6,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { textSimilarity } from "../../../tools/cmptxt";
-import { sliceEmbeds } from "../../../tools/Embed";
+import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myScheduleCmd } from "../Interf/KEP_myScheduleCmd";
 
@@ -77,14 +77,15 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
             )
         )
 
-    const embeds = sliceEmbeds(
-        studentClasses.map(ev => ({
-            name: ev.summary, value: ev.start.date
-        })),
-        {
+    const embeds = sliceToEmbeds({
+        data: studentClasses
+            .map(ev => ({
+                name: ev.summary, value: ev.start.date
+            })),
+        headerEmbed: {
             title: `MySchedule`,
             description: `Το εβδομαδιαίο σας πρόγραμμα`
         }
-    )
+    })
     return request.reply({ embeds });
 }

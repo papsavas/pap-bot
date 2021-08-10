@@ -4,7 +4,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
-import { sliceEmbeds } from "../../../tools/Embed";
+import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
@@ -62,9 +62,13 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                     ephemeral: true
                 });
 
-            const embs = sliceEmbeds(res.reverse().map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })), {
-                title: 'logs'
-            }, 5);
+            const embs = sliceToEmbeds({
+                data: res.reverse().map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })),
+                headerEmbed: {
+                    title: `Logs`
+                },
+                size: 5
+            })
             return interaction.followUp({
                 embeds: embs,
                 allowedMentions: { parse: [] },
@@ -95,9 +99,15 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                         try {
                             const res = await loadGuildLogs(guild.id);
                             if (res.length < 1) return channel.send(`no logs found`);
-                            const embs = sliceEmbeds(res.reverse().map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })), {
-                                title: 'logs'
-                            }, 5);
+                            const embs = sliceToEmbeds({
+                                data: res
+                                    .reverse() //show latest logs first
+                                    .map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })),
+                                headerEmbed: {
+                                    title: `Logs`
+                                },
+                                size: 5
+                            })
                             return channel.send({
                                 embeds: embs,
                                 allowedMentions: {

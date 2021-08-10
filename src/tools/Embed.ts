@@ -56,18 +56,21 @@ export function paginationEmbed(
 }
 
 
-export function sliceEmbeds(data: EmbedFieldData[],
-    options: {
+export function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
+    data: EmbedFieldData[],
+    headerEmbed: {
         author?: MessageEmbed["author"],
         title?: MessageEmbed["title"],
         description?: MessageEmbed["description"],
         footer?: MessageEmbed["footer"],
-
+        color?: MessageEmbed["color"],
+        thumbnail?: MessageEmbed["thumbnail"],
+        image?: MessageEmbed["image"],
     },
-    size = 20
-): MessageEmbed[] {
+    size?: number;
+}): MessageEmbed[] {
     if (size > 20) throw new Error("embed fields are 20 max");
-    const embeds = [new MessageEmbed(options)];
+    const embeds = [new MessageEmbed(headerEmbed)];
     for (let i = 0; i < data.length; i += size) {
         if (i >= size * 9) return embeds;
         embeds.push(new MessageEmbed().addFields(data.slice(i, i + size)));
