@@ -1,6 +1,7 @@
 import { ApplicationCommandData, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
+import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -50,7 +51,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 function handleRequest(request: Message | CommandInteraction): Promise<unknown> {
     const classes = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.classes;
     const events = (guildMap.get(kepGuildId) as KepGuild).events
-        .filter(ev => !ev.summary?.includes('[EXAMS]'));
+        .filter(ev => !ev.summary?.includes(examsPrefix));
 
     const respond = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
         { content: response, ephemeral: true } :

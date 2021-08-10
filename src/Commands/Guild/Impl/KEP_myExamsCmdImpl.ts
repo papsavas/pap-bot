@@ -1,6 +1,7 @@
 import { ApplicationCommandData, CommandInteraction, Constants, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
+import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -38,7 +39,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const classes = (guildMap.get(kepGuildId) as KepGuild).students.get(interaction.user.id)?.classes;
         const events = (guildMap.get(kepGuildId) as KepGuild).events
-            .filter(ev => ev.summary?.startsWith('[EXAMS]'));
+            .filter(ev => ev.summary?.startsWith(examsPrefix));
 
         if (!classes || classes.size === 0)
             return interaction.reply({
@@ -54,7 +55,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
 
         const studentClasses = events
             .map(ev => Object.assign(ev, {
-                summary: ev.summary.replace('[EXAMS]', '')
+                summary: ev.summary.replace(examsPrefix, '')
                     .trimStart()
                     .trimEnd()
             }))
@@ -116,7 +117,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
         const classes = (guildMap.get(kepGuildId) as KepGuild).students.get(message.author.id)?.classes;
         const events = (guildMap.get(kepGuildId) as KepGuild).events
-            .filter(ev => ev.summary?.startsWith('[EXAMS]'));
+            .filter(ev => ev.summary?.startsWith(examsPrefix));
 
         if (!classes || classes.size === 0)
             return message.reply({
@@ -130,7 +131,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
 
         const studentClasses = events
             .map(ev => Object.assign(ev, {
-                summary: ev.summary.replace('[EXAMS]', '')
+                summary: ev.summary.replace(examsPrefix, '')
                     .trimStart()
                     .trimEnd()
             }))
