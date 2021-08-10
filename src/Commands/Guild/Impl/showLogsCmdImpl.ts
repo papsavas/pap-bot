@@ -4,6 +4,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
+import { sliceEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
@@ -60,13 +61,12 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                     content: `no logs found`,
                     ephemeral: true
                 });
-            let literal: string = ``;
-            for (const el of res)
-                literal += `${el.member_id ? `<@${el.member_id}> | ` : ``}${el.log} | ${el.date.toString()}\n`;
+
+            const embs = sliceEmbeds(res.reverse().map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })), {
+                title: 'logs'
+            }, 5);
             return interaction.followUp({
-                content:
-                    //last 2000 characters
-                    `\`\`\`${literal.substr(0, 2000)}\`\`\``,
+                embeds: embs,
                 allowedMentions: { parse: [] },
                 ephemeral: true
             }
@@ -95,11 +95,11 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                         try {
                             const res = await loadGuildLogs(guild.id);
                             if (res.length < 1) return channel.send(`no logs found`);
-                            let literal = ``;
-                            for (const el of res)
-                                literal += `<@${el.member_id}> | ${el.log} | ${el.date.toString}\n`;
+                            const embs = sliceEmbeds(res.reverse().map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })), {
+                                title: 'logs'
+                            }, 5);
                             return channel.send({
-                                content: literal.toString(),
+                                embeds: embs,
                                 allowedMentions: {
                                     users: [],
                                     roles: [],
@@ -116,7 +116,10 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                         return collected.first().react('👌');
                 }
                 )
-                .catch(collected => { channel.send(`You didnt answer in time`) })
+                .catch(err => {
+                    console.log(err.toString());
+                    channel.send(`You didnt answer in time`)
+                })
         }
     }
 

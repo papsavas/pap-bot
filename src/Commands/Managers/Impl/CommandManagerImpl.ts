@@ -17,7 +17,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
             name: "help",
-            description: "displays support for a certain command",
+            description: `[${commands[0].type.toString()}] displays support for a certain command`,
             options: [
                 {
                     name: `command`,
