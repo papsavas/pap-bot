@@ -2,6 +2,7 @@ import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
     Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
+import { prefix as defaultPrefix } from "../../../../botconfig.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
 import { GenericCommand } from "../../GenericCommand";
@@ -35,7 +36,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     //TODO: implement permission guard
     async onManualCommand(message: Message): Promise<unknown> {
         const guildHandler = guildMap.get(message.guild.id);
-        const prefix = guildHandler.getSettings().prefix;
+        const prefix = guildHandler?.getSettings().prefix ?? defaultPrefix;
         const commandMessage = message;
         const candidateCommand = this.sliceCommandLiterals(message);
         const commandImpl = this.commands

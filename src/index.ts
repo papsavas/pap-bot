@@ -229,6 +229,8 @@ PAP.on('messageCreate', (receivedMessage) => {
 
     switch (receivedMessage.channel.type) {
         case 'DM':
+            dmHandler.onMessage(receivedMessage)
+                .catch(console.error);
             break;
 
         case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
@@ -254,6 +256,8 @@ PAP.on('messageDelete', async (deletedMessage) => {
 
     switch (deletedMessage.channel.type) {
         case 'DM':
+            dmHandler.onMessageDelete(deletedMessage as Message)
+                .catch(console.error);
             break;
 
         case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
@@ -265,19 +269,48 @@ PAP.on('messageDelete', async (deletedMessage) => {
 })
 
 PAP.on('messageReactionAdd', async (reaction, user) => {
-    guildMap.get(reaction.message.guild?.id)
-        ?.onMessageReactionAdd(
-            reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
-            user.partial ? await user.fetch() : user as User,
-        ).catch(console.error);
+    const r = reaction.partial ? await reaction.fetch() : reaction;
+    const u = user.partial ? await user.fetch() : user;
+    switch (reaction.message.channel.type) {
+        case 'DM':
+            dmHandler.onMessageReactionAdd(r as MessageReaction, u as User)
+                .catch(console.error);
+            break;
+
+        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+            guildMap.get(reaction.message.guild?.id)
+                ?.onMessageReactionAdd(
+                    r as MessageReaction,
+                    u as User,
+                ).catch(console.error);
+            break;
+
+        default:
+            bugsChannel.send(`received reaction from untracked channel type
+CHANNEL_TYPE: ${reaction.message.channel.type}
+ID: ${reaction.message.id}
+from: ${reaction.message.member.displayName}
+reaction: ${reaction.emoji.name}\n`).catch(console.error);
+    }
 });
 
 PAP.on('messageReactionRemove', async (reaction, user) => {
-    guildMap.get(reaction.message.guild?.id)
-        ?.onMessageReactionRemove(
-            reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
-            user.partial ? await user.fetch() : user as User,
-        ).catch(console.error);
+    const r = reaction.partial ? await reaction.fetch() : reaction;
+    const u = user.partial ? await user.fetch() : user;
+    switch (reaction.message.channel.type) {
+        case 'DM':
+            dmHandler.onMessageReactionRemove(r as MessageReaction, u as User)
+                .catch(console.error);
+            break;
+
+        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+            guildMap.get(reaction.message.guild?.id)
+                ?.onMessageReactionRemove(
+                    r as MessageReaction,
+                    u as User,
+                ).catch(console.error);
+            break;
+    };
 });
 
 PAP.on('guildMemberAdd', (member) => {
@@ -287,11 +320,10 @@ PAP.on('guildMemberAdd', (member) => {
 });
 
 PAP.on('guildMemberRemove', async (member) => {
-    if (member.partial) await member.fetch().catch(console.error);
-    guildMap.get(member.guild.id)
-        .onGuildMemberRemove(member as GuildMember)
+    const m = member.partial ? await member.fetch() : member;
+    guildMap.get(m.guild.id)
+        .onGuildMemberRemove(m as GuildMember)
         .catch(console.error);
-
 });
 
 PAP.on('guildMemberUpdate', async (oldMember, newMember) => {

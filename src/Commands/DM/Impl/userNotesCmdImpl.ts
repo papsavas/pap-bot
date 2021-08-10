@@ -4,12 +4,12 @@ import { userNote } from '../../../Entities/Generic/userNote';
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
-import { AbstractGlobalCommand } from '../../Global/AbstractGlobalCommand';
+import { AbstractDMCommand } from '../AbstractDMCommand';
 import { userNotesCmd } from '../Interf/userNotesCmd';
 
 
 
-export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
+export class userNotesCmdImpl extends AbstractDMCommand implements userNotesCmd {
 
     protected _id: Snowflake;
     protected _keyword = `notes`;

@@ -1,4 +1,4 @@
-import { ApplicationCommand, ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommand, ApplicationCommandData, Collection, Snowflake } from "discord.js";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";
@@ -11,13 +11,6 @@ export class DMCommandManagerImpl extends CommandManagerImpl implements DMComman
     constructor(dmCommands: GenericDMCommand[]) {
         super(dmCommands);
         this.commands = dmCommands;
-    }
-
-    onManualCommand(message: Message): Promise<unknown> {
-        throw new Error("Method not implemented. Need for implementation in order to skip super handler");
-    }
-    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
-        throw new Error("Method not implemented. Need for implementation in order to skip super handler");
     }
 
     fetchCommandData(commands: GenericDMCommand[]) {

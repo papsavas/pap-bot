@@ -3,12 +3,12 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
-import { AbstractDMCommand } from '../../DM/AbstractDMCommand';
+import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
 import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
-export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessageCmd {
+export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
     protected _id: Snowflake;
     protected _keyword = `mock`;
     protected _guide = `Mocks text`;
