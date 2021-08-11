@@ -22,7 +22,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
 
     private readonly _aliases = this.addKeywordToAliases
         (
-            [], this.keyword
+            ['bookmark', 'bm'], this.keyword
         );
 
     getCommandData(guild_id: Snowflake): MessageApplicationCommandData {

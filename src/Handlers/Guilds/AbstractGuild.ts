@@ -7,6 +7,7 @@ import {
 import { mentionRegex } from "../../../botconfig.json";
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
+import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
 import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
 import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
@@ -50,7 +51,7 @@ export abstract class AbstractGuild implements GenericGuild {
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
         AddResponseCmdImpl, ShowPersonalResponsesCmdImpl, RemovePersonalResponseCmdImpl,
-        NsfwSwitchCmdImpl, ShowLogsCmdImpl
+        NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;

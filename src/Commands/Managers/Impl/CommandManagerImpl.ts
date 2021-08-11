@@ -26,13 +26,33 @@ export abstract class CommandManagerImpl implements CommandManager {
                     type: 'STRING',
                     choices: commands.map(cmd => ({
                         name: cmd.keyword,
-                        value: cmd.guide.substring(0, 99)
+                        value: cmd.guide?.substring(0, 99) ?? 'context app'
                     })),
                     required: true
                 }
             ]
         }
     }
+
+    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
+        if (interaction.commandName == 'help')
+            return interaction.reply({
+                embeds: [
+                    new MessageEmbed({
+                        description: interaction.options.get('command').value as string
+                    })
+                ]
+                , ephemeral: true
+            }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
+
+
+        const candidateCommand = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
+        if (typeof candidateCommand !== "undefined")
+            return candidateCommand.interactiveExecute(interaction)
+                .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
+        else
+            return interaction.reply(`Command not found`);
+    };
 
     //TODO: implement permission guard
     async onManualCommand(message: Message): Promise<unknown> {
@@ -66,28 +86,6 @@ export abstract class CommandManagerImpl implements CommandManager {
         else
             return message.react('❔').catch();
     };
-
-    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
-        if (interaction.commandName == 'help')
-            return interaction.reply({
-                embeds: [
-                    new MessageEmbed({
-                        description: interaction.options.get('command').value as string
-                    })
-                ]
-                , ephemeral: true
-            }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
-
-
-        const candidateCommand = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
-        if (typeof candidateCommand !== "undefined")
-            return candidateCommand.interactiveExecute(interaction)
-                .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
-        else
-            return interaction.reply(`Command not found`);
-    };
-
-
 
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand<{}>>> {
