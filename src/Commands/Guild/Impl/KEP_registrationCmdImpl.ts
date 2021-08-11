@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
@@ -29,7 +29,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         (
             [], this.keyword
         );
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

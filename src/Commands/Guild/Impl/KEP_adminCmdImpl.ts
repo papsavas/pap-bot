@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -29,7 +29,7 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
         );
 
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

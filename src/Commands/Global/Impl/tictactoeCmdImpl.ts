@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
+import { ApplicationCommandData, ChatInputApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
@@ -68,7 +68,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
             ['tictactoe', 'tic-tac-toe', 'triliza', 'τριλιζα'], this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandData, CommandInteraction, Message,
+    ChatInputApplicationCommandData, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
     Snowflake
 } from 'discord.js';
@@ -31,7 +31,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

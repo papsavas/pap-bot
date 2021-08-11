@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -32,7 +32,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             ['announce', 'ann'], this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

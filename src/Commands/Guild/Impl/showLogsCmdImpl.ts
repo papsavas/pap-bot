@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -31,7 +31,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

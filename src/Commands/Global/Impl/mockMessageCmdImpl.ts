@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -28,7 +28,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
             this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

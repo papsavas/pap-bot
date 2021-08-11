@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction,
+    ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction,
     Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
@@ -36,7 +36,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             _keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: _keyword,
             description: this.guide,

@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
@@ -26,7 +26,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         (
             ["my_schedule", "schedule"], this.keyword
         );
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

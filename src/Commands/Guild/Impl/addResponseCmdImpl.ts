@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -30,7 +30,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

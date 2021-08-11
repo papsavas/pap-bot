@@ -1,6 +1,4 @@
-import {
-    ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissions, CommandInteraction, Constants, Message, MessageEmbed, Snowflake
-} from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
@@ -30,7 +28,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,

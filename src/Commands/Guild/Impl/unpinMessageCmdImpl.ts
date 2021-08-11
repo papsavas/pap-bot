@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Constants, GuildMember, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -33,7 +33,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: _keyword,
             description: this.guide,

@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { userNote } from '../../../Entities/Generic/userNote';
 import { guildMap } from '../../../index';
@@ -31,7 +31,7 @@ export class userNotesCmdImpl extends AbstractDMCommand implements userNotesCmd 
             this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,
