@@ -6,7 +6,6 @@ import {
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { GdmMember as _guide } from '../../guides.json';
 import { dmMember as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
@@ -40,7 +39,8 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: _keyword,
-            description: this.getGuide(),
+            description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: userOptionLiteral,
@@ -133,16 +133,8 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             })
     }
 
-    getKeyword(): string {
-        return _keyword;
-    }
-
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

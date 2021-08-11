@@ -34,7 +34,8 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: this.keyword,
-            description: this.guide
+            description: this.guide,
+            type: 'CHAT_INPUT',
         }
     }
 

@@ -32,7 +32,8 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: this.keyword,
-            description: this.guide
+            description: this.guide,
+            type: 'CHAT_INPUT',
         }
     }
 

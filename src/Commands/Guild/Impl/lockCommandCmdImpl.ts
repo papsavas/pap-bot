@@ -32,6 +32,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: cmdOptionLiteral,

@@ -1,6 +1,6 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
-    Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+    Collection, CommandInteraction, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../botconfig.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -18,6 +18,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         this.helpCommandData = {
             name: "help",
             description: `[${commands[0].type.toString()}] displays support for a certain command`,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: `command`,
@@ -66,7 +67,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             return message.react('❔').catch();
     };
 
-    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
+    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
         if (interaction.commandName == 'help')
             return interaction.reply({
                 embeds: [
@@ -194,9 +195,10 @@ export abstract class CommandManagerImpl implements CommandManager {
                     })
             ]
         }
-        ).then(msg => setTimeout(() => {
-            msg.delete().catch()
-        }, 30000));
+        )
+            .then(msg => setTimeout(() => {
+                msg.delete().catch()
+            }, 30000));
 
     }
 

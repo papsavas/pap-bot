@@ -1,6 +1,6 @@
 import {
     ButtonInteraction,
-    Client, CommandInteraction, Constants, Guild,
+    Client, CommandInteraction, Constants, ContextMenuInteraction, Guild,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
@@ -96,7 +96,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onSlashCommand(interaction: CommandInteraction): Promise<any> {
+    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<any> {
         return this.commandManager.onSlashCommand(interaction);
     }
 

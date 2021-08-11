@@ -16,7 +16,7 @@
 			"protected _id: Snowflake;\nprotected _keyword = ``;\nprotected _guide = ``;\nprotected _usage = ``;\n private constructor() {super()}",
 			"static async init(): Promise<$4>{\nconst cmd = new $3();\ncmd._id = await fetchCommandID(cmd.keyword);\nreturn cmd;\n}",
 			"private readonly _aliases = this.addKeywordToAliases\n(\n[],this.keyword\n);",
-			"getCommandData(guild_id: Snowflake): ApplicationCommandData { return {\nname: this.keyword,\ndescription: this.guide,\n}\n}",
+			"getCommandData(guild_id: Snowflake): ApplicationCommandData { return {\nname: this.keyword,\ndescription: this.guide,\ntype: 'CHAT_INPUT'\n,}\n}",
 			"async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {\n\n}",
 			"async execute(message: Message, { }: commandLiteral): Promise<unknown> {\n\n}",
 			"getAliases(): string[] {\n\treturn this._aliases;\n}",

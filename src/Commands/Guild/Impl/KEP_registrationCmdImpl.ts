@@ -33,6 +33,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: registerName,

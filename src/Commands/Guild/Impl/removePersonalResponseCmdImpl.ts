@@ -32,6 +32,7 @@ export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implemen
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: respOptionLiteral,

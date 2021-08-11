@@ -33,6 +33,7 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: onLiteral,

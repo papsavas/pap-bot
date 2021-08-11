@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/uuid": "^8.3.0",
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.0.1",
+    "discord.js": "^13.1.0-dev.1628683680.75b48d8",
     "dotenv": "^8.2.0",
     "find-config": "^1.0.0",
     "firebase": "^8.3.3",

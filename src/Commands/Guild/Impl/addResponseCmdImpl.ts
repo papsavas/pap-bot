@@ -34,6 +34,7 @@ export class AddResponseCmdImpl extends AbstractGuildCommand implements addRespo
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: responseOptionLiteral,

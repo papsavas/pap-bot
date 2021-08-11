@@ -33,6 +33,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: msgidOptionLiteral,

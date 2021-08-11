@@ -34,6 +34,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: cmdOptionLiteral,

@@ -37,6 +37,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         return {
             name: _keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: msgidOptionLiteral,

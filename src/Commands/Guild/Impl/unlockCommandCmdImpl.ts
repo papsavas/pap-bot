@@ -32,6 +32,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: cmdOptionLiteral,

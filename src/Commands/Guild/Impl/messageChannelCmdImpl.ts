@@ -32,6 +32,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: channelOptionLiteral,

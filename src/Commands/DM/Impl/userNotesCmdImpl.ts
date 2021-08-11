@@ -35,6 +35,7 @@ export class userNotesCmdImpl extends AbstractDMCommand implements userNotesCmd 
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: "add",

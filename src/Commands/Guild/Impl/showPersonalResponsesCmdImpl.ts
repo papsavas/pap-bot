@@ -33,7 +33,8 @@ export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implement
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: this.keyword,
-            description: this.guide
+            description: this.guide,
+            type: 'CHAT_INPUT',
         }
     }
 

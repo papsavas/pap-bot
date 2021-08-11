@@ -36,6 +36,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: contentLiteral,

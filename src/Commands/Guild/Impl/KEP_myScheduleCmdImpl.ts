@@ -30,6 +30,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {

@@ -30,6 +30,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: textOptionLiteral,
