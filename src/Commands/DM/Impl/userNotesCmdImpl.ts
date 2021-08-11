@@ -14,7 +14,7 @@ export class userNotesCmdImpl extends AbstractDMCommand implements userNotesCmd 
     protected _id: Snowflake;
     protected _keyword = `notes`;
     protected _guide = `Your personal notes`;
-    protected _usage = `notes [add <note> / remove <index> / edit <index> <note> / clear]`;
+    protected _usage = `notes add <note> / remove <index> / edit <index> <note> / clear / show`;
 
     private constructor() { super() }
 
@@ -141,6 +141,7 @@ export class userNotesCmdImpl extends AbstractDMCommand implements userNotesCmd 
     async execute({ author }: Message, { arg1, commandless2 }: commandLiteral) {
         const user_id = author.id;
         const user = author;
+        console.log(arg1);
         switch (arg1) {
             case 'add':
                 const addedNote = commandless2.trimStart().trimEnd();
@@ -163,11 +164,12 @@ export class userNotesCmdImpl extends AbstractDMCommand implements userNotesCmd 
 
             case 'show':
                 const notes: userNote[] = await fetchAllNotes(user_id);
-                await user.send(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
+                return user.send(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
 
-
-            case 'default':
-                return new Error(`$notes add <note>\n$notes edit <old_note>|<new_note>\n$notes remove <note>\n$notes clear\n$notes show`);
+            case undefined:
+            case '':
+            default:
+                throw new Error(`Invalid parameter: "**${arg1}**". Available options are listed above`);
         }
     }
 

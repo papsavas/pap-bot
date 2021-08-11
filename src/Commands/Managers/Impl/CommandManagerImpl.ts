@@ -35,24 +35,25 @@ export abstract class CommandManagerImpl implements CommandManager {
 
     //TODO: implement permission guard
     async onManualCommand(message: Message): Promise<unknown> {
-        const guildHandler = guildMap.get(message.guild.id);
+        const guildHandler = guildMap.get(message.guild?.id);
         const prefix = guildHandler?.getSettings().prefix ?? defaultPrefix;
         const commandMessage = message;
-        const candidateCommand = this.sliceCommandLiterals(message);
+        const candidateCommand = this.sliceCommandLiterals(message, prefix);
         const commandImpl = this.commands
             .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
         if (typeof commandImpl !== "undefined") {
+            let emote: string;
             try {
                 await commandImpl.execute(commandMessage, candidateCommand);
-                commandMessage?.react('✅')
-                // .catch()
+                emote = '✅';
             } catch (error) {
-                this.invalidCommand(error, commandMessage, commandImpl, candidateCommand.primaryCommand);
-                commandMessage?.react('❌');
+                this.invalidCommand(error, commandMessage, commandImpl, candidateCommand.primaryCommand, prefix);
+                emote = '❌';
             }
             finally {
-                await message?.reactions.removeAll();
+                const reaction = await commandMessage.react(emote);
+                await reaction.users.remove(reaction.client.user.id);
             }
         }
 
@@ -100,10 +101,9 @@ export abstract class CommandManagerImpl implements CommandManager {
         return newCommands;
     }
 
-    protected sliceCommandLiterals(receivedMessage: Message): commandLiteral {
+    protected sliceCommandLiterals(receivedMessage: Message, prefix: string): commandLiteral {
         const receivedMessageContent = receivedMessage.content;
-        const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id)
-            .getSettings().prefix.length); // Remove the prefix;
+        const fullCommand: string = receivedMessageContent.substr(prefix.length); // Remove the prefix;
         const splitCommand: string[] = fullCommand
             .split(/(\s+)/)
             .filter(e => e.trim().length > 0) //split command from space(s);
@@ -160,16 +160,15 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
 
-    protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
+    protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string, prefix: string) {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.message}`);
-        const prefix = guildMap.get(commandMessage.guild.id).getSettings().prefix;
         const bugsChannelEmbed = new MessageEmbed({
             author: {
-                name: commandMessage.guild.name,
+                name: commandMessage.guild?.name ?? commandMessage.author.username,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: commandMessage.guild.iconURL({ format: "png", size: 512 })
+                proxy_url: commandMessage.guild?.iconURL({ format: "png", size: 512 }) ?? commandMessage.author.avatarURL({ format: "png", size: 512 }),
             },
             title: primaryCommandLiteral,
             color: "DARK_RED",
