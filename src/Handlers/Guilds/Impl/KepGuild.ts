@@ -1,7 +1,8 @@
-import { Collection, GuildChannel, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
+import { Collection, GuildChannel, GuildChannelManager, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
+import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
 import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
@@ -9,9 +10,13 @@ import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdI
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchStudents } from '../../../Queries/KEP/Student';
+import { fetchUniClasses } from '../../../Queries/KEP/uniClass';
+import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
+import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
+import { uniClass } from './../../../Entities/KEP/uniClass';
 
 const guildCommands = [
     KEP_announceCmdImpl,
@@ -21,6 +26,7 @@ const guildCommands = [
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
     public students: Collection<Snowflake, Student>;
+    public classes: uniClass[];
     private constructor(id: Snowflake) {
         super(id);
     }
@@ -37,6 +43,8 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         );
         guild.events = await fetchEvents();
         guild.students = await fetchStudents();
+        guild.classes = await fetchUniClasses();
+        handleExamedChannels(guild.classes, guild.events, guild.guild.channels);
         return guild;
     }
 
@@ -136,4 +144,37 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             return Promise.resolve();
         }
     }
+}
+
+function handleExamedChannels(classes: uniClass[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {
+    return events.map(ev => {
+        const uniClass = classes.find(cl =>
+            textSimilarity(
+                ev.summary
+                    .replace(examsPrefix, '')
+                    .trimStart()
+                    .trimEnd(),
+                cl.name
+            ) > 0.85 ||
+            cl.code === ev.summary
+                .replace(examsPrefix, '')
+                .trimStart()
+                .trimEnd()
+        );
+        if (uniClass) {
+            const channel = channelManager.cache.get(uniClass.channel_id) as GuildChannel;
+            return scheduleTask(
+                ev.start.dateTime,
+                () => channel.permissionOverwrites.edit(uniClass.role_id, {
+                    SEND_MESSAGES: false
+                })
+            ).then(() => scheduleTask(
+                ev.end.dateTime,
+                () => channel.permissionOverwrites.edit(uniClass.role_id, {
+                    SEND_MESSAGES: true
+                })
+            ));
+        }
+    });
+
 }

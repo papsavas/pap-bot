@@ -1,6 +1,10 @@
-import { deleteBatch, findOne, saveBatch } from "../../DB/GenericCRUD";
+import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 import { uniClass } from "../../Entities/KEP/uniClass";
+
+export function fetchUniClasses(returnings?: (keyof uniClass)[]) {
+    return findAll('class', true, returnings) as Promise<uniClass[]>;
+}
 
 export function addUniClass(cl: uniClass) {
     return saveBatch('class', [cl]);

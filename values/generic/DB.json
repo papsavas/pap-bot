@@ -15,6 +15,7 @@
         "generic_responses",
         "command_perms",
         "student",
+        "pending_student",
         "user_notes",
         "bot_config",
         "secrets"
