@@ -12,7 +12,8 @@ export function addCourse(c: Course) {
 
 export async function linkTeacherToCourse(teacherUsername: Teacher['username'], courseCode: Course['code']) {
     const teacher = await findOne(teacherTable, { "username": teacherUsername }) as Teacher;
-    const course = await findOne(courseTable, { "code": courseCode }) as Course;
+    const courses = await findAll(courseTable, true) as Course[];
+    const course = courses.find(c => c.code.includes(courseCode)); //TODO: solve dual course codes
     return saveBatch(teacher_courseTable, [{ "course_id": course.uuid, "teacher_id": teacher.uuid }]);
 }
 

@@ -114,6 +114,7 @@ export abstract class AbstractGuild implements GenericGuild {
             return this.commandManager.onManualCommand(message);
         }
 
+        //TODO: switch to mention
         if (message.content.match(mentionRegex)) {
             return message.channel.sendTyping()
                 .then(() => message.reply(randomArrayValue(this._responses)))
