@@ -38,11 +38,11 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        const classes = (guildMap.get(kepGuildId) as KepGuild).students.get(interaction.user.id)?.classes;
+        const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(interaction.user.id)?.courses;
         const events = (guildMap.get(kepGuildId) as KepGuild).events
             .filter(ev => ev.summary?.startsWith(examsPrefix));
 
-        if (!classes || classes.size === 0)
+        if (!courses || courses.size === 0)
             return interaction.reply({
                 content: `Δεν βρέθηκαν μαθήματα`,
                 ephemeral: true
@@ -60,7 +60,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
                     .trimStart()
                     .trimEnd()
             }))
-            .filter(ev => classes
+            .filter(ev => courses
                 .find(c => textSimilarity(
                     c.name,
                     ev.summary
@@ -116,11 +116,11 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        const classes = (guildMap.get(kepGuildId) as KepGuild).students.get(message.author.id)?.classes;
+        const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(message.author.id)?.courses;
         const events = (guildMap.get(kepGuildId) as KepGuild).events
             .filter(ev => ev.summary?.startsWith(examsPrefix));
 
-        if (!classes || classes.size === 0)
+        if (!courses || courses.size === 0)
             return message.reply({
                 content: `Δεν βρέθηκαν μαθήματα`
             })
@@ -130,13 +130,13 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
                 content: `Δεν βρέθηκαν προγραμματισμένα μαθήματα`
             })
 
-        const studentClasses = events
+        const studentCourses = events
             .map(ev => Object.assign(ev, {
                 summary: ev.summary.replace(examsPrefix, '')
                     .trimStart()
                     .trimEnd()
             }))
-            .filter(ev => classes
+            .filter(ev => courses
                 .find(c => textSimilarity(
                     c.name,
                     ev.summary
@@ -145,7 +145,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
             )
 
         const responseEmbeds = sliceToEmbeds({
-            data: studentClasses.map(ev => ({ name: ev.summary, value: ev.start.date })),
+            data: studentCourses.map(ev => ({ name: ev.summary, value: ev.start.date })),
             headerEmbed: {
                 title: `MyExams`,
                 description: `Description`

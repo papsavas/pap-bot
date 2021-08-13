@@ -50,7 +50,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 }
 
 function handleRequest(request: Message | CommandInteraction): Promise<unknown> {
-    const classes = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.classes;
+    const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guildMap.get(kepGuildId) as KepGuild).events
         .filter(ev => !ev.summary?.includes(examsPrefix));
 
@@ -58,7 +58,7 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
         { content: response, ephemeral: true } :
         { content: response };
 
-    if (!classes || classes.size === 0)
+    if (!courses || courses.size === 0)
         return request.reply(respond("Δεν βρέθηκαν μαθήματα"));
 
     if (events.length === 0)
@@ -70,7 +70,7 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
                 .trimStart()
                 .trimEnd()
         }))
-        .filter(ev => classes
+        .filter(ev => courses
             .find(c => textSimilarity(
                 c.name,
                 ev.summary

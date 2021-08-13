@@ -19,5 +19,11 @@
         "user_notes",
         "bot_config",
         "secrets"
-    ]
+    ],
+    "courseTable": "course",
+    "teacherTable": "teacher",
+    "studentTable": "student",
+    "pendingStudentTable": "pending_student",
+    "teacher_courseTable": "teacher_course",
+    "student_courseTable": "student_course"
 }

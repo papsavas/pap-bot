@@ -1,22 +1,23 @@
+import { courseTable, teacherTable, teacher_courseTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 
 export async function addTeacher(teacher: Teacher) {
-    const { classes } = teacher;
-    delete teacher.classes;
-    const [teacherID] = await saveBatch('teacher', [teacher], 'uuid');
-    const relation: { teacher_id: string, class_id: string }[] = [];
-    for (const c of classes.values()) {
-        const classObj = await findOne('class', { "code": c.code }, ['uuid']);
-        relation.push({ teacher_id: teacherID, class_id: classObj['uuid'] });
+    const { courses } = teacher;
+    delete teacher.courses;
+    const [teacherID] = await saveBatch(teacherTable, [teacher], 'uuid');
+    const relation: { teacher_id: string, course_id: string }[] = [];
+    for (const c of courses.values()) {
+        const classObj = await findOne(courseTable, { "code": c.code }, ['uuid']);
+        relation.push({ teacher_id: teacherID, course_id: classObj['uuid'] });
     }
-    return saveBatch('teacher_class', relation);
+    return saveBatch(teacher_courseTable, relation);
 }
 
 export function deleteTeacher(username: Teacher['username']) {
-    return findOne('teacher', { "username": username }, ['uuid']).then(async (teacher) => {
+    return findOne(teacherTable, { "username": username }, ['uuid']).then(async (teacher) => {
         //!order matters, otherwise "teacher_class" will be violating foreign key constraint, fixed with cascade
-        await deleteBatch('teacher_class', { "teacher_id": teacher['uuid'] });
-        await deleteBatch('teacher', { "uuid": teacher['uuid'] });
+        await deleteBatch(teacher_courseTable, { "teacher_id": teacher['uuid'] });
+        await deleteBatch(teacherTable, { "uuid": teacher['uuid'] });
     });
 }
