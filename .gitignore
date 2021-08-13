@@ -3,3 +3,4 @@ node_modules/
 *.bat
 .idea
 .vscode/settings.json
+repo/
