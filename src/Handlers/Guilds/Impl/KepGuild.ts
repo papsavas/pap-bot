@@ -1,4 +1,4 @@
-import { Collection, GuildChannel, GuildChannelManager, Message, MessageReaction, Snowflake, TextChannel, User } from 'discord.js';
+import { Collection, GuildChannel, GuildChannelManager, Message, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
@@ -50,7 +50,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     async onReady(client): Promise<unknown> {
         return super.onReady(client);
-
     }
 
     async onMessage(message: Message): Promise<unknown> {
@@ -142,6 +141,22 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             console.log(error);
         } finally {
             return Promise.resolve();
+        }
+    }
+
+    async onSelectMenu(select: SelectMenuInteraction) {
+        switch (select.channel.id) {
+            case channels.select_classes: {
+                const codes = select.values;
+                const classes = this.classes.filter(cl => codes.includes(cl.code));
+                console.log(classes);
+                //TODO: find & assign roles
+                return select.reply({
+                    content: `you selected ${classes.map(cl => cl.name).toString()}`,
+                    ephemeral: true
+                });
+            }
+
         }
     }
 }

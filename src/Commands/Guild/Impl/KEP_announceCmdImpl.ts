@@ -1,17 +1,13 @@
 
 import { ChatInputApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from '../AbstractGuildCommand';
 import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
 
-throw new Error('dummy ids, remove if attached');
-
-//TODO: Add valid Channel ids
-
 const contentLiteral = `content`
-
 export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_announceCmd {
 
     protected _id: Snowflake;
@@ -72,7 +68,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         const roles = ["1", "2", "3"]
             .map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
             .filter(r => typeof r !== "undefined");
-        const newsChannel = interaction.guild.channels.cache.get('newsChannelID' as Snowflake) as TextChannel;
+        const newsChannel = interaction.guild.channels.cache.get(kepChannels.news as Snowflake) as TextChannel;
         const emb = new MessageEmbed({
             author: {
                 name: interaction.user.tag,
@@ -91,7 +87,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             ephemeral: true
         });
 
-        const modChannel = interaction.guild.channels.cache.get('mod guild id' as Snowflake) as TextChannel;
+        const modChannel = interaction.guild.channels.cache.get(kepChannels.mods as Snowflake) as TextChannel;
         const approveLiteral = 'approve';
         const approveBtn = new MessageButton()
             .setCustomId(approveLiteral)
@@ -122,7 +118,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         }
         else
             await response.update({
-                content: `Απορρίφθηκε από ${response.user.tag}`,
+                content: `Απορρίφθηκε από **${response.user.tag}**`,
                 embeds: [emb],
                 components: [new MessageActionRow().addComponents(rejectBtn.setDisabled(true))]
             });

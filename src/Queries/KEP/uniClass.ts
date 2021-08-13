@@ -10,7 +10,7 @@ export function addUniClass(cl: uniClass) {
     return saveBatch('class', [cl]);
 }
 
-export async function linkTeacherToUniClass(teacherUsername: string, classCode: string) {
+export async function linkTeacherToUniClass(teacherUsername: Teacher['username'], classCode: uniClass['code']) {
     const teacher = await findOne('teacher', { "username": teacherUsername }) as Teacher;
     const uniClass = await findOne('class', { "code": classCode }) as uniClass;
     return saveBatch('teacher_class', [{ "class_id": uniClass.uuid, "teacher_id": teacher.uuid }]);
@@ -18,7 +18,7 @@ export async function linkTeacherToUniClass(teacherUsername: string, classCode: 
 
 export function deleteUniClass(code: uniClass['code']) {
     return findOne('class', { "code": code }, ['uuid']).then(async (uniClass) => {
-        //!order matters, otherwise "teacher_class" will be violating foreign key constraint
+        //!order matters, otherwise "teacher_class" will be violating foreign key constraint, fixed with cascade
         await deleteBatch('teacher_class', { "class_id": uniClass['uuid'] });
         await deleteBatch('class', { "uuid": uniClass['uuid'] });
     });
