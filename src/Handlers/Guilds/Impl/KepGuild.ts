@@ -1,4 +1,4 @@
-import { Collection, GuildChannel, GuildChannelManager, Message, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { Collection, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
@@ -45,12 +45,12 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         guild.events = await fetchEvents();
         guild.students = await fetchStudents();
         guild.courses = await fetchCourses();
-        guild.courseRoles = guild.courses.map(course => guild.guild.roles.cache.get(course.role_id));
+
         return guild;
     }
 
     async onReady(client): Promise<unknown> {
-        handleExamedChannels(this.courses, this.events, this.guild.channels);
+        //handleExamedChannels(this.courses, this.events, this.guild.channels);
         return super.onReady(client);
     }
 
@@ -150,17 +150,53 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         switch (select.channel.id) {
             case channels.select_courses: {
                 const codes = select.values;
-                const courses = this.courses.filter(cl => codes.includes(cl.code));
-                console.log(courses);
-                //TODO: find & assign roles
+                const semester = select.customId;
+                const semesterCourses = this.courses.filter(c => c.semester == semester)
+                const selectedCourses = this.courses.filter(cl => codes.includes(cl.code));
+                const semesterRolesIds: Snowflake[] = semesterCourses.map(c => c.role_id);
+                const member = await select.guild.members.fetch(select.user.id);
+                const oldSemesterRoles = member.roles.cache.filter(r => semesterRolesIds.includes(r.id));
+                await member.roles.remove(semesterRolesIds);
+                await member.roles.add(selectedCourses.map(c => c.role_id));
+                const newSemesterCourses = selectedCourses.filter(c => !oldSemesterRoles.has(c.role_id));
+                const [added, removed] = [
+                    newSemesterCourses
+                        .map(c => `**• ${c.name}**`)
+                        .join('\n'),
+                    oldSemesterRoles
+                        .filter(r => !selectedCourses.find(c => c.role_id === r.id))
+                        .map(r => `**• ${r.name}**`)
+                        .join('\n')
+                ]
+
+                const header = {
+                    author: {
+                        name: member.displayName,
+                        icon_url: member.user.avatarURL()
+                    },
+                    title: `${semester}ο Εξάμηνο`
+                }
+                const logEmbeds: MessageEmbed[] = [];
+
+                if (added.length > 0) logEmbeds.push(
+                    new MessageEmbed(header)
+                        .setColor("BLUE")
+                        .addFields([{ name: 'Προστέθηκαν', value: added }])
+                );
+                if (removed.length > 0) logEmbeds.push(
+                    new MessageEmbed(header)
+                        .setColor("RED")
+                        .addFields([{ name: 'Αφαιρέθηκαν', value: removed }])
+                );
                 return select.reply({
-                    content: `you selected ${courses.map(cl => cl.name).toString()}`,
+                    embeds: logEmbeds,
                     ephemeral: true
                 });
             }
 
         }
     }
+
 }
 
 function handleExamedChannels(courses: Course[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {
