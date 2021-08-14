@@ -1,5 +1,6 @@
 import { ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
+import { reasons } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { guildMap } from "../../../index";
@@ -65,8 +66,18 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        const existingStudent = await fetchStudent({ member_id: interaction.user.id });
         const cmdOptions = interaction.options.get(registerName).options;
-        if (Boolean(await fetchStudent({ member_id: interaction.user.id })))
+        if (existingStudent.blocked) {
+            await interaction.reply({
+                content: `Έχετε αποκλειστεί`,
+                ephemeral: true
+            });
+            const member = interaction.guild.members.cache.get(interaction.user.id);
+            if (member.bannable) await member.ban({ reason: reasons.blockedStudentAccount })
+            return
+        }
+        if (Boolean(existingStudent))
             return interaction.reply({
                 content: `Έχετε ήδη εγγραφεί. Σας έχει δωθεί ο ρόλος <@&${kepRoles.student}>`,
                 ephemeral: true,

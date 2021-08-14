@@ -1,3 +1,6 @@
 {
-    "examsPrefix": "[EXAMS]"
+    "examsPrefix": "[EXAMS]",
+    "reasons": {
+        "blockedStudentAccount": "Already blocked student"
+    }
 }

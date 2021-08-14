@@ -1,6 +1,6 @@
 import { Collection, Snowflake } from "discord.js";
 import { courseTable, pendingStudentTable, studentTable, student_courseTable } from "../../../values/generic/DB.json";
-import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
+import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { PendingStudent, Student } from "../../Entities/KEP/Student";
 import { RequireAtLeastOne } from "../../tools/types";
@@ -51,3 +51,10 @@ export function fetchPendingStudent(member_id: Snowflake) {
 export function dropPendingStudent(member_id: Snowflake) {
     return deleteBatch(pendingStudentTable, { member_id });
 }
+
+export const banStudent = (member_id: Snowflake) =>
+    updateAll(studentTable, { member_id }, { "blocked": true });
+
+
+export const unbanStudent = (member_id: Snowflake) =>
+    updateAll(studentTable, { member_id }, { "blocked": false });

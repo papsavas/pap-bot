@@ -1,5 +1,5 @@
 
-import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, ContextMenuInteraction, GuildMember, Message, MessageReaction, SelectMenuInteraction, User } from 'discord.js';
+import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, ContextMenuInteraction, GuildBan, GuildMember, Message, MessageReaction, SelectMenuInteraction, User } from 'discord.js';
 import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 export interface GenericGuild {
@@ -27,6 +27,10 @@ export interface GenericGuild {
     onGuildMemberRemove(member: GuildMember): Promise<unknown>;
 
     onGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<unknown>;
+
+    onGuildBanAdd(ban: GuildBan): Promise<unknown>;
+
+    onGuildBanRemove(ban: GuildBan): Promise<unknown>;
 
     addGuildLog(log: string): string;
 

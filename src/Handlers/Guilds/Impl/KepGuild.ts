@@ -1,4 +1,4 @@
-import { Collection, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
@@ -11,7 +11,7 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
-import { fetchStudents } from '../../../Queries/KEP/Student';
+import { banStudent, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -158,6 +158,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 const oldSemesterRoles = member.roles.cache.filter(r => semesterRolesIds.includes(r.id));
                 await member.roles.remove(semesterRolesIds);
                 await member.roles.add(selectedCourses.map(c => c.role_id));
+                //! filtering courses with roles & vice versa might cause name variance
                 const newSemesterCourses = selectedCourses.filter(c => !oldSemesterRoles.has(c.role_id));
                 const [added, removed] = [
                     newSemesterCourses
@@ -168,7 +169,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         .map(r => `**• ${r.name}**`)
                         .join('\n')
                 ]
-
                 const header = {
                     author: {
                         name: member.displayName,
@@ -177,7 +177,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     title: `${semester}ο Εξάμηνο`
                 }
                 const logEmbeds: MessageEmbed[] = [];
-
                 if (added.length > 0) logEmbeds.push(
                     new MessageEmbed(header)
                         .setColor("BLUE")
@@ -197,6 +196,19 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         }
     }
 
+    onGuildBanAdd(ban: GuildBan) {
+        const { user } = ban;
+        const logs = this.guild.channels.cache.get(channels.logs) as TextChannel;
+        logs.send(`Banned ${user.username}`);
+        return banStudent(user.id);
+    }
+
+    onGuildBanRemove(unban: GuildBan) {
+        const { user } = unban;
+        const logs = this.guild.channels.cache.get(channels.logs) as TextChannel;
+        logs.send(`Unbanned ${user.username}`);
+        return unbanStudent(user.id);
+    }
 }
 
 function handleExamedChannels(courses: Course[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {

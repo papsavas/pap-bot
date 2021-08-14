@@ -14,12 +14,12 @@ export interface Student {
     am: amType;
     email: `${amType}@uom.edu.gr`;
     member_id: Snowflake,
-    name?: string | null;
+    blocked?: boolean,
     courses?: Collection<Course['role_id'], Course>
     uuid?: string
 }
 
-export type PendingStudent = Omit<Student, "courses" | "uuid" | "name"> & { password: number, date?: Date };
+export type PendingStudent = Omit<Student, "courses" | "uuid" | "blocked"> & { password: number, date?: Date };
 
 export interface StudentFine {
     student_id: amType;

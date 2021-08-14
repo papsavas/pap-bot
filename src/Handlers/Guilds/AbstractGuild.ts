@@ -1,6 +1,7 @@
 import {
     ButtonInteraction,
     Client, CommandInteraction, Constants, ContextMenuInteraction, Guild,
+    GuildBan,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
@@ -195,6 +196,14 @@ export abstract class AbstractGuild implements GenericGuild {
 
     onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<any> {
         return Promise.resolve(`reaction removed`);
+    }
+
+    onGuildBanAdd(ban: GuildBan): Promise<unknown> {
+        return Promise.resolve(`banned ${ban.user.tag}`);
+    }
+
+    onGuildBanRemove(ban: GuildBan): Promise<unknown> {
+        return Promise.resolve(`unbanned ${ban.user.tag}`);
     }
 
 

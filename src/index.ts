@@ -355,6 +355,18 @@ PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
         .catch(console.error);
 });
 
+PAP.on('guildBanAdd', ban => {
+    guildMap.get(ban.guild.id)
+        ?.onGuildBanAdd(ban)
+        .catch(console.error);
+})
+
+PAP.on('guildBanRemove', ban => {
+    guildMap.get(ban.guild.id)
+        ?.onGuildBanRemove(ban)
+        .catch(console.error);
+})
+
 PAP.on('error', (error) => {
     console.error(error);
 });
