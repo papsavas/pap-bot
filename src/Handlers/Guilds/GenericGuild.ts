@@ -6,6 +6,8 @@ export interface GenericGuild {
 
     readonly commandManager: GuildCommandManager;
 
+    readonly guild: Guild;
+
     onReady(client: Client): Promise<unknown>;
 
     onGuildJoin(guild: Guild): Promise<unknown>;
