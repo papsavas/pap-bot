@@ -105,40 +105,46 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         await interaction.deferReply({ ephemeral: true });
         const user_id = interaction.user.id;
         const subCommand = interaction.options.getSubcommand();
-        const options = interaction.options.get(subCommand).options;
+        const noteOption = interaction.options.getString('note');
+        const oldNoteOption = interaction.options.getString('old_note');
+        const newNoteOption = interaction.options.getString('new_note');
         try {
             switch (subCommand) {
-                case 'add':
-                    const addedNote = options[0].value as string;
-                    await addNote(user_id, addedNote);
-                    return interaction.editReply(`you added: ${addedNote}`);
-
-                case 'edit':
-                    const oldNote = options[0].value as string;
-                    const newNote = options[1].value as string;
+                case 'add': {
+                    const addedNote = noteOption;
+                    const notes = await addNote(user_id, addedNote);
+                    return interaction.editReply({
+                        content: `added \`\`\`${notes[0].note}\`\`\``
+                    });
+                }
+                case 'edit': {
+                    const oldNote = oldNoteOption;
+                    const newNote = newNoteOption;
                     const res = await editNote(user_id, oldNote, newNote);
-                    return interaction.editReply(`note edited to ${res.note.substr(0, 10)}...`);
-
-                case 'remove':
-                    const removingNote = options[0].value as string;
+                    return interaction.editReply({
+                        content: `note edited to ${res[0].note.substr(0, 1000)}...`
+                    });
+                }
+                case 'remove': {
+                    const removingNote = noteOption;
                     const n = await deleteNote(user_id, removingNote);
                     return interaction.editReply(`removed **${n}** notes`);
+                }
 
-
-                case 'clear':
+                case 'clear': {
                     return interaction.editReply(`Removed **${await clearNotes(user_id)}** notes`);
-
-                case 'show':
+                }
+                case 'show': {
                     const notes: userNote[] = await fetchAllNotes(user_id);
                     return await interaction.editReply(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
-
+                }
 
                 case 'default':
                     return new Error(`returned wrong subcommand on notes: ${interaction.options.getSubcommand()} `);
             }
         } catch (error) {
             return interaction.replied ? interaction.editReply(`\`\`\`${JSON.stringify(error)}\`\`\``) :
-                interaction.reply(`\`\`\`${JSON.stringify(error)}\`\`\``)
+                interaction.editReply(`\`\`\`${JSON.stringify(error)}\`\`\``)
         }
 
 

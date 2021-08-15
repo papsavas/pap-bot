@@ -37,11 +37,11 @@ export abstract class CommandManagerImpl implements CommandManager {
 
 
     onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
-        if (interaction.commandName == 'help')
+        if (interaction.commandName.startsWith('help'))
             return interaction.reply({
                 embeds: [
                     new MessageEmbed({
-                        description: interaction.options.get('command').value as string
+                        description: interaction.options.getString('command')
                     })
                 ]
                 , ephemeral: true
@@ -123,11 +123,11 @@ export abstract class CommandManagerImpl implements CommandManager {
     protected invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new MessageEmbed({
             author: {
-                name: interaction.guild.name,
+                name: interaction.guild?.name ?? interaction.user.username,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: interaction.guild.iconURL({ format: "png", size: 512 })
+                proxy_url: interaction.guild?.iconURL({ format: "png", size: 512 }) ?? interaction.user.avatarURL({ format: "png", size: 512 }),
             },
             title: primaryCommandLiteral,
             color: "DARK_RED",
@@ -144,7 +144,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                     name: `Error on Command`,
                     icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                 },
-                title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
+                title: interaction.commandName,
                 fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
                 color: 'RED'
             })

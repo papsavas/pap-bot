@@ -29,5 +29,6 @@
     "studentTable": "student",
     "pendingStudentTable": "pending_student",
     "teacher_courseTable": "teacher_course",
-    "student_courseTable": "student_course"
+    "student_courseTable": "student_course",
+    "userNotesTable": "user_notes"
 }

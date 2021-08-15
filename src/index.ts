@@ -60,7 +60,7 @@ export const PAP = new Client({
 
 async function runScript() {
     //-----insert script-------
-    console.log((await PAP.application.commands.fetch()).map(c => c.id));
+
     //-------------------------
     console.log('script done');
     return
