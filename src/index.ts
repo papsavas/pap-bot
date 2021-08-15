@@ -58,6 +58,17 @@ export const PAP = new Client({
     }
 });
 
+/*
+    TODOS:
+    * disable registration
+    * fetch students from FS
+    * save on DB
+    * write linking students to courses script
+    * figure out command perms
+    
+*/
+
+
 async function runScript() {
     //-----insert script-------
 
