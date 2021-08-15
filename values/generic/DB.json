@@ -20,6 +20,10 @@
         "bot_config",
         "secrets"
     ],
+    "guildTable": "guild",
+    "guildSettingsTable": "guild_settings",
+    "commandsTable": "command",
+    "commandPermsTable": "command_perms",
     "courseTable": "course",
     "teacherTable": "teacher",
     "studentTable": "student",

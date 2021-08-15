@@ -1,12 +1,13 @@
 import { Guild } from "discord.js";
 import { prefix as defaultPrefix } from "../../../botconfig.json";
+import { commandPermsTable, guildSettingsTable, guildTable } from "../../../values/generic/DB.json";
 import { deleteBatch, saveBatch } from "../../DB/GenericCRUD";
 import { GuildMap } from "../../Entities/Generic/guildMap";
 
 export async function saveGuild(guildMap: GuildMap, guild: Guild): Promise<void> {
-    await saveBatch('guild', [{ "guild_id": guild.id }]);
+    await saveBatch(guildTable, [{ "guild_id": guild.id }]);
     await saveBatch(
-        'command_perms',
+        commandPermsTable,
         guildMap.get(guild.id).commandManager.commands.map(cmd =>
         ({
             "guild_id": guild.id,
@@ -15,7 +16,7 @@ export async function saveGuild(guildMap: GuildMap, guild: Guild): Promise<void>
         }))
 
     );
-    await saveBatch('guild_settings', [{
+    await saveBatch(guildSettingsTable, [{
         "prefix": defaultPrefix,
         "guild_id": guild.id
 
@@ -24,5 +25,5 @@ export async function saveGuild(guildMap: GuildMap, guild: Guild): Promise<void>
 
 export function deleteGuild(guild: Guild): Promise<number> {
     //cascade applies to all tables
-    return deleteBatch('guild', [{ "guild_id": guild.id }]);
+    return deleteBatch(guildTable, [{ "guild_id": guild.id }]);
 }

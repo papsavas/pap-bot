@@ -1,10 +1,11 @@
 import { Snowflake } from "discord.js";
+import { commandPermsTable, commandsTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { CommandType } from "../../Entities/Generic/command";
 import { commandPermission } from "../../Entities/Generic/commandPermission";
 
 export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snowflake, roleIDs: Snowflake[]): Promise<commandPermission[]> {
-    await deleteBatch('command_perms',
+    await deleteBatch(commandPermsTable,
         {
             "guild_id": guild_id,
             "command_id": command_id
@@ -14,11 +15,11 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snow
         "command_id": command_id,
         "role_id": roleID
     }));
-    return saveBatch('command_perms', rows, '*');
+    return saveBatch(commandPermsTable, rows, '*');
 }
 
 export function fetchCommandPerms(guild_id: Snowflake, command_id: Snowflake): Promise<commandPermission[]> {
-    return findAll('command_perms',
+    return findAll(commandPermsTable,
         {
             "guild_id": guild_id,
             "command_id": command_id
@@ -28,19 +29,19 @@ export function fetchCommandPerms(guild_id: Snowflake, command_id: Snowflake): P
 }
 
 export async function fetchCommandID(commandName: string): Promise<Snowflake> {
-    const res = await findOne('commands', { "keyword": commandName }, ['id']);
+    const res = await findOne(commandsTable, { "keyword": commandName }, ['id']);
     return res ? res['id'] : null;
 }
 
 export async function overrideCommands(newCommands: CommandType[]): Promise<void> {
     for (const cmd of newCommands) {
         /*incase keyword is unchanged, there is still a connection with previous, update*/
-        const prev = await findOne('commands', { "keyword": cmd.keyword }) as CommandType;
+        const prev = await findOne(commandsTable, { "keyword": cmd.keyword }) as CommandType;
         if (prev) {
-            await updateAll('commands', { id: prev.id }, Object.assign(prev, { "id": cmd.id }));
+            await updateAll(commandsTable, { id: prev.id }, Object.assign(prev, { "id": cmd.id }));
         }
         else
-            await saveBatch('commands', [cmd]);
+            await saveBatch(commandsTable, [cmd]);
     }
 }
 
