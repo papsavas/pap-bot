@@ -82,6 +82,14 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
 
+    onGuildJoin(guild: Guild) {
+        return this.commandManager.updateCommands(guild.commands);
+    }
+
+    onGuildLeave(guild: Guild) {
+        return this.commandManager.clearCommands(guild.commands)
+    }
+
     onGuildMemberAdd(member: GuildMember): Promise<any> {
         return Promise.resolve(this.addGuildLog(`member ${member.displayName} joined the guild`));
 

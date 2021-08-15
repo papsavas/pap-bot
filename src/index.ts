@@ -104,15 +104,19 @@ PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
     await saveGuild(guildMap, guild).catch(console.error);;
     guildMap.set(guild.id, await DefaultGuild.init(guild.id));
-    await guildMap.get(guild.id).onReady(PAP).catch(console.error);
-    //onGuildJoin(guild);
+    const g = guildMap.get(guild.id);
+    g.onReady(PAP)
+        .then(() => g.onGuildJoin(guild))
+        .catch(console.error);
 })
 
 PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
-    await deleteGuild(guild).catch(console.error);;
-    //onGuildLeave(guild);
-    guildMap.sweep(g => g.getSettings().guild_id === guild.id);
+    const g = guildMap.get(guild.id);
+    await g.onGuildLeave(guild)
+        .then(() => deleteGuild(guild))
+        .catch(console.error);
+    guildMap.delete(guild.id);
 })
 
 PAP.on('guildUnavailable', (guild) => {

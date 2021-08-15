@@ -34,6 +34,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
     }
 
+
     onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
         if (interaction.commandName == 'help')
             return interaction.reply({
@@ -90,14 +91,16 @@ export abstract class CommandManagerImpl implements CommandManager {
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand<{}>>> {
         const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
-        console.log(`updating commands`);
-        await commandManager.set([]); //remove previous 
+        console.log(`updating ${this.commands[0].type} commands`);
         applicationCommands.push(this.helpCommandData);
         const newCommands = await commandManager.set(applicationCommands);
-        //add to db
-        await this.saveCommandData(newCommands);
+        await this.saveCommandData(newCommands); //DB
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
+    }
+
+    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+        return commandManager.set([]);
     }
 
     protected sliceCommandLiterals(receivedMessage: Message, prefix: string): commandLiteral {

@@ -8,6 +8,9 @@ export interface CommandManager {
     readonly commands: GenericCommand[];
     onManualCommand(message: Message): Promise<unknown>;
     onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown>
-    updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
-        : Promise<Collection<Snowflake, ApplicationCommand<{}>>>
+    updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
+        Promise<Collection<Snowflake, ApplicationCommand<{}>>>
+
+    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
+        Promise<Collection<Snowflake, ApplicationCommand>>
 }
