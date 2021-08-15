@@ -15,7 +15,6 @@ import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl
 import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
 import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
-import { PinMessageCmdImpl } from "../../Commands/Guild/Impl/pinMessageCmdImpl";
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
 import { RemovePersonalResponseCmdImpl } from "../../Commands/Guild/Impl/removePersonalResponseCmdImpl";
 import { SetPrefixCmdImpl } from "../../Commands/Guild/Impl/setPrefixCmdImpl";
@@ -23,7 +22,6 @@ import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
-import { UnpinMessageCmdImpl } from "../../Commands/Guild/Impl/unpinMessageCmdImpl";
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 import { memberResponses } from "../../Entities/Generic/MemberResponses";
@@ -48,7 +46,6 @@ export abstract class AbstractGuild implements GenericGuild {
 
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
-        PinMessageCmdImpl, UnpinMessageCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
         AddResponseCmdImpl, ShowPersonalResponsesCmdImpl, RemovePersonalResponseCmdImpl,

@@ -1,6 +1,7 @@
 import {
     ChatInputApplicationCommandData, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
+    Permissions,
     Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -40,6 +41,13 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     }
 
     async interactiveExecute(commandInteraction: CommandInteraction): Promise<any> {
+        const member = await commandInteraction.guild.members.fetch(commandInteraction.user.id);
+        const perm = Permissions.FLAGS.MANAGE_GUILD;
+        if (!member.permissions.has(perm))
+            return commandInteraction.reply({
+                content: `\`MANAGE_GUILD\` Permissions required`,
+                ephemeral: true
+            })
         //TODO: Fix behavior, after update collector returns an error if time ends
         const oldSettings = await fetchGuildSettings(commandInteraction.guildId);
 
@@ -95,6 +103,11 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     }
 
     async execute(message: Message, { }: commandLiteral) {
+        const perm = Permissions.FLAGS.MANAGE_GUILD;
+        if (!message.member.permissions.has(perm))
+            return message.reply({
+                content: `\`MANAGE_GUILD\` Permissions required`
+            })
         //TODO: Fix behaviour, after update collector returns an error if time ends
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);
