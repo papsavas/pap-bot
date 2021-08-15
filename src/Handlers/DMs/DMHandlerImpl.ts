@@ -1,26 +1,13 @@
 import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
-import { prefix } from "../../../botconfig.json";
-import { userNotesCmdImpl } from "../../Commands/DM/Impl/userNotesCmdImpl";
-import { DMCommandManagerImpl } from "../../Commands/Managers/Impl/DMCommandManagerImpl";
-import { DMCommandManager } from "../../Commands/Managers/Interf/DMCommandManager";
 import { DmHandler } from "./GenericDm";
 
-const dmCommands = [
-    userNotesCmdImpl
-];
 export class DMHandlerImpl implements DmHandler {
-    commandManager: DMCommandManager;
+
 
     private constructor() { }
 
     static async init(): Promise<DmHandler> {
         const dm = new DMHandlerImpl();
-        dm.commandManager = new DMCommandManagerImpl(
-            await Promise.all(
-                dmCommands
-                    .map(cmd => cmd.init())
-            )
-        );
         return dm
     }
 
@@ -29,7 +16,8 @@ export class DMHandlerImpl implements DmHandler {
     }
 
     onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
-        return this.commandManager.onSlashCommand(interaction);
+        return interaction.reply({ content: `Dm commands coming soon`, ephemeral: true })
+        //return this.commandManager.onSlashCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<unknown> {
@@ -41,8 +29,6 @@ export class DMHandlerImpl implements DmHandler {
     }
 
     onMessage(message: Message): Promise<unknown> {
-        if (message.content.startsWith(prefix))
-            return this.commandManager.onManualCommand(message);
         return Promise.resolve(`message received from ${message.author.id}`);
     }
 

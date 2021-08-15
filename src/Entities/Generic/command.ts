@@ -25,6 +25,5 @@ export interface CommandType {
 
 export enum commandSpecifier {
     GUILD = "GUILD",
-    GLOBAL = "GLOBAL",
-    DM = "DM"
+    GLOBAL = "GLOBAL"
 }

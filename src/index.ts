@@ -90,7 +90,6 @@ PAP.on('ready', async () => {
 
         dmHandler = await DMHandlerImpl.init();
         await dmHandler.onReady(PAP);
-        //await dmHandler.commandManager.updateCommands(PAP.application.commands);
         globalCommandHandler = await GlobalCommandHandlerImpl.init();
         globalCommandsIDs = await fetchGlobalCommandIds();
         //await globalCommandHandler.commandManager.updateCommands(PAP.application.commands);
