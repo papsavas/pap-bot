@@ -43,7 +43,7 @@ export async function overrideCommands(newCommands: CommandType[]): Promise<void
         /*incase keyword is unchanged, there is still a connection with previous, update*/
         const prev = await findOne(commandsTable, { "keyword": cmd.keyword }) as CommandType;
         if (prev) {
-            await updateAll(commandsTable, { id: prev.id }, Object.assign(prev, { "id": cmd.id }));
+            await updateAll(commandsTable, { id: prev.id }, Object.assign(prev, cmd));
         }
         else
             await saveBatch(commandsTable, [cmd]);
