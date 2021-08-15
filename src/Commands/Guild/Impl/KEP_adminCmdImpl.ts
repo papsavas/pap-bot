@@ -1,6 +1,6 @@
 import { ChatInputApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
-import { roles as kepRoles } from "../../../../values/KEP/IDs.json";
+import { adminUsers, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -51,6 +51,11 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        if (!adminUsers.includes(interaction.user.id))
+            return interaction.reply({
+                content: `Δεν είστε διαχειριστής`,
+                ephemeral: true
+            });
         const role = interaction.guild.roles.cache.get(kepRoles.admin);
         if (interaction.options.getSubcommand(true) === onLiteral)
             return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")
@@ -60,7 +65,12 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
             return new Error("Invalid subcommand option for KEP_adminSwitch");
     }
 
-    async execute({ guild }: Message, { arg1 }: commandLiteral): Promise<unknown> {
+    async execute(message: Message, { arg1 }: commandLiteral): Promise<unknown> {
+        const { guild, author } = message;
+        if (!adminUsers.includes(author.id))
+            return message.reply({
+                content: `Δεν είστε διαχειριστής`
+            });
         const role = guild.roles.cache.get(kepRoles.admin)
         if (arg1 === onLiteral)
             return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")

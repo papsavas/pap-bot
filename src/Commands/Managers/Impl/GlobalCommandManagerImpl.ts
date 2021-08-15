@@ -1,5 +1,5 @@
-import { ApplicationCommand, ApplicationCommandData, Collection, Snowflake } from "discord.js";
-import { overrideCommands } from "../../../Queries/Generic/Commands";
+import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, GuildApplicationCommandManager, Snowflake } from "discord.js";
+import { dropAllCommandPerms, overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericGlobalCommand } from "../../Global/GenericGlobalCommand";
 import { GlobalCommandManager } from "../Interf/GlobalCommandManager";
 import { CommandManagerImpl } from "./CommandManagerImpl";
@@ -37,4 +37,9 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
         );
     }
 
+    async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildID: Snowflake): Promise<unknown> {
+        if (guildID)
+            await dropAllCommandPerms(guildID).catch(console.error);
+        return commandManager.set([]);
+    }
 }

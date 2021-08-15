@@ -1,5 +1,5 @@
 
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
@@ -48,12 +48,10 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const member = (interaction.member instanceof GuildMember) ?
-            interaction.member :
-            await interaction.guild.members.fetch(interaction.member.user.id);
+        const member = await interaction.guild.members.fetch(interaction.member.user.id);
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return interaction.reply({
-                content: `\`MANAGE_GUILD permissions required\``,
+                content: `\`MANAGE_GUILD\` permissions required`,
                 ephemeral: true
             });
 
@@ -82,15 +80,15 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
-        if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
-        const guild_id = receivedMessage.guild.id;
+    async execute(message: Message, receivedCommand: commandLiteral): Promise<any> {
+        if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return message.reply(`\`MANAGE_GUILD permissions required\``);
+        const guild_id = message.guild.id;
         const commands = guildMap.get(guild_id).commandManager.commands;
         const commandLiteral = receivedCommand.arg1 as Snowflake;
         const command_id = commands.find((cmds) => cmds.matchAliases(commandLiteral))?.id
         if (!command_id)
-            return receivedMessage.reply(`command ${commandLiteral} not found`);
+            return message.reply(`command ${commandLiteral} not found`);
         /*
          * override perms for manual command in DB
          */
@@ -99,11 +97,11 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         /**
          * override perms for interaction
          */
-        let command = await receivedMessage.guild.commands.fetch(command_id);
+        let command = await message.guild.commands.fetch(command_id);
         //enable for @everyone
         command = await command.edit(Object.assign(command, { defaultPermission: true }));
 
-        await receivedMessage.guild.commands.permissions.set({
+        await message.guild.commands.permissions.set({
             command: command_id,
             permissions: []
         });

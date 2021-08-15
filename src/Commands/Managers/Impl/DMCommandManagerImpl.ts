@@ -1,4 +1,4 @@
-import { ApplicationCommand, ApplicationCommandData, Collection, Snowflake } from "discord.js";
+import { ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, GuildApplicationCommandManager, Snowflake } from "discord.js";
 import { overrideCommands } from "../../../Queries/Generic/Commands";
 import { GenericDMCommand } from "../../DM/GenericDMCommand";
 import { DMCommandManager } from "../Interf/DMCommandManager";
@@ -35,4 +35,7 @@ export class DMCommandManagerImpl extends CommandManagerImpl implements DMComman
         ));
     }
 
+    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+        return commandManager.set([]);
+    }
 }

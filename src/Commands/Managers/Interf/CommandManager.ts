@@ -10,7 +10,5 @@ export interface CommandManager {
     onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown>
     updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
         Promise<Collection<Snowflake, ApplicationCommand<{}>>>
-
-    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
-        Promise<Collection<Snowflake, ApplicationCommand>>
+    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildId?: Snowflake): Promise<unknown>;
 }

@@ -1,5 +1,5 @@
 
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -47,6 +47,9 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
         const guildHandler = guildMap.get(interaction.guildId);
         const newPrefix = interaction.options.getString(prefixOptionLiteral);
         await interaction.deferReply();
@@ -61,16 +64,18 @@ export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     }
 
-    execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
-        const guildHandler = guildMap.get(receivedMessage.guild.id);
+    execute(message: Message, receivedCommand: commandLiteral): Promise<any> {
+        if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return message.reply(`\`MANAGE_GUILD\` permissions required`);
+        const guildHandler = guildMap.get(message.guild.id);
         if (receivedCommand.arg1)
-            return fetchGuildSettings(receivedMessage.guild.id)
+            return fetchGuildSettings(message.guild.id)
                 .then(async oldSettings => {
                     const newSettings = Object.assign(oldSettings, { 'prefix': receivedCommand.arg1 });
-                    return updateGuildSettings(receivedMessage.guild.id, newSettings).then(() => guildHandler.setPrefix(receivedCommand.arg1))
+                    return updateGuildSettings(message.guild.id, newSettings).then(() => guildHandler.setPrefix(receivedCommand.arg1))
                 });
         else
-            return receivedMessage.reply({
+            return message.reply({
                 content: `\`\`\`Current prefix is "${guildHandler.getSettings().prefix}"\`\`\``
             });
 

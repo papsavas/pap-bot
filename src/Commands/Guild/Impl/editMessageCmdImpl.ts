@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -57,6 +57,9 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
         const targetChannel = interaction.options.getChannel(channelOptionLiteral, true);
         const messageID = interaction.options.getString(msgidOptionLiteral, true) as Snowflake;
         await interaction.deferReply({ ephemeral: true });
@@ -75,10 +78,12 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     async execute(
-        { channel, mentions, guild, url }: Message,
+        message: Message,
         { arg1, arg2, commandless2, commandless3 }: commandLiteral
     ): Promise<any> {
-
+        const { channel, mentions, guild, url, member } = message;
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return message.reply(`\`MANAGE_GUILD\` permissions required`);
         try {
             const fetchedMessage = await channel.messages.fetch(arg1 as Snowflake)
             const editedMessage = await fetchedMessage
@@ -105,12 +110,12 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
                             )
                         ]
                     });
-                    return new Promise((res, rej) => res('edit message success'));
+                    return Promise.reject('edit message success');
                 } catch (err) {
-                    return new Promise((res, rej) => rej(`edit message failed\n${url}`));
+                    return Promise.reject(`edit message failed\n${url}`);
                 }
             } else {
-                return new Promise((res, rej) => rej(`edit message failed\nreason:${err.toString()}`));
+                return Promise.reject(`edit message failed\nreason:${err.toString()}`);
             }
         }
 

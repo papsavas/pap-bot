@@ -13,10 +13,11 @@ export abstract class CommandManagerImpl implements CommandManager {
     protected readonly helpCommandData: ApplicationCommandData;
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
     abstract saveCommandData(commands: Collection<Snowflake, ApplicationCommand>): Promise<unknown>;
+    abstract clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildId?: Snowflake): Promise<unknown>;
 
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
-            name: "help",
+            name: `help_${commands[0].type.toString().toLowerCase()}`,
             description: `[${commands[0].type.toString()}] displays support for a certain command`,
             type: 'CHAT_INPUT',
             options: [
@@ -97,10 +98,6 @@ export abstract class CommandManagerImpl implements CommandManager {
         await this.saveCommandData(newCommands); //DB
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
-    }
-
-    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
-        return commandManager.set([]);
     }
 
     protected sliceCommandLiterals(receivedMessage: Message, prefix: string): commandLiteral {

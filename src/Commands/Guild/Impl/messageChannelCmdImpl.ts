@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -51,6 +51,9 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
         const sendChannel = interaction.options.getChannel(channelOptionLiteral, true) as TextChannel;
         const messageContent = interaction.options.getString(msgOptionLiteral, true);
         await sendChannel.send({
@@ -71,7 +74,10 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     }
 
-    async execute({ guild, mentions }: Message, { commandless2 }: commandLiteral) {
+    async execute(message: Message, { commandless2 }: commandLiteral) {
+        const { guild, mentions, member } = message;
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return message.reply(`\`MANAGE_GUILD\` permissions required`);
         const sendChannel = mentions.channels.first();
         if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
             return sendChannel.send(commandless2)

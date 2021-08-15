@@ -3,6 +3,8 @@ import {
 } from 'discord.js';
 import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { guildId as kepGuildId } from "../values/KEP/IDs.json";
+import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
 import { GuildMap } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
@@ -10,6 +12,8 @@ import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
 import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
+import { KepGuild } from './Handlers/Guilds/Impl/KepGuild';
+import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
 import { deleteGuild, saveGuild } from './Queries/Generic/Guild';
 
@@ -56,7 +60,7 @@ export const PAP = new Client({
 
 async function runScript() {
     //-----insert script-------
-
+    console.log((await PAP.application.commands.fetch()).map(c => c.id));
     //-------------------------
     console.log('script done');
     return
@@ -64,7 +68,6 @@ async function runScript() {
 
 PAP.on('ready', async () => {
     try {
-        // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
         const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
         const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
@@ -74,20 +77,23 @@ PAP.on('ready', async () => {
         if (!inDevelopment)
             await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
 
-        /*
-        TODO: Replace on release 
-        PAP.guilds.cache.keyArray()
-        */
-        for (const guildID of [botGuildID] as Snowflake[]) {
+        // Initializing the guilds
+        guildMap.set(kepGuildId, await KepGuild.init(kepGuildId));
+        guildMap.set(woapGuildId, await WoapGuild.init(woapGuildId));
+        for (const guildID of [...PAP.guilds.cache.keys()] as Snowflake[]) {
             if (!guildMap.has(guildID))
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
-            await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
+            const g = guildMap.get(guildID);
+            await g.onReady(PAP); //block until all guilds are loaded
+            //await g.commandManager.updateCommands(g.guild.commands, guildID);
         };
 
         dmHandler = await DMHandlerImpl.init();
         await dmHandler.onReady(PAP);
+        //await dmHandler.commandManager.updateCommands(PAP.application.commands);
         globalCommandHandler = await GlobalCommandHandlerImpl.init();
         globalCommandsIDs = await fetchGlobalCommandIds();
+        //await globalCommandHandler.commandManager.updateCommands(PAP.application.commands);
         console.log('smooth init');
 
     } catch (err) {
