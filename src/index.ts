@@ -85,7 +85,8 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
-            //await g.commandManager.updateCommands(g.guild.commands, guildID);
+            await g.commandManager.clearCommands(g.guild.commands);
+
         };
 
         dmHandler = await DMHandlerImpl.init();
@@ -382,3 +383,9 @@ PAP.on('error', (error) => {
 PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in `))
     .catch(err => console.log(`ERROR ON LOGIN: \n${err}`));
+
+
+process.on('unhandledRejection', (reason, p) => {
+    console.log(reason)
+});
+

@@ -5,8 +5,8 @@ import { channels } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
-import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
+import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
@@ -19,9 +19,10 @@ import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
 const guildCommands = [
-    KEP_announceCmdImpl,
+    //KEP_announceCmdImpl,
     KEP_adminCmdImpl,
-    KEP_myExamsCmdImpl
+    KEP_myExamsCmdImpl,
+    KEP_myScheduleCmdImpl
 ]
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
@@ -50,8 +51,9 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onReady(client): Promise<unknown> {
-        //handleExamedChannels(this.courses, this.events, this.guild.channels);
-        return super.onReady(client);
+        await super.onReady(client);
+        handleExamedChannels(this.courses, this.events, this.guild.channels);
+        return Promise.resolve('KEP Loaded');
     }
 
     async onMessage(message: Message): Promise<unknown> {

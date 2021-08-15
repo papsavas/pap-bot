@@ -28,7 +28,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
     }
     private readonly _aliases = this.addKeywordToAliases
         (
-            [], this.keyword
+            [], this._keyword,
         );
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {

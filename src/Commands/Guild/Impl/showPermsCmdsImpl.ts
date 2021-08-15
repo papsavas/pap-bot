@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake } from 'discord.js';
-import { commandLiteral } from "../../../Entities/Generic/command";
+import { commandLiteral } from '../../../Entities/Generic/command';
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -47,7 +47,6 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        await interaction.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
         const command_id: Snowflake = guildMap.get(interaction.guildId).commandManager.commands
             .find(cmd => cmd.matchAliases(commandLiteral))?.id
@@ -79,15 +78,15 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                         {
                             name: `Slash Command: **\`/${commandLiteral}\`**`,
                             /* if command is not locked, permissions will be empty*/
-                            value: apiPerms.length > 0 ?
+                            value:
                                 apiPerms.
                                     filter(perm => perm.permission)
                                     .map(perm => `<@&${perm.id}>`).toString()
-                                : `<@&${interaction.guildId}>` //allowed for @everyone
+                                ?? `<@&${interaction.guildId}>` //allowed for @everyone
                         },
                         {
                             name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
-                            value: reqRoles.toString()
+                            value: reqRoles.toString() ?? `<@&${interaction.guildId}>` //allowed for @everyone
                         }
                     ]
                 })
@@ -96,7 +95,6 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     }
 
     async execute(message: Message, { arg1 }: commandLiteral) {
-        await message.channel.send('**FIX:** *api perms lost on re-registration, asynced with db*');
         const commandLiteral = arg1;
         if (!commandLiteral)
             return message.reply({ embeds: [new MessageEmbed({ description: this.guide })] })
@@ -125,15 +123,15 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                         {
                             name: `Slash Command: **\`/${commandLiteral}\`**`,
                             /* if command is not locked, permissions will be empty*/
-                            value: apiPerms.length > 0 ?
+                            value:
                                 apiPerms
                                     .filter(perm => perm.permission) //filter out  allowed
                                     .map(perm => `<@&${perm.id}>`).toString()
-                                : `<@&${message.guild.id}>` //allowed for everyone
+                                ?? `<@&${message.guild.id}>` //allowed for @everyone
                         },
                         {
                             name: `Manual Command: **\`${guild_prefix}${commandLiteral}\`**`,
-                            value: reqRoles.toString()
+                            value: reqRoles.toString() ?? `<@&${message.guildId}>` //allowed for @everyone
                         }
                     ]
                 })

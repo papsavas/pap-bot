@@ -26,7 +26,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
 
     private readonly _aliases = this.addKeywordToAliases
         (
-            ['my_exams', 'exams'], this.keyword
+            ['my_exams', 'exams', 'myexams'], this._keyword
         );
 
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
@@ -44,7 +44,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
 
         if (!courses || courses.size === 0)
             return interaction.reply({
-                content: `Δεν βρέθηκαν μαθήματα`,
+                content: `Δεν έχετε επιλέξει μαθήματα`,
                 ephemeral: true
             })
 

@@ -45,8 +45,6 @@ export abstract class AbstractCommand implements GenericCommand {
     }
 
     protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
-        return aliases.includes(keyword)
-            ? [...aliases, keyword]
-            : aliases
+        return aliases.includes(keyword) ? aliases : [...aliases, keyword]
     }
 }

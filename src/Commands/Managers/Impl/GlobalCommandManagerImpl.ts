@@ -37,7 +37,8 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
         );
     }
 
-    async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildID: Snowflake): Promise<unknown> {
+    async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildID?: Snowflake): Promise<unknown> {
+        //TODO: fetch id from command manager
         if (guildID)
             await dropAllCommandPerms(guildID).catch(console.error);
         return commandManager.set([]);

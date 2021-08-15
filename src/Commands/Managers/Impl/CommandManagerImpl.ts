@@ -150,11 +150,10 @@ export abstract class CommandManagerImpl implements CommandManager {
             })
 
         //send feedback to member
-        const interactionPromise: Promise<unknown> = interaction.replied ?
-            interaction.editReply({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
+        const interactionPromise: Promise<unknown> = interaction.replied || interaction.deferred ?
+            interaction.followUp({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
         interactionPromise
-            .then(() => setTimeout(() => interaction.deleteReply().catch(), 20000))
-            .catch();
+            .catch(console.error);
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 

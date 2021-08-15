@@ -25,7 +25,7 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
 
     private readonly _aliases = this.addKeywordToAliases
         (
-            ['adm'], this.keyword
+            ['adm', 'admin'], this._keyword
         );
 
 
@@ -38,14 +38,12 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
                 {
                     name: onLiteral,
                     description: "Enables ADMIN permission",
-                    type: "SUB_COMMAND",
-                    required: true
+                    type: "SUB_COMMAND"
                 },
                 {
                     name: offLiteral,
                     description: "Disables ADMIN permission",
-                    type: "SUB_COMMAND",
-                    required: true
+                    type: "SUB_COMMAND"
                 }
             ]
         }

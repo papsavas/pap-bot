@@ -24,7 +24,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
     }
     private readonly _aliases = this.addKeywordToAliases
         (
-            ["my_schedule", "schedule"], this.keyword
+            ["my_schedule", "schedule"], this._keyword
         );
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
