@@ -97,6 +97,11 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        if (interaction.channel.type !== "DM")
+            return interaction.reply({
+                content: `For security reasons, please use this command in DMs`,
+                ephemeral: true
+            })
         await interaction.deferReply({ ephemeral: true });
         const user_id = interaction.user.id;
         const subCommand = interaction.options.getSubcommand();
@@ -139,7 +144,12 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     }
 
-    async execute({ author }: Message, { arg1, commandless2 }: commandLiteral) {
+    async execute(message: Message, { arg1, commandless2 }: commandLiteral) {
+        const { author } = message
+        if (message.channel.type !== "DM")
+            return message.reply({
+                content: `For security reasons, please use this command in DMs`
+            })
         const user_id = author.id;
         const user = author;
         console.log(arg1);
