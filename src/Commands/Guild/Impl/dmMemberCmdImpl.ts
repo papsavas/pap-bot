@@ -6,7 +6,6 @@ import {
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { dmMember as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
 
@@ -26,19 +25,19 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
     static async init(): Promise<dmMemberCmd> {
         const cmd = new DmMemberCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['directmessage', 'message', 'dm'],
-            _keyword
+            this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
-            name: _keyword,
+            name: this.keyword,
             description: this.guide,
             type: 'CHAT_INPUT',
             options: [

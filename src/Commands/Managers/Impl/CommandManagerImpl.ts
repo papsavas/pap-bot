@@ -37,6 +37,7 @@ export abstract class CommandManagerImpl implements CommandManager {
 
 
     onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
+        //TODO: fetch command to access "usage"
         if (interaction.commandName.startsWith('help'))
             return interaction.reply({
                 embeds: [
@@ -48,7 +49,8 @@ export abstract class CommandManagerImpl implements CommandManager {
             }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
 
 
-        const candidateCommand = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
+        const candidateCommand = this.commands
+            .find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
         if (typeof candidateCommand !== "undefined")
             return candidateCommand.interactiveExecute(interaction)
                 .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
@@ -81,7 +83,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
 
         else if (['help', 'h'].includes(candidateCommand.primaryCommand))
-            return this.helpCmd(
+            return this.manualHelpCmd(
                 message,
                 this.commands
                     .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.arg1)));
@@ -110,7 +112,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             //prefix,
             fullCommand,
             splitCommand,
-            primaryCommand: splitCommand[0], // The first word directly after the exclamation is the command
+            primaryCommand: splitCommand[0],
             arg1: splitCommand[1],
             arg2: splitCommand[2],
             arg3: splitCommand[3],
@@ -120,6 +122,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
     }
 
+    //TODO: fix this mess
     protected invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new MessageEmbed({
             author: {
@@ -158,6 +161,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
 
+    //TODO: fix this mess
     protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string, prefix: string) {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.message}`);
         const bugsChannelEmbed = new MessageEmbed({
@@ -199,7 +203,7 @@ export abstract class CommandManagerImpl implements CommandManager {
 
     }
 
-    protected helpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
+    protected manualHelpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
         if (typeof providedCommand !== 'undefined')
             return message.reply({
                 embeds:
@@ -207,6 +211,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                         new MessageEmbed({
                             title: providedCommand.keyword,
                             description: providedCommand.guide,
+                            fields: [{ name: "Usage", value: providedCommand.usage, inline: true }],
                             footer: { text: providedCommand.getAliases().toString() }
                         })
                     ]

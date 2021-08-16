@@ -2,7 +2,6 @@ import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandI
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { extractId } from "../../../tools/extractMessageId";
-import { unpinMessage as _keyword } from "../../keywords.json";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 
@@ -34,7 +33,7 @@ export class UnpinMessageCmdImpl extends AbstractGlobalCommand implements unpinM
 
     getCommandData(): ChatInputApplicationCommandData {
         return {
-            name: _keyword,
+            name: this.keyword,
             description: this.guide,
             type: 'CHAT_INPUT',
             options: [
