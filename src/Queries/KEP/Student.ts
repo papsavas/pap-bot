@@ -1,5 +1,5 @@
 import { Collection, Snowflake } from "discord.js";
-import { courseTable, pendingStudentTable, studentTable, student_courseTable } from "../../../values/generic/DB.json";
+import { pendingStudentTable, studentTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { PendingStudent, Student } from "../../Entities/KEP/Student";
@@ -17,7 +17,8 @@ export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Col
     const collection = new Collection<Snowflake, Student>();
     for (const student of students) {
         student.courses = new Collection<Snowflake, Course>();
-        //TODO: use JOIN
+        //? avoided, limited rows on free plan
+        /*
         const coursesUUID = (await findAll(student_courseTable, { "student_id": student.uuid }, ["course_id"]))
             .map(c => c["course_id"]) as string[];
         for (const course_id of coursesUUID) {
@@ -25,6 +26,7 @@ export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Col
             if (course)
                 student.courses.set(course.role_id, course);
         }
+        */
         collection.set(student.member_id, student);
     }
     return collection;

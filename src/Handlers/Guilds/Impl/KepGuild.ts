@@ -43,15 +43,22 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     .concat(guild.specifiedCommands ?? [])) //merge specified commands if any
 
         );
-        guild.events = await fetchEvents();
-        guild.students = await fetchStudents();
-        guild.courses = await fetchCourses();
-
         return guild;
     }
 
     async onReady(client): Promise<unknown> {
         await super.onReady(client);
+        this.events = await fetchEvents();
+        this.students = await fetchStudents();
+        const members = await this.guild.members.fetch()
+        this.courses = await fetchCourses();
+        for (const student of this.students.values()) {
+            const member = members.get(student.member_id);
+            this.courses.forEach(course => {
+                if (member.roles.cache.has(course.role_id))
+                    this.students.get(student.member_id).courses.set(course.role_id, course);
+            });
+        }
         handleExamedChannels(this.courses, this.events, this.guild.channels);
         return Promise.resolve('KEP Loaded');
     }
@@ -148,6 +155,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         }
     }
 
+    //TODO: refresh student courses on selections
     async onSelectMenu(select: SelectMenuInteraction) {
         switch (select.channel.id) {
             case channels.select_courses: {

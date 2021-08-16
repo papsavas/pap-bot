@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, Constants, Message, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
@@ -55,11 +55,13 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
             })
 
         const studentClasses = events
-            .map(ev => Object.assign(ev, {
+            .map(ev => ({
+                ...ev,
                 summary: ev.summary.replace(examsPrefix, '')
                     .trimStart()
                     .trimEnd()
-            }))
+            })
+            )
             .filter(ev => courses
                 .find(c => textSimilarity(
                     c.name,
@@ -67,52 +69,35 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
                 ) > 0.85
                 )
             )
+        if (studentClasses.length === 0)
+            return interaction.reply({
+                content: `Δεν βρέθηκε προσεχές μάθημα`,
+                ephemeral: true
+            });
 
         const responseEmbeds = sliceToEmbeds({
-            data: studentClasses.map(ev => ({ name: ev.summary, value: ev.start.date })),
+            data: studentClasses.map(ev => ({ name: ev.summary, value: `${ev.start.dateTime ?? "date"}` })),
             headerEmbed: {
                 title: `MyExams`,
                 description: `Description`
             }
         })
-        await interaction.reply({
-            content: `Που θα θέλατε να σας το στείλω;`,
-        })
-        const buttonReply = await interaction.followUp({
-            ephemeral: true,
-            components: [
-                new MessageActionRow().addComponents(
-                    new MessageButton()
-                        .setCustomId("channel")
-                        .setLabel("Εδώ")
-                        .setStyle("SECONDARY"),
 
-                    new MessageButton()
-                        .setCustomId("dm")
-                        .setLabel("DM")
-                        .setStyle("SECONDARY"),
-                )
-            ]
-        })
-        try {
-            const collected = await (buttonReply as Message).awaitMessageComponent({
-                componentType: "BUTTON",
-                time: 10000
+        interaction.user.send({ embeds: responseEmbeds })
+            .then(msg => interaction.reply({
+                content: `Σας το έστειλα σε DM`,
+                ephemeral: true
+            }))
+            .catch(err => {
+                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER)
+                    return interaction.reply({
+                        content: `Τα DMs σας ειναι κλειστά, το αποστέλλω εδώ`,
+                        embeds: responseEmbeds,
+                        ephemeral: true
+                    });
+                else
+                    throw err;
             })
-            console.log(collected)
-            await (buttonReply as Message).edit({ components: [] });
-            if (collected.customId === "channel")
-                return collected.reply({
-                    embeds: responseEmbeds,
-                    ephemeral: true
-                })
-            else if (collected.customId === "dm")
-                return collected.user.send({ embeds: responseEmbeds })
-            else
-                throw new Error("[MY_EXAMS] Unknown button id " + collected.customId)
-        } catch (error) {
-            console.error(error);
-        }
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
