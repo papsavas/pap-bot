@@ -11,7 +11,7 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
-import { banStudent, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
+import { banStudent, deleteStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -54,6 +54,10 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         this.courses = await fetchCourses();
         for (const student of this.students.values()) {
             const member = members.get(student.member_id);
+            if (!member) {
+                await deleteStudents({ am: student.am }).catch(console.error);
+                continue;
+            }
             this.courses.forEach(course => {
                 if (member.roles.cache.has(course.role_id))
                     this.students.get(student.member_id).courses.set(course.role_id, course);
