@@ -174,15 +174,19 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 await member.roles.add(selectedCourses.map(c => c.role_id));
                 //! filtering courses with roles & vice versa might cause name variance
                 const newSemesterCourses = selectedCourses.filter(c => !oldSemesterRoles.has(c.role_id));
-                const [added, removed] = [
+                const [added, removedRoles] = [
                     newSemesterCourses
                         .map(c => `**• ${c.name}**`)
                         .join('\n'),
                     oldSemesterRoles
                         .filter(r => !selectedCourses.find(c => c.role_id === r.id))
-                        .map(r => `**• ${r.name}**`)
-                        .join('\n')
                 ]
+
+                const studentCourses = this.students.get(member.id).courses;
+                studentCourses.sweep(sc => removedRoles.has(sc.role_id));
+                for (const course of newSemesterCourses)
+                    studentCourses.set(course.role_id, course);
+
                 const header = {
                     author: {
                         name: member.displayName,
@@ -196,10 +200,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         .setColor("BLUE")
                         .addFields([{ name: 'Προστέθηκαν', value: added }])
                 );
-                if (removed.length > 0) logEmbeds.push(
+                if (removedRoles.size > 0) logEmbeds.push(
                     new MessageEmbed(header)
                         .setColor("RED")
-                        .addFields([{ name: 'Αφαιρέθηκαν', value: removed }])
+                        .addFields([{
+                            name: 'Αφαιρέθηκαν', value: removedRoles
+                                .map(r => `**• ${r.name}**`)
+                                .join('\n')
+                        }])
                 );
                 return select.reply({
                     embeds: logEmbeds,
