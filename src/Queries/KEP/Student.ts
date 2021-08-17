@@ -36,7 +36,7 @@ export function addStudents(students: Student[], returnings?: keyof Student): Pr
     return saveBatch(studentTable, students, returnings);
 }
 
-export async function deleteStudents(clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">): Promise<number> {
+export async function dropStudents(clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">): Promise<number> {
     return deleteBatch(studentTable, clause);
 }
 

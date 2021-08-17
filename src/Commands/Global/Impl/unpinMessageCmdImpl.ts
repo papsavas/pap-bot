@@ -9,7 +9,6 @@ import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
-//TODO: make this global
 export class UnpinMessageCmdImpl extends AbstractGlobalCommand implements unpinMessageCmd {
 
     protected _id: Snowflake;

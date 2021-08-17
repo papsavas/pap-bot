@@ -15,7 +15,7 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snow
         "command_id": command_id,
         "role_id": roleID
     }));
-    return saveBatch(commandPermsTable, rows, '*');
+    return saveBatch(commandPermsTable, rows);
 }
 
 export async function dropAllCommandPerms(guild_id: Snowflake) {

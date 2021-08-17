@@ -107,19 +107,18 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         /*
          * override perms for manual command in DB
          */
+        console.log(`locking ${commandLiteral} with id : ${command_id} for [${rolesKeyArr.toString()}]`);
         await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
+
         const allowedPerms: ApplicationCommandPermissionData[] = [...new Set(rolesKeyArr)].map(roleID => ({
             id: roleID,
             type: 'ROLE',
             permission: true
         }));
-
         let command = await interaction.guild.commands.fetch(command_id);
-
         //disable for @everyone
         command = await command.edit(Object.assign(command, { defaultPermission: false }));
-
-        /**
+        /*
          * override perms for interaction
          */
         await interaction.guild.commands.permissions.add({

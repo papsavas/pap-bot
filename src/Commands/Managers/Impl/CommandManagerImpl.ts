@@ -1,10 +1,11 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
-    Collection, CommandInteraction, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+    Collection, CommandInteraction, Constants, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../botconfig.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
+import { fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
 
@@ -68,6 +69,12 @@ export abstract class CommandManagerImpl implements CommandManager {
             .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
         if (typeof commandImpl !== "undefined") {
+            if (Boolean(message.guild)) {
+                const perms = await fetchCommandPerms(message.guild.id, commandImpl.id);
+                if (perms.length !== 0 && !perms.map(p => p.role_id).some(pr => message.member.roles.cache.has(pr)))
+                    return message.react('⛔');
+            }
+
             let emote: string;
             try {
                 await commandImpl.execute(commandMessage, candidateCommand);
@@ -77,8 +84,9 @@ export abstract class CommandManagerImpl implements CommandManager {
                 emote = '❌';
             }
             finally {
-                const reaction = await commandMessage.react(emote);
-                await reaction.users.remove(reaction.client.user.id);
+                commandMessage.react(emote)
+                    .then(reaction => reaction.users.remove(reaction.client.user.id))
+                    .catch(err => err.code === Constants.APIErrors.UNKNOWN_MESSAGE ? '' : new Error(err));
             }
         }
 

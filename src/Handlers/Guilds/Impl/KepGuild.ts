@@ -1,4 +1,4 @@
-import { Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { Client, Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
@@ -11,7 +11,7 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
-import { banStudent, deleteStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
+import { banStudent, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -46,22 +46,22 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         return guild;
     }
 
-    async onReady(client): Promise<unknown> {
+    async onReady(client: Client): Promise<unknown> {
         await super.onReady(client);
         this.events = await fetchEvents();
         this.students = await fetchStudents();
         const members = await this.guild.members.fetch()
         this.courses = await fetchCourses();
+        //load students
         for (const student of this.students.values()) {
             const member = members.get(student.member_id);
             if (!member) {
-                await deleteStudents({ am: student.am }).catch(console.error);
+                await dropStudents({ am: student.am }).catch(console.error);
                 continue;
             }
-            this.courses.forEach(course => {
-                if (member.roles.cache.has(course.role_id))
-                    this.students.get(student.member_id).courses.set(course.role_id, course);
-            });
+            for (const c of this.courses)
+                if (member.roles.cache.has(c.role_id))
+                    this.students.get(student.member_id).courses.set(c.role_id, c);
         }
         handleExamedChannels(this.courses, this.events, this.guild.channels);
         return Promise.resolve('KEP Loaded');
@@ -159,7 +159,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         }
     }
 
-    //TODO: refresh student courses on selections
     async onSelectMenu(select: SelectMenuInteraction) {
         switch (select.channel.id) {
             case channels.select_courses: {

@@ -61,7 +61,6 @@ export const PAP = new Client({
 /*
     TODOS:
     * disable registration
-    * write linking students to courses script
     * figure out command perms
     
 */
@@ -94,7 +93,7 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
-            //await g.commandManager.clearCommands(g.guild.commands);
+            await g.commandManager.clearCommands(g.guild.commands);
 
         };
 
