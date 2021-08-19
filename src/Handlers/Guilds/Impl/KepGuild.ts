@@ -63,7 +63,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 if (member.roles.cache.has(c.role_id))
                     this.students.get(student.member_id).courses.set(c.role_id, c);
         }
-        handleExamedChannels(this.courses, this.events, this.guild.channels);
+        handleExaminedChannels(this.courses, this.events, this.guild.channels);
         return Promise.resolve('KEP Loaded');
     }
 
@@ -151,11 +151,12 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         }
                     }
                 }
+
+                default:
+                    return Promise.resolve();
             }
         } catch (error) {
             console.log(error);
-        } finally {
-            return Promise.resolve();
         }
     }
 
@@ -232,7 +233,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 }
 
-function handleExamedChannels(courses: Course[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {
+function handleExaminedChannels(courses: Course[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {
     return events.map(ev => {
         const course = courses.find(cl =>
             textSimilarity(
