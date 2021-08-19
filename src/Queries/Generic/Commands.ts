@@ -39,7 +39,8 @@ export function fetchCommandPerms(guild_id: Snowflake, command_id: Snowflake): P
 
 
 export async function fetchCommandID(keyword: string, guild_id?: Snowflake): Promise<Collection<Snowflake, Snowflake>> {
-    const res = await findAll(commandsTable, { keyword, guild_id });
+    const cl = guild_id ? { keyword, guild_id } : { keyword }
+    const res = await findAll(commandsTable, cl);
     const coll = new Collection<Snowflake, Snowflake>();
     for (const i of (res as CommandType[])) {
         coll.set(i.id, i.guild_id);

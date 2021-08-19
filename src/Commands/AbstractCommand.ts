@@ -18,6 +18,10 @@ export abstract class AbstractCommand implements GenericCommand {
         return this._id;
     }
 
+    set id(id) {
+        this._id = id;
+    }
+
     get keyword() {
         return this._keyword;
     }
