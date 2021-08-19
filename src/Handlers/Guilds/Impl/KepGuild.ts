@@ -5,6 +5,7 @@ import { channels } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
+import { KEP_infoCmdImpl } from '../../../Commands/Guild/Impl/KEP_infoCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
@@ -22,7 +23,8 @@ const guildCommands = [
     //KEP_announceCmdImpl,
     KEP_adminCmdImpl,
     KEP_myExamsCmdImpl,
-    KEP_myScheduleCmdImpl
+    KEP_myScheduleCmdImpl,
+    KEP_infoCmdImpl
 ]
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];

@@ -1,0 +1,33 @@
+{
+    "values": [
+        {
+            "name": "πρόγραμμα_εξεταστικής",
+            "description": "Πρόγραμμα επερχόμενης εξεταστικής"
+        },
+        {
+            "name": "πρόγραμμα_διδασκαλίας",
+            "description": "Πρόγραμμα διδασκαλίας τωρινού εξαμήνου"
+        },
+        {
+            "name": "dai_archive",
+            "description": "Google Drive αποθετήριο"
+        },
+        {
+            "name": "πρόγραμμα_σπουδών",
+            "description": "Πρόγραμμα σπουδών - διδασκόμενα μαθήματα"
+        },
+        {
+            "name": "faq",
+            "description": "Συχνές ερωτήσεις Προγράμματος Σπουδών"
+        },
+        {
+            "name": "ακαδημαϊκό_ημερολόγιο",
+            "description": "Ακαδημαϊκό ημερολόγιο τωρινής περιόδου"
+        }
+    ],
+    "exams": "https://docs.google.com/spreadsheets/d/1MvTMObAsv5vERNcVQXLv0yV3_uRGPwd99HFHQn4zQDI",
+    "schedule": "Δεν έχει ανακοινωθεί πρόγραμμα διδασκαλίας 2021-2022",
+    "drive": "Δεν έχει οριστεί γενικός σύνδεσμος για το dai archive",
+    "faq": "https://www.uom.gr/dai/syxnes-erothseis-gia-to-programma-spoydon",
+    "calendar": "https://www.uom.gr/akadhmaiko-hmerologio/akadhmaiko-hmerologio-2021-2022"
+}

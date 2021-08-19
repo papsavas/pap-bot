@@ -61,6 +61,7 @@ export const PAP = new Client({
 /*
     TODOS:
     * disable registration
+    * merge myresponses to a single multi subcommand
 */
 
 
@@ -115,6 +116,7 @@ PAP.on('ready', async () => {
 
 PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
+    //TODO: register guild commands
     await saveGuild(guildMap, guild).catch(console.error);;
     guildMap.set(guild.id, await DefaultGuild.init(guild.id));
     const g = guildMap.get(guild.id);
@@ -125,6 +127,7 @@ PAP.on('guildCreate', async (guild) => {
 
 PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
+    //TODO: unregister guild commands
     const g = guildMap.get(guild.id);
     await g.onGuildLeave(guild)
         .then(() => deleteGuild(guild))

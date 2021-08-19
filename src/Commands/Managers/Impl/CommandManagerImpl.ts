@@ -14,7 +14,14 @@ export abstract class CommandManagerImpl implements CommandManager {
     protected readonly helpCommandData: ApplicationCommandData;
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
     abstract saveCommandData(commands: Collection<Snowflake, ApplicationCommand>): Promise<unknown>;
-    abstract clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildId?: Snowflake): Promise<unknown>;
+    abstract clearCommands(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        guildId?: Snowflake
+    ): Promise<unknown>;
+    abstract registerCommand(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        commandData: ApplicationCommandData
+    ): Promise<unknown>;
 
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
@@ -73,7 +80,6 @@ export abstract class CommandManagerImpl implements CommandManager {
                 if (perms.length !== 0 && !perms.map(p => p.role_id).some(pr => message.member.roles.cache.has(pr)))
                     return message.react('⛔');
             }
-
             let emote: string;
             try {
                 await commandImpl.execute(commandMessage, candidateCommand);
