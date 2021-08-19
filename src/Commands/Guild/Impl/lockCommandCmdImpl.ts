@@ -1,5 +1,5 @@
 
-import { ApplicationCommandOptionData, ApplicationCommandPermissionData, ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandPermissionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
@@ -10,7 +10,7 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 
 export class LockCommandCmdImpl extends AbstractGuildCommand implements lockCommandCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `lockcmd`;
     protected _guide = `Locks command for certain roles`;
     protected _usage = `lockcmd <cmd> <role1> [<role2>...]`;
@@ -100,16 +100,11 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         if (rolesKeyArr.length < 1)
             return interaction.editReply(`no point on locking for \`@everyone\`, mind as well unlock it 😉`)
         const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
-        const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
-            .find(cmd => cmd.matchAliases(commandLiteral))?.id
-
+        const command_id: Snowflake = (await fetchCommandID(commandLiteral, guild_id)).firstKey();
 
         /*
-         * override perms for manual command in DB
-         */
-        console.log(`locking ${commandLiteral} with id : ${command_id} for [${rolesKeyArr.toString()}]`);
-        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
-
+        * override perms for interaction
+        */
         const allowedPerms: ApplicationCommandPermissionData[] = [...new Set(rolesKeyArr)].map(roleID => ({
             id: roleID,
             type: 'ROLE',
@@ -118,14 +113,15 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         let command = await interaction.guild.commands.fetch(command_id);
         //disable for @everyone
         command = await command.edit(Object.assign(command, { defaultPermission: false }));
-        /*
-         * override perms for interaction
-         */
         await interaction.guild.commands.permissions.add({
             command: command_id,
             permissions: allowedPerms
         });
 
+        /*
+         * override perms for manual command in DB
+         */
+        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
         return interaction.editReply(`Command ${commandLiteral} locked for ${rolesKeyArr.map(id => `<@&${id}>`).toString()}`);
     }
 
@@ -139,18 +135,13 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         if (rolesKeyArr.length < 1)
             return receivedMessage.reply(`you need to provide atleast 1 role.\n*\`@everyone\` doesn't count*`);
         const commandLiteral = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
-        const command_id: Snowflake = guildMap.get(guild_id).commandManager.commands
-            .find(cmd => cmd.matchAliases(commandLiteral))?.id
+        const command_id: Snowflake = (await fetchCommandID(commandLiteral, guild_id)).firstKey();
         if (!command_id)
             return receivedMessage.reply(`command ${commandLiteral} not found`);
-        /*
-         * override perms for manual command in DB
-         */
-        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
 
-        /**
-         * override perms for interaction
-         */
+        /*
+        * override perms for interaction
+        */
         const allowedPerms = [...new Set(rolesKeyArr)].map(id => ({
             id: id,
             type: 'ROLE',
@@ -159,12 +150,20 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         let command = await receivedMessage.guild.commands.fetch(command_id);
 
         //disable for @everyone
-        command = await command.edit(Object.assign(command, { defaultPermission: false }));
+        command = await command.edit({ ...command, defaultPermission: false });
 
         await receivedMessage.guild.commands.permissions.add({
             command: command_id,
             permissions: allowedPerms
         });
+
+
+        /*
+        * override perms for manual command in DB
+        */
+        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
+
+
     }
 
     getAliases(): string[] {

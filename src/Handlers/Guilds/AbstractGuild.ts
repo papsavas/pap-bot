@@ -16,8 +16,8 @@ import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
 import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
+import { PrefixCmdImpl } from "../../Commands/Guild/Impl/prefixCmdImpl";
 import { RemovePersonalResponseCmdImpl } from "../../Commands/Guild/Impl/removePersonalResponseCmdImpl";
-import { SetPrefixCmdImpl } from "../../Commands/Guild/Impl/setPrefixCmdImpl";
 import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
@@ -45,7 +45,7 @@ export abstract class AbstractGuild implements GenericGuild {
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
 
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
-        PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
+        PollCmdImpl, DmMemberCmdImpl, PrefixCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
         AddResponseCmdImpl, ShowPersonalResponsesCmdImpl, RemovePersonalResponseCmdImpl,

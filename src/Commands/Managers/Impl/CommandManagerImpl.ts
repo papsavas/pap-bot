@@ -5,7 +5,7 @@ import {
 import { prefix as defaultPrefix } from "../../../../botconfig.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
-import { fetchCommandPerms } from "../../../Queries/Generic/Commands";
+import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
 
@@ -59,7 +59,6 @@ export abstract class CommandManagerImpl implements CommandManager {
             return interaction.reply(`Command not found`);
     };
 
-    //TODO: implement permission guard
     async onManualCommand(message: Message): Promise<unknown> {
         const guildHandler = guildMap.get(message.guild?.id);
         const prefix = guildHandler?.getSettings().prefix ?? defaultPrefix;
@@ -70,7 +69,7 @@ export abstract class CommandManagerImpl implements CommandManager {
 
         if (typeof commandImpl !== "undefined") {
             if (Boolean(message.guild)) {
-                const perms = await fetchCommandPerms(message.guild.id, commandImpl.id);
+                const perms = await fetchCommandPerms(message.guild.id, commandImpl.id.find(v => v === message.guildId));
                 if (perms.length !== 0 && !perms.map(p => p.role_id).some(pr => message.member.roles.cache.has(pr)))
                     return message.react('⛔');
             }
@@ -104,6 +103,9 @@ export abstract class CommandManagerImpl implements CommandManager {
         applicationCommands.push(this.helpCommandData);
         const newCommands = await commandManager.set(applicationCommands);
         await this.saveCommandData(newCommands); //DB
+        for (const cmd of this.commands) {
+            cmd.id = await fetchCommandID(cmd.keyword);
+        }
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
     }

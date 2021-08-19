@@ -1,9 +1,9 @@
-import { CommandInteraction, Message, Snowflake } from "discord.js";
+import { Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
 export abstract class AbstractCommand implements GenericCommand {
-    protected abstract _id: Snowflake;
+    protected abstract _id: Collection<Snowflake, Snowflake>;
     protected abstract _keyword: string;
     protected abstract _guide: string;
     protected abstract _usage: string;
@@ -12,6 +12,7 @@ export abstract class AbstractCommand implements GenericCommand {
     get type() {
         return this._type;
     }
+
 
     get id() {
         return this._id;

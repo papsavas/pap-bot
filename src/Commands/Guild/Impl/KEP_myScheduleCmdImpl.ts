@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
@@ -12,7 +12,7 @@ import { KEP_myScheduleCmd } from "../Interf/KEP_myScheduleCmd";
 
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `myschedule`;
     protected _guide = `Σας εμφανίζει το εβδομαδιαίο σας πρόγραμμα`;
     protected _usage = `myschedule`;

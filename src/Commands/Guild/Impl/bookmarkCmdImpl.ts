@@ -1,4 +1,4 @@
-import { Constants, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake, User } from "discord.js";
+import { Collection, Constants, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake, User } from "discord.js";
 import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -7,7 +7,7 @@ import { bookmarkCmd } from "../Interf/bookmarkCmd";
 
 export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `bookmark`;
     protected _guide = null;
     protected _usage = null;

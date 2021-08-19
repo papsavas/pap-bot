@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ChatInputApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
+import { ApplicationCommandData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
@@ -51,7 +51,7 @@ const isWin = (board: MessageButton[][]) => {
 
 export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoeCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `tictactoe`;
     protected _guide = `Spawns a tic-tac-toe board`;
     protected _usage = `tictactoe`;

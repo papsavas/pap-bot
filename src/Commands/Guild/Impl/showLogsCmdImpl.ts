@@ -1,5 +1,5 @@
 
-import { ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -12,7 +12,7 @@ import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `logs`;
     protected _guide = `Prints guilds logs`;
     protected _usage = `logs`;

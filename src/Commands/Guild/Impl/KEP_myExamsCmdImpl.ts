@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
@@ -18,7 +18,7 @@ const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
 }));
 export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myExamsCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `myexams`;
     protected _guide = `Εμφανίζει τα επερχόμενα εξεταζόμενα μαθήματά σας`;
     protected _usage = `myexams`;

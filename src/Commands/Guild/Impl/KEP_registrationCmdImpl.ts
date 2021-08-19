@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { reasons } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -16,7 +16,7 @@ const [registerName, verifyName] = ['register', 'verify'];
 
 export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP_registrationCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `registration`;
     protected _guide = `Εγγραφή στην κοινότητα Εφ. Πληροφορικής`;
     protected _usage = `registration register/verify`;

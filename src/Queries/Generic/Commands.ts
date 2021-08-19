@@ -1,4 +1,4 @@
-import { Snowflake } from "discord.js";
+import { Collection, Snowflake } from "discord.js";
 import { commandPermsTable, commandsTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { CommandType } from "../../Entities/Generic/command";
@@ -18,6 +18,10 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snow
     return saveBatch(commandPermsTable, rows);
 }
 
+export async function dropCommandPerms(command_id: Snowflake, guild_id: Snowflake) {
+    return deleteBatch(commandPermsTable, { guild_id, command_id });
+}
+
 export async function dropAllCommandPerms(guild_id: Snowflake) {
     return deleteBatch(commandPermsTable, { guild_id });
 }
@@ -33,17 +37,22 @@ export function fetchCommandPerms(guild_id: Snowflake, command_id: Snowflake): P
     ) as Promise<commandPermission[]>;
 }
 
-export async function fetchCommandID(commandName: string): Promise<Snowflake> {
-    const res = await findOne(commandsTable, { "keyword": commandName }, ['id']);
-    return res ? res['id'] : null;
+
+export async function fetchCommandID(keyword: string, guild_id?: Snowflake): Promise<Collection<Snowflake, Snowflake>> {
+    const res = await findAll(commandsTable, { keyword, guild_id });
+    const coll = new Collection<Snowflake, Snowflake>();
+    for (const i of (res as CommandType[])) {
+        coll.set(i.id, i.guild_id);
+    }
+    return coll;
 }
 
 export async function overrideCommands(newCommands: CommandType[]): Promise<void> {
     for (const cmd of newCommands) {
         /*incase keyword is unchanged, there is still a connection with previous, update*/
-        const prev = await findOne(commandsTable, { "keyword": cmd.keyword }) as CommandType;
-        if (prev) {
-            await updateAll(commandsTable, { id: prev.id }, Object.assign(prev, cmd));
+        const prev = await findOne(commandsTable, { "keyword": cmd.keyword, "guild_id": cmd.guild_id ?? null }) as CommandType;
+        if (Boolean(prev)) {
+            await updateAll(commandsTable, { id: prev.id }, cmd);
         }
         else
             await saveBatch(commandsTable, [cmd]);

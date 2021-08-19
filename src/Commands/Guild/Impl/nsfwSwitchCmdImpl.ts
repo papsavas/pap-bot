@@ -1,5 +1,5 @@
 import {
-    ChatInputApplicationCommandData, CommandInteraction, Message,
+    ChatInputApplicationCommandData, Collection, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
     Permissions,
     Snowflake
@@ -14,7 +14,7 @@ import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `nsfw`;
     protected _guide = `Enables/Disables nsfw responses`;
     protected _usage = `nsfw`;

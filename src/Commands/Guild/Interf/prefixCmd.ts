@@ -1,5 +1,5 @@
 import { GenericGuildCommand } from "../GenericGuildCommand";
 
-export interface setPrefixCmd extends GenericGuildCommand {
+export interface prefixCmd extends GenericGuildCommand {
 
 }

@@ -1,5 +1,5 @@
 
-import { ChatInputApplicationCommandData, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
@@ -10,7 +10,7 @@ import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
 const contentLiteral = `content`
 export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_announceCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `announce`;
     protected _guide = `Ανακοινώνει ένα μήνυμα στα νέα-ενημερώσεις`;
     protected _usage = `announce <message> [<roles>]`;

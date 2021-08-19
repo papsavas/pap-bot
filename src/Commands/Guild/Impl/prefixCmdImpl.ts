@@ -1,25 +1,24 @@
 
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { pollCmd } from "../Interf/pollCmd";
-import { setPrefixCmd } from "../Interf/setPrefixCmd";
+import { prefixCmd } from "../Interf/prefixCmd";
 
-const prefixOptionLiteral: ApplicationCommandOptionData['name'] = 'prefix';
-export class SetPrefixCmdImpl extends AbstractGuildCommand implements pollCmd {
+const prefixOptionLiteral: ApplicationCommandOptionData['name'] = 'new_prefix';
+export class PrefixCmdImpl extends AbstractGuildCommand implements prefixCmd {
 
-    protected _id: Snowflake;
-    protected _keyword = `setprefix`;
+    protected _id: Collection<Snowflake, Snowflake>;
+    protected _keyword = `prefix`;
     protected _guide = `Changes the prefix of the bot`;
     protected _usage = `prefix [new_prefix]`;
 
     private constructor() { super() }
 
-    static async init(): Promise<setPrefixCmd> {
-        const cmd = new SetPrefixCmdImpl();
+    static async init(): Promise<prefixCmd> {
+        const cmd = new PrefixCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }

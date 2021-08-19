@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { userNote } from '../../../Entities/Generic/userNote';
 import { guildMap } from '../../../index';
@@ -11,7 +11,7 @@ import { userNotesCmd } from '../Interf/userNotesCmd';
 
 export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `notes`;
     protected _guide = `Your personal notes`;
     protected _usage = `notes add <note> / remove <index> / edit <index> <note> / clear / show`;

@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction,
+    ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction,
     Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
@@ -17,7 +17,7 @@ const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `dm`;
     protected _guide = `Sends DM to a specific member`;
     protected _usage = `dm member/username/nickname message`;

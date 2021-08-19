@@ -17,6 +17,7 @@ export interface CommandType {
     id: Snowflake;
     keyword: string;
     guide: string;
+    guild_id?: Snowflake;
     aliases?: string[];
     global?: boolean;
     uuid?: string;

@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, CommandInteraction, Constants, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { commandLiteral } from '../../../Entities/Generic/command';
 import { guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
@@ -8,7 +8,7 @@ import { showPermsCmd } from "../Interf/showPermsCmd";
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `perms`;
     protected _guide = `Shows permissions for specific command`;
     protected _usage = `perms <command>`;
@@ -47,8 +47,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
-        const command_id: Snowflake = guildMap.get(interaction.guildId).commandManager.commands
-            .find(cmd => cmd.matchAliases(commandLiteral))?.id
+        const command_id: Snowflake = (await fetchCommandID(commandLiteral, interaction.guildId)).firstKey();
         if (!command_id)
             return interaction.reply({
                 content: `command ${commandLiteral} not found`,
@@ -66,8 +65,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
 
     async execute(message: Message, { arg1 }: commandLiteral) {
         const commandLiteral = arg1;
-        const command_id: Snowflake = guildMap.get(message.guildId).commandManager.commands
-            .find(cmd => cmd.matchAliases(commandLiteral))?.id
+        const command_id: Snowflake = (await fetchCommandID(commandLiteral, message.guildId)).firstKey();
         if (!command_id)
             return message.reply({
                 content: `command ${commandLiteral} not found`
@@ -91,6 +89,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
 }
 
 async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[string, string]> {
+
     const commandPerms = await fetchCommandPerms(guild.id, command_id);
     const reqRoles = await Promise.all(commandPerms.map(cp => guild.roles.fetch(cp.role_id)));
     let apiPerms: ApplicationCommandPermissions[];

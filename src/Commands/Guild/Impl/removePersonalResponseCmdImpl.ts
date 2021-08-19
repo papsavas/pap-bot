@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -10,7 +10,7 @@ import { removePersonalResponseCmd } from "../Interf/removePersonalResponseCmd";
 const respOptionLiteral: ApplicationCommandOptionData['name'] = 'response';
 export class RemovePersonalResponseCmdImpl extends AbstractGuildCommand implements removePersonalResponseCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `removeresponse`;
     protected _guide = `Removes an added response`;
     protected _usage = `removeresponse <response>`;

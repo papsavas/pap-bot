@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { extractId } from "../../../tools/extractMessageId";
@@ -11,7 +11,7 @@ const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
 export class UnpinMessageCmdImpl extends AbstractGlobalCommand implements unpinMessageCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `unpin`;
     protected _guide = `Unpins a message`;
     protected _usage = `unpin <msg_id> [reason]`;

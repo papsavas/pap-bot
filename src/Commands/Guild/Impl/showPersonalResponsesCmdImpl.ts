@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -10,7 +10,7 @@ import { showPersonalResponsesCmd } from "../Interf/showPersonalResponsesCmd";
 
 export class ShowPersonalResponsesCmdImpl extends AbstractGuildCommand implements showPersonalResponsesCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `myresponses`;
     protected _guide = `Prints user submitted responses`;
     protected _usage = `myresponses`;

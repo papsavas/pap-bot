@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { extractId } from "../../../tools/extractMessageId";
@@ -10,7 +10,7 @@ const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
 export class PinMessageCmdImpl extends AbstractGlobalCommand implements pinMessageCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `pin`;
     protected _guide = `Pins a message`;
     protected _usage = `pin <msg_id> [reason]`;

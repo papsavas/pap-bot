@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -8,7 +8,7 @@ import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
 
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `clear`;
     protected _guide = `Deletes a provided number of recent messages`;
     protected _usage = `$clear number`;

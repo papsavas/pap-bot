@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { adminUsers, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -10,7 +10,7 @@ const [onLiteral, offLiteral] = ["on", "off"];
 
 export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `admin`;
     protected _guide = `Enables/Disables ADMIN permission`;
     protected _usage = `admin`;
