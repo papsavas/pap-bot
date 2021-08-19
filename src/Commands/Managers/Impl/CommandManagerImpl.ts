@@ -83,11 +83,9 @@ export abstract class CommandManagerImpl implements CommandManager {
                 this.invalidCommand(error, commandMessage, commandImpl, candidateCommand.primaryCommand, prefix);
                 emote = '❌';
             }
-            finally {
-                commandMessage.react(emote)
-                    .then(reaction => reaction.users.remove(reaction.client.user.id))
-                    .catch(err => err.code === Constants.APIErrors.UNKNOWN_MESSAGE ? '' : new Error(err));
-            }
+            return commandMessage.react(emote)
+                .then(reaction => reaction.users.remove(reaction.client.user.id))
+                .catch(err => err.code === Constants.APIErrors.UNKNOWN_MESSAGE ? '' : new Error(err));
         }
 
         else if (['help', 'h'].includes(candidateCommand.primaryCommand))

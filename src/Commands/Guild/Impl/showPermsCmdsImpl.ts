@@ -5,9 +5,6 @@ import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Comm
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPermsCmd } from "../Interf/showPermsCmd";
 
-
-//TODO: ensure non empty embed fields
-
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
@@ -107,7 +104,9 @@ async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[
     }
     const allowedApiPerms = apiPerms.filter(perm => perm.permission)
     const apiResponse: string = allowedApiPerms.length > 0 ?
-        allowedApiPerms.map(perm => `<@&${perm.id}>`).toString()
+        allowedApiPerms
+            .map(perm => `<@&${perm.id}>`)
+            .toString()
         : `<@&${guild.id}>` //allowed for @everyone
 
     const manualResponse: string = reqRoles.length > 0 ?
@@ -119,7 +118,7 @@ async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[
 function buildEmbed(guild_prefix: string, commandLiteral: string, apiResponse: string, manualResponse: string) {
     return new MessageEmbed({
         title: guild_prefix + commandLiteral,
-        description: `Enabled for :`,
+        description: `Allowed for :`,
         fields: [
             {
                 name: `Slash Command: **\`/${commandLiteral}\`**`,

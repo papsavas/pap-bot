@@ -109,15 +109,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 break;
             }
 
-            default:
-                return Promise.resolve('no referenced channel');
+
         }
 
         switch ((message.channel as GuildChannel).parentId) { //categories
-
             default:
-                return Promise.resolve('no referenced category');
+                break;
         }
+        return super.onMessage(message);
     }
 
     async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
