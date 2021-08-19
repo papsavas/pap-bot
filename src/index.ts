@@ -61,9 +61,6 @@ export const PAP = new Client({
 /*
     TODOS:
     * disable registration
-    * figure out command perms
-    * load command ids in commandManager, each guild has different command id (map guild_ids => cmd_ids)
-    
 */
 
 
