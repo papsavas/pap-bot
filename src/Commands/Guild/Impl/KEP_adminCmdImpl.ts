@@ -49,16 +49,16 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        await interaction.deferReply({ ephemeral: true })
         if (!adminUsers.includes(interaction.user.id))
-            return interaction.reply({
-                content: `Δεν είστε διαχειριστής`,
-                ephemeral: true
-            });
+            return interaction.editReply(`Δεν είστε διαχειριστής`);
         const role = interaction.guild.roles.cache.get(kepRoles.admin);
         if (interaction.options.getSubcommand(true) === onLiteral)
             return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")
+                .then(() => interaction.editReply(`admin perms enabled`))
         else if (interaction.options.getSubcommand(true) === offLiteral)
             return role?.setPermissions(0n, "interaction switch")
+                .then(() => interaction.editReply(`admin perms disabled`))
         else
             return new Error("Invalid subcommand option for KEP_adminSwitch");
     }
@@ -71,9 +71,9 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
             });
         const role = guild.roles.cache.get(kepRoles.admin)
         if (arg1 === onLiteral)
-            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")
+            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "command switch")
         else if (arg1 === offLiteral)
-            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")
+            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "command switch")
 
         else {
             const role = guild.roles.cache.get(kepRoles.admin)
