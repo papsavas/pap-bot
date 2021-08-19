@@ -1,4 +1,5 @@
-import { ChatInputApplicationCommandData, CommandInteraction, Constants, Message, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { calendar_v3 } from "googleapis";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
@@ -10,6 +11,11 @@ import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myExamsCmd } from "../Interf/KEP_myExamsCmd";
 
+
+const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
+    name: ev.summary,
+    value: `${ev.start.dateTime ?? ev.start.date}`
+}));
 export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myExamsCmd {
 
     protected _id: Snowflake;
@@ -38,123 +44,11 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(interaction.user.id)?.courses;
-        const events = (guildMap.get(kepGuildId) as KepGuild).events
-            .filter(ev => ev.summary?.startsWith(examsPrefix));
-
-        if (!courses || courses.size === 0)
-            return interaction.reply({
-                content: `Δεν έχετε επιλέξει μαθήματα`,
-                ephemeral: true
-            })
-
-        if (events.length === 0)
-            return interaction.reply({
-                content: `Δεν βρέθηκαν προγραμματισμένα μαθήματα`,
-                ephemeral: true
-            })
-
-        const studentClasses = events
-            .map(ev => ({
-                ...ev,
-                summary: ev.summary.replace(examsPrefix, '')
-                    .trimStart()
-                    .trimEnd()
-            })
-            )
-            .filter(ev => courses
-                .find(c => textSimilarity(
-                    c.name,
-                    ev.summary
-                ) > 0.85
-                )
-            )
-        if (studentClasses.length === 0)
-            return interaction.reply({
-                content: `Δεν βρέθηκε προσεχές μάθημα`,
-                ephemeral: true
-            });
-
-        const responseEmbeds = sliceToEmbeds({
-            data: studentClasses.map(ev => ({ name: ev.summary, value: `${ev.start.dateTime ?? "date"}` })),
-            headerEmbed: {
-                title: `MyExams`,
-                description: `Description`
-            }
-        })
-
-        interaction.user.send({ embeds: responseEmbeds })
-            .then(msg => interaction.reply({
-                content: `Σας το έστειλα σε DM`,
-                ephemeral: true
-            }))
-            .catch(err => {
-                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER)
-                    return interaction.reply({
-                        content: `Τα DMs σας ειναι κλειστά, το αποστέλλω εδώ`,
-                        embeds: responseEmbeds,
-                        ephemeral: true
-                    });
-                else
-                    throw err;
-            })
+        return handleRequest(interaction);
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(message.author.id)?.courses;
-        const events = (guildMap.get(kepGuildId) as KepGuild).events
-            .filter(ev => ev.summary?.startsWith(examsPrefix));
-
-        if (!courses || courses.size === 0)
-            return message.reply({
-                content: `Δεν βρέθηκαν μαθήματα`
-            })
-
-        if (events.length === 0)
-            return message.reply({
-                content: `Δεν βρέθηκαν προγραμματισμένα μαθήματα`
-            })
-
-        const studentCourses = events
-            .map(ev => Object.assign(ev, {
-                summary: ev.summary.replace(examsPrefix, '')
-                    .trimStart()
-                    .trimEnd()
-            }))
-            .filter(ev => courses
-                .find(c => textSimilarity(
-                    c.name,
-                    ev.summary
-                ) > 0.85
-                )
-            )
-
-        const responseEmbeds = sliceToEmbeds({
-            data: studentCourses.map(ev => ({ name: ev.summary, value: ev.start.date })),
-            headerEmbed: {
-                title: `MyExams`,
-                description: `Description`
-            }
-        })
-
-        try {
-            return message.author.send({ embeds: responseEmbeds });
-        } catch (error) {
-            if (error.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                const emoji = "📨";
-                const msg = await message.reply(`Έχετε κλειστά DMs. Εαν θέλετε να το στείλω εδώ, πατήστε το ${emoji}`);
-                await msg.react(emoji);
-                await msg.react("🗑️");
-                const collected = await msg.awaitReactions({
-                    filter: (reaction, user) => ['🗑️', '🗑', emoji].includes(reaction.emoji.name) && !user.bot,
-                    time: 10000,
-                    max: 1
-                })
-                if (collected.first().emoji.name === emoji)
-                    await message.reply({ embeds: responseEmbeds });
-                await msg.delete();
-            }
-        }
+        return handleRequest(message);
     }
 
     getAliases(): string[] {
@@ -163,4 +57,89 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     addGuildLog(guildID: Snowflake, log: string) {
         return guildMap.get(guildID).addGuildLog(log);
     }
+}
+
+function handleRequest(request: CommandInteraction | Message) {
+    const user = request.type === "APPLICATION_COMMAND" ?
+        (request as CommandInteraction).user :
+        (request as Message).author;
+    const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(user.id)?.courses;
+    const events = (guildMap.get(kepGuildId) as KepGuild).events
+        .filter(ev => ev.summary?.startsWith(examsPrefix));
+
+
+    const responseBuilder = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
+        { content: response, ephemeral: true } :
+        { content: response };
+
+    if (!courses || courses.size === 0)
+        return request.reply(responseBuilder('Δεν έχετε επιλέξει μαθήματα'));
+
+    if (events.length === 0)
+        return request.reply(responseBuilder('Δεν βρέθηκαν προγραμματισμένα μαθήματα'));
+
+    const studentCourseEvents = events
+        .map(ev => ({
+            ...ev,
+            summary: ev.summary.replace(examsPrefix, '')
+                .trimStart()
+                .trimEnd()
+        })
+        )
+        .filter(ev => courses
+            .find(c => textSimilarity(
+                c.name,
+                ev.summary
+            ) > 0.85
+            )
+        )
+    if (studentCourseEvents.length === 0)
+        return request.reply(responseBuilder('Δεν βρέθηκαν προγραμματισμένα μαθήματα'));
+
+    const responseEmbeds = sliceToEmbeds({
+        data: studentCourseEvents.map(fieldBuilder),
+        headerEmbed: {
+            title: `MyExams`,
+            description: `Description`
+        }
+    })
+
+    user.send({ embeds: responseEmbeds })
+        .then(msg => {
+            if (request.type === "APPLICATION_COMMAND")
+                request.reply(responseBuilder(`Σας το έστειλα στα DMs`))
+            else if (request.type === "DEFAULT")
+                request.react('👌')
+        })
+        .catch(async err => {
+            if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
+                if (request.type === "APPLICATION_COMMAND") {
+                    const interaction = request as CommandInteraction;
+                    const resp: InteractionReplyOptions = {
+                        content: `Τα DMs σας ειναι κλειστά, το αποστέλλω εδώ`,
+                        embeds: responseEmbeds,
+                        ephemeral: true
+                    }
+                    return interaction.replied ?
+                        interaction.followUp(resp) :
+                        interaction.reply(resp)
+                }
+                else if (request.type === "DEFAULT") {
+                    const emoji = "📨";
+                    const msg = await request.reply(`Έχετε κλειστά DMs. Εαν θέλετε να το στείλω εδώ, πατήστε το ${emoji}`);
+                    await msg.react(emoji);
+                    await msg.react("🗑️");
+                    const collected = await msg.awaitReactions({
+                        filter: (reaction, user) => ['🗑️', '🗑', emoji].includes(reaction.emoji.name) && !user.bot,
+                        time: 10000,
+                        max: 1
+                    })
+                    if (collected.first().emoji.name === emoji)
+                        await request.reply({ embeds: responseEmbeds });
+                    await msg.delete();
+                }
+            }
+            else
+                throw err;
+        })
 }
