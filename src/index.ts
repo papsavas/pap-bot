@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
 import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
+import { myResponsesCmdImpl } from './Commands/Guild/Impl/myResponsesCmdImpl';
 import { GuildMap } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
@@ -92,6 +93,8 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
+            const cmd = await myResponsesCmdImpl.init()
+            //await g.commandManager.registerCommand(g.guild.commands, cmd.getCommandData(guildID))
             //await g.commandManager.clearCommands(g.guild.commands);
             //await g.commandManager.updateCommands(g.guild.commands);
 

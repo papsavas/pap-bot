@@ -1,20 +1,18 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
 import Profanity from "profanity-js";
-import { findAll } from "../../../DB/GenericCRUD";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { memberResponses } from "../../../Entities/Generic/MemberResponses";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse, countMemberResponses, fetchGuildMemberResponses, removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
-import { paginationEmbed, sliceToEmbeds } from "../../../tools/Embed";
+import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
-import { myPersonalCmd } from "../Interf/myResponsesCmd";
+import { myResponsesCmd } from "../Interf/myResponsesCmd";
 
 
 const [add, show, remove] = ['add', 'show', 'remove'];
 const response: ApplicationCommandOptionData['name'] = 'response';
-export class myResponsesCmdImpl extends AbstractGuildCommand implements myPersonalCmd {
+export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `myresponses`;
@@ -23,7 +21,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myPerson
 
     private constructor() { super() }
 
-    static async init(): Promise<myPersonalCmd> {
+    static async init(): Promise<myResponsesCmd> {
         const cmd = new myResponsesCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;

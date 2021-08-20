@@ -1,5 +1,5 @@
 import { GenericGuildCommand } from "../GenericGuildCommand";
 
-export interface myPersonalCmd extends GenericGuildCommand {
+export interface myResponsesCmd extends GenericGuildCommand {
 
 }
