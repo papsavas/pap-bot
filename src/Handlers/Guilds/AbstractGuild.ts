@@ -7,20 +7,18 @@ import {
 } from 'discord.js';
 import { mentionRegex } from "../../../botconfig.json";
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
-import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
 import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
 import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
 import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
+import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
 import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
 import { PrefixCmdImpl } from "../../Commands/Guild/Impl/prefixCmdImpl";
-import { RemovePersonalResponseCmdImpl } from "../../Commands/Guild/Impl/removePersonalResponseCmdImpl";
 import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
-import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
@@ -31,6 +29,8 @@ import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../../tools/randomArrayValue";
 import { GenericGuild } from "./GenericGuild";
+
+
 
 
 export abstract class AbstractGuild implements GenericGuild {
@@ -48,8 +48,7 @@ export abstract class AbstractGuild implements GenericGuild {
         PollCmdImpl, DmMemberCmdImpl, PrefixCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
-        AddResponseCmdImpl, ShowPersonalResponsesCmdImpl, RemovePersonalResponseCmdImpl,
-        NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl
+        myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;

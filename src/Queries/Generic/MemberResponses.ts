@@ -45,7 +45,14 @@ export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowf
         "member_id": member_id,
         "response": response,
     });
-    let resp: string;
-    res > 0 ? resp = `removed ${res} responses` : resp = `Response \`\`\`${response}\`\`\` not found`;
-    return Promise.resolve(resp);
+
+    return res > 0 ? `removed ${res} responses` : `Response \`\`\`${response}\`\`\` not found`;
+}
+
+export async function countMemberResponses(member_id: Snowflake, guild_id: Snowflake): Promise<number> {
+    const res = await findAll('guild_responses', {
+        "guild_id": guild_id,
+        "member_id": member_id,
+    })
+    return res.length;
 }
