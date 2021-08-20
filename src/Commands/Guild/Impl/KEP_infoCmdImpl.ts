@@ -75,7 +75,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
 }
 
 function fetchInfo(query: string): string {
-
+    //TODO: add `προγραμμα_σπουδών`
     switch (query.toLowerCase().trimEnd()) {
         case "πρόγραμμα_εξεταστικής":
         case "προγραμμα_εξεταστικης":
@@ -88,6 +88,11 @@ function fetchInfo(query: string): string {
         case "programma_didaskalias":
         case "programma_didaskalias":
             return i.schedule;
+
+        case "πρόγραμμα_σπουδών":
+        case "προγραμμα_σπουδων":
+        case "programma_spoudwn":
+            return i.curriculum;
 
         case "drive": case "gdrive":
         case "daiarchive": case "dai_archive":
