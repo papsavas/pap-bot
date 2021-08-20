@@ -3,14 +3,14 @@ import { google } from 'googleapis'
 import readline from 'readline'
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets'
 
-const TOKEN_PATH = 'secrets/token.json'
+const TOKEN_PATH = './secrets/token.json'
 
 export function Gauth(credentials: googleCredentials, token: googleToken, scopes: string[]) {
     return authorize(credentials, token, scopes);
 }
 
 async function authorize(cred: googleCredentials, token: googleToken, scopes: string[]) {
-    const { client_secret, client_id, redirect_uris } = cred.installed
+    const { client_secret, client_id, redirect_uris } = cred['installed'] ?? cred['web']
     const oAuth2Client = new google.auth.OAuth2(
         client_id, client_secret, redirect_uris[0])
 
@@ -19,7 +19,7 @@ async function authorize(cred: googleCredentials, token: googleToken, scopes: st
         return oAuth2Client
     }
     else
-        throw `Undefined provided token`;
+        return getNewToken(oAuth2Client, scopes);
 }
 
 //TODO: handle undefined tokens
