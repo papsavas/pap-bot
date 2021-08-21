@@ -87,21 +87,22 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         switch (interaction.options.getSubcommand(true)) {
             case registerName: {
                 const submittedEmail = interaction.options.getString(email);
-                const academicEmail = submittedEmail.match(studentEmailregex) as Student['email'][];
-                if (!academicEmail)
-                    return interaction.editReply(`Το email που καταχωρήσατε δεν είναι ακαδημαϊκό`);
-                const existingStudent = await fetchStudent({ "email": academicEmail[0] });
+                const emailMatch = submittedEmail.match(studentEmailregex) as Student['email'][];
+                if (!emailMatch)
+                    return interaction.editReply(`Το \`${submittedEmail}\` δεν είναι ακαδημαϊκό email προπτυχιακών σπουδών`);
+                const academicEmail = emailMatch[0];
+                const existingStudent = await fetchStudent({ "email": academicEmail });
                 if (existingStudent)
-                    return conflict(interaction, academicEmail[0].split('@')[0]);
+                    return conflict(interaction, academicEmail.split('@')[0]);
                 const pswd = Math.floor(generateRandomNumber(1111111111, 9999999999));
                 await savePendingStudent({
-                    am: academicEmail.join().split('@')[0] as amType,
-                    email: academicEmail[0] as Student["email"],
+                    am: academicEmail.split('@')[0] as amType,
+                    email: academicEmail,
                     member_id: interaction.user.id,
                     password: pswd
                 })
-                await interaction.editReply(`Θα σας αποσταλεί ένας 10ψήφιος κωδικός στο **${academicEmail[0]}**`);
-                await sendEmail(academicEmail[0], "Verification Password", `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration ${verifyName}\n
+                await interaction.editReply(`Θα σας αποσταλεί ένας 10ψήφιος κωδικός στο **${academicEmail}**`);
+                await sendEmail(academicEmail, "Verification Password", `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration ${verifyName}\n
 ${pswd}\n
 Αγνοείστε αυτό το μήνυμα εάν δεν προσπαθήσατε να εγγραφείτε στον Discord Server της Κοινότητα Εφαρμοσμένης Πληροφορικής`)
                 await interaction.followUp({
@@ -117,7 +118,6 @@ ${pswd}\n
                 if (!pendingStudent) //no record of registration
                     return interaction.editReply(`Δεν έχει προηγηθεί κάποια εγγραφή. Παρακαλώ ξεκινήστε χρησιμοποιώντας το \`/registration register\``);
                 if (pendingStudent.password == submittedPswd) {
-                    await interaction.editReply(`Επιτυχής εγγραφή!`);
                     const member = interaction.guild.members.cache.get(interaction.user.id);
                     await addStudents([
                         {
@@ -130,8 +130,9 @@ ${pswd}\n
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
                     const channel = guildMap.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
                     await channel.send(`<@${pendingStudent.member_id}> **:** ${pendingStudent.am}`);
-                    await member.user.send(`Καλώς ήρθες και επισήμως!\nΔιάβασε το <#${kepChannels.readme}> και τους κανόνες <#${kepChannels.rules}> ώστε να προσανατολιστείς`)
-                        .catch()
+                    await interaction.editReply(`Επιτυχής εγγραφή ✅
+Καλώς ήρθες και επισήμως!
+Διάβασε το <#${kepChannels.readme}> και τους <#${kepChannels.rules}> ώστε να προσανατολιστείς`);
                 }
                 else {
                     await interaction.editReply(`Λανθασμένος κωδικός. Σιγουρευτείτε ότι αντιγράψατε σωστά τον δεκαψήφιο κωδικό που σας απεστάλη στο ακαδημαϊκό σας email`);
@@ -140,7 +141,7 @@ ${pswd}\n
             }
 
             default:
-                return new Error(`returned wrong subcommand on KEP_registration: ${interaction.options[0].name} `);
+                return new Error(`returned wrong subcommand on KEP_registration: ${interaction.options[0].name}`);
 
         }
     }

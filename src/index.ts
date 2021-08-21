@@ -60,7 +60,6 @@ export const PAP = new Client({
 
 /*
     TODOS:
-    * disable registration
     * handle guild join/leave
 */
 
