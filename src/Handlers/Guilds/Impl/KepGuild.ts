@@ -1,12 +1,10 @@
-import { SSL_OP_EPHEMERAL_RSA } from 'constants';
 import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
-import { channels } from "../../../../values/KEP/IDs.json";
+import { channels, roles } from "../../../../values/KEP/IDs.json";
 import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
-import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { KEP_infoCmdImpl } from '../../../Commands/Guild/Impl/KEP_infoCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
@@ -245,7 +243,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     });
                     const conflictingStudent = this.students.find(s => s.am === am);
                     thread.send({
-                        content: `<@702931803542913044> <@${userid}>`, //TODO: replace with mod role
+                        content: `<@&${roles.head_mod}> <@${userid}>`,
                         embeds: [
                             new MessageEmbed({
                                 title: "Έφεση",

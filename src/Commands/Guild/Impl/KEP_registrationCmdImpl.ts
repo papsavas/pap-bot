@@ -1,11 +1,11 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { buttons, messages, reasons } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { dropPendingStudent, fetchPendingStudent, fetchStudent, savePendingStudent } from "../../../Queries/KEP/Student";
+import { addStudents, dropPendingStudent, fetchPendingStudent, fetchStudent, savePendingStudent } from "../../../Queries/KEP/Student";
 import { sendEmail } from "../../../tools/Google/Gmail";
 import { generateRandomNumber } from "../../../tools/randomNumber";
 import { studentEmailregex } from "../../../tools/regexs";
@@ -100,12 +100,12 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                     member_id: interaction.user.id,
                     password: pswd
                 })
-                await interaction.editReply(`Θα σας αποσταλεί ένας 10ψήφιος κωδικός στο **${academicEmail[0]}**\n__Καταχωρήστε αυτόν τον κωδικό στην εντολή \`${verifyName}\` \`(/registration ${verifyName})\`__`);
+                await interaction.editReply(`Θα σας αποσταλεί ένας 10ψήφιος κωδικός στο **${academicEmail[0]}**`);
                 await sendEmail(academicEmail[0], "Verification Password", `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration ${verifyName}\n
 ${pswd}\n
 Αγνοείστε αυτό το μήνυμα εάν δεν προσπαθήσατε να εγγραφείτε στον Discord Server της Κοινότητα Εφαρμοσμένης Πληροφορικής`)
                 await interaction.followUp({
-                    content: `Το email έχει αποσταλεί 👌\nΠροχωρήστε με την επαλήθευση του 10ψήφιου κωδικού που αναγράφεται στο email`,
+                    content: `Το email έχει αποσταλεί 📨\n__Καταχωρήστε τον κωδικό (ως αριθμό) στην εντολή **\`${verifyName}\`**__ \`(/registration ${verifyName})\``,
                     ephemeral: true
                 });
                 break;
@@ -116,13 +116,22 @@ ${pswd}\n
                 const pendingStudent = await fetchPendingStudent(interaction.user.id);
                 if (!pendingStudent) //no record of registration
                     return interaction.editReply(`Δεν έχει προηγηθεί κάποια εγγραφή. Παρακαλώ ξεκινήστε χρησιμοποιώντας το \`/registration register\``);
-                if (pendingStudent.password === submittedPswd) {
+                if (pendingStudent.password == submittedPswd) {
                     await interaction.editReply(`Επιτυχής εγγραφή!`);
                     const member = interaction.guild.members.cache.get(interaction.user.id);
+                    await addStudents([
+                        {
+                            am: pendingStudent.am,
+                            email: pendingStudent.email,
+                            member_id: interaction.user.id,
+                        }
+                    ])
+                    await dropPendingStudent(interaction.user.id);
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
+                    const channel = guildMap.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
+                    await channel.send(`<@${pendingStudent.member_id}> **:** ${pendingStudent.am}`);
                     await member.user.send(`Καλώς ήρθες και επισήμως!\nΔιάβασε το <#${kepChannels.readme}> και τους κανόνες <#${kepChannels.rules}> ώστε να προσανατολιστείς`)
                         .catch()
-                    await dropPendingStudent(interaction.user.id);
                 }
                 else {
                     await interaction.editReply(`Λανθασμένος κωδικός. Σιγουρευτείτε ότι αντιγράψατε σωστά τον δεκαψήφιο κωδικό που σας απεστάλη στο ακαδημαϊκό σας email`);

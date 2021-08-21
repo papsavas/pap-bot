@@ -5,7 +5,6 @@ import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
 import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
-import { myResponsesCmdImpl } from './Commands/Guild/Impl/myResponsesCmdImpl';
 import { GuildMap } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
