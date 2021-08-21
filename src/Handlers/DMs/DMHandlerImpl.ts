@@ -40,7 +40,7 @@ export class DMHandlerImpl implements DmHandler {
     onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
         switch (reaction.emoji.name) {
             case '🗑️': case '🗑':
-                if (reaction.message.deletable)
+                if (reaction.message.deletable && user.id !== reaction.client.user.id)
                     return reaction.message.delete();
 
             default:
