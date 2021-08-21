@@ -1,6 +1,6 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
-import { reasons } from "../../../../values/KEP/literals.json";
+import { buttons, messages, reasons } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { guildMap } from "../../../index";
@@ -13,6 +13,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_registrationCmd } from "../Interf/KEP_registrationCmd";
 
 const [registerName, verifyName] = ['register', 'verify'];
+const [email, password] = ['email', 'password']
 
 export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP_registrationCmd {
 
@@ -42,7 +43,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                     type: "SUB_COMMAND",
                     options: [
                         {
-                            name: "email",
+                            name: email,
                             description: "το ακαδημαϊκό σας email",
                             type: "STRING",
                             required: true,
@@ -55,9 +56,9 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                     type: "SUB_COMMAND",
                     options: [
                         {
-                            name: "password",
+                            name: password,
                             description: "ο κωδικός επαλήθευσής σας",
-                            type: "NUMBER",
+                            type: "INTEGER",
                             required: true,
                         }
                     ]
@@ -66,9 +67,8 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        const existingStudent = await fetchStudent({ member_id: interaction.user.id });
-        const cmdOptions = interaction.options.get(registerName).options;
-        if (existingStudent.blocked) {
+        const registeredMember = await fetchStudent({ member_id: interaction.user.id });
+        if (registeredMember?.blocked) {
             await interaction.reply({
                 content: `Έχετε αποκλειστεί`,
                 ephemeral: true
@@ -77,7 +77,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
             if (member.bannable) await member.ban({ reason: reasons.blockedStudentAccount })
             return
         }
-        if (Boolean(existingStudent))
+        if (registeredMember)
             return interaction.reply({
                 content: `Έχετε ήδη εγγραφεί. Σας έχει δωθεί ο ρόλος <@&${kepRoles.student}>`,
                 ephemeral: true,
@@ -86,19 +86,22 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         await interaction.deferReply({ ephemeral: true });
         switch (interaction.options.getSubcommand(true)) {
             case registerName: {
-                const submittedEmail = cmdOptions[0].value as string;
-                const email = submittedEmail.match(studentEmailregex);
-                if (!email)
+                const submittedEmail = interaction.options.getString(email);
+                const academicEmail = submittedEmail.match(studentEmailregex) as Student['email'][];
+                if (!academicEmail)
                     return interaction.editReply(`Το email που καταχωρήσατε δεν είναι ακαδημαϊκό`);
+                const existingStudent = await fetchStudent({ "email": academicEmail[0] });
+                if (existingStudent)
+                    return conflict(interaction, academicEmail[0].split('@')[0]);
                 const pswd = Math.floor(generateRandomNumber(1111111111, 9999999999));
                 await savePendingStudent({
-                    am: email.join().split('@')[0] as amType,
-                    email: email[0] as Student["email"],
+                    am: academicEmail.join().split('@')[0] as amType,
+                    email: academicEmail[0] as Student["email"],
                     member_id: interaction.user.id,
                     password: pswd
                 })
-                await interaction.editReply(`Θα σας αποσταλεί ένας 10ψήφιος κωδικός στο **${email[0]}**\n__Καταχωρήστε αυτόν τον κωδικό στην εντολή \`verify\` \`(/registration verify)\`__`);
-                await sendEmail(email[0], "Verification Password", `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration verify\n
+                await interaction.editReply(`Θα σας αποσταλεί ένας 10ψήφιος κωδικός στο **${academicEmail[0]}**\n__Καταχωρήστε αυτόν τον κωδικό στην εντολή \`${verifyName}\` \`(/registration ${verifyName})\`__`);
+                await sendEmail(academicEmail[0], "Verification Password", `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration ${verifyName}\n
 ${pswd}\n
 Αγνοείστε αυτό το μήνυμα εάν δεν προσπαθήσατε να εγγραφείτε στον Discord Server της Κοινότητα Εφαρμοσμένης Πληροφορικής`)
                 await interaction.followUp({
@@ -109,8 +112,7 @@ ${pswd}\n
             }
 
             case verifyName: {
-                const submittedPswd = cmdOptions[0].value as number;
-                await interaction.deferReply({ ephemeral: true });
+                const submittedPswd = interaction.options.getInteger(password);
                 const pendingStudent = await fetchPendingStudent(interaction.user.id);
                 if (!pendingStudent) //no record of registration
                     return interaction.editReply(`Δεν έχει προηγηθεί κάποια εγγραφή. Παρακαλώ ξεκινήστε χρησιμοποιώντας το \`/registration register\``);
@@ -145,4 +147,27 @@ ${pswd}\n
     addGuildLog(guildID: Snowflake, log: string) {
         return guildMap.get(guildID).addGuildLog(log);
     }
+}
+
+async function conflict(interaction: CommandInteraction, am: string): Promise<unknown> {
+    const appealBtn = new MessageButton({
+        customId: `${buttons.appealId}_${am}_${interaction.user.id}`,
+        style: "PRIMARY",
+        label: buttons.appealLabel
+    })
+    return interaction.editReply({
+        embeds: [
+            new MessageEmbed({
+                author: {
+                    name: "Εγγεγραμμένο email",
+                    iconURL: "https://cdn1.vectorstock.com/i/1000x1000/80/30/conflict-resolution-icon-symbol-isolated-on-white-vector-31728030.jpg"
+                },
+                title: am,
+                description: messages.appeal,
+                color: "RED",
+                timestamp: new Date()
+            })
+        ],
+        components: [new MessageActionRow().addComponents(appealBtn)]
+    })
 }

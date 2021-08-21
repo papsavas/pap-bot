@@ -19,7 +19,7 @@ async function authorize(cred: googleCredentials, token: googleToken, scopes: st
         return oAuth2Client
     }
     else
-        return getNewToken(oAuth2Client, scopes);
+        throw 'no token found';
 }
 
 //TODO: handle undefined tokens

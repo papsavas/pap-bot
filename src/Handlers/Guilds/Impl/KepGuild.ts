@@ -1,13 +1,16 @@
-import { Client, Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { SSL_OP_EPHEMERAL_RSA } from 'constants';
+import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels } from "../../../../values/KEP/IDs.json";
-import { examsPrefix } from "../../../../values/KEP/literals.json";
+import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
+import { KEP_announceCmdImpl } from '../../../Commands/Guild/Impl/KEP_announceCmdImpl';
 import { KEP_infoCmdImpl } from '../../../Commands/Guild/Impl/KEP_infoCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
+import { KEP_registrationCmdImpl } from '../../../Commands/Guild/Impl/KEP_registrationCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
@@ -21,6 +24,7 @@ import { GenericGuild } from "../GenericGuild";
 
 const guildCommands = [
     //KEP_announceCmdImpl,
+    KEP_registrationCmdImpl,
     KEP_adminCmdImpl,
     KEP_myExamsCmdImpl,
     KEP_myScheduleCmdImpl,
@@ -216,6 +220,57 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 });
             }
 
+        }
+    }
+
+    async onButton(interaction: ButtonInteraction) {
+        switch (interaction.channel.id) {
+            case channels.registration: {
+                if (interaction.customId.startsWith(buttons.appealId)) {
+                    const [appealLiteral, am, userid] = interaction.customId.split('_');
+                    const threadName = `${am}_${userid}`
+                    const channel = interaction.channel as TextChannel;
+                    const existingThread = channel.threads.cache.find(c => c.name === threadName)
+                    if (existingThread)
+                        return interaction.reply({
+                            content: `Έχει ήδη δημιουργηθεί thread <#${existingThread.id}>`,
+                            ephemeral: true
+                        })
+
+                    const thread = await channel.threads.create({
+                        autoArchiveDuration: "MAX",
+                        name: threadName,
+                        reason: "appeal",
+                        type: "GUILD_PRIVATE_THREAD",
+                    });
+                    const conflictingStudent = this.students.find(s => s.am === am);
+                    thread.send({
+                        content: `<@702931803542913044> <@${userid}>`, //TODO: replace with mod role
+                        embeds: [
+                            new MessageEmbed({
+                                title: "Έφεση",
+                                description: `<@${userid}> Θα πρέπει να στείλετε εδώ μία φωτογραφία της ακαδημαϊκή σας ταυτότητα με εμφανή τον αριθμό μητρώου`,
+                                fields: [{
+                                    name: "Συγκρουόμενος Λογαριασμός:",
+                                    value: `<@${conflictingStudent.member_id}>`,
+                                    inline: true
+                                }],
+                                timestamp: new Date(),
+                                color: "RANDOM"
+                            })
+                        ]
+                    })
+                        .then(msg =>
+                            interaction.reply({
+                                content: `Δημιουργήθηκε ιδιωτικό thread <#${thread.id}>. Παρακαλώ αποστείλετε εκεί την φωτογραφία της ακαδημαϊκής σας ταυτότητας`,
+                                ephemeral: true
+                            })
+                        )
+                        .catch(console.error);
+
+                }
+                break;
+            }
         }
     }
 

@@ -5,7 +5,6 @@ import {
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
-import { mentionRegex } from "../../../botconfig.json";
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
@@ -120,7 +119,7 @@ export abstract class AbstractGuild implements GenericGuild {
         }
 
         //TODO: switch to mention
-        if (message.content.match(mentionRegex)) {
+        if (message.mentions.users.first()?.id === message.client.user.id) {
             return message.channel.sendTyping()
                 .then(() => message.reply(randomArrayValue(this._responses)))
                 .catch(err => console.log(err));

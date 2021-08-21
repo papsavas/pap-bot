@@ -62,6 +62,7 @@ export const PAP = new Client({
 /*
     TODOS:
     * disable registration
+    * handle guild join/leave
 */
 
 
@@ -92,8 +93,7 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
-            const cmd = await myResponsesCmdImpl.init()
-            //await g.commandManager.registerCommand(g.guild.commands, cmd.getCommandData(guildID))
+
             //await g.commandManager.clearCommands(g.guild.commands);
             //await g.commandManager.updateCommands(g.guild.commands);
 
