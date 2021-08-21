@@ -133,7 +133,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
                 ]
             const swears = await loadSwearWords();
             const nsfw = swears.some((swear) =>
-                response.includes(swear['swear_word'])) ||
+                response.includes(swear)) ||
                 new Profanity().isProfane(response);
             await addMemberResponse(guild_id, member_id, response, nsfw);
             return [
