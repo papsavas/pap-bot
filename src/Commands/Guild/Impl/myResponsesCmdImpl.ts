@@ -175,9 +175,10 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
             return sliceToEmbeds({
                 data: responses.map((r, i) => ({ name: `${i + 1}.`, value: r })),
                 headerEmbed: {
-                    title: `Your Added Responses ✍ 💬`
+                    title: `Your Added Responses ✍ 💬`,
+                    footer: { text: `You can add up to 20 responses` }
                 },
-                size: 2
+                size: 3
             })
         }
 
