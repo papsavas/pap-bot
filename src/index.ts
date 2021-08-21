@@ -62,7 +62,6 @@ export const PAP = new Client({
 /*
     TODOS:
     * disable registration
-    * merge myresponses to a single multi subcommand
 */
 
 

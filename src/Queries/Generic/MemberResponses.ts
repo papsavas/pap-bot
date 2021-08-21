@@ -49,7 +49,7 @@ export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowf
     return res > 0 ? `removed ${res} responses` : `Response \`\`\`${response}\`\`\` not found`;
 }
 
-export async function countMemberResponses(member_id: Snowflake, guild_id: Snowflake): Promise<number> {
+export async function memberResponsesCount(member_id: Snowflake, guild_id: Snowflake): Promise<number> {
     const res = await findAll('guild_responses', {
         "guild_id": guild_id,
         "member_id": member_id,

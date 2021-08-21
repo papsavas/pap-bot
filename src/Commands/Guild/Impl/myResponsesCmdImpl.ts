@@ -4,7 +4,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
-import { addMemberResponse, countMemberResponses, fetchGuildMemberResponses, removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
+import { addMemberResponse, fetchGuildMemberResponses, memberResponsesCount, removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
 import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { myResponsesCmd } from "../Interf/myResponsesCmd";
@@ -12,12 +12,13 @@ import { myResponsesCmd } from "../Interf/myResponsesCmd";
 
 const [add, show, remove] = ['add', 'show', 'remove'];
 const response: ApplicationCommandOptionData['name'] = 'response';
+const usage = "myresponses add <response> | remove <response> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `myresponses`;
     protected _guide = `Manage your submitted responses`;
-    protected _usage = `myresponses`;
+    protected _usage = usage;
 
     private constructor() { super() }
 
@@ -86,8 +87,6 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     }
 
     async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
-        const guild_id = message.guildId;
-        const member_id = message.author.id;
         return message.reply({
             embeds: await embedResponse(message, arg1, commandless2)
         })
@@ -108,9 +107,21 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 async function embedResponse(request: CommandInteraction | Message, subcommand: string, response?: string): Promise<MessageEmbed[]> {
     const guild_id = request.guildId;
     const member_id = request.member.user.id;
+    if (!subcommand)
+        return [new MessageEmbed({
+            title: `Wrong syntax [subcommand]`,
+            description: '**usage:** ' + usage,
+            color: "RED"
+        })]
     switch (subcommand?.toLowerCase()) {
         case add: {
-            if (await countMemberResponses(member_id, guild_id) > 20)
+            if (!response)
+                return [new MessageEmbed({
+                    title: `Wrong syntax [response]`,
+                    description: '**usage:** ' + usage,
+                    color: "RED"
+                })]
+            if (await memberResponsesCount(member_id, guild_id) > 20)
                 return [
                     new MessageEmbed({
                         title: "Quantity Limit",
@@ -136,10 +147,16 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
 
         }
         case remove: {
-            const resp = await removeMemberResponse(guild_id, member_id, response);
+            if (!response)
+                return [new MessageEmbed({
+                    title: `Wrong syntax [response]`,
+                    description: '**usage:** ' + usage,
+                    color: "RED"
+                })]
+            const res = await removeMemberResponse(guild_id, member_id, response);
             return [new MessageEmbed({
-                title: `Removed Response`,
-                description: resp
+                title: `Remove Response`,
+                description: res
             })]
         }
 
@@ -149,7 +166,8 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
                 data: responses.map((r, i) => ({ name: `${i}`, value: r })),
                 headerEmbed: {
                     title: `Your Added Responses ✍ 💬`
-                }
+                },
+                size: 2
             })
         }
 

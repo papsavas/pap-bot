@@ -57,6 +57,7 @@ export function paginationEmbed(
 
 
 export function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
+    //TODO: fix field overflow
     data: EmbedFieldData[],
     headerEmbed: MessageEmbedOptions,
     size?: number;
