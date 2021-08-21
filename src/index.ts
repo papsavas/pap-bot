@@ -309,6 +309,7 @@ PAP.on('messageDelete', async (deletedMessage) => {
 })
 
 PAP.on('messageReactionAdd', async (reaction, user) => {
+    if (user.bot) return
     const r = reaction.partial ? await reaction.fetch() : reaction;
     const u = user.partial ? await user.fetch() : user;
     switch (reaction.message.channel.type) {
@@ -335,6 +336,7 @@ reaction: ${reaction.emoji.name}\n`).catch(console.error);
 });
 
 PAP.on('messageReactionRemove', async (reaction, user) => {
+    if (user.bot) return
     const r = reaction.partial ? await reaction.fetch() : reaction;
     const u = user.partial ? await user.fetch() : user;
     switch (reaction.message.channel.type) {
