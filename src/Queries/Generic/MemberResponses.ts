@@ -46,6 +46,7 @@ export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowf
             guild_id,
             member_id
         }, ['uuid'])
+    if (resps.length === 0) return "No responses found";
     const res = await deleteBatch('guild_responses', {
         "uuid": resps[index - 1]['uuid']
     });
