@@ -59,7 +59,7 @@ export function paginationEmbed(
 export function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
     //TODO: fix field overflow
     data: EmbedFieldData[],
-    headerEmbed: MessageEmbedOptions,
+    headerEmbed: Omit<MessageEmbedOptions, "fields">,
     size?: number;
 }): MessageEmbed[] {
     if (size > 20) throw new Error("embed fields are 20 max");

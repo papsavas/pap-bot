@@ -12,7 +12,7 @@ import { myResponsesCmd } from "../Interf/myResponsesCmd";
 
 const [add, show, remove] = ['add', 'show', 'remove'];
 const response: ApplicationCommandOptionData['name'] = 'response';
-const usage = "myresponses add <response> | remove <response> | show";
+const usage = "myresponses add <response> | remove <index> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
@@ -60,9 +60,9 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
                     type: "SUB_COMMAND",
                     options: [
                         {
-                            name: response,
-                            description: 'exact response',
-                            type: 'STRING',
+                            name: "index",
+                            description: 'the index of the shown response',
+                            type: 'INTEGER',
                             required: true
 
                         }
@@ -80,9 +80,10 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         await interaction.deferReply({ ephemeral: true });
         const subcommand = interaction.options.getSubcommand(true);
-        const resp = interaction.options.getString(response, true);
+        const resp = interaction.options.getString(response);
+        const index = interaction.options.getInteger('index');
         return interaction.editReply({
-            embeds: await embedResponse(interaction, subcommand, resp)
+            embeds: await embedResponse(interaction, subcommand, resp ?? index)
         })
     }
 
@@ -104,7 +105,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 
 }
 
-async function embedResponse(request: CommandInteraction | Message, subcommand: string, response?: string): Promise<MessageEmbed[]> {
+async function embedResponse(request: CommandInteraction | Message, subcommand: string, input?: string | number): Promise<MessageEmbed[]> {
     const guild_id = request.guildId;
     const member_id = request.member.user.id;
     if (!subcommand)
@@ -115,6 +116,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
         })]
     switch (subcommand?.toLowerCase()) {
         case add: {
+            const response = (input as string).trimEnd();
             if (!response)
                 return [new MessageEmbed({
                     title: `Wrong syntax [response]`,
@@ -147,13 +149,14 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
 
         }
         case remove: {
-            if (!response)
+            const index = input as number;
+            if (typeof index === 'undefined')
                 return [new MessageEmbed({
-                    title: `Wrong syntax [response]`,
+                    title: `Wrong syntax [index]`,
                     description: '**usage:** ' + usage,
                     color: "RED"
                 })]
-            const res = await removeMemberResponse(guild_id, member_id, response);
+            const res = await removeMemberResponse(guild_id, member_id, index);
             return [new MessageEmbed({
                 title: `Remove Response`,
                 description: res
@@ -161,9 +164,16 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
         }
 
         case show: {
-            const responses: string[] = (await fetchGuildMemberResponses(guild_id, member_id)).map(r => r['response']);
+            const responses: string[] = (await fetchGuildMemberResponses(guild_id, member_id));
+            if (responses.length === 0)
+                return [
+                    new MessageEmbed({
+                        title: `Your responses`,
+                        description: `You have no responses in this guild. Add using **myresponses add <response>**`,
+                    })
+                ]
             return sliceToEmbeds({
-                data: responses.map((r, i) => ({ name: `${i}`, value: r })),
+                data: responses.map((r, i) => ({ name: `${i + 1}.`, value: r })),
                 headerEmbed: {
                     title: `Your Added Responses ✍ 💬`
                 },
