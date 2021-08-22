@@ -47,12 +47,12 @@ export class PrefixCmdImpl extends AbstractGuildCommand implements prefixCmd {
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
         const guildHandler = guildMap.get(interaction.guildId);
         const newPrefix = interaction.options.getString(prefixOptionLiteral);
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         if (!!newPrefix) {
+            if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+                return interaction.editReply(`\`MANAGE_GUILD\` permissions required`);
             const oldSettings = await fetchGuildSettings(interaction.guildId);
             const newSettings = Object.assign(oldSettings, { 'prefix': newPrefix });
             await updateGuildSettings(interaction.guildId, newSettings).then(() => guildHandler.setPrefix(newPrefix));
