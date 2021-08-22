@@ -14,11 +14,13 @@ import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
 import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
 import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
+import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
 import { PrefixCmdImpl } from "../../Commands/Guild/Impl/prefixCmdImpl";
 import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
+import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 import { memberResponses } from "../../Entities/Generic/MemberResponses";
@@ -47,7 +49,8 @@ export abstract class AbstractGuild implements GenericGuild {
         PollCmdImpl, DmMemberCmdImpl, PrefixCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
-        myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl
+        myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl,
+        PinMessageCmdImpl, UnpinMessageCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;
@@ -118,7 +121,6 @@ export abstract class AbstractGuild implements GenericGuild {
             return this.commandManager.onManualCommand(message);
         }
 
-        //TODO: switch to mention
         if (message.mentions.users.first()?.id === message.client.user.id) {
             return message.channel.sendTyping()
                 .then(() => message.reply(randomArrayValue(this._responses)))
@@ -209,7 +211,6 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`unbanned ${ban.user.tag}`);
     }
 
-
     addGuildLog(log: string, member_id: Snowflake = null): string {
         this.logs.push(log);
         addLog(this.guildID, log, member_id)
@@ -222,8 +223,6 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     fetchCommands() {
-        //this refreshes every time ⬇
-        //return this._commandHandler.fetchGuildCommands(this.guild.commands); 
         return this.guild.commands.fetch();
     }
 

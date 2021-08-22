@@ -1,15 +1,16 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { extractId } from "../../../tools/extractMessageId";
-import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 
 
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
-export class UnpinMessageCmdImpl extends AbstractGlobalCommand implements unpinMessageCmd {
+export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `unpin`;
@@ -30,7 +31,7 @@ export class UnpinMessageCmdImpl extends AbstractGlobalCommand implements unpinM
             this.keyword
         );
 
-    getCommandData(): ChatInputApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,
@@ -143,5 +144,9 @@ export class UnpinMessageCmdImpl extends AbstractGlobalCommand implements unpinM
 
     getAliases(): string[] {
         return this._aliases;
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
     }
 }

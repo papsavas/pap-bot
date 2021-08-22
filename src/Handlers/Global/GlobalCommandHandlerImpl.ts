@@ -1,8 +1,6 @@
 import { CommandInteraction } from 'discord.js';
 import { MockMessageCmdImpl } from '../../Commands/Global/Impl/mockMessageCmdImpl';
-import { PinMessageCmdImpl } from '../../Commands/Global/Impl/pinMessageCmdImpl';
 import { tictactoeCmdImpl } from '../../Commands/Global/Impl/tictactoeCmdImpl';
-import { UnpinMessageCmdImpl } from '../../Commands/Global/Impl/unpinMessageCmdImpl';
 import { userNotesCmdImpl } from '../../Commands/Global/Impl/userNotesCmdImpl';
 import { GlobalCommandManagerImpl } from '../../Commands/Managers/Impl/GlobalCommandManagerImpl';
 import { GlobalCommandManager } from '../../Commands/Managers/Interf/GlobalCommandManager';
@@ -10,7 +8,6 @@ import { GlobalCommandHandler } from './GlobalCommandHandler';
 
 const globalCommands = [
     MockMessageCmdImpl, tictactoeCmdImpl,
-    PinMessageCmdImpl, UnpinMessageCmdImpl,
     userNotesCmdImpl
 ]
 export class GlobalCommandHandlerImpl implements GlobalCommandHandler {
