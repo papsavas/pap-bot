@@ -3,13 +3,12 @@ import { deleteBatch, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 
 export async function addTeacher(teacher: Teacher) {
-    const { courses } = teacher;
-    delete teacher.courses;
-    const [teacherID] = await saveBatch(teacherTable, [teacher], 'uuid');
+    const { courses: teacherCourses, ...dbTeacher } = teacher;
+    const [teacherID] = await saveBatch(teacherTable, [dbTeacher], 'uuid');
     const relation: { teacher_id: string, course_id: string }[] = [];
-    for (const c of courses.values()) {
-        const classObj = await findOne(courseTable, { "code": c.code }, ['uuid']);
-        relation.push({ teacher_id: teacherID, course_id: classObj['uuid'] });
+    for (const c of teacherCourses.values()) {
+        const course = await findOne(courseTable, { "code": c.code }, ['uuid']);
+        relation.push({ teacher_id: teacherID, course_id: course['uuid'] });
     }
     return saveBatch(teacher_courseTable, relation);
 }
