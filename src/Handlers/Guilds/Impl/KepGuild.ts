@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import urlRegex from 'url-regex';
 import { channels, roles } from "../../../../values/KEP/IDs.json";
@@ -270,6 +270,12 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 break;
             }
         }
+    }
+
+    async onGuildMemberRemove(member: GuildMember): Promise<unknown> {
+        return dropStudents({
+            member_id: member.id
+        });
     }
 
     onGuildBanAdd(ban: GuildBan) {
