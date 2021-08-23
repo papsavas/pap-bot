@@ -102,7 +102,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             }
 
             case channels.memes: {
-                if (message.attachments.size === 0 || !urlRegex({ strict: true, exact: false }).test(message.content) && message.deletable)
+                if (
+                    (
+                        message.attachments.size === 0 ||
+                        !urlRegex({ strict: true, exact: false })
+                            .test(message.content)
+                    )
+                    && message.deletable
+                )
                     await message.delete();
                 break;
             }
