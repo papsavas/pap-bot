@@ -17,6 +17,13 @@ export async function linkTeacherToCourse(teacherUsername: Teacher['username'], 
     return saveBatch(teacher_courseTable, [{ "course_id": course.uuid, "teacher_id": teacher.uuid }]);
 }
 
+//TODO: replace with fetching table
+export const fetchTeacherCourses = () =>
+    findAll(teacher_courseTable, true) as Promise<{
+        course_id: Course['uuid'],
+        teacher_id: Teacher['uuid']
+    }[]>;
+
 export function deleteCourse(code: Course['code']) {
     return findOne(courseTable, { "code": code }, ['uuid']).then(async (course) => {
         //!order matters, otherwise "teacher_class" will be violating foreign key constraint, fixed with cascade
