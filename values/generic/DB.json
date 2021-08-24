@@ -30,5 +30,6 @@
     "pendingStudentTable": "pending_student",
     "teacher_courseTable": "teacher_course",
     "student_courseTable": "student_course",
-    "userNotesTable": "user_notes"
+    "userNotesTable": "user_notes",
+    "drivePermsTable": "drive_perms"
 }
