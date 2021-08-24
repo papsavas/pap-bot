@@ -1,5 +1,8 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
+import moment from "moment-timezone";
+import 'moment/locale/el';
+import urlRegex from "url-regex";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
@@ -11,10 +14,12 @@ import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myExamsCmd } from "../Interf/KEP_myExamsCmd";
 
+moment.locale('el');
+moment.tz("Europe/Athens");
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
-    name: ev.summary,
-    value: `${ev.start.dateTime ?? ev.start.date}`
+    name: `• 📅 ${moment(ev.start.dateTime).format('LL')}, ${moment(ev.start.dateTime).format("kk:mm")} - ${moment(ev.end.dateTime).format("kk:mm")}`,
+    value: `[**${ev.summary}**](${ev.description.match(urlRegex({ strict: true })).toString()})`
 }));
 export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myExamsCmd {
 
@@ -96,16 +101,19 @@ function handleRequest(request: CommandInteraction | Message) {
     if (studentCourseEvents.length === 0)
         return request.reply(responseBuilder('Δεν βρέθηκαν προγραμματισμένα μαθήματα'));
 
+    const [first, last] = [studentCourseEvents[0], studentCourseEvents[studentCourseEvents.length - 1]]
+        .map(ev => moment(ev.start.dateTime).format('LL'));
     const responseEmbeds = sliceToEmbeds({
         data: studentCourseEvents.map(fieldBuilder),
         headerEmbed: {
             title: `MyExams`,
-            description: `Description`
+            description: `Η εξεταστική σας ξεκινάει **${first}** και ολοκληρώνεται **${last}**`
         }
     })
 
     user.send({ embeds: responseEmbeds })
         .then(msg => {
+            msg.react("🗑");
             if (request.type === "APPLICATION_COMMAND")
                 request.reply(responseBuilder(`Σας το έστειλα στα DMs`))
             else if (request.type === "DEFAULT")

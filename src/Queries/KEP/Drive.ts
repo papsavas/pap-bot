@@ -1,8 +1,12 @@
 import { Snowflake } from "discord.js";
-import moment, { Moment } from "moment";
+import moment, { Moment } from "moment-timezone";
+import 'moment/locale/el';
 import { drivePermsTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { drivePermission } from "../../Entities/KEP/Drive";
+moment.locale('el');
+moment.tz("Europe/Athens");
+
 
 
 export function findDrivePerm(member_id: Snowflake) {
@@ -13,8 +17,8 @@ export function saveDrivePermission(permId: string, until: Moment, memberId: Sno
     return saveBatch(drivePermsTable, [
         {
             "perm_id": permId,
-            "createdAt": moment().tz("Europe/Athens"),
-            destroyedAt: until.toDate(),
+            "createdAt": moment(),
+            "destroyedAt": until,
             "member_id": memberId
         }
     ]);

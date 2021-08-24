@@ -1,6 +1,7 @@
 import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
-import moment from 'moment';
+import moment from "moment-timezone";
+import 'moment/locale/el';
 import urlRegex from 'url-regex';
 import { channels, roles } from "../../../../values/KEP/IDs.json";
 import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
@@ -23,6 +24,9 @@ import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
+moment.locale('el');
+moment.tz("Europe/Athens");
+
 
 const guildCommands = [
     //KEP_announceCmdImpl,

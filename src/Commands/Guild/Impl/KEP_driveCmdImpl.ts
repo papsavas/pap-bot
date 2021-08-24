@@ -1,5 +1,6 @@
 import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import moment from "moment-timezone";
+import 'moment/locale/el';
 import { guildMap } from "../../..";
 import { drive as driveLink } from "../../../../values/KEP/info.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -10,6 +11,8 @@ import { addDrivePermission, deleteDrivePermission } from "../../../tools/Google
 import { scheduleTask } from "../../../tools/scheduler";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_driveCmd } from "../Interf/KEP_driveCmd";
+moment.locale('el');
+moment.tz("Europe/Athens")
 
 const defaultHours: number = 3;
 const registerLiteral = "register";
@@ -65,7 +68,7 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
                 const duration = inputHours ?? defaultHours;
                 const student = await fetchStudent({ member_id: interaction.user.id });
                 if (!student)
-                    return interaction.editReply('Δεν είστε εγγεγραμμένος. Εγγραφείτε με /registration register');
+                    return interaction.editReply('Δεν είστε εγγεγραμμένος. Εγγραφείτε με **`/registration register`**');
                 const time = moment().tz("Europe/Athens").add(duration, "hours");
                 const perm = await addDrivePermission(student.email);
                 await saveDrivePermission(perm.data.id, time, interaction.user.id);
@@ -73,8 +76,7 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
                     if (!!await fetchDrivePermissions(interaction.user.id)[0]) //check if record still exists
                         deleteDrivePermission(perm.data.id)
                             .then(() => dropDrivePermission(perm.data.id))
-                }
-                );
+                });
                 return interaction.editReply(`Ενεργοποιήθηκε η πρόσβαση σας για **${duration} ώρες**\nΟ σύνδεσμος: ${driveLink}`)
             }
         }

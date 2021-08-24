@@ -4,6 +4,7 @@ import {
 import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
+import { channels as botGuildChannels } from "../values/PAP/IDs.json";
 import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
 import { GuildMap } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
@@ -75,13 +76,13 @@ async function runScript() {
 PAP.on('ready', async () => {
     try {
         PAP.user.setActivity('over you', { type: 'WATCHING' });
-        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
-        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
-        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
-        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel;
-        testChannel = PAPGuildChannels.cache.get('755136367935226098') as TextChannel
+        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID).channels;
+        const initLogs = PAPGuildChannels.cache.get(botGuildChannels.init_logs) as TextChannel;
+        bugsChannel = PAPGuildChannels.cache.get(botGuildChannels.bugs) as TextChannel;
+        logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
+        testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel
         if (!inDevelopment)
-            await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+            await initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`);
 
         // Initializing the guilds
         guildMap.set(kepGuildId, await KepGuild.init(kepGuildId));
@@ -107,7 +108,7 @@ PAP.on('ready', async () => {
     } catch (err) {
         console.log('ERROR\n' + err.stack);
     }
-    console.log(`___Initiated___`);
+    console.log(`___ Initiated ___`);
 
     if (inDevelopment) {
         await runScript();
