@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { drivePermsTable } from "../../../values/generic/DB.json";
-import { deleteBatch, findOne, saveBatch } from "../../DB/GenericCRUD";
+import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { drivePermission } from "../../Entities/KEP/Drive";
 
 
@@ -13,7 +13,7 @@ export function saveDrivePermission(permId: string, until: Moment, memberId: Sno
     return saveBatch(drivePermsTable, [
         {
             "perm_id": permId,
-            "createdAt": new Date(),
+            "createdAt": moment().tz("Europe/Athens"),
             destroyedAt: until.toDate(),
             "member_id": memberId
         }
@@ -22,4 +22,8 @@ export function saveDrivePermission(permId: string, until: Moment, memberId: Sno
 
 export function dropDrivePermission(permId: string) {
     return deleteBatch(drivePermsTable, { "perm_id": permId });
+}
+
+export function fetchDrivePermissions(member_id?: Snowflake) {
+    return findAll(drivePermsTable, member_id ? { member_id } : true) as Promise<drivePermission[]>;
 }

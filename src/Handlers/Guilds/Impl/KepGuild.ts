@@ -1,5 +1,6 @@
 import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
+import moment from 'moment';
 import urlRegex from 'url-regex';
 import { channels, roles } from "../../../../values/KEP/IDs.json";
 import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
@@ -14,9 +15,11 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
+import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
 import { banStudent, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
+import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
@@ -70,6 +73,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     this.students.get(student.member_id).courses.set(c.role_id, c);
         }
         handleExaminedChannels(this.courses, this.events, this.guild.channels);
+        handleActiveDrivePermissions();
         return Promise.resolve('KEP Loaded');
     }
 
@@ -333,4 +337,22 @@ function handleExaminedChannels(courses: Course[], events: calendar_v3.Schema$Ev
         }
     });
 
+}
+
+function handleActiveDrivePermissions() {
+    fetchDrivePermissions()
+        .then(async perms => {
+            for (const p of perms) {
+                if (p.destroyedAt.getTime() < Date.now()) {
+                    await deleteDrivePermission(p.perm_id).catch(console.error);
+                    await dropDrivePermission(p.perm_id);
+                    continue;
+                }
+                scheduleTask(moment(p.destroyedAt), async () => {
+                    await deleteDrivePermission(p.perm_id).catch(console.error);
+                    await dropDrivePermission(p.perm_id);
+
+                })
+            }
+        })
 }

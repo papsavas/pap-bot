@@ -29,10 +29,12 @@ const token: googleToken = {
     "expiry_date": 1590000084528
 };
 const authPromise = Gauth(credentials, token, SCOPES);
-const drive = google.drive({ version: "v3" });
+const driveV3 = google.drive({ version: "v3" });
+const driveV2 = google.drive({ version: "v2" });
 
-export async function addDrivePermission(email: string) {
-    return drive.permissions.create({
+export async function addDrivePermission(email: string/*, date?: Date*/) {
+    /*v3 (expiration date buggy)*/
+    return driveV3.permissions.create({
         auth: await authPromise,
         fileId: process.env.GDRIVE_FILE_ID,
         sendNotificationEmail: false,
@@ -45,10 +47,55 @@ export async function addDrivePermission(email: string) {
 
         }
     })
+
+    /* return date ? driveV3.permissions.update({
+         auth: await authPromise,
+         fileId: process.env.GDRIVE_FILE_ID,
+         permissionId: perm.data.id,
+         fields: 'id',
+         requestBody: {
+             role: "reader",
+             expirationTime: date.toISOString()
+         }
+     }) : perm
+     */
+
+    //----------------------------------------------------
+
+    /*v2 (expiration date buggy)*/
+    /* 
+    
+    const perm = await driveV2.permissions.insert({
+        auth: await authPromise,
+        fileId: process.env.GDRIVE_FILE_ID,
+        sendNotificationEmails: false,
+        supportsAllDrives: true,
+        fields: '*',
+        requestBody: {
+            value: email,
+            type: "user",
+            role: "reader",
+            emailAddress: email,
+
+        }
+    });
+
+    return date ? driveV2.permissions.patch({
+        auth: await authPromise,
+        fileId: process.env.GDRIVE_FILE_ID,
+        permissionId: perm.data.id,
+        fields: '*',
+        requestBody: {
+            value: perm.data.emailAddress,
+            role: "reader",
+            expirationDate: date.toISOString()
+        }
+    }) : perm
+    */
 }
 
 export async function deleteDrivePermission(perm_id: string) {
-    return drive.permissions.delete({
+    return driveV3.permissions.delete({
         auth: await authPromise,
         fileId: process.env.GDRIVE_FILE_ID,
         permissionId: perm_id

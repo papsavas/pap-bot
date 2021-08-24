@@ -92,8 +92,8 @@ PAP.on('ready', async () => {
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
 
-            await g.commandManager.clearCommands(g.guild.commands);
-            await g.commandManager.updateCommands(g.guild.commands);
+            //await g.commandManager.clearCommands(g.guild.commands);
+            //await g.commandManager.updateCommands(g.guild.commands);
 
         };
 
