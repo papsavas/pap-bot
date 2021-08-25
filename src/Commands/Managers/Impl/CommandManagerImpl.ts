@@ -71,12 +71,12 @@ export abstract class CommandManagerImpl implements CommandManager {
         const prefix = guildHandler?.getSettings().prefix ?? defaultPrefix;
         const commandMessage = message;
         const candidateCommand = this.sliceCommandLiterals(message, prefix);
-        const commandImpl = this.commands
+        const commandImpl: GenericCommand = this.commands
             .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
         if (typeof commandImpl !== "undefined") {
             if (Boolean(message.guild)) {
-                const perms = await fetchCommandPerms(message.guild.id, commandImpl.id.find(v => v === message.guildId));
+                const perms = await fetchCommandPerms(message.guildId, commandImpl.id.findKey(v => v === message.guildId));
                 if (perms.length !== 0 && !perms.map(p => p.role_id).some(pr => message.member.roles.cache.has(pr)))
                     return message.react('⛔');
             }
@@ -191,7 +191,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             timestamp: new Date()
         });
         bugsChannelEmbed.setDescription(err.message);
-        bugsChannelEmbed.addField(`caused by`, commandMessage.url);
+        bugsChannelEmbed.addField(`caused by`, commandMessage?.url);
         await bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
         return commandMessage.reply({

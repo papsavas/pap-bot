@@ -16,6 +16,7 @@ import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 import { KepGuild } from './Handlers/Guilds/Impl/KepGuild';
 import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
+import { saveGuild } from './Queries/Generic/Guild';
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
@@ -60,7 +61,7 @@ export const PAP = new Client({
 
 /*
     TODOS:
-    * handle guild join/leave
+    * 
 */
 
 
@@ -116,11 +117,16 @@ PAP.on('ready', async () => {
 
 PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
-    guildMap.set(guild.id, await DefaultGuild.init(guild.id));
-    const g = guildMap.get(guild.id);
-    g.onReady(PAP)
-        .then(() => g.onGuildJoin(guild))
-        .catch(console.error);
+    try {
+        await saveGuild(guild) //required before init
+        guildMap.set(guild.id, await DefaultGuild.init(guild.id));
+        const g = guildMap.get(guild.id);
+        await g.onGuildJoin(guild);
+        await g.onReady(PAP);
+        console.log(`${guild.name} ready`)
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 PAP.on('guildDelete', async guild => {

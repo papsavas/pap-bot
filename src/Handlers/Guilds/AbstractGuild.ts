@@ -25,7 +25,7 @@ import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommand
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 import { memberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
-import { dropGuild, saveGuild } from '../../Queries/Generic/Guild';
+import { dropGuild } from '../../Queries/Generic/Guild';
 import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
@@ -85,15 +85,12 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onGuildJoin(guild: Guild) {
-        return saveGuild(guild)
-            .then(() => this.commandManager.updateCommands(guild.commands))
-            .catch(console.error);
+        return this.commandManager.updateCommands(guild.commands)
     }
 
-    onGuildLeave(guild: Guild) {
-        return this.commandManager.clearCommands(guild.commands)
-            .then(() => dropGuild(guild))
-            .catch(console.error)
+    async onGuildLeave(guild: Guild) {
+        dropGuild(guild);
+        await this.commandManager.clearCommands(guild.commands).catch(console.error);
     }
 
     onGuildMemberAdd(member: GuildMember): Promise<any> {
@@ -233,7 +230,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     async loadResponses() {
         this._settings = await fetchGuildSettings(this.guildID);
-        const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
+        const genericResponses = await genericGuildResponses(this.guildID, this._settings?.nsfw_responses);
         const memberResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
         this._responses = memberResponses.concat(genericResponses);
     }
