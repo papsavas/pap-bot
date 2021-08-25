@@ -18,6 +18,10 @@ export async function overrideCommandPerms(guild_id: Snowflake, command_id: Snow
     return saveBatch(commandPermsTable, rows);
 }
 
+export async function dropGuildCommands(guild_id: Snowflake) {
+    return deleteBatch(commandsTable, { guild_id });
+}
+
 export async function dropCommandPerms(command_id: Snowflake, guild_id: Snowflake) {
     return deleteBatch(commandPermsTable, { guild_id, command_id });
 }

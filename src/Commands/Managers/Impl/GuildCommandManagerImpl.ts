@@ -1,7 +1,7 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, GuildApplicationCommandManager, Snowflake
 } from 'discord.js';
-import { dropAllCommandPerms, fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
+import { dropAllCommandPerms, dropGuildCommands, fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
 import { GuildCommandManager } from "../Interf/GuildCommandManager";
 import { CommandManagerImpl } from './CommandManagerImpl';
@@ -75,7 +75,9 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         );
     }
 
-    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
-        return commandManager.set([]).then(() => dropAllCommandPerms(this.guildID));
+    async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+        await commandManager.set([]);
+        await dropAllCommandPerms(this.guildID);
+        await dropGuildCommands(this.guildID);
     }
 }

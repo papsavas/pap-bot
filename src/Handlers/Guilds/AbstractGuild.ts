@@ -25,6 +25,7 @@ import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommand
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 import { memberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
+import { dropGuild, saveGuild } from '../../Queries/Generic/Guild';
 import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
@@ -84,11 +85,15 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onGuildJoin(guild: Guild) {
-        return this.commandManager.updateCommands(guild.commands);
+        return saveGuild(guild)
+            .then(() => this.commandManager.updateCommands(guild.commands))
+            .catch(console.error);
     }
 
     onGuildLeave(guild: Guild) {
         return this.commandManager.clearCommands(guild.commands)
+            .then(() => dropGuild(guild))
+            .catch(console.error)
     }
 
     onGuildMemberAdd(member: GuildMember): Promise<any> {

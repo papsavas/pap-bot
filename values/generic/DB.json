@@ -22,6 +22,8 @@
     ],
     "guildTable": "guild",
     "guildSettingsTable": "guild_settings",
+    "guildLogsTable": "guild_logs",
+    "guildResponsesTable": "guild_responses",
     "commandsTable": "command",
     "commandPermsTable": "command_perms",
     "courseTable": "course",

@@ -16,7 +16,6 @@ import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
 import { KepGuild } from './Handlers/Guilds/Impl/KepGuild';
 import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
-import { registerGuild, unregisterGuild } from './Queries/Generic/Guild';
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
@@ -117,8 +116,6 @@ PAP.on('ready', async () => {
 
 PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
-    //TODO: register guild commands
-    await registerGuild(guildMap, guild).catch(console.error);;
     guildMap.set(guild.id, await DefaultGuild.init(guild.id));
     const g = guildMap.get(guild.id);
     g.onReady(PAP)
@@ -128,12 +125,10 @@ PAP.on('guildCreate', async (guild) => {
 
 PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
-    //TODO: unregister guild commands
     const g = guildMap.get(guild.id);
-    await g.onGuildLeave(guild)
-        .then(() => unregisterGuild(guild))
+    g.onGuildLeave(guild)
+        .then(() => guildMap.delete(guild.id))
         .catch(console.error);
-    guildMap.delete(guild.id);
 })
 
 PAP.on('guildUnavailable', (guild) => {
