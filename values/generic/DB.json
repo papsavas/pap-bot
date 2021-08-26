@@ -24,6 +24,7 @@
     "guildSettingsTable": "guild_settings",
     "guildLogsTable": "guild_logs",
     "guildResponsesTable": "guild_responses",
+    "mutedMemberTable": "muted_member",
     "commandsTable": "command",
     "commandPermsTable": "command_perms",
     "courseTable": "course",

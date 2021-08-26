@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, Collection, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import moment from "moment-timezone";
 import 'moment/locale/el';
@@ -10,6 +10,7 @@ import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl'
 import { KEP_dataCmdImpl } from '../../../Commands/Guild/Impl/KEP_dataCmdImpl';
 import { KEP_driveCmdImpl } from '../../../Commands/Guild/Impl/KEP_driveCmdImpl';
 import { KEP_infoCmdImpl } from '../../../Commands/Guild/Impl/KEP_infoCmdImpl';
+import { KEP_muteCmdImpl } from '../../../Commands/Guild/Impl/KEP_muteCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
 import { KEP_registrationCmdImpl } from '../../../Commands/Guild/Impl/KEP_registrationCmdImpl';
@@ -18,6 +19,7 @@ import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
 import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
+import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
 import { banStudent, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
@@ -37,8 +39,12 @@ const guildCommands = [
     KEP_myScheduleCmdImpl,
     KEP_infoCmdImpl,
     KEP_driveCmdImpl,
-    KEP_dataCmdImpl
+    KEP_dataCmdImpl,
+    KEP_muteCmdImpl
 ]
+
+//TODO: create reminders for courses
+//TODO: implement mute command
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
     public students: Collection<Snowflake, Student>;
@@ -80,6 +86,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         }
         handleExaminedChannels(this.courses, this.events, this.guild.channels);
         handleActiveDrivePermissions();
+        handleMutedMembers(this.guild);
         return Promise.resolve('KEP Loaded');
     }
 
@@ -354,4 +361,31 @@ function handleActiveDrivePermissions() {
                 })
             }
         })
+}
+
+async function handleMutedMembers(guild: Guild) {
+    for (const mm of await fetchMutedMembers()) {
+        scheduleTask(moment(mm.unmuteAt), async () => {
+            if (!!await findMutedMember(mm.member_id)) {
+                const member = await guild.members.fetch(mm.member_id);
+                await member?.roles?.set(mm.roles);
+                await dropMutedMember(member.id);
+                const headerEmb = new MessageEmbed({
+                    author: {
+                        name: `CyberSocial Excluded`,
+                        icon_url: `https://i.imgur.com/92vhTqK.png`
+                    },
+                    title: `Mute Logs`,
+                    color: "DARKER_GREY",
+                    footer: { text: `Execution Number: 1662` },
+                })
+                await (guild.channels.cache.get(channels.logs) as TextChannel).send({
+                    embeds: [
+                        new MessageEmbed(headerEmb)
+                            .setDescription(`Unmuted ${member.toString()}`)
+                    ]
+                })
+            }
+        })
+    }
 }
