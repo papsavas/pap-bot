@@ -3,6 +3,7 @@ import { channels as kepChannels, roles as kepRoles } from "../../../../values/K
 import { buttons, messages, reasons } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
+import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { addStudents, dropPendingStudent, fetchPendingStudent, fetchStudent, savePendingStudent } from "../../../Queries/KEP/Student";
@@ -130,6 +131,9 @@ ${pswd}\n
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
                     const channel = guildMap.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
                     await channel.send(`<@${pendingStudent.member_id}> **:** ${pendingStudent.am}`);
+                    const students = (guildMap.get(interaction.guild.id) as KepGuild).students;
+                    //TODO: fix duplicate db query, return entire record on submit
+                    students.set(interaction.user.id, await fetchStudent({ member_id: interaction.user.id })); //update cache
                     await interaction.editReply(`Επιτυχής εγγραφή ✅
 Καλώς ήρθες και επισήμως!
 Διάβασε το <#${kepChannels.readme}> και τους <#${kepChannels.rules}> ώστε να προσανατολιστείς`);

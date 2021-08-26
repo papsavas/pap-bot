@@ -102,17 +102,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 }
                 break;
 
-            case channels.anonymous: {
-                if (message.embeds.length > 0) {
-                    await message.startThread({
-                        name: message.embeds[0].footer.text,
-                        autoArchiveDuration: 1440
-                    }).catch(err => console.log(`could not create anonymous thread\n` + err.toString()));
-
-                }
-                break;
-            }
-
             case channels.memes: {
                 if (
                     (
@@ -146,32 +135,35 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         try {
             switch (reaction.message.channel.id) {
                 case channels.anonymous_approval: {
-                    const targetChannel = reaction.message.guild.channels.cache.get(channels.anonymous) as TextChannel;
                     const emb = reaction.message.embeds[0];
-                    switch (reaction.emoji.name) {
-                        case '✅': {
-                            try {
-                                await targetChannel.send({ embeds: [emb] });
+                    if (Boolean(emb)) {
+                        const targetChannel = reaction.message.guild.channels.cache.get(channels.anonymous) as TextChannel;
+                        switch (reaction.emoji.name) {
+                            case '✅': {
+                                const msg = await targetChannel.send({ embeds: [emb] });
+                                await msg.startThread({
+                                    name: msg.embeds[0].footer.text,
+                                    autoArchiveDuration: 1440
+                                }).catch(err => console.log(`could not create anonymous thread\n` + err.toString()));
                                 await reaction.message.reactions.removeAll();
-                                reaction.message.react('☑');
-                            } catch (err) {
-                                console.log(err);
+                                await reaction.message.react('☑');
+                                break;
                             }
-                            break;
-                        }
-                        case '❌': {
-                            await reaction.message.reactions.removeAll();
-                            reaction.message.react('✂');
-                            break;
-                        }
-                        case '✝': {
-                            await reaction.message.reactions.removeAll();
-                            reaction.message.react('✂');
-                            const channel = reaction.message.guild.channels.cache.get(WOAPchannels.cemetery);
-                            await (channel as TextChannel).send({ embeds: [emb] })
-                            break;
+                            case '❌': {
+                                await reaction.message.reactions.removeAll();
+                                reaction.message.react('✂');
+                                break;
+                            }
+                            case '✝': {
+                                await reaction.message.reactions.removeAll();
+                                reaction.message.react('✂');
+                                const channel = reaction.message.guild.channels.cache.get(WOAPchannels.cemetery);
+                                await (channel as TextChannel).send({ embeds: [emb] })
+                                break;
+                            }
                         }
                     }
+
                 }
 
                 default:
@@ -292,6 +284,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onGuildMemberRemove(member: GuildMember): Promise<unknown> {
+        this.students.delete(member.id)
         return dropStudents({
             member_id: member.id
         });
