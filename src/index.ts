@@ -259,7 +259,7 @@ PAP.on('messageCreate', (receivedMessage) => {
                 .catch(internalErr => console.log(internalErr));
         }
 
-    if (receivedMessage.author.bot)
+    if (receivedMessage.author.id === PAP.user.id)
         return
 
     switch (receivedMessage.channel.type) {
@@ -286,7 +286,7 @@ content: ${receivedMessage.content}\n`).catch(console.error);
 PAP.on('messageDelete', async (deletedMessage) => {
     if (deletedMessage.partial) return; //cannot fetch deleted data
 
-    if (deletedMessage.author == PAP.user || deletedMessage.author.bot)
+    if (deletedMessage.author.id === PAP.user.id || deletedMessage.author.bot)
         return
 
     switch (deletedMessage.channel.type) {

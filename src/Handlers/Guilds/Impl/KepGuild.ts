@@ -137,6 +137,28 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         return super.onMessage(message);
     }
 
+    async onMessageDelete(message: Message): Promise<unknown> {
+        const logChannel = message.guild.channels.cache.get(channels.logs) as TextChannel;
+        return logChannel?.send({
+            embeds: [
+                new MessageEmbed(
+                    {
+                        author: {
+                            name: message.author.username,
+                            icon_url: message.member.user.avatarURL({ format: 'png' })
+                        },
+                        color: `#ffffff`,
+                        description: `**🗑️ Διεγράφη Μήνυμα από ${message.member.toString()} στο ${message.channel.toString()}**
+    *Μήνυμα:* "**${message.content}**\nMedia: ${message.attachments.first()?.proxyURL ?? '-'}"`,
+                        footer: {
+                            text: `sent at: ${moment(message.createdTimestamp).format('LLLL')}`
+                        }
+                    }
+                )
+            ]
+        })
+    }
+
     async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
         try {
             switch (reaction.message.channel.id) {
