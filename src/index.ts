@@ -59,12 +59,6 @@ export const PAP = new Client({
     }
 });
 
-/*
-    TODOS:
-    * 
-*/
-
-
 async function runScript() {
     //-----insert script-------
 
@@ -92,21 +86,16 @@ PAP.on('ready', async () => {
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
-
-            //await g.commandManager.clearCommands(g.guild.commands);
-            //await g.commandManager.updateCommands(g.guild.commands);
-
         };
 
         dmHandler = await DMHandlerImpl.init();
         await dmHandler.onReady(PAP);
         globalCommandHandler = await GlobalCommandHandlerImpl.init();
         globalCommandsIDs = await fetchGlobalCommandIds();
-        //await globalCommandHandler.commandManager.updateCommands(PAP.application.commands);
         console.log('smooth init');
 
     } catch (err) {
-        console.log('ERROR\n' + err.stack);
+        console.log('READY ERROR\n' + err);
     }
     console.log(`___ Initiated ___`);
 
