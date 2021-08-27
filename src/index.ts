@@ -3,6 +3,7 @@ import {
 } from 'discord.js';
 import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { logUnregisteredStudents } from '../repo/scripts/findUnregisteredStudents';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
 import { channels as botGuildChannels } from "../values/PAP/IDs.json";
 import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
@@ -61,7 +62,7 @@ export const PAP = new Client({
 
 async function runScript() {
     //-----insert script-------
-
+    await logUnregisteredStudents(PAP, kepGuildId);
     //-------------------------
     console.log('script done');
     return
@@ -105,6 +106,7 @@ PAP.on('ready', async () => {
 
     if (inDevelopment) {
         await runScript();
+        process.exit(0);
     }
 });
 

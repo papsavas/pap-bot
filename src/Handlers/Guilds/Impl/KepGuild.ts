@@ -229,6 +229,10 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                                 .join('\n')
                         }])
                 );
+
+                if (logEmbeds.length === 0)
+                    logEmbeds.push(new MessageEmbed(header).setDescription("Δεν υπήρξαν αλλαγές"))
+
                 return select.reply({
                     embeds: logEmbeds,
                     ephemeral: true
