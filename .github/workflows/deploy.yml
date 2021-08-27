@@ -29,4 +29,10 @@ jobs:
           GMAIL_CLIENT_SECRET: ${{secrets.GMAIL_CLIENT_SECRET}}
           GMAIL_ACCESS_TOKEN: ${{secrets.GMAIL_ACCESS_TOKEN}}
           GMAIL_REFRESH_TOKEN: ${{secrets.GMAIL_REFRESH_TOKEN}}
+          GDRIVE_FILE_ID: ${{secrets.GDRIVE_FILE_ID}}
+          GDRIVE_CLIENT_ID : ${{secrets.GDRIVE_CLIENT_ID}}
+          GDRIVE_PROJECT_ID: ${{secrets.GDRIVE_PROJECT_ID}}
+          GDRIVE_CLIENT_SECRET: ${{secrets.GDRIVE_CLIENT_SECRET}}
+          GDRIVE_ACCESS_TOKEN: ${{secrets.GDRIVE_ACCESS_TOKEN}}
+          GDRIVE_REFRESH_TOKEN: ${{secrets.GDRIVE_REFRESH_TOKEN}}
           
