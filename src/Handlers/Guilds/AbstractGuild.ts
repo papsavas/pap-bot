@@ -1,36 +1,38 @@
 import {
     ButtonInteraction,
-    Client, CommandInteraction, Guild,
+    Client, CommandInteraction, Constants, ContextMenuInteraction, Guild,
+    GuildBan,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User
 } from 'discord.js';
-import { mentionRegex } from "../../../botconfig.json";
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
-import { AddResponseCmdImpl } from "../../Commands/Guild/Impl/addResponseCmdImpl";
+import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
 import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
 import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
 import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
+import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
 import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
-import { PinMessageCmdImpl } from "../../Commands/Guild/Impl/pinMessageCmdImpl";
+import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
-import { RemovePersonalResponseCmdImpl } from "../../Commands/Guild/Impl/removePersonalResponseCmdImpl";
-import { SetPrefixCmdImpl } from "../../Commands/Guild/Impl/setPrefixCmdImpl";
+import { PrefixCmdImpl } from "../../Commands/Guild/Impl/prefixCmdImpl";
 import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
-import { ShowPersonalResponsesCmdImpl } from "../../Commands/Guild/Impl/showPersonalResponsesCmdImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
-import { UnpinMessageCmdImpl } from "../../Commands/Guild/Impl/unpinMessageCmdImpl";
+import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 import { memberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
+import { dropGuild } from '../../Queries/Generic/Guild';
 import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
-import { randomArrayValue } from "../../toolbox/randomArrayValue";
+import { randomArrayValue } from "../../tools/randomArrayValue";
 import { GenericGuild } from "./GenericGuild";
+
+
 
 
 export abstract class AbstractGuild implements GenericGuild {
@@ -45,12 +47,11 @@ export abstract class AbstractGuild implements GenericGuild {
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
 
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
-        PollCmdImpl, DmMemberCmdImpl, SetPrefixCmdImpl,
-        PinMessageCmdImpl, UnpinMessageCmdImpl,
+        PollCmdImpl, DmMemberCmdImpl, PrefixCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
-        AddResponseCmdImpl, ShowPersonalResponsesCmdImpl, RemovePersonalResponseCmdImpl,
-        NsfwSwitchCmdImpl, ShowLogsCmdImpl
+        myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl,
+        PinMessageCmdImpl, UnpinMessageCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;
@@ -77,10 +78,19 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._settings;
     }
 
-    async onReady(client: Client): Promise<string> {
+    async onReady(client: Client): Promise<unknown> {
         this._guild = client.guilds.cache.get(this.guildID);
         await this.loadResponses()
         return Promise.resolve(`loaded ${this.guild.name}`);
+    }
+
+    onGuildJoin(guild: Guild) {
+        return this.commandManager.updateCommands(guild.commands)
+    }
+
+    async onGuildLeave(guild: Guild) {
+        dropGuild(guild);
+        await this.commandManager.clearCommands(guild.commands).catch(console.error);
     }
 
     onGuildMemberAdd(member: GuildMember): Promise<any> {
@@ -96,7 +106,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onSlashCommand(interaction: CommandInteraction): Promise<any> {
+    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<any> {
         return this.commandManager.onSlashCommand(interaction);
     }
 
@@ -113,7 +123,7 @@ export abstract class AbstractGuild implements GenericGuild {
             return this.commandManager.onManualCommand(message);
         }
 
-        if (message.content.match(mentionRegex)) {
+        if (message.mentions.users.first()?.id === message.client.user.id) {
             return message.channel.sendTyping()
                 .then(() => message.reply(randomArrayValue(this._responses)))
                 .catch(err => console.log(err));
@@ -126,9 +136,9 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(this.addGuildLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
     }
 
-    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<any> {
+    async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
         switch (reaction.emoji.name) {
-            case "📌": case "📍":
+            case "📌": case "📍": {
                 let response: string;
                 if (!reaction.message.pinnable) {
                     response = `*Missing \`MANAGE_MESSAGES\` permission to pin this message*`;
@@ -136,8 +146,18 @@ export abstract class AbstractGuild implements GenericGuild {
                 else if (reaction.message.pinned) {
                     response = `Message is already pinned`
                 }
-                else
-                    return reaction.message.pin();
+                else {
+                    try {
+                        await reaction.message.pin();
+                        return
+                    } catch (error) {
+                        if (error.code === Constants.APIErrors.MAXIMUM_PINS)
+                            response = `Maximum Number of pins reached`;
+                        else
+                            return console.log(error);
+                    }
+                }
+
                 const msg = await reaction.message.channel.send(response);
                 await msg.react("🗑️");
                 const collected = await msg.awaitReactions({
@@ -147,6 +167,7 @@ export abstract class AbstractGuild implements GenericGuild {
                 })
                 await msg.delete();
                 break
+            }
 
             case "🔖": case "📑":
                 return user.send({
@@ -184,6 +205,13 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`reaction removed`);
     }
 
+    onGuildBanAdd(ban: GuildBan): Promise<unknown> {
+        return Promise.resolve(`banned ${ban.user.tag}`);
+    }
+
+    onGuildBanRemove(ban: GuildBan): Promise<unknown> {
+        return Promise.resolve(`unbanned ${ban.user.tag}`);
+    }
 
     addGuildLog(log: string, member_id: Snowflake = null): string {
         this.logs.push(log);
@@ -197,14 +225,12 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     fetchCommands() {
-        //this refreshes every time ⬇
-        //return this._commandHandler.fetchGuildCommands(this.guild.commands); 
         return this.guild.commands.fetch();
     }
 
     async loadResponses() {
         this._settings = await fetchGuildSettings(this.guildID);
-        const genericResponses = await genericGuildResponses(this.guildID, this._settings.nsfw_responses);
+        const genericResponses = await genericGuildResponses(this.guildID, this._settings?.nsfw_responses);
         const memberResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
         this._responses = memberResponses.concat(genericResponses);
     }

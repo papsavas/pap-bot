@@ -1,9 +1,10 @@
 
-import { ApplicationCommandData, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
+import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
 import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
@@ -11,7 +12,7 @@ import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `logs`;
     protected _guide = `Prints guilds logs`;
     protected _usage = `logs`;
@@ -30,10 +31,11 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
-            description: this.guide
+            description: this.guide,
+            type: 'CHAT_INPUT',
         }
     }
 
@@ -60,13 +62,16 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                     content: `no logs found`,
                     ephemeral: true
                 });
-            let literal: string = ``;
-            for (const el of res)
-                literal += `${el.member_id ? `<@${el.member_id}> | ` : ``}${el.log} | ${el.date.toString()}\n`;
+
+            const embs = sliceToEmbeds({
+                data: res.reverse().map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })),
+                headerEmbed: {
+                    title: `Logs`
+                },
+                size: 5
+            })
             return interaction.followUp({
-                content:
-                    //last 2000 characters
-                    `\`\`\`${literal.substr(0, 2000)}\`\`\``,
+                embeds: embs,
                 allowedMentions: { parse: [] },
                 ephemeral: true
             }
@@ -95,11 +100,17 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                         try {
                             const res = await loadGuildLogs(guild.id);
                             if (res.length < 1) return channel.send(`no logs found`);
-                            let literal = ``;
-                            for (const el of res)
-                                literal += `<@${el.member_id}> | ${el.log} | ${el.date.toString}\n`;
+                            const embs = sliceToEmbeds({
+                                data: res
+                                    .reverse() //show latest logs first
+                                    .map((el, i) => ({ name: el.date.toDateString() ?? `**${i}.**`, value: `<@${el.member_id}> | ${el.log}` })),
+                                headerEmbed: {
+                                    title: `Logs`
+                                },
+                                size: 5
+                            })
                             return channel.send({
-                                content: literal.toString(),
+                                embeds: embs,
                                 allowedMentions: {
                                     users: [],
                                     roles: [],
@@ -116,7 +127,10 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
                         return collected.first().react('👌');
                 }
                 )
-                .catch(collected => { channel.send(`You didnt answer in time`) })
+                .catch(err => {
+                    console.log(err.toString());
+                    channel.send(`You didnt answer in time`)
+                })
         }
     }
 

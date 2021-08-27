@@ -39,13 +39,24 @@ export function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, res
     )
 }
 
-export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowflake, response: string): Promise<string> {
+export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowflake, index: number): Promise<string> {
+    if (index < 1 || index > 20) return "Index out of range";
+    const resps = await findAll('guild_responses',
+        {
+            guild_id,
+            member_id
+        }, ['uuid'])
+    if (resps.length === 0) return "No responses found";
     const res = await deleteBatch('guild_responses', {
+        "uuid": resps[index - 1]['uuid']
+    });
+    return res > 0 ? `removed ${res} responses` : `Response \`\`\`${index}\`\`\` not found`;
+}
+
+export async function memberResponsesCount(member_id: Snowflake, guild_id: Snowflake): Promise<number> {
+    const res = await findAll('guild_responses', {
         "guild_id": guild_id,
         "member_id": member_id,
-        "response": response,
-    });
-    let resp: string;
-    res > 0 ? resp = `removed ${res} responses` : resp = `Response \`\`\`${response}\`\`\` not found`;
-    return Promise.resolve(resp);
+    })
+    return res.length;
 }

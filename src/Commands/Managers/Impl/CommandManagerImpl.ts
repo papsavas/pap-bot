@@ -1,9 +1,11 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
-    Collection, CommandInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+    Collection, CommandInteraction, Constants, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
+import { prefix as defaultPrefix } from "../../../../botconfig.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
+import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
 
@@ -12,11 +14,20 @@ export abstract class CommandManagerImpl implements CommandManager {
     protected readonly helpCommandData: ApplicationCommandData;
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
     abstract saveCommandData(commands: Collection<Snowflake, ApplicationCommand>): Promise<unknown>;
+    abstract clearCommands(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        guildId?: Snowflake
+    ): Promise<unknown>;
+    abstract registerCommand(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        commandData: ApplicationCommandData
+    ): Promise<unknown>;
 
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
-            name: "help",
-            description: "displays support for a certain command",
+            name: `help_${commands[0].type.toString().toLowerCase()}`,
+            description: `[${commands[0].type.toString()}] displays support for a certain command`,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: `command`,
@@ -24,7 +35,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                     type: 'STRING',
                     choices: commands.map(cmd => ({
                         name: cmd.keyword,
-                        value: cmd.guide.substring(0, 99)
+                        value: cmd.guide?.substring(0, 99) ?? 'context app'
                     })),
                     required: true
                 }
@@ -32,51 +43,22 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
     }
 
-    //TODO: implement permission guard
-    async onManualCommand(message: Message): Promise<unknown> {
-        const guildHandler = guildMap.get(message.guild.id);
-        const prefix = guildHandler.getSettings().prefix;
-        const commandMessage = message;
-        const candidateCommand = this.sliceCommandLiterals(message);
-        const commandImpl = this.commands
-            .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
-        if (typeof commandImpl !== "undefined") {
-            try {
-                await commandImpl.execute(commandMessage, candidateCommand);
-                commandMessage?.react('✅')
-                // .catch()
-            } catch (error) {
-                this.invalidCommand(error, commandMessage, commandImpl, candidateCommand.primaryCommand);
-                commandMessage?.react('❌');
-            }
-            finally {
-                await message?.reactions.removeAll();
-            }
-        }
-
-        else if (['help', 'h'].includes(candidateCommand.primaryCommand))
-            return this.helpCmd(
-                message,
-                this.commands
-                    .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.arg1)));
-        else
-            return message.react('❔').catch();
-    };
-
-    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
-        if (interaction.commandName == 'help')
+    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
+        //TODO: fetch command to access "usage"
+        if (interaction.commandName.startsWith('help'))
             return interaction.reply({
                 embeds: [
                     new MessageEmbed({
-                        description: interaction.options.get('command').value as string
+                        description: interaction.options.getString('command')
                     })
                 ]
                 , ephemeral: true
             }).catch(err => this.invalidSlashCommand(err, interaction, 'help'))
 
 
-        const candidateCommand = this.commands.find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
+        const candidateCommand = this.commands
+            .find((cmds: GenericCommand) => cmds.matchAliases(interaction.commandName))
         if (typeof candidateCommand !== "undefined")
             return candidateCommand.interactiveExecute(interaction)
                 .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
@@ -84,25 +66,59 @@ export abstract class CommandManagerImpl implements CommandManager {
             return interaction.reply(`Command not found`);
     };
 
+    async onManualCommand(message: Message): Promise<unknown> {
+        const guildHandler = guildMap.get(message.guild?.id);
+        const prefix = guildHandler?.getSettings().prefix ?? defaultPrefix;
+        const commandMessage = message;
+        const candidateCommand = this.sliceCommandLiterals(message, prefix);
+        const commandImpl: GenericCommand = this.commands
+            .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.primaryCommand));
 
+        if (typeof commandImpl !== "undefined") {
+            if (Boolean(message.guild)) {
+                const perms = await fetchCommandPerms(message.guildId, commandImpl.id.findKey(v => v === message.guildId));
+                if (perms.length !== 0 && !perms.map(p => p.role_id).some(pr => message.member.roles.cache.has(pr)))
+                    return message.react('⛔');
+            }
+            let emote: string;
+            try {
+                await commandImpl.execute(commandMessage, candidateCommand);
+                emote = '✅';
+            } catch (error) {
+                this.invalidCommand(error, commandMessage, commandImpl, candidateCommand.primaryCommand, prefix);
+                emote = '❌';
+            }
+            return commandMessage.react(emote)
+                .then(reaction => reaction.users.remove(reaction.client.user.id))
+                .catch(err => err.code === Constants.APIErrors.UNKNOWN_MESSAGE ? '' : new Error(err));
+        }
+
+        else if (['help', 'h'].includes(candidateCommand.primaryCommand))
+            return this.manualHelpCmd(
+                message,
+                this.commands
+                    .find((cmds: GenericCommand) => cmds.matchAliases(candidateCommand?.arg1)));
+        else
+            return message.react('❔').catch();
+    };
 
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand<{}>>> {
         const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
-        console.log(`updating commands`);
-        await commandManager.set([]); //remove previous 
+        console.log(`updating ${this.commands[0].type} commands`);
         applicationCommands.push(this.helpCommandData);
         const newCommands = await commandManager.set(applicationCommands);
-        //add to db
-        await this.saveCommandData(newCommands);
+        await this.saveCommandData(newCommands); //DB
+        for (const cmd of this.commands) {
+            cmd.id = await fetchCommandID(cmd.keyword);
+        }
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
     }
 
-    protected sliceCommandLiterals(receivedMessage: Message): commandLiteral {
+    protected sliceCommandLiterals(receivedMessage: Message, prefix: string): commandLiteral {
         const receivedMessageContent = receivedMessage.content;
-        const fullCommand: string = receivedMessageContent.substr(guildMap.get(receivedMessage.guild.id)
-            .getSettings().prefix.length); // Remove the prefix;
+        const fullCommand: string = receivedMessageContent.substr(prefix.length); // Remove the prefix;
         const splitCommand: string[] = fullCommand
             .split(/(\s+)/)
             .filter(e => e.trim().length > 0) //split command from space(s);
@@ -110,7 +126,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             //prefix,
             fullCommand,
             splitCommand,
-            primaryCommand: splitCommand[0], // The first word directly after the exclamation is the command
+            primaryCommand: splitCommand[0],
             arg1: splitCommand[1],
             arg2: splitCommand[2],
             arg3: splitCommand[3],
@@ -120,14 +136,15 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
     }
 
+    //TODO: fix this mess
     protected invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new MessageEmbed({
             author: {
-                name: interaction.guild.name,
+                name: interaction.guild?.name ?? interaction.user.username,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: interaction.guild.iconURL({ format: "png", size: 512 })
+                proxy_url: interaction.guild?.iconURL({ format: "png", size: 512 }) ?? interaction.user.avatarURL({ format: "png", size: 512 }),
             },
             title: primaryCommandLiteral,
             color: "DARK_RED",
@@ -144,38 +161,37 @@ export abstract class CommandManagerImpl implements CommandManager {
                     name: `Error on Command`,
                     icon_url: `https://www.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-512.png`
                 },
-                title: guildMap.get(interaction.guild.id).getSettings().prefix + interaction.commandName,
+                title: interaction.commandName,
                 fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
                 color: 'RED'
             })
 
         //send feedback to member
-        const interactionPromise: Promise<unknown> = interaction.replied ?
-            interaction.editReply({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
+        const interactionPromise: Promise<unknown> = interaction.replied || interaction.deferred ?
+            interaction.followUp({ embeds: [interactionEmb] }) : interaction.reply({ embeds: [interactionEmb] });
         interactionPromise
-            .then(() => setTimeout(() => interaction.deleteReply().catch(), 20000))
-            .catch();
+            .catch(console.error);
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.stack}`)
     }
 
 
-    protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string) {
+    //TODO: fix this mess
+    protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string, prefix: string) {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.message}`);
-        const prefix = guildMap.get(commandMessage.guild.id).getSettings().prefix;
         const bugsChannelEmbed = new MessageEmbed({
             author: {
-                name: commandMessage.guild.name,
+                name: commandMessage.guild?.name ?? commandMessage.author.username,
                 icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
             },
             thumbnail: {
-                proxy_url: commandMessage.guild.iconURL({ format: "png", size: 512 })
+                proxy_url: commandMessage.guild?.iconURL({ format: "png", size: 512 }) ?? commandMessage.author.avatarURL({ format: "png", size: 512 }),
             },
             title: primaryCommandLiteral,
             color: "DARK_RED",
             timestamp: new Date()
         });
         bugsChannelEmbed.setDescription(err.message);
-        bugsChannelEmbed.addField(`caused by`, commandMessage.url);
+        bugsChannelEmbed.addField(`caused by`, commandMessage?.url);
         await bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
         //send feedback to member
         return commandMessage.reply({
@@ -194,13 +210,14 @@ export abstract class CommandManagerImpl implements CommandManager {
                     })
             ]
         }
-        ).then(msg => setTimeout(() => {
-            msg.delete().catch()
-        }, 30000));
+        )
+            .then(msg => setTimeout(() => {
+                msg.delete().catch()
+            }, 30000));
 
     }
 
-    protected helpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
+    protected manualHelpCmd(message: Message, providedCommand: GenericCommand): Promise<Message> {
         if (typeof providedCommand !== 'undefined')
             return message.reply({
                 embeds:
@@ -208,6 +225,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                         new MessageEmbed({
                             title: providedCommand.keyword,
                             description: providedCommand.guide,
+                            fields: [{ name: "Usage", value: providedCommand.usage, inline: true }],
                             footer: { text: providedCommand.getAliases().toString() }
                         })
                     ]

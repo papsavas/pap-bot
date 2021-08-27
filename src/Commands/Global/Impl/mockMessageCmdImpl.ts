@@ -1,15 +1,15 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import UpperLowerCaseSwitching from '../../../toolbox/upperLowerCaseSwitching';
-import { AbstractDMCommand } from '../../DM/AbstractDMCommand';
+import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
+import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
 import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
-export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessageCmd {
-    protected _id: Snowflake;
+export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `mock`;
     protected _guide = `Mocks text`;
     protected _usage = `mock <text>`;
@@ -28,10 +28,11 @@ export class MockMessageCmdImpl extends AbstractDMCommand implements mockMessage
             this.keyword
         );
 
-    getCommandData(): ApplicationCommandData {
+    getCommandData(): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: textOptionLiteral,

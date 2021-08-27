@@ -1,13 +1,11 @@
 import {
-    ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction,
+    ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction,
     Constants,
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
-import { GdmMember as _guide } from '../../guides.json';
-import { dmMember as _keyword } from '../../keywords.json';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
 
@@ -19,7 +17,7 @@ const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `dm`;
     protected _guide = `Sends DM to a specific member`;
     protected _usage = `dm member/username/nickname message`;
@@ -27,20 +25,21 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
     static async init(): Promise<dmMemberCmd> {
         const cmd = new DmMemberCmdImpl();
-        cmd._id = await fetchCommandID(_keyword);
+        cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
     private readonly _aliases = this.addKeywordToAliases
         (
             ['directmessage', 'message', 'dm'],
-            _keyword
+            this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
-            name: _keyword,
-            description: this.getGuide(),
+            name: this.keyword,
+            description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: userOptionLiteral,
@@ -133,16 +132,8 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             })
     }
 
-    getKeyword(): string {
-        return _keyword;
-    }
-
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    getGuide(): string {
-        return _guide;
     }
 
     addGuildLog(guildID: Snowflake, log: string) {

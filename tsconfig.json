@@ -14,7 +14,6 @@
       "ES2018"
     ],
     "resolveJsonModule": true,
-    "baseUrl": "./",
   },
   "exclude": [
     "node_modules"

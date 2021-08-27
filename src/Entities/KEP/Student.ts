@@ -1,5 +1,5 @@
 import { Collection, Snowflake } from "discord.js";
-import { uniClass } from "./uniClass";
+import { Course } from "./Course";
 
 type digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type digitZeroLess = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -14,10 +14,12 @@ export interface Student {
     am: amType;
     email: `${amType}@uom.edu.gr`;
     member_id: Snowflake,
-    name?: string | null;
-    classes?: Collection<uniClass['role_id'], uniClass[]>
+    blocked?: boolean,
+    courses?: Collection<Course['role_id'], Course>
     uuid?: string
 }
+
+export type PendingStudent = Omit<Student, "courses" | "uuid" | "blocked"> & { password: number, date?: Date };
 
 export interface StudentFine {
     student_id: amType;

@@ -15,8 +15,24 @@
         "generic_responses",
         "command_perms",
         "student",
+        "pending_student",
         "user_notes",
         "bot_config",
         "secrets"
-    ]
+    ],
+    "guildTable": "guild",
+    "guildSettingsTable": "guild_settings",
+    "guildLogsTable": "guild_logs",
+    "guildResponsesTable": "guild_responses",
+    "mutedMemberTable": "muted_member",
+    "commandsTable": "command",
+    "commandPermsTable": "command_perms",
+    "courseTable": "course",
+    "teacherTable": "teacher",
+    "studentTable": "student",
+    "pendingStudentTable": "pending_student",
+    "teacher_courseTable": "teacher_course",
+    "student_courseTable": "student_course",
+    "userNotesTable": "user_notes",
+    "drivePermsTable": "drive_perms"
 }

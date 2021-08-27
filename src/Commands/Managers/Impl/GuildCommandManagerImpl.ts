@@ -25,20 +25,27 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         return applicationCommands;
     }
 
+    //TODO: transform Collection
     saveCommandData(newCommands: Collection<Snowflake, ApplicationCommand>): Promise<void> {
         return overrideCommands(
-            newCommands.map(cmd => (
+            [...newCommands.mapValues(cmd => (
                 {
                     keyword: cmd.name,
                     id: cmd.id,
                     guide: cmd.description,
                     global: false,
+                    guild_id: this.guildID,
                     aliases: this.commands
                         .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
 
                 })
-            )
+            ).values()]
         );
+    }
+
+    async registerCommand(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, commandData: ApplicationCommandData) {
+        const cmd = await commandManager.create(commandData);
+        await this.saveCommandData(new Collection<Snowflake, ApplicationCommand>().set(cmd.id, cmd));
     }
 
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
@@ -66,5 +73,9 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
                 })
             })
         );
+    }
+
+    async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+        return commandManager.set([]);
     }
 }

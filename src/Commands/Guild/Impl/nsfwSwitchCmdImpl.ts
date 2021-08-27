@@ -1,6 +1,7 @@
 import {
-    ApplicationCommandData, CommandInteraction, Message,
+    ChatInputApplicationCommandData, Collection, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
+    Permissions,
     Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -13,7 +14,7 @@ import { nsfwSwitchCmd } from '../Interf/nsfwSwitchCmd';
 
 export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitchCmd {
 
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `nsfw`;
     protected _guide = `Enables/Disables nsfw responses`;
     protected _usage = `nsfw`;
@@ -31,14 +32,22 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
-            description: this.guide
+            description: this.guide,
+            type: 'CHAT_INPUT',
         }
     }
 
     async interactiveExecute(commandInteraction: CommandInteraction): Promise<any> {
+        const member = await commandInteraction.guild.members.fetch(commandInteraction.user.id);
+        const perm = Permissions.FLAGS.MANAGE_GUILD;
+        if (!member.permissions.has(perm))
+            return commandInteraction.reply({
+                content: `\`MANAGE_GUILD\` Permissions required`,
+                ephemeral: true
+            })
         //TODO: Fix behavior, after update collector returns an error if time ends
         const oldSettings = await fetchGuildSettings(commandInteraction.guildId);
 
@@ -94,6 +103,11 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
     }
 
     async execute(message: Message, { }: commandLiteral) {
+        const perm = Permissions.FLAGS.MANAGE_GUILD;
+        if (!message.member.permissions.has(perm))
+            return message.reply({
+                content: `\`MANAGE_GUILD\` Permissions required`
+            })
         //TODO: Fix behaviour, after update collector returns an error if time ends
         try {
             const oldSettings = await fetchGuildSettings(message.guild.id);

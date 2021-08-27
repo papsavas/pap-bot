@@ -1,24 +1,13 @@
 import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
-import { userNotesCmdImpl } from "../../Commands/DM/Impl/userNotesCmdImpl";
-import { DMCommandManagerImpl } from "../../Commands/Managers/Impl/DMCommandManagerImpl";
-import { DMCommandManager } from "../../Commands/Managers/Interf/DMCommandManager";
 import { DmHandler } from "./GenericDm";
 
 export class DMHandlerImpl implements DmHandler {
-    commandManager: DMCommandManager;
+
 
     private constructor() { }
 
     static async init(): Promise<DmHandler> {
         const dm = new DMHandlerImpl();
-        dm.commandManager = new DMCommandManagerImpl(
-            await Promise.all(
-                [
-                    userNotesCmdImpl
-                ]
-                    .map(cmd => cmd.init())
-            )
-        );
         return dm
     }
 
@@ -27,29 +16,31 @@ export class DMHandlerImpl implements DmHandler {
     }
 
     onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        return interaction.reply({ content: `Dm commands coming soon`, ephemeral: true })
+        //return this.commandManager.onSlashCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve(`button ${interaction.customId} received from ${interaction.user.id}`);
     }
 
     onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve(`select ${interaction.customId} received from ${interaction.user.id}`);
     }
 
     onMessage(message: Message): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve(`message received from ${message.author.id}`);
     }
 
+
     onMessageDelete(deletedMessage: Message): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve();
     }
 
     onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
         switch (reaction.emoji.name) {
             case '🗑️': case '🗑':
-                if (reaction.message.deletable)
+                if (reaction.message.deletable && user.id !== reaction.client.user.id)
                     return reaction.message.delete();
 
             default:
@@ -58,6 +49,6 @@ export class DMHandlerImpl implements DmHandler {
     }
 
     onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<unknown> {
-        throw new Error("Method not implemented.");
+        return Promise.resolve();
     }
 }

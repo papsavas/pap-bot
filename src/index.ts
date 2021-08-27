@@ -3,6 +3,9 @@ import {
 } from 'discord.js';
 import _ from 'lodash';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { guildId as kepGuildId } from "../values/KEP/IDs.json";
+import { channels as botGuildChannels } from "../values/PAP/IDs.json";
+import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
 import { GuildMap } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
@@ -10,11 +13,15 @@ import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
 import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
 import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
+import { KepGuild } from './Handlers/Guilds/Impl/KepGuild';
+import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
-import { deleteGuild, saveGuild } from './Queries/Generic/Guild';
+import { saveGuild } from './Queries/Generic/Guild';
 
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
+let testChannel: TextChannel;
+
 export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
 
 console.log(`inDevelopment is ${inDevelopment}`);
@@ -24,16 +31,27 @@ let globalCommandHandler: GlobalCommandHandler;
 export let globalCommandsIDs: Snowflake[];
 
 if (inDevelopment)
-    require('dotenv').config({ path: '../.env' });  //load env variables
+    require('dotenv').config({ path: require('find-config')('.env') })  //load env variables
 
 console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
 export const PAP = new Client({
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
+    partials: [
+        'MESSAGE',
+        'CHANNEL',
+        'REACTION',
+        'USER',
+        'GUILD_MEMBER',
+    ],
     intents: [
-        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_MEMBERS',
-        'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
-        'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS'
+        'GUILDS',
+        'GUILD_BANS',
+        'GUILD_EMOJIS_AND_STICKERS',
+        'GUILD_MEMBERS',
+        'GUILD_MESSAGES',
+        'GUILD_MESSAGE_REACTIONS',
+        'DIRECT_MESSAGES',
+        'DIRECT_MESSAGE_REACTIONS',
     ],
     allowedMentions: {
         parse: ['users'],
@@ -42,7 +60,7 @@ export const PAP = new Client({
 });
 
 async function runScript() {
-    //-----insert script--------
+    //-----insert script-------
 
     //-------------------------
     console.log('script done');
@@ -51,23 +69,23 @@ async function runScript() {
 
 PAP.on('ready', async () => {
     try {
-        // Creating a guild-specific command
         PAP.user.setActivity('over you', { type: 'WATCHING' });
-        const PAPGuildChannels: GuildChannelManager = PAP.guilds.cache.get(botGuildID as Snowflake).channels;
-        const initLogs = PAPGuildChannels.cache.get('746310338215018546') as TextChannel;
-        bugsChannel = PAPGuildChannels.cache.get('746696214103326841') as TextChannel;
-        logsChannel = PAPGuildChannels.cache.get('815602459372027914') as TextChannel
+        const PAPGuildChannels: GuildChannelManager = (await PAP.guilds.cache.get(botGuildID).fetch()).channels;
+        const initLogs = PAPGuildChannels.cache.get(botGuildChannels.init_logs) as TextChannel;
+        bugsChannel = PAPGuildChannels.cache.get(botGuildChannels.bugs) as TextChannel;
+        logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
+        testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel
         if (!inDevelopment)
-            await initLogs.send(`**Launched** __**Typescript Version**__ at *${(new Date()).toString()}*`);
+            await initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`);
 
-        /*
-        TODO: Replace on release 
-        PAP.guilds.cache.keyArray()
-        */
-        for (const guildID of [botGuildID] as Snowflake[]) {
+        // Initializing the guilds
+        guildMap.set(kepGuildId, await KepGuild.init(kepGuildId));
+        guildMap.set(woapGuildId, await WoapGuild.init(woapGuildId));
+        for (const guildID of [...PAP.guilds.cache.keys()] as Snowflake[]) {
             if (!guildMap.has(guildID))
                 guildMap.set(guildID, await DefaultGuild.init(guildID));
-            await guildMap.get(guildID).onReady(PAP); //block until all guilds are loaded
+            const g = guildMap.get(guildID);
+            await g.onReady(PAP); //block until all guilds are loaded
         };
 
         dmHandler = await DMHandlerImpl.init();
@@ -77,9 +95,9 @@ PAP.on('ready', async () => {
         console.log('smooth init');
 
     } catch (err) {
-        console.log('ERROR\n' + err.stack);
+        console.log('READY ERROR\n' + err);
     }
-    console.log(`___Initiated___`);
+    console.log(`___ Initiated ___`);
 
     if (inDevelopment) {
         await runScript();
@@ -88,17 +106,24 @@ PAP.on('ready', async () => {
 
 PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
-    await saveGuild(guildMap, guild);
-    guildMap.set(guild.id, await DefaultGuild.init(guild.id));
-    await guildMap.get(guild.id).onReady(PAP);
-    //onGuildJoin(guild);
+    try {
+        await saveGuild(guild) //required before init
+        guildMap.set(guild.id, await DefaultGuild.init(guild.id));
+        const g = guildMap.get(guild.id);
+        await g.onGuildJoin(guild);
+        await g.onReady(PAP);
+        console.log(`${guild.name} ready`)
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
-    await deleteGuild(guild);
-    //onGuildLeave(guild);
-    guildMap.sweep(g => g.getSettings().guild_id === guild.id);
+    const g = guildMap.get(guild.id);
+    g.onGuildLeave(guild)
+        .then(() => guildMap.delete(guild.id))
+        .catch(console.error);
 })
 
 PAP.on('guildUnavailable', (guild) => {
@@ -126,19 +151,35 @@ PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
 
 PAP.on('interactionCreate', async interaction => {
     if (interaction.isCommand()) {
-        //TODO: check if global
         if (globalCommandsIDs.includes(interaction.commandId)) {
             globalCommandHandler.onSlashCommand(interaction)
                 .catch(console.error);
         }
-
         else if (interaction.guildId) {
-            try {
-                guildMap.get(interaction.guildId)
-                    ?.onSlashCommand(interaction)
-            } catch (error) {
-                console.log(error)
-            }
+            guildMap.get(interaction.guildId)
+                ?.onSlashCommand(interaction)
+                .catch(console.error);
+        }
+        else if (interaction.channel.type === "DM") {
+            dmHandler.onSlashCommand(interaction)
+                .catch(console.error);
+            console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
+    from ${interaction.user.tag}`)
+        }
+        else {
+            console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
+        }
+    }
+
+    else if (interaction.isContextMenu()) {
+        if (globalCommandsIDs.includes(interaction.commandId)) {
+            globalCommandHandler.onSlashCommand(interaction)
+                .catch(console.error);
+        }
+        else if (interaction.guildId) {
+            guildMap.get(interaction.guildId)
+                ?.onSlashCommand(interaction)
+                .catch(console.error);
         }
         else if (interaction.channel.type === "DM") {
             dmHandler.onSlashCommand(interaction)
@@ -153,13 +194,10 @@ PAP.on('interactionCreate', async interaction => {
 
     else if (interaction.isButton()) {
         if (interaction.guildId) {
-            try {
-                guildMap.get(interaction.guildId)
-                    ?.onButton(interaction);
+            guildMap.get(interaction.guildId)
+                ?.onButton(interaction)
+                .catch(console.error);
 
-            } catch (error) {
-                console.log(error)
-            }
         }
         else {
             dmHandler.onButton(interaction)
@@ -170,13 +208,9 @@ PAP.on('interactionCreate', async interaction => {
 
     else if (interaction.isSelectMenu()) {
         if (interaction.guildId) {
-            try {
-                guildMap.get(interaction.guildId)
-                    ?.onSelectMenu(interaction);
-
-            } catch (error) {
-                console.log(error)
-            }
+            guildMap.get(interaction.guildId)
+                ?.onSelectMenu(interaction)
+                .catch(console.error);
         }
         else if (interaction.channel.type === "DM") {
             dmHandler.onSelectMenu(interaction)
@@ -226,12 +260,14 @@ PAP.on('messageCreate', (receivedMessage) => {
 
     switch (receivedMessage.channel.type) {
         case 'DM':
+            dmHandler.onMessage(receivedMessage)
+                .catch(console.error);
             break;
 
         case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
             guildMap.get(receivedMessage.guild.id)
                 ?.onMessage(receivedMessage)
-                .catch(err => console.log(err));
+                .catch(console.error);
             break;
 
         default:
@@ -251,51 +287,76 @@ PAP.on('messageDelete', async (deletedMessage) => {
 
     switch (deletedMessage.channel.type) {
         case 'DM':
+            dmHandler.onMessageDelete(deletedMessage as Message)
+                .catch(console.error);
             break;
 
         case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
             guildMap.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
-                .catch(err => console.log(err));
+                .catch(console.error);
             break;
     }
 })
 
 PAP.on('messageReactionAdd', async (reaction, user) => {
-    try {
-        guildMap.get(reaction.message.guild?.id)
-            ?.onMessageReactionAdd(
-                reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
-                user.partial ? await user.fetch() : user as User,
-            )
-    } catch (err) {
-        console.error(err)
+    if (user.bot) return
+    const r = reaction.partial ? await reaction.fetch() : reaction;
+    const u = user.partial ? await user.fetch() : user;
+    switch (reaction.message.channel.type) {
+        case 'DM':
+            dmHandler.onMessageReactionAdd(r as MessageReaction, u as User)
+                .catch(console.error);
+            break;
+
+        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+            guildMap.get(reaction.message.guild?.id)
+                ?.onMessageReactionAdd(
+                    r as MessageReaction,
+                    u as User,
+                ).catch(console.error);
+            break;
+
+        default:
+            bugsChannel.send(`received reaction from untracked channel type
+CHANNEL_TYPE: ${reaction.message.channel.type}
+ID: ${reaction.message.id}
+from: ${reaction.message.member.displayName}
+reaction: ${reaction.emoji.name}\n`).catch(console.error);
     }
 });
 
 PAP.on('messageReactionRemove', async (reaction, user) => {
-    try {
-        guildMap.get(reaction.message.guild?.id)
-            ?.onMessageReactionRemove(
-                reaction.partial ? await reaction.fetch() : reaction as MessageReaction,
-                user.partial ? await user.fetch() : user as User,
-            )
-    } catch (err) {
-        console.error(err)
-    }
+    if (user.bot) return
+    const r = reaction.partial ? await reaction.fetch() : reaction;
+    const u = user.partial ? await user.fetch() : user;
+    switch (reaction.message.channel.type) {
+        case 'DM':
+            dmHandler.onMessageReactionRemove(r as MessageReaction, u as User)
+                .catch(console.error);
+            break;
+
+        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+            guildMap.get(reaction.message.guild?.id)
+                ?.onMessageReactionRemove(
+                    r as MessageReaction,
+                    u as User,
+                ).catch(console.error);
+            break;
+    };
 });
 
 PAP.on('guildMemberAdd', (member) => {
     guildMap.get(member.guild.id)
         ?.onGuildMemberAdd(member)
-        .catch(err => console.log(err));
+        .catch(console.error);
 });
 
 PAP.on('guildMemberRemove', async (member) => {
-    if (member.partial) await member.fetch().catch(console.error);
-    guildMap.get(member.guild.id).onGuildMemberRemove(member as GuildMember)
-        .catch(err => console.log(err));
-
+    const m = member.partial ? await member.fetch() : member;
+    guildMap.get(m.guild.id)
+        .onGuildMemberRemove(m as GuildMember)
+        .catch(console.error);
 });
 
 PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
@@ -303,8 +364,20 @@ PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
         ?.onGuildMemberUpdate(
             oldMember.partial ? await oldMember.fetch() : oldMember as GuildMember,
             newMember)
-        .catch(err => console.log(err));
+        .catch(console.error);
 });
+
+PAP.on('guildBanAdd', ban => {
+    guildMap.get(ban.guild.id)
+        ?.onGuildBanAdd(ban)
+        .catch(console.error);
+})
+
+PAP.on('guildBanRemove', ban => {
+    guildMap.get(ban.guild.id)
+        ?.onGuildBanRemove(ban)
+        .catch(console.error);
+})
 
 PAP.on('error', (error) => {
     console.error(error);
@@ -313,3 +386,9 @@ PAP.on('error', (error) => {
 PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in `))
     .catch(err => console.log(`ERROR ON LOGIN: \n${err}`));
+
+
+process.on('unhandledRejection', (reason, p) => {
+    console.log(reason)
+});
+

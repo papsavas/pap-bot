@@ -1,0 +1,90 @@
+
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
+import { commandLiteral } from "../../../Entities/Generic/command";
+import { guildMap } from "../../../index";
+import { fetchCommandID } from "../../../Queries/Generic/Commands";
+import { fetchGuildSettings, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
+import { AbstractGuildCommand } from "../AbstractGuildCommand";
+import { prefixCmd } from "../Interf/prefixCmd";
+
+const prefixOptionLiteral: ApplicationCommandOptionData['name'] = 'new_prefix';
+export class PrefixCmdImpl extends AbstractGuildCommand implements prefixCmd {
+
+    protected _id: Collection<Snowflake, Snowflake>;
+    protected _keyword = `prefix`;
+    protected _guide = `Changes the prefix of the bot`;
+    protected _usage = `prefix [new_prefix]`;
+
+    private constructor() { super() }
+
+    static async init(): Promise<prefixCmd> {
+        const cmd = new PrefixCmdImpl();
+        cmd._id = await fetchCommandID(cmd.keyword);
+        return cmd;
+    }
+
+    private readonly _aliases = this.addKeywordToAliases
+        (
+            ['prefix', 'setprefix'],
+            this.keyword
+        );
+
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
+        return {
+            name: this.keyword,
+            description: this.guide,
+            type: 'CHAT_INPUT',
+            options: [
+                {
+                    name: prefixOptionLiteral,
+                    description: 'new prefix',
+                    type: 'STRING',
+                    required: false
+                }
+            ]
+        }
+    }
+
+    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        const guildHandler = guildMap.get(interaction.guildId);
+        const newPrefix = interaction.options.getString(prefixOptionLiteral);
+        await interaction.deferReply({ ephemeral: true });
+        if (!!newPrefix) {
+            if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+                return interaction.editReply(`\`MANAGE_GUILD\` permissions required`);
+            const oldSettings = await fetchGuildSettings(interaction.guildId);
+            const newSettings = Object.assign(oldSettings, { 'prefix': newPrefix });
+            await updateGuildSettings(interaction.guildId, newSettings).then(() => guildHandler.setPrefix(newPrefix));
+            return interaction.editReply(`new prefix is set to \`${newPrefix}\``)
+        }
+        else
+            return interaction.editReply(`Current prefix is \`${guildHandler.getSettings().prefix}\``);
+
+    }
+
+    execute(message: Message, receivedCommand: commandLiteral): Promise<any> {
+        if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return message.reply(`\`MANAGE_GUILD\` permissions required`);
+        const guildHandler = guildMap.get(message.guild.id);
+        if (receivedCommand.arg1)
+            return fetchGuildSettings(message.guild.id)
+                .then(async oldSettings => {
+                    const newSettings = Object.assign(oldSettings, { 'prefix': receivedCommand.arg1 });
+                    return updateGuildSettings(message.guild.id, newSettings).then(() => guildHandler.setPrefix(receivedCommand.arg1))
+                });
+        else
+            return message.reply({
+                content: `\`\`\`Current prefix is "${guildHandler.getSettings().prefix}"\`\`\``
+            });
+
+    }
+    getAliases(): string[] {
+        return this._aliases
+    }
+
+    addGuildLog(guildID: Snowflake, log: string) {
+        return guildMap.get(guildID).addGuildLog(log);
+    }
+
+}

@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -10,7 +10,7 @@ const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
-    protected _id: Snowflake;
+    protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `editmsg`;
     protected _guide = `Edits a bot's text message`;
     protected _usage = `editmessage <channel> <msg_id> <text>`;
@@ -28,10 +28,11 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
             this.keyword
         );
 
-    getCommandData(guild_id: Snowflake): ApplicationCommandData {
+    getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,
+            type: 'CHAT_INPUT',
             options: [
                 {
                     name: channelOptionLiteral,
@@ -56,6 +57,9 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
         const targetChannel = interaction.options.getChannel(channelOptionLiteral, true);
         const messageID = interaction.options.getString(msgidOptionLiteral, true) as Snowflake;
         await interaction.deferReply({ ephemeral: true });
@@ -74,10 +78,12 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     async execute(
-        { channel, mentions, guild, url }: Message,
+        message: Message,
         { arg1, arg2, commandless2, commandless3 }: commandLiteral
     ): Promise<any> {
-
+        const { channel, mentions, guild, url, member } = message;
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return message.reply(`\`MANAGE_GUILD\` permissions required`);
         try {
             const fetchedMessage = await channel.messages.fetch(arg1 as Snowflake)
             const editedMessage = await fetchedMessage
@@ -104,12 +110,12 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
                             )
                         ]
                     });
-                    return new Promise((res, rej) => res('edit message success'));
+                    return Promise.reject('edit message success');
                 } catch (err) {
-                    return new Promise((res, rej) => rej(`edit message failed\n${url}`));
+                    return Promise.reject(`edit message failed\n${url}`);
                 }
             } else {
-                return new Promise((res, rej) => rej(`edit message failed\nreason:${err.toString()}`));
+                return Promise.reject(`edit message failed\nreason:${err.toString()}`);
             }
         }
 

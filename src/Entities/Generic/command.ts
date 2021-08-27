@@ -17,6 +17,7 @@ export interface CommandType {
     id: Snowflake;
     keyword: string;
     guide: string;
+    guild_id?: Snowflake;
     aliases?: string[];
     global?: boolean;
     uuid?: string;
@@ -24,7 +25,6 @@ export interface CommandType {
 
 
 export enum commandSpecifier {
-    GUILD,
-    GLOBAL,
-    DM
+    GUILD = "GUILD",
+    GLOBAL = "GLOBAL"
 }

@@ -3,7 +3,7 @@ import knex, { Knex } from "knex";
 import { v4 } from "uuid";
 import TableBuilder = Knex.TableBuilder;
 
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: require('find-config')('.env') })
 
 class AbstractRepository {
     knex: Knex<any, unknown[]>;

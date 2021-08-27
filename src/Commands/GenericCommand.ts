@@ -1,7 +1,7 @@
-import { CommandInteraction, Message, Snowflake } from "discord.js";
+import { Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
 export interface GenericCommand {
-    id: Snowflake;
+    id: Collection<Snowflake, Snowflake>;
     keyword: string;
     guide: string;
     usage: string;
