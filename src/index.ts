@@ -105,7 +105,6 @@ PAP.on('ready', async () => {
 
     if (inDevelopment) {
         await runScript();
-        process.exit(0);
     }
 });
 
