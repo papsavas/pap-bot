@@ -205,12 +205,18 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     async onSelectMenu(select: SelectMenuInteraction) {
         switch (select.channel.id) {
             case channels.select_courses: {
+                const member = await select.guild.members.fetch(select.user.id);
+                const studentCourses = this.students.get(member.id)?.courses;
+                if (!studentCourses)
+                    return select.reply({
+                        content: "Δεν είστε εγγεγραμμένος/η",
+                        ephemeral: true
+                    })
                 const codes = select.values;
                 const semester = select.customId;
                 const semesterCourses = this.courses.filter(c => c.semester == semester)
                 const selectedCourses = this.courses.filter(cl => codes.includes(cl.code));
                 const semesterRolesIds: Snowflake[] = semesterCourses.map(c => c.role_id);
-                const member = await select.guild.members.fetch(select.user.id);
                 const oldSemesterRoles = member.roles.cache.filter(r => semesterRolesIds.includes(r.id));
                 await member.roles.remove(semesterRolesIds);
                 await member.roles.add(selectedCourses.map(c => c.role_id).filter(r => !member.roles.cache.has(r)));
@@ -224,7 +230,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         .filter(r => !selectedCourses.find(c => c.role_id === r.id))
                 ]
 
-                const studentCourses = this.students.get(member.id).courses;
+
                 studentCourses.sweep(sc => removedRoles.has(sc.role_id));
                 for (const course of newSemesterCourses)
                     studentCourses.set(course.role_id, course);
