@@ -213,7 +213,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 const member = await select.guild.members.fetch(select.user.id);
                 const oldSemesterRoles = member.roles.cache.filter(r => semesterRolesIds.includes(r.id));
                 await member.roles.remove(semesterRolesIds);
-                await member.roles.add(selectedCourses.map(c => c.role_id));
+                await member.roles.add(selectedCourses.map(c => c.role_id).filter(r => !member.roles.cache.has(r)));
                 //! filtering courses with roles & vice versa might cause name variance
                 const newSemesterCourses = selectedCourses.filter(c => !oldSemesterRoles.has(c.role_id));
                 const [added, removedRoles] = [
