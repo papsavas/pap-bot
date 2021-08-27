@@ -78,6 +78,12 @@ PAP.on('ready', async () => {
         if (!inDevelopment)
             await initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`);
 
+        //Initialize global handlers
+        dmHandler = await DMHandlerImpl.init();
+        await dmHandler.onReady(PAP);
+        globalCommandHandler = await GlobalCommandHandlerImpl.init();
+        globalCommandsIDs = await fetchGlobalCommandIds();
+
         // Initializing the guilds
         guildMap.set(kepGuildId, await KepGuild.init(kepGuildId));
         guildMap.set(woapGuildId, await WoapGuild.init(woapGuildId));
@@ -87,21 +93,14 @@ PAP.on('ready', async () => {
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
         };
-
-        dmHandler = await DMHandlerImpl.init();
-        await dmHandler.onReady(PAP);
-        globalCommandHandler = await GlobalCommandHandlerImpl.init();
-        globalCommandsIDs = await fetchGlobalCommandIds();
         console.log('smooth init');
-
+        if (inDevelopment) {
+            await runScript();
+        }
     } catch (err) {
         console.log('READY ERROR\n' + err);
     }
     console.log(`___ Initiated ___`);
-
-    if (inDevelopment) {
-        await runScript();
-    }
 });
 
 PAP.on('guildCreate', async (guild) => {
