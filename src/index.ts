@@ -76,7 +76,8 @@ PAP.on('ready', async () => {
         logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
         testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel
         if (!inDevelopment)
-            await initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`);
+            initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`)
+                .catch(err => console.log("could not send init log"))
 
         //Initialize global handlers
         dmHandler = await DMHandlerImpl.init();
@@ -94,14 +95,17 @@ PAP.on('ready', async () => {
             await g.onReady(PAP); //block until all guilds are loaded
         };
         console.log('smooth init');
-        if (inDevelopment) {
-            await runScript();
-        }
+
     } catch (err) {
         console.log('READY ERROR');
         console.log(err);
     }
+
     console.log(`___ Initiated ___`);
+
+    if (inDevelopment) {
+        await runScript();
+    }
 });
 
 PAP.on('guildCreate', async (guild) => {
