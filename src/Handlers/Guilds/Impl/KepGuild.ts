@@ -44,7 +44,6 @@ const guildCommands = [
 ]
 
 //TODO: create reminders for courses
-//TODO: implement mute command
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
     public students: Collection<Snowflake, Student>;
