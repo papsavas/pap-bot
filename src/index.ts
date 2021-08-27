@@ -98,7 +98,8 @@ PAP.on('ready', async () => {
             await runScript();
         }
     } catch (err) {
-        console.log('READY ERROR\n' + err);
+        console.log('READY ERROR');
+        console.log(err);
     }
     console.log(`___ Initiated ___`);
 });
