@@ -76,7 +76,14 @@ PAP.on('ready', async () => {
         logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
         testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel
         if (!inDevelopment)
-            await initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`);
+            initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`)
+                .catch(err => console.log("could not send init log"))
+
+        //Initialize global handlers
+        dmHandler = await DMHandlerImpl.init();
+        await dmHandler.onReady(PAP);
+        globalCommandHandler = await GlobalCommandHandlerImpl.init();
+        globalCommandsIDs = await fetchGlobalCommandIds();
 
         // Initializing the guilds
         guildMap.set(kepGuildId, await KepGuild.init(kepGuildId));
@@ -87,16 +94,13 @@ PAP.on('ready', async () => {
             const g = guildMap.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
         };
-
-        dmHandler = await DMHandlerImpl.init();
-        await dmHandler.onReady(PAP);
-        globalCommandHandler = await GlobalCommandHandlerImpl.init();
-        globalCommandsIDs = await fetchGlobalCommandIds();
         console.log('smooth init');
 
     } catch (err) {
-        console.log('READY ERROR\n' + err);
+        console.log('READY ERROR');
+        console.log(err);
     }
+
     console.log(`___ Initiated ___`);
 
     if (inDevelopment) {
