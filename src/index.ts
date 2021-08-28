@@ -269,18 +269,16 @@ PAP.on('messageCreate', (receivedMessage) => {
                 .catch(console.error);
             break;
 
-        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_TEXT':
+        case 'GUILD_PRIVATE_THREAD':
+        case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_NEWS':
+        case 'GUILD_NEWS_THREAD': {
             guildMap.get(receivedMessage.guild.id)
                 ?.onMessage(receivedMessage)
                 .catch(console.error);
             break;
-
-        default:
-            bugsChannel.send(`received message from untracked channel type
-CHANNEL_TYPE: ${receivedMessage.channel.type}
-ID: ${receivedMessage.id}
-from: ${receivedMessage.member.displayName}
-content: ${receivedMessage.content}\n`).catch(console.error);
+        }
     }
 })
 
