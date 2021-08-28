@@ -2,6 +2,7 @@ import {
     Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
 import _ from 'lodash';
+import moment from 'moment-timezone';
 import { creatorID, guildID as botGuildID } from '../botconfig.json';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
 import { channels as botGuildChannels } from "../values/PAP/IDs.json";
@@ -76,7 +77,7 @@ PAP.on('ready', async () => {
         logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
         testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel
         if (!inDevelopment)
-            initLogs.send(`**Launched** __**v2**__ at *${(new Date()).toString()}*`)
+            initLogs.send(`**Launched** __**v2**__ at *${moment().tz("Europe/Athens").locale("el").format("LLLL")}*`)
                 .catch(err => console.log("could not send init log"))
 
         //Initialize global handlers
