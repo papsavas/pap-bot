@@ -92,11 +92,9 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     async onMessage(message: Message): Promise<unknown> {
         switch (message.channel.id) { //channels
             case channels.registration: {
-                if (message.type === "DEFAULT") {
-                    if (message.deletable) await message.delete();
-                    await message.member.send({ content: `Παρακαλώ χρησιμοποιείστε **slash command** πατώντας \`/\` στο κανάλι <#${channels.registration}> και επιλέγοντας \`/registration register\`` })
-                        .catch();
-                }
+                if (message.deletable) await message.delete();
+                await message.member.send({ content: `Παρακαλώ χρησιμοποιείστε **slash command** πατώντας \`/\` στο κανάλι <#${channels.registration}> και επιλέγοντας \`/registration register\`` })
+                    .catch();
                 break;
             }
 
