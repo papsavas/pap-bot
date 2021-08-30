@@ -1,6 +1,6 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
-import moment from "moment-timezone";
+import moment from "moment";
 import 'moment/locale/el';
 import urlRegex from "url-regex";
 import { guildMap } from "../../..";
@@ -15,10 +15,9 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myExamsCmd } from "../Interf/KEP_myExamsCmd";
 
 moment.locale('el');
-moment.tz("Europe/Athens");
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
-    name: `• 📅 ${moment(ev.start.dateTime).format('LL')}, ${moment(ev.start.dateTime).format("kk:mm")} - ${moment(ev.end.dateTime).format("kk:mm")}`,
+    name: `• 📅 ${moment(ev.start.dateTime).format('LL')}, ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
     value: `[**${ev.summary}**](${ev.description.match(urlRegex({ strict: true })).toString()})`
 }));
 export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myExamsCmd {
