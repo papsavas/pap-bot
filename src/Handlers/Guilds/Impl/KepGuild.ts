@@ -204,12 +204,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         switch (select.channel.id) {
             case channels.select_courses: {
                 const member = await select.guild.members.fetch(select.user.id);
-                const studentCourses = this.students.get(member.id)?.courses;
-                if (!studentCourses)
+                const student = this.students.get(member.id);
+                if (!student)
                     return select.reply({
                         content: "Δεν είστε εγγεγραμμένος/η",
                         ephemeral: true
                     })
+                const studentCourses = student.courses;
                 const codes = select.values;
                 const semester = select.customId;
                 const semesterCourses = this.courses.filter(c => c.semester == semester)
