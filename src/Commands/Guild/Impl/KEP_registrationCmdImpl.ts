@@ -2,6 +2,7 @@ import { ChatInputApplicationCommandData, Collection, CommandInteraction, Messag
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { buttons, messages, reasons } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
+import { Course } from "../../../Entities/KEP/Course";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { guildMap } from "../../../index";
@@ -130,12 +131,15 @@ ${pswd}\n
                         }
                     ])
                     await dropPendingStudent(interaction.user.id);
+                    const student = await fetchStudent({ member_id: interaction.user.id });
+                    student.courses = new Collection<Snowflake, Course>();
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
                     const channel = guildMap.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
                     await channel.send(`<@${pendingStudent.member_id}> **:** ${pendingStudent.am}`);
+                    
                     const students = (guildMap.get(interaction.guild.id) as KepGuild).students;
                     //TODO: fix duplicate db query, return entire record on submit
-                    students.set(interaction.user.id, await fetchStudent({ member_id: interaction.user.id })); //update cache
+                    students.set(interaction.user.id, student); //update cache
                     await interaction.editReply(`Επιτυχής εγγραφή ✅
 Καλώς ήρθες και επισήμως!
 Διάβασε το <#${kepChannels.readme}> και τους <#${kepChannels.rules}> ώστε να προσανατολιστείς`);
