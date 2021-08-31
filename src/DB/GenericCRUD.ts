@@ -116,11 +116,11 @@ type createType = "integer"
     | "object"
     | "enum"
 
-export function getTableNames() {
+function getTableNames() {
     return DB.fetchTables();
 }
 
-export function create(
+function create(
     name: string,
     columns: {
         name: string,
@@ -144,19 +144,19 @@ export function create(
     });
 }
 
-export function saveBatch(tableName: string, rows: object[], returning: string = '*') {
+function saveBatch(tableName: string, rows: object[], returning: string = '*') {
     return DB.addRows(tableName, rows, returning);
 }
 
-export async function findOne(tableName: string, clause: {}, returnings: string[] = ['*']) {
+async function findOne(tableName: string, clause: {}, returnings: string[] = ['*']) {
     return DB.fetchFirstOnCondition(tableName, clause, returnings);
 }
 
-export async function findAll(tableName: string, clause: {}, returnings: string[] = ['*']) {
+async function findAll(tableName: string, clause: {}, returnings: string[] = ['*']) {
     return DB.fetchAllOnCondition(tableName, clause, returnings);
 }
 
-export async function updateAll(tableName: string, clause: {}, newRow: {}, returnings: string[] = ['*']) {
+async function updateAll(tableName: string, clause: {}, newRow: {}, returnings: string[] = ['*']) {
     return DB.updateRows(
         tableName,
         clause,
@@ -172,8 +172,10 @@ export async function updateAll(tableName: string, clause: {}, newRow: {}, retur
  * @param clause which rows to affect
  * @returns number of affected rows
  */
-export function deleteBatch(
+function deleteBatch(
     tableName: string,
     clause: {}) {
     return DB.dropRows(tableName, clause);
 }
+
+export { create, saveBatch, findOne, findAll, updateAll, deleteBatch, getTableNames };

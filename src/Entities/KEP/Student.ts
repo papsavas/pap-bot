@@ -8,9 +8,9 @@ type itType = `'it${0 | 1}${digit}${digit}${digit | ''}${digit | ''}`;
 type daiType = `dai${1}${6 | 7 | 8 | 9}${0 | 1 | 2 | 3}${digit}${digit}`;
 type icsType = `ics${2}${digitZeroLess}${digit}${digit}${digit}`;
 type iisType = `iis${2}${digitZeroLess}${digit}${digit}${digit}`;
-export type amType = tmType | itType | daiType | icsType | iisType;
+type amType = tmType | itType | daiType | icsType | iisType;
 
-export interface Student {
+interface Student {
     am: amType;
     email: `${amType}@uom.edu.gr`;
     member_id: Snowflake,
@@ -19,14 +19,14 @@ export interface Student {
     uuid?: string
 }
 
-export type PendingStudent = Omit<Student, "courses" | "uuid" | "blocked"> & { password: number, date?: Date };
+type PendingStudent = Omit<Student, "courses" | "uuid" | "blocked"> & { password: number, date?: Date };
 
-export interface StudentFine {
+interface StudentFine {
     student_id: amType;
     channel_id?: Snowflake;
     reason: string;
     uuid?: string;
 }
 
-
+export { amType, Student, PendingStudent, StudentFine };
 

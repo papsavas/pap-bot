@@ -1,6 +1,6 @@
 import { EmbedFieldData, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
 
-export function paginationEmbed(
+function paginationEmbed(
     userMessage: Message, targetStructure: string[], perPage: number,
     headerEmbed: MessageEmbed, fieldBuilder: (resp: string, index: number, start: number) => string[],
     timeout: number, targetChannel = userMessage.channel
@@ -56,7 +56,7 @@ export function paginationEmbed(
 }
 
 
-export function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
+function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
     //TODO: fix field overflow
     data: EmbedFieldData[],
     headerEmbed: Omit<MessageEmbedOptions, "fields">,
@@ -70,3 +70,5 @@ export function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
     }
     return embeds;
 }
+
+export { paginationEmbed, sliceToEmbeds };

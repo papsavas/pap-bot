@@ -2,7 +2,7 @@ import { Snowflake } from "discord.js";
 import { deleteBatch, findAll, saveBatch } from "../../DB/GenericCRUD";
 
 
-export async function fetchGuildMemberResponses(guildID: Snowflake, memberID: Snowflake): Promise<string[]> {
+async function fetchGuildMemberResponses(guildID: Snowflake, memberID: Snowflake): Promise<string[]> {
     return (await findAll('guild_responses',
         {
             'guild_id': guildID,
@@ -11,7 +11,7 @@ export async function fetchGuildMemberResponses(guildID: Snowflake, memberID: Sn
         .map(res => res['response']);
 }
 
-export async function fetchAllGuildMemberResponses(guildID: Snowflake): Promise<string[]> {
+async function fetchAllGuildMemberResponses(guildID: Snowflake): Promise<string[]> {
     try {
         const raw = await findAll(
             'guild_responses',
@@ -25,7 +25,7 @@ export async function fetchAllGuildMemberResponses(guildID: Snowflake): Promise<
     }
 }
 
-export function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, response: string, nsfw: boolean) {
+function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, response: string, nsfw: boolean) {
     return saveBatch(
         'guild_responses',
         [
@@ -39,7 +39,7 @@ export function addMemberResponse(guild_id: Snowflake, member_id: Snowflake, res
     )
 }
 
-export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowflake, index: number): Promise<string> {
+async function removeMemberResponse(guild_id: Snowflake, member_id: Snowflake, index: number): Promise<string> {
     if (index < 1 || index > 20) return "Index out of range";
     const resps = await findAll('guild_responses',
         {
@@ -53,10 +53,19 @@ export async function removeMemberResponse(guild_id: Snowflake, member_id: Snowf
     return res > 0 ? `removed ${res} responses` : `Response \`\`\`${index}\`\`\` not found`;
 }
 
-export async function memberResponsesCount(member_id: Snowflake, guild_id: Snowflake): Promise<number> {
+async function memberResponsesCount(member_id: Snowflake, guild_id: Snowflake): Promise<number> {
     const res = await findAll('guild_responses', {
         "guild_id": guild_id,
         "member_id": member_id,
     })
     return res.length;
 }
+
+export {
+    fetchAllGuildMemberResponses,
+    fetchGuildMemberResponses,
+    addMemberResponse,
+    removeMemberResponse,
+    memberResponsesCount
+};
+

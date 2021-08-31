@@ -5,14 +5,14 @@ import { Course } from "../../Entities/KEP/Course";
 import { PendingStudent, Student } from "../../Entities/KEP/Student";
 import { RequireAtLeastOne } from "../../tools/types";
 
-export async function fetchStudent(
+async function fetchStudent(
     clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">,
     returnings?: (keyof Student)[]): Promise<Student> {
     return findOne(studentTable, clause, returnings) as Promise<Student>;
 }
 
 
-export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Collection<Snowflake, Student>> {
+async function fetchStudents(returnings?: (keyof Student)[]): Promise<Collection<Snowflake, Student>> {
     const students = await findAll(studentTable, true, returnings) as Student[];
     const collection = new Collection<Snowflake, Student>();
     for (const student of students) {
@@ -32,31 +32,43 @@ export async function fetchStudents(returnings?: (keyof Student)[]): Promise<Col
     return collection;
 }
 
-export function addStudents(students: Student[], returnings?: keyof Student): Promise<unknown> {
+function addStudents(students: Student[], returnings?: keyof Student): Promise<unknown> {
     return saveBatch(studentTable, students, returnings);
 }
 
-export async function dropStudents(clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">): Promise<number> {
+async function dropStudents(clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">): Promise<number> {
     return deleteBatch(studentTable, clause);
 }
 
-export async function savePendingStudent(student: PendingStudent) {
+async function savePendingStudent(student: PendingStudent) {
     if (Boolean(await fetchPendingStudent(student.am)))
         await deleteBatch(pendingStudentTable, { am: student.am }); //replace previous record
     return saveBatch(pendingStudentTable, [student]);
 }
 
-export function fetchPendingStudent(member_id: Snowflake) {
+function fetchPendingStudent(member_id: Snowflake) {
     return findOne(pendingStudentTable, { member_id }) as Promise<PendingStudent>;
 }
 
-export function dropPendingStudent(member_id: Snowflake) {
+function dropPendingStudent(member_id: Snowflake) {
     return deleteBatch(pendingStudentTable, { member_id });
 }
 
-export const banStudent = (member_id: Snowflake) =>
+const banStudent = (member_id: Snowflake) =>
     updateAll(studentTable, { member_id }, { "blocked": true });
 
 
-export const unbanStudent = (member_id: Snowflake) =>
+const unbanStudent = (member_id: Snowflake) =>
     updateAll(studentTable, { member_id }, { "blocked": false });
+
+export {
+    fetchStudent,
+    fetchStudents,
+    addStudents,
+    dropStudents,
+    savePendingStudent,
+    fetchPendingStudent,
+    dropPendingStudent,
+    banStudent,
+    unbanStudent
+};
