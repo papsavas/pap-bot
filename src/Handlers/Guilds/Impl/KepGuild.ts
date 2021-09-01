@@ -379,7 +379,7 @@ function handleActiveDrivePermissions() {
     fetchDrivePermissions()
         .then(async perms => {
             for (const p of perms) {
-                if (p.destroyedAt.getTime() < Date.now()) {
+                if (p.destroyedAt.getTime() < new Date().getTime()) {
                     await deleteDrivePermission(p.perm_id).catch(console.error);
                     await dropDrivePermission(p.perm_id);
                     continue;
