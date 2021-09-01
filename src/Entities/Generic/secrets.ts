@@ -1,4 +1,4 @@
-export interface googleToken {
+interface googleToken {
     "access_token": string,
     "refresh_token": string,
     "scope": string,
@@ -6,7 +6,7 @@ export interface googleToken {
     "expiry_date": number
 }
 
-interface installedCredentials {
+interface coreCredentials {
     "client_id": string,
     "project_id": string,
     "auth_uri": string,
@@ -19,8 +19,9 @@ interface installedCredentials {
     ]
 }
 
-export interface googleCredentials {
-    "installed"?: installedCredentials
-    "web"?: installedCredentials
+interface googleCredentials {
+    "installed"?: coreCredentials
+    "web"?: coreCredentials
 }
 
+export { googleToken, googleCredentials };

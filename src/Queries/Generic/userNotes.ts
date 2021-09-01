@@ -3,7 +3,7 @@ import { userNotesTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { userNote } from "../../Entities/Generic/userNote";
 
-export async function addNote(user_id: Snowflake, note: string): Promise<userNote[]> {
+async function addNote(user_id: Snowflake, note: string): Promise<userNote[]> {
     return saveBatch(userNotesTable, [
         {
             "user_id": user_id,
@@ -13,7 +13,7 @@ export async function addNote(user_id: Snowflake, note: string): Promise<userNot
     ])
 }
 
-export async function editNote(user_id: Snowflake, old_note: string, new_note: string): Promise<userNote[]> {
+async function editNote(user_id: Snowflake, old_note: string, new_note: string): Promise<userNote[]> {
     return updateAll(userNotesTable, {
         "user_id": user_id,
         "note": old_note
@@ -24,22 +24,24 @@ export async function editNote(user_id: Snowflake, old_note: string, new_note: s
     })
 }
 
-export function deleteNote(user_id: Snowflake, note: string): Promise<number> {
+function deleteNote(user_id: Snowflake, note: string): Promise<number> {
     return deleteBatch(userNotesTable, {
         "user_id": user_id,
         "note": note
     })
 }
 
-export function clearNotes(user_id: Snowflake): Promise<number> {
+function clearNotes(user_id: Snowflake): Promise<number> {
     return deleteBatch(userNotesTable, {
         "user_id": user_id
     })
 }
 
-export async function fetchAllNotes(user_id: Snowflake): Promise<userNote[]> {
+async function fetchAllNotes(user_id: Snowflake): Promise<userNote[]> {
     const notes = await findAll(userNotesTable, {
         "user_id": user_id
     });
     return notes.map(userNote => userNote['note'])
 }
+
+export { addNote, editNote, deleteNote, clearNotes, fetchAllNotes };

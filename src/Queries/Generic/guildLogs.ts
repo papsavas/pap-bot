@@ -3,13 +3,13 @@ import { findAll, saveBatch } from "../../DB/GenericCRUD";
 import { guildLog } from "../../Entities/Generic/guildLog";
 
 
-export async function loadGuildLogs(guild_id: Snowflake): Promise<guildLog[]> {
+async function loadGuildLogs(guild_id: Snowflake): Promise<guildLog[]> {
     return findAll('guild_logs', {
         "guild_id": guild_id,
     }, ['guild_id', 'member_id', 'log', 'date']) as Promise<guildLog[]>;
 }
 
-export async function addLog(guild_id: Snowflake, log: string, member_id?: Snowflake): Promise<guildLog> {
+async function addLog(guild_id: Snowflake, log: string, member_id?: Snowflake): Promise<guildLog> {
     return await saveBatch('guild_logs',
         [
             {
@@ -21,3 +21,5 @@ export async function addLog(guild_id: Snowflake, log: string, member_id?: Snowf
         ],
         '*')[0];
 }
+
+export { loadGuildLogs, addLog };

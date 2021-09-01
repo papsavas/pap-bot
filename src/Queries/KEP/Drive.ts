@@ -9,11 +9,11 @@ moment.tz("Europe/Athens");
 
 
 
-export function findDrivePerm(member_id: Snowflake) {
+function findDrivePerm(member_id: Snowflake) {
     return findOne(drivePermsTable, { member_id }) as Promise<drivePermission>;
 }
 
-export function saveDrivePermission(permId: string, until: Moment, memberId: Snowflake) {
+function saveDrivePermission(permId: string, until: Moment, memberId: Snowflake) {
     return saveBatch(drivePermsTable, [
         {
             "perm_id": permId,
@@ -24,10 +24,12 @@ export function saveDrivePermission(permId: string, until: Moment, memberId: Sno
     ]);
 }
 
-export function dropDrivePermission(permId: string) {
+function dropDrivePermission(permId: string) {
     return deleteBatch(drivePermsTable, { "perm_id": permId });
 }
 
-export function fetchDrivePermissions(member_id?: Snowflake) {
+function fetchDrivePermissions(member_id?: Snowflake) {
     return findAll(drivePermsTable, member_id ? { member_id } : true) as Promise<drivePermission[]>;
 }
+
+export { findDrivePerm, saveDrivePermission, dropDrivePermission, fetchDrivePermissions };
