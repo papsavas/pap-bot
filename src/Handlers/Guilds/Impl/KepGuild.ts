@@ -304,7 +304,11 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                                 timestamp: new Date(),
                                 color: "RANDOM"
                             })
-                        ]
+                        ],
+                        allowedMentions: {
+                            roles: [roles.head_mod],
+                            users: [userid]
+                        }
                     })
                         .then(msg =>
                             interaction.reply({

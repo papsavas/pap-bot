@@ -9,6 +9,8 @@ import { editMessageCmd } from "../Interf/editMessageCmd";
 const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
+
+//TODO: use message link for channel and message id
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `editmsg`;
@@ -64,7 +66,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         const messageID = interaction.options.getString(msgidOptionLiteral, true) as Snowflake;
         await interaction.deferReply({ ephemeral: true });
         const targetMessage = await (targetChannel as TextChannel)?.messages.fetch(messageID);
-        if (targetMessage.author != interaction.client.user)
+        if (targetMessage.author.id !== interaction.client.user.id)
             return interaction.reply('Cannot edit a message authored by another user');
         const editedMessage = await targetMessage?.edit(interaction.options.getString(editedMsgOptionLiteral, true));
         return interaction.editReply({
