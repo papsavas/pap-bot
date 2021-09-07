@@ -1,5 +1,5 @@
 import { Guild } from "discord.js";
-import { prefix as defaultPrefix } from "../../../botconfig.json";
+import { prefix as defaultPrefix } from "../../../bot.config.json";
 import { guildSettingsTable, guildTable } from "../../../values/generic/DB.json";
 import { deleteBatch, saveBatch } from "../../DB/GenericCRUD";
 

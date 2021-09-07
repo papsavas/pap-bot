@@ -3,7 +3,7 @@ import {
 } from 'discord.js';
 import _ from 'lodash';
 import moment from 'moment-timezone';
-import { creatorID, guildID as botGuildID } from '../botconfig.json';
+import { creatorID, guildID as botGuildID } from '../bot.config.json';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
 import { channels as botGuildChannels } from "../values/PAP/IDs.json";
 import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
@@ -75,7 +75,7 @@ PAP.on('ready', async () => {
         const initLogs = PAPGuildChannels.cache.get(botGuildChannels.init_logs) as TextChannel;
         bugsChannel = PAPGuildChannels.cache.get(botGuildChannels.bugs) as TextChannel;
         logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
-        testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel
+        testChannel = PAPGuildChannels.cache.get(botGuildChannels.testing) as TextChannel;
         if (!inDevelopment)
             initLogs.send(`**Launched** __**v2**__ at *${moment().tz("Europe/Athens").locale("el").format("LLLL")}*`)
                 .catch(err => console.log("could not send init log"))
@@ -294,7 +294,11 @@ PAP.on('messageDelete', async (deletedMessage) => {
                 .catch(console.error);
             break;
 
-        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_TEXT':
+        case 'GUILD_PRIVATE_THREAD':
+        case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_NEWS':
+        case 'GUILD_NEWS_THREAD':
             guildMap.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(console.error);
@@ -312,20 +316,17 @@ PAP.on('messageReactionAdd', async (reaction, user) => {
                 .catch(console.error);
             break;
 
-        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_TEXT':
+        case 'GUILD_PRIVATE_THREAD':
+        case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_NEWS':
+        case 'GUILD_NEWS_THREAD':
             guildMap.get(reaction.message.guild?.id)
                 ?.onMessageReactionAdd(
                     r as MessageReaction,
                     u as User,
                 ).catch(console.error);
             break;
-
-        default:
-            bugsChannel.send(`received reaction from untracked channel type
-CHANNEL_TYPE: ${reaction.message.channel.type}
-ID: ${reaction.message.id}
-from: ${reaction.message.member.displayName}
-reaction: ${reaction.emoji.name}\n`).catch(console.error);
     }
 });
 
@@ -339,7 +340,11 @@ PAP.on('messageReactionRemove', async (reaction, user) => {
                 .catch(console.error);
             break;
 
-        case 'GUILD_TEXT': case 'GUILD_PRIVATE_THREAD': case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_TEXT':
+        case 'GUILD_PRIVATE_THREAD':
+        case 'GUILD_PUBLIC_THREAD':
+        case 'GUILD_NEWS':
+        case 'GUILD_NEWS_THREAD':
             guildMap.get(reaction.message.guild?.id)
                 ?.onMessageReactionRemove(
                     r as MessageReaction,
