@@ -335,7 +335,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         ephemeral: true
                     })
                 const studentCourses = student.courses;
-                const semester = interaction.customId;
+                const semester = interaction.customId.split('_')[0];
                 const semesterCourses = this.courses.filter(c => c.semester == semester);
                 const selectedCourses = semesterCourses.filter(c => member.roles.cache.has(c.role_id));
                 await member.roles.remove(selectedCourses.map(c => c.role_id));
@@ -353,13 +353,16 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                             fields: [
                                 {
                                     name: 'Αφαιρέθηκαν',
-                                    value: selectedCourses
-                                        .map(r => `**• ${r.name}**`)
-                                        .join('\n')
+                                    value: selectedCourses.length > 0 ?
+                                        selectedCourses
+                                            .map(r => `**• ${r.name}**`)
+                                            .join('\n')
+                                        : "Δεν υπήρξαν αλλαγές"
                                 }
                             ]
                         })
-                    ]
+                    ],
+                    ephemeral: true
                 });
             }
 
