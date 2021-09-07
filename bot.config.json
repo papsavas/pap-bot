@@ -1,6 +1,5 @@
 {
-  "prefix": ".",
-  "qprefix": ";",
+  "prefix": "$",
   "name": "PAPbot",
   "mentionRegex": "(^|\\s)((π(α|ά)π)|(pap))($|\\s|[.!?,;])",
   "id": "690353618238308385",

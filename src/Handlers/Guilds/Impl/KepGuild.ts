@@ -136,6 +136,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onMessageDelete(message: Message): Promise<unknown> {
+        await super.onMessageDelete(message);
         const logChannel = message.guild.channels.cache.get(channels.logs) as TextChannel;
         return logChannel?.send({
             embeds: [
@@ -193,7 +194,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 }
 
                 default:
-                    return Promise.resolve();
+                    return super.onMessageReactionAdd(reaction, user);
             }
         } catch (error) {
             console.log(error);
@@ -266,6 +267,9 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 });
             }
 
+            default:
+                return super.onSelectMenu(select);
+
         }
     }
 
@@ -321,24 +325,67 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 }
                 break;
             }
+
+            case channels.select_courses: {
+                const member = await interaction.guild.members.fetch(interaction.user.id);
+                const student = this.students.get(member.id);
+                if (!student)
+                    return interaction.reply({
+                        content: "Δεν είστε εγγεγραμμένος/η",
+                        ephemeral: true
+                    })
+                const studentCourses = student.courses;
+                const semester = interaction.customId;
+                const semesterCourses = this.courses.filter(c => c.semester == semester);
+                const selectedCourses = semesterCourses.filter(c => member.roles.cache.has(c.role_id));
+                await member.roles.remove(selectedCourses.map(c => c.role_id));
+                //sweep cache
+                studentCourses.sweep((v, k) => selectedCourses.some(sc => sc.role_id === k));
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed({
+                            author: {
+                                name: member.displayName,
+                                icon_url: member.user.avatarURL()
+                            },
+                            title: `${semester}ο Εξάμηνο`,
+                            color: "RED",
+                            fields: [
+                                {
+                                    name: 'Αφαιρέθηκαν',
+                                    value: selectedCourses
+                                        .map(r => `**• ${r.name}**`)
+                                        .join('\n')
+                                }
+                            ]
+                        })
+                    ]
+                });
+            }
+
+            default:
+                return super.onButton(interaction);
         }
     }
 
     async onGuildMemberRemove(member: GuildMember): Promise<unknown> {
+        await super.onGuildBanRemove(member);
         this.students.delete(member.id)
         return dropStudents({
             member_id: member.id
         });
     }
 
-    onGuildBanAdd(ban: GuildBan) {
+    async onGuildBanAdd(ban: GuildBan) {
+        await super.onGuildBanAdd(ban);
         const { user } = ban;
         const logs = this.guild.channels.cache.get(channels.logs) as TextChannel;
         logs.send(`Banned ${user.username}`);
         return banStudent(user.id);
     }
 
-    onGuildBanRemove(unban: GuildBan) {
+    async onGuildBanRemove(unban: GuildBan) {
+        await super.onGuildBanRemove(unban);
         const { user } = unban;
         const logs = this.guild.channels.cache.get(channels.logs) as TextChannel;
         logs.send(`Unbanned ${user.username}`);

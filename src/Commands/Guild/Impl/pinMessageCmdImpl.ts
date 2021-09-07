@@ -1,14 +1,15 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { extractId } from "../../../tools/extractMessageId";
+import { separateIds } from "../../../tools/seperateIds";
 import { pinMessageCmd } from "../../Guild/Interf/pinMessageCmd";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
+//TODO: implement request handler
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
@@ -51,97 +52,17 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        const channel = interaction.channel as TextChannel;
-        const user = interaction.user;
+    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const pinReason = interaction.options.getString(reasonOptionLiteral) ?? ``;
-        const pinningMessageID = extractId(interaction.options.getString(msgidOptionLiteral, true));
-        try {
-            const fetchedMessage = await channel.messages.fetch(pinningMessageID);
-            if (fetchedMessage.pinned)
-                return interaction.reply({
-                    embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }],
-                    ephemeral: true
-                });
-            else if (!fetchedMessage.pinnable)
-                throw new Error('Cannot pin this message')
-            return fetchedMessage.pin()
-                .then((pinnedMessage) => {
-                    interaction.reply({
-                        embeds: [
-                            new MessageEmbed({
-                                author: {
-                                    name: user.username,
-                                    iconURL: user.avatarURL()
-                                },
-                                title: `Pinned Message  📌`,
-                                description: pinnedMessage.content?.length > 0 ?
-                                    `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
-                                    `[Click to jump](${pinnedMessage.url})`,
-                                color: 'GREEN',
-                                footer: { text: pinReason }
-                            })
-                        ]
-                    })
-                })
-                .catch(err => {
-                    interaction.reply({
-                        content: 'could not pin message',
-                        embeds: [new MessageEmbed({
-                            description: err.toString()
-                        })]
-                    });
-                });
-        } catch (error) {
-            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
-                return interaction.reply({
-                    content: `*invalid message id. Message needs to be of channel ${channel.toString()}*`,
-                    ephemeral: true
-                })
-        }
+        const [guildId, channelId, pinningMessageID] = separateIds(interaction.options.getString(msgidOptionLiteral, true));
+        return handleRequest(interaction, pinReason, channelId, pinningMessageID);
     }
 
-    async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
-        const { channel, author } = message;
-        let pinReason = commandless2 ? commandless2 : ``;
-        pinReason += `\nby ${message.member.displayName}`;
-        let pinningMessageID = extractId(arg1);
-        let fetchedMessage: Message;
-        try {
-            fetchedMessage = await channel.messages.fetch(pinningMessageID);
-        } catch (error) {
-            if (error.code === Constants.APIErrors.UNKNOWN_MESSAGE)
-                return message.reply(`*invalid message id. Message needs to be of channel ${channel.toString()}*`);
-        }
-        if (fetchedMessage.pinned)
-            return message.reply({ embeds: [{ description: `[message](${fetchedMessage.url}) already pinned 😉` }] });
-        else if (!fetchedMessage.pinnable)
-            throw new Error('Cannot pin this message')
+    async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<unknown> {
+        const pinReason = commandless2 ?? ``;
+        const [guildId, channelId, pinningMessageID] = separateIds(arg1);
+        return handleRequest(message, pinReason, channelId, pinningMessageID);
 
-        return channel.messages.fetch(pinningMessageID)
-            .then((fetchedMessage) => {
-                fetchedMessage.pin()
-                    .then((pinnedMessage) => {
-                        message.channel.send({
-                            embeds: [
-                                new MessageEmbed({
-                                    author: {
-                                        name: author.username,
-                                        iconURL: author.avatarURL()
-                                    },
-                                    title: `Pinned Message  📌`,
-                                    description: pinnedMessage.content?.length > 0 ?
-                                        `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
-                                        `[Click to jump](${pinnedMessage.url})`,
-                                    color: 'GREEN',
-                                    footer: { text: pinReason }
-                                })
-                            ]
-                        });
-                        if (message.deletable)
-                            setTimeout(() => { message.delete().catch() }, 5000);
-                    });
-            })
     }
 
     getAliases(): string[] {
@@ -152,4 +73,56 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         return guildMap.get(guildID).addGuildLog(log);
     }
 
+}
+
+async function handleRequest(
+    request: Message | CommandInteraction,
+    pinReason: string, channelId: Snowflake, messageId: Snowflake
+) {
+    const ephemeralResponse = (s: string) =>
+        request.type === 'APPLICATION_COMMAND' ? { content: s, ephemeral: true } : { content: s }
+    const ephemeralEmbedResponse = (e: MessageEmbed[]) =>
+        request.type === 'APPLICATION_COMMAND' ? { embeds: e, ephemeral: true } : { embeds: e }
+
+    const { channel, guild } = request;
+    const user = request.type === "APPLICATION_COMMAND" ?
+        (request as CommandInteraction).user : (request as Message).author;
+
+    const targetChannel = !channelId ? channel : (await guild.channels.fetch(channelId));
+    if (!targetChannel.isText())
+        return request.reply(
+            ephemeralResponse(`channel ${targetChannel.name} is not a text channel`)
+        )
+    const fetchedMessage = await targetChannel.messages.fetch(messageId);
+    if (!fetchedMessage)
+        return request.reply(
+            ephemeralResponse(`To pin messages from other channels, provide a message url instead of an id`)
+        )
+    if (fetchedMessage?.pinned)
+        return request.reply(
+            ephemeralEmbedResponse([new MessageEmbed({ description: `[message](${fetchedMessage.url}) already pinned 😉` })])
+        )
+    else if (!fetchedMessage?.pinnable)
+        return request.reply(
+            ephemeralResponse('Cannot pin this message')
+        )
+    return fetchedMessage.pin()
+        .then((pinnedMessage) => {
+            request.reply({
+                embeds: [
+                    new MessageEmbed({
+                        author: {
+                            name: user.username,
+                            iconURL: user.avatarURL()
+                        },
+                        title: `Pinned Message  📌`,
+                        description: pinnedMessage.content?.length > 0 ?
+                            `[${pinnedMessage.content.substring(0, 100)}...](${pinnedMessage.url})` :
+                            `[Click to jump](${pinnedMessage.url})`,
+                        color: 'GREEN',
+                        footer: { text: pinReason }
+                    })
+                ]
+            })
+        })
 }

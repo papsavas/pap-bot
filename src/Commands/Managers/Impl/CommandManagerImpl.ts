@@ -2,7 +2,7 @@ import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
     Collection, CommandInteraction, Constants, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
-import { prefix as defaultPrefix } from "../../../../botconfig.json";
+import { prefix as defaultPrefix } from "../../../../bot.config.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
