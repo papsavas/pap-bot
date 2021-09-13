@@ -96,9 +96,9 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                 const existingStudent = await fetchStudent({ "email": academicEmail });
                 if (existingStudent)
                     return conflict(interaction, academicEmail.split('@')[0]);
-                if(!!await fetchPendingStudent(interaction.user.id))
+                if (!!await fetchPendingStudent(interaction.user.id))
                     return interaction.editReply(`Έχετε ήδη λάβει κωδικό. Παρακαλώ χρησιμοποιείστε τον στο \`registration verify\``);
-                const pswd = Math.floor(generateRandomNumber(1111111111, 9999999999));
+                const pswd = Math.floor(generateRandomNumber(111111111, 999999999));
                 await savePendingStudent({
                     am: academicEmail.split('@')[0] as amType,
                     email: academicEmail,
@@ -136,7 +136,7 @@ ${pswd}\n
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
                     const channel = guildMap.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
                     await channel.send(`<@${pendingStudent.member_id}> **:** ${pendingStudent.am}`);
-                    
+
                     const students = (guildMap.get(interaction.guild.id) as KepGuild).students;
                     //TODO: fix duplicate db query, return entire record on submit
                     students.set(interaction.user.id, student); //update cache
