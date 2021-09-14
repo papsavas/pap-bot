@@ -299,7 +299,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         embeds: [
                             new MessageEmbed({
                                 title: "Έφεση",
-                                description: `<@${userid}> Θα πρέπει να στείλετε εδώ μία φωτογραφία της ακαδημαϊκή σας ταυτότητα με εμφανή τον αριθμό μητρώου`,
+                                description: `<@${userid}> Θα πρέπει να στείλετε εδώ μία φωτογραφία της ακαδημαϊκή σας ταυτότητας με εμφανή τον αριθμό μητρώου`,
                                 fields: [{
                                     name: "Συγκρουόμενος Λογαριασμός:",
                                     value: `<@${conflictingStudent.member_id}>`,
