@@ -48,7 +48,8 @@ export class setVoiceLobbyCmdImpl extends AbstractGuildCommand implements setVoi
         if (voice.type !== "GUILD_VOICE") {
             return interaction.editReply("Please provide a voice channel");
         }
-        return setVoiceLobby(interaction.guildId, voice.id)
+        await setVoiceLobby(interaction.guildId, voice.id);
+        return interaction.editReply(`Voice ${voice.toString()} is now set as creation lobby`);
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
