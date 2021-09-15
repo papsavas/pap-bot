@@ -42,7 +42,7 @@ export const PAP = new Client({
         'CHANNEL',
         'REACTION',
         'USER',
-        'GUILD_MEMBER',
+        'GUILD_MEMBER'
     ],
     intents: [
         'GUILDS',
@@ -53,6 +53,7 @@ export const PAP = new Client({
         'GUILD_MESSAGE_REACTIONS',
         'DIRECT_MESSAGES',
         'DIRECT_MESSAGE_REACTIONS',
+        'GUILD_VOICE_STATES'
     ],
     allowedMentions: {
         parse: ['users'],
@@ -353,6 +354,11 @@ PAP.on('messageReactionRemove', async (reaction, user) => {
             break;
     };
 });
+
+PAP.on('voiceStateUpdate', (oldState, newState) => {
+
+})
+
 
 PAP.on('guildMemberAdd', (member) => {
     guildMap.get(member.guild.id)

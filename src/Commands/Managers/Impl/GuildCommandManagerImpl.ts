@@ -43,11 +43,6 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         );
     }
 
-    async registerCommand(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, commandData: ApplicationCommandData) {
-        const cmd = await commandManager.create(commandData);
-        await this.saveCommandData(new Collection<Snowflake, ApplicationCommand>().set(cmd.id, cmd));
-    }
-
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
         const newCommands = await super.updateCommands(commandManager);
         await this.syncPermissions(commandManager, newCommands);

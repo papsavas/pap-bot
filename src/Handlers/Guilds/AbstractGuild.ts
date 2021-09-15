@@ -3,7 +3,7 @@ import {
     Client, CommandInteraction, Constants, ContextMenuInteraction, Guild,
     GuildBan,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
-    Snowflake, User
+    Snowflake, User, VoiceState
 } from 'discord.js';
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
@@ -17,6 +17,7 @@ import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
 import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
 import { PrefixCmdImpl } from "../../Commands/Guild/Impl/prefixCmdImpl";
+import { setVoiceLobbyCmdImpl } from '../../Commands/Guild/Impl/setVoiceLobbyCmdImpl';
 import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
@@ -43,6 +44,9 @@ export abstract class AbstractGuild implements GenericGuild {
     private _guild: Guild;
     private _logs: string[] = [];
 
+    //keeping it on cache, not that important
+    private privateVoiceChannels: Snowflake[] = [];
+
     protected readonly guildID: Snowflake;
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
 
@@ -51,7 +55,7 @@ export abstract class AbstractGuild implements GenericGuild {
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
         myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl,
-        PinMessageCmdImpl, UnpinMessageCmdImpl
+        PinMessageCmdImpl, UnpinMessageCmdImpl, setVoiceLobbyCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;
@@ -203,6 +207,56 @@ export abstract class AbstractGuild implements GenericGuild {
 
     onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<any> {
         return Promise.resolve(`reaction removed`);
+    }
+
+    async onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+        const clientMember = newState.guild.members.cache.get(newState.client.user.id);
+        if (!clientMember.permissions.has('ADMINISTRATOR'))
+            return
+        const member = newState.member;
+        const [joined, left] = [!!newState.channel, !!oldState.channel || oldState?.channel?.id !== newState?.channel?.id];
+        if (joined) {
+            console.log(`member ${member.displayName} joined ${newState.channel.name}`);
+            if (newState.channel.id === this._settings.voice_lobby) {
+                const categoryId = newState.channel.parentId;
+                const privateChannel = await newState.guild.channels.create(
+                    `🔒 ${member.displayName}'s table`,
+                    {
+                        parent: categoryId,
+                        permissionOverwrites: [{
+                            id: member.id,
+                            type: 'member',
+                            allow: [
+                                'VIEW_CHANNEL',
+                                'CONNECT',
+                                'SPEAK',
+                                'STREAM',
+                                'MOVE_MEMBERS',
+                                'MUTE_MEMBERS',
+                                'MANAGE_CHANNELS'
+                            ]
+                        },
+                        {
+                            id: member.guild.id,
+                            type: 'role',
+                            deny: ['CONNECT']
+                        }
+                        ],
+                        type: "GUILD_VOICE",
+                        position: newState.channel.position + 1,
+                        reason: "self create private channel"
+                    }
+                );
+                await newState.setChannel(privateChannel, 'move to personal channel');
+                this.privateVoiceChannels.push(privateChannel.id);
+            }
+        }
+        if (left) {
+            const channel = oldState.channel;
+            console.log(`member ${member.displayName} left ${channel.name}`);
+            if (this.privateVoiceChannels.includes(channel.id) && channel.members.size === 0)
+                await channel.delete();
+        }
     }
 
     onGuildBanAdd(ban: GuildBan): Promise<unknown> {
