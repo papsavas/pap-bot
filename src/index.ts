@@ -356,7 +356,9 @@ PAP.on('messageReactionRemove', async (reaction, user) => {
 });
 
 PAP.on('voiceStateUpdate', (oldState, newState) => {
-
+    guildMap.get(newState.guild.id)
+        ?.onVoiceStateUpdate(oldState, newState)
+        .catch(console.error);
 })
 
 
