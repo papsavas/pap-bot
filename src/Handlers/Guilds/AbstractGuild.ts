@@ -31,7 +31,7 @@ import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../../tools/randomArrayValue";
-import openVoiceCmdImpl from './../../Commands/Guild/Impl/openVoiceCmdImpl';
+import { openVoiceCmdImpl } from './../../Commands/Guild/Impl/openVoiceCmdImpl';
 import { GenericGuild } from "./GenericGuild";
 
 
