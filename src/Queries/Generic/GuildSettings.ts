@@ -12,5 +12,9 @@ function updateGuildSettings(guildID: Snowflake, newData: {}) {
     return updateAll('guild_settings', { 'guild_id': guildID }, newData, ['*'])
 }
 
-export { fetchGuildSettings, updateGuildSettings };
+function setVoiceLobby(guild_id: Snowflake, channel_id: Snowflake) {
+    return updateAll('guild_settings', { 'guild_id': guild_id }, { 'voice_lobby': channel_id }, ['*']);
+}
+
+export { fetchGuildSettings, updateGuildSettings, setVoiceLobby };
 
