@@ -1,5 +1,5 @@
 
-import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, ContextMenuInteraction, Guild, GuildBan, GuildMember, Message, MessageReaction, SelectMenuInteraction, User, VoiceState } from 'discord.js';
+import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, ContextMenuInteraction, Guild, GuildBan, GuildMember, Message, MessageReaction, SelectMenuInteraction, Snowflake, User, VoiceState } from 'discord.js';
 import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 export interface GenericGuild {
@@ -45,6 +45,8 @@ export interface GenericGuild {
     getSettings(): guildSettings;
 
     setPrefix(newPrefix: string): void;
+
+    patchVoiceLobbySetting(newVoiceLobby: Snowflake): void;
 
     fetchCommands(): Promise<Collection<string, ApplicationCommand>>;
 

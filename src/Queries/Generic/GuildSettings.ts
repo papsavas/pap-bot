@@ -1,4 +1,5 @@
 import { Snowflake } from "discord.js";
+import { guildMap } from "../../../repo/index2";
 import { findOne, updateAll } from "../../DB/GenericCRUD";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 
@@ -13,6 +14,8 @@ function updateGuildSettings(guildID: Snowflake, newData: {}) {
 }
 
 function setVoiceLobby(guild_id: Snowflake, channel_id: Snowflake) {
+    const guild = guildMap.get(guild_id);
+    guild.patchVoiceLobbySetting(channel_id);
     return updateAll('guild_settings', { 'guild_id': guild_id }, { 'voice_lobby': channel_id }, ['*']);
 }
 

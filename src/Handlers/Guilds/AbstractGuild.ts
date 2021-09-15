@@ -279,6 +279,10 @@ export abstract class AbstractGuild implements GenericGuild {
         this._settings.prefix = newPrefix;
     }
 
+    patchVoiceLobbySetting(v: Snowflake): void {
+        this._settings.voice_lobby = v;
+    }
+
     fetchCommands() {
         return this.guild.commands.fetch();
     }
