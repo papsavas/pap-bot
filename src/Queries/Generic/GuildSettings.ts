@@ -4,9 +4,7 @@ import { findOne, updateAll } from "../../DB/GenericCRUD";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 
 async function fetchGuildSettings(guildID: Snowflake): Promise<guildSettings> {
-    type fields = keyof guildSettings;
-    const returnings: fields[] = ["guild_id", "nsfw_responses", "prefix"];
-    return findOne('guild_settings', { 'guild_id': guildID }, returnings) as Promise<guildSettings>;
+    return findOne('guild_settings', { 'guild_id': guildID }) as Promise<guildSettings>;
 }
 
 function updateGuildSettings(guildID: Snowflake, newData: {}) {

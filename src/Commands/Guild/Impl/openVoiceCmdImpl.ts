@@ -1,5 +1,4 @@
-import { APIRole } from "discord-api-types";
-import { ApplicationCommandData, Collection, CommandInteraction, Message, Role, Snowflake, User } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -38,24 +37,32 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        await interaction.deferReply({ ephemeral: true });
-        const requestMember = interaction.guild.members.cache.get(interaction.user.id);
-        if (!requestMember.voice.channel)
-            return interaction.editReply(`You must be in a voice channel to use this command`);
-        const mentionable = interaction.options.getMentionable('mentionable', true);
-        const role = mentionable as unknown as Role | APIRole;
-        const user = mentionable as unknown as User;
-        if (!(role instanceof Role) && !(user instanceof User))
-            return interaction.editReply("Mentionable needs to be a role or a member");
-        const voiceChannel = requestMember.voice.channel;
-        if (!voiceChannel.permissionsFor(requestMember).has('MANAGE_CHANNELS'))
-            return interaction.editReply(`You do not have permission to manage this channel`);
-        await voiceChannel.permissionOverwrites.edit(role.id ?? user.id, {
-            CONNECT: true,
-            SPEAK: true,
-            STREAM: true
-        })
-        return interaction.editReply(`Channel ${voiceChannel.toString()} is now unlocked for ${mentionable.toString()}`)
+        try {
+            await interaction.deferReply({ ephemeral: true });
+            const requestMember = interaction.guild.members.cache.get(interaction.user.id);
+            if (!requestMember.voice.channel)
+                return interaction.editReply(`You must be in a voice channel to use this command`);
+            const mentionable = interaction.options.getMentionable('mentionable', true);
+            const role = interaction.options.getRole('mentionable', true);
+            const user = interaction.options.getUser('mentionable', true);
+            console.log(`user: ${!!user}`);
+            console.log(`role: ${!!role}`);
+            //if (!(role instanceof Role) && !(user instanceof User))
+            //  return interaction.editReply("Mentionable needs to be a role or a member");
+            const voiceChannel = requestMember.voice.channel;
+            if (!voiceChannel.permissionsFor(requestMember).has('MANAGE_CHANNELS'))
+                return interaction.editReply(`You do not have manage permissions for this channel`);
+            await voiceChannel.permissionOverwrites.edit(role.id ?? user.id, {
+                CONNECT: true,
+                SPEAK: true,
+                STREAM: true
+            })
+            return interaction.editReply(`Channel ${voiceChannel.toString()} is now unlocked for ${mentionable.toString()}`)
+        }
+        catch (err) {
+            return interaction.editReply(`Error: ${err.toString()}`);
+        }
+
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
