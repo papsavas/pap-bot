@@ -361,7 +361,6 @@ PAP.on('voiceStateUpdate', (oldState, newState) => {
         .catch(console.error);
 })
 
-
 PAP.on('guildMemberAdd', (member) => {
     guildMap.get(member.guild.id)
         ?.onGuildMemberAdd(member)
