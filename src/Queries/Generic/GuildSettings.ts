@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { guildMap } from "../../../repo/index2";
+import { guildMap } from "../../../src/index";
 import { findOne, updateAll } from "../../DB/GenericCRUD";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 
