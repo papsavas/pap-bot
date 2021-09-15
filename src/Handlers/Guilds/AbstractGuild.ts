@@ -28,7 +28,7 @@ import { memberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
 import { dropGuild } from '../../Queries/Generic/Guild';
 import { addLog } from "../../Queries/Generic/guildLogs";
-import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
+import { fetchGuildSettings } from '../../Queries/Generic/GuildSettings';
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../../tools/randomArrayValue";
 import { openVoiceCmdImpl } from './../../Commands/Guild/Impl/openVoiceCmdImpl';
@@ -85,6 +85,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     async onReady(client: Client): Promise<unknown> {
         this._guild = client.guilds.cache.get(this.guildID);
+        this._settings = await fetchGuildSettings(this.guildID);
         await this.loadResponses()
         return Promise.resolve(`loaded ${this.guild.name}`);
     }
@@ -248,7 +249,7 @@ export abstract class AbstractGuild implements GenericGuild {
                         }
                         ],
                         type: "GUILD_VOICE",
-                        position: newState.channel.position + 1,
+                        position: newState.channel.position,
                         reason: "self create private channel"
                     }
                 );
@@ -292,7 +293,6 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     async loadResponses() {
-        this._settings = await fetchGuildSettings(this.guildID);
         const genericResponses = await genericGuildResponses(this.guildID, this._settings?.nsfw_responses);
         const memberResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
         this._responses = memberResponses.concat(genericResponses);

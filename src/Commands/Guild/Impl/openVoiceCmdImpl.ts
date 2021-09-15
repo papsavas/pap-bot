@@ -45,7 +45,7 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
         const mentionable = interaction.options.getMentionable('mentionable', true);
         const role = mentionable as unknown as Role | APIRole;
         const user = mentionable as unknown as User;
-        if (!(role instanceof Role || user instanceof User))
+        if (!(role instanceof Role) && !(user instanceof User))
             return interaction.editReply("Mentionable needs to be a role or a member");
         const voiceChannel = requestMember.voice.channel;
         if (!voiceChannel.permissionsFor(requestMember).has('MANAGE_CHANNELS'))
