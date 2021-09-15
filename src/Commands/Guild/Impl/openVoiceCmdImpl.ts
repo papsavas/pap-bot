@@ -1,4 +1,5 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { APIRole } from "discord-api-types";
+import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Role, Snowflake, User } from "discord.js";
 import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -43,16 +44,11 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
             if (!requestMember.voice.channel)
                 return interaction.editReply(`You must be in a voice channel to use this command`);
             const mentionable = interaction.options.getMentionable('mentionable', true);
-            const role = interaction.options.getRole('mentionable', true);
-            const user = interaction.options.getUser('mentionable', true);
-            console.log(`user: ${!!user}`);
-            console.log(`role: ${!!role}`);
-            //if (!(role instanceof Role) && !(user instanceof User))
-            //  return interaction.editReply("Mentionable needs to be a role or a member");
             const voiceChannel = requestMember.voice.channel;
             if (!voiceChannel.permissionsFor(requestMember).has('MANAGE_CHANNELS'))
                 return interaction.editReply(`You do not have manage permissions for this channel`);
-            await voiceChannel.permissionOverwrites.edit(role.id ?? user.id, {
+            await voiceChannel.permissionOverwrites.edit(
+                (mentionable as Role | APIRole)?.id ?? (mentionable as User | GuildMember)?.id, {
                 CONNECT: true,
                 SPEAK: true,
                 STREAM: true
