@@ -31,6 +31,7 @@ import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from "../../Queries/Generic/GuildSettings";
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../../tools/randomArrayValue";
+import openVoiceCmdImpl from './../../Commands/Guild/Impl/openVoiceCmdImpl';
 import { GenericGuild } from "./GenericGuild";
 
 
@@ -55,7 +56,7 @@ export abstract class AbstractGuild implements GenericGuild {
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
         myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl,
-        PinMessageCmdImpl, UnpinMessageCmdImpl, setVoiceLobbyCmdImpl
+        PinMessageCmdImpl, UnpinMessageCmdImpl, setVoiceLobbyCmdImpl, openVoiceCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;
