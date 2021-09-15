@@ -248,7 +248,7 @@ export abstract class AbstractGuild implements GenericGuild {
                         }
                         ],
                         type: "GUILD_VOICE",
-                        position: newState.channel.position,
+                        position: newState.channel.position + 1,
                         reason: "self create private channel"
                     }
                 );
