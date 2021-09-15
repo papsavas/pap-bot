@@ -215,7 +215,11 @@ export abstract class AbstractGuild implements GenericGuild {
         if (!clientMember.permissions.has('ADMINISTRATOR'))
             return
         const member = newState.member;
-        const [joined, left] = [!!newState.channel, !!oldState.channel || oldState?.channel?.id !== newState?.channel?.id];
+        const [joined, left] = [
+            !!newState.channel,
+            //if user was on voice AND if newState is another channel or null(disconnected)
+            !!oldState.channel && oldState?.channel?.id !== newState?.channel?.id
+        ];
         if (joined) {
             console.log(`member ${member.displayName} joined ${newState.channel.name}`);
             if (newState.channel.id === this._settings.voice_lobby) {
