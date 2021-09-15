@@ -3,7 +3,7 @@ import { calendar_v3 } from 'googleapis';
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import urlRegex from 'url-regex';
-import { channels, roles } from "../../../../values/KEP/IDs.json";
+import { categories, channels, roles } from "../../../../values/KEP/IDs.json";
 import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
@@ -278,23 +278,55 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             case channels.registration: {
                 if (interaction.customId.startsWith(buttons.appealId)) {
                     const [appealLiteral, am, userid] = interaction.customId.split('_');
-                    const threadName = `${am}_${userid}`
-                    const channel = interaction.channel as TextChannel;
-                    const existingThread = channel.threads.cache.find(c => c.name === threadName)
+                    const threadName = `${am}_${userid}`;
+                    const appealChannel = /*interaction.channel as TextChannel;*/ await interaction.guild.channels.create(threadName, {
+                        type: 'GUILD_TEXT',
+                        parent: categories.mod,
+                        permissionOverwrites: [
+                            {
+                                id: roles.head_mod,
+                                type: "role",
+                                allow: [
+                                    "VIEW_CHANNEL",
+                                    "SEND_MESSAGES",
+                                    "READ_MESSAGE_HISTORY",
+                                    "ATTACH_FILES",
+                                    "ADD_REACTIONS",
+                                    "MANAGE_CHANNELS",
+                                    "MANAGE_MESSAGES",
+                                ]
+                            },
+                            {
+                                id: userid,
+                                type: 'member',
+                                allow: [
+                                    "ATTACH_FILES",
+                                    "VIEW_CHANNEL",
+                                    "SEND_MESSAGES"
+                                ]
+                            },
+                            {
+                                id: interaction.guildId,
+                                type: 'role',
+                                deny: ['VIEW_CHANNEL']
+                            }
+                        ]
+                    });
+                    const existingThread = interaction.guild.channels/*.threads*/.cache.find(c => c.name === threadName)
                     if (existingThread)
                         return interaction.reply({
                             content: `Έχει ήδη δημιουργηθεί thread <#${existingThread.id}>`,
                             ephemeral: true
                         })
 
-                    const thread = await channel.threads.create({
+                    /*const appealChannel = await channel.threads.create({
                         autoArchiveDuration: "MAX",
                         name: threadName,
                         reason: "appeal",
                         type: "GUILD_PRIVATE_THREAD",
-                    });
+                    });*/
                     const conflictingStudent = this.students.find(s => s.am === am);
-                    thread.send({
+                    appealChannel.send({
                         content: `<@&${roles.head_mod}> <@${userid}>`,
                         embeds: [
                             new MessageEmbed({
@@ -316,7 +348,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     })
                         .then(msg =>
                             interaction.reply({
-                                content: `Δημιουργήθηκε ιδιωτικό thread <#${thread.id}>. Παρακαλώ αποστείλετε εκεί την φωτογραφία της ακαδημαϊκής σας ταυτότητας`,
+                                content: `Δημιουργήθηκε ιδιωτικό κανάλι <#${appealChannel.id}>. Παρακαλώ αποστείλετε εκεί την φωτογραφία της ακαδημαϊκής σας ταυτότητας`,
                                 ephemeral: true
                             })
                         )

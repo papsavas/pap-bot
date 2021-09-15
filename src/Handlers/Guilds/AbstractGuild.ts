@@ -222,7 +222,6 @@ export abstract class AbstractGuild implements GenericGuild {
             !!oldState.channel && oldState?.channel?.id !== newState?.channel?.id
         ];
         if (joined) {
-            console.log(`member ${member.displayName} joined ${newState.channel.name}`);
             if (newState.channel.id === this._settings.voice_lobby) {
                 const categoryId = newState.channel.parentId;
                 const privateChannel = await newState.guild.channels.create(
@@ -249,7 +248,7 @@ export abstract class AbstractGuild implements GenericGuild {
                         }
                         ],
                         type: "GUILD_VOICE",
-                        position: newState.channel.position,
+                        position: newState.channel.position + 1,
                         reason: "self create private channel"
                     }
                 );
@@ -259,7 +258,6 @@ export abstract class AbstractGuild implements GenericGuild {
         }
         if (left) {
             const channel = oldState.channel;
-            console.log(`member ${member.displayName} left ${channel.name}`);
             if (this.privateVoiceChannels.includes(channel.id) && channel.members.size === 0)
                 await channel.delete();
         }
