@@ -18,10 +18,6 @@ export abstract class CommandManagerImpl implements CommandManager {
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
         guildId?: Snowflake
     ): Promise<unknown>;
-    abstract registerCommand(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
-        commandData: ApplicationCommandData
-    ): Promise<unknown>;
 
     constructor(commands: GenericCommand[]) {
         this.helpCommandData = {
@@ -115,6 +111,17 @@ export abstract class CommandManagerImpl implements CommandManager {
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
     }
+
+    async registerCommand(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        command: ApplicationCommand | ApplicationCommandData
+    ): Promise<ApplicationCommand> {
+        const cmd = await commandManager.create(command);
+        await this.saveCommandData(new Collection<Snowflake, ApplicationCommand>().set(cmd.id, cmd));
+        return cmd;
+    }
+
+    //TODO: implement `removeCommand()`
 
     protected sliceCommandLiterals(receivedMessage: Message, prefix: string): commandLiteral {
         const receivedMessageContent = receivedMessage.content;

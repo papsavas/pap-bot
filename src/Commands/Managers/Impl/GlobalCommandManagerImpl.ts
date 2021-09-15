@@ -37,11 +37,6 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
         );
     }
 
-    async registerCommand(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, commandData: ApplicationCommandData) {
-        const cmd = await commandManager.create(commandData);
-        await this.saveCommandData(new Collection<Snowflake, ApplicationCommand>().set(cmd.id, cmd));
-    }
-
     async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildID?: Snowflake): Promise<unknown> {
         //TODO: fetch id from command manager
         if (guildID)

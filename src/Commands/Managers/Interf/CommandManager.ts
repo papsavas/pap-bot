@@ -11,7 +11,7 @@ export interface CommandManager {
     registerCommand(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
         commandData: ApplicationCommandData
-    ): Promise<unknown>;
+    ): Promise<ApplicationCommand>;
     updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
         Promise<Collection<Snowflake, ApplicationCommand<{}>>>
     clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildId?: Snowflake): Promise<unknown>;
