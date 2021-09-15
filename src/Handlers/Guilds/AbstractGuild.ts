@@ -220,7 +220,7 @@ export abstract class AbstractGuild implements GenericGuild {
             if (newState.channel.id === this._settings.voice_lobby) {
                 const categoryId = newState.channel.parentId;
                 const privateChannel = await newState.guild.channels.create(
-                    `${member.displayName}'s channel`,
+                    `🔒 ${member.displayName}'s table`,
                     {
                         parent: categoryId,
                         permissionOverwrites: [{

@@ -9,9 +9,9 @@ import { setVoiceLobbyCmd } from "../Interf/setVoiceLobbyCmd";
 export class setVoiceLobbyCmdImpl extends AbstractGuildCommand implements setVoiceLobbyCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
-    protected _keyword = `setVoiceLobby`;
+    protected _keyword = `set-voice-lobby`;
     protected _guide = `Sets a voice channel as Creation Lobby`;
-    protected _usage = `setVoiceLobby <voiceChannel>`;
+    protected _usage = `${this.keyword} <voiceChannel>`;
 
     private constructor() { super() }
 
@@ -52,7 +52,7 @@ export class setVoiceLobbyCmdImpl extends AbstractGuildCommand implements setVoi
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        return message.reply("Please use slash command");
+        return message.reply(`Please use slash command => \`/${this.usage}\``);
     }
 
     getAliases(): string[] {
