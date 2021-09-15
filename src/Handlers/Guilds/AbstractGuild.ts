@@ -3,7 +3,7 @@ import {
     Client, CommandInteraction, Constants, ContextMenuInteraction, Guild,
     GuildBan,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
-    Snowflake, User
+    Snowflake, User, VoiceState
 } from 'discord.js';
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
@@ -203,6 +203,35 @@ export abstract class AbstractGuild implements GenericGuild {
 
     onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<any> {
         return Promise.resolve(`reaction removed`);
+    }
+
+    async onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+        const member = newState.member;
+        const [joined, left] = [!!newState.channel, !!oldState.channel];
+        if (joined) {
+            console.log(`member ${member.displayName} joined ${newState.channel.name}`);
+            if (newState.channel.id === lobbychannel) {
+                const categoryId = newState.channel.parentId;
+                const privateChannel = await newState.guild.channels.create(
+                    `${member.displayName}'s channel`,
+                    {
+                        parent: categoryId,
+                        permissionOverwrites: [{ id: member.user.id }],
+                        type: "GUILD_VOICE",
+                        position: newState.channel.position + 1,
+                        reason: "self create private channel"
+                    }
+                );
+                await newState.setChannel(privateChannel, 'move to personal channel');
+                privateChannels.push(privateChannel.id);
+            }
+        }
+        else if (left) {
+            const channel = oldState.channel;
+            console.log(`member ${member.displayName} left ${channel.name}`);
+            if (privateChannels.includes(channel.id) && channel.members.size === 0)
+                await channel.delete();
+        }
     }
 
     onGuildBanAdd(ban: GuildBan): Promise<unknown> {
