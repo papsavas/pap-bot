@@ -144,7 +144,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     {
                         author: {
                             name: message.author.username,
-                            icon_url: message.member.user.avatarURL({ format: 'png' })
+                            icon_url: message.author.avatarURL({ format: 'png' })
                         },
                         color: `#ffffff`,
                         description: `**🗑️ Διεγράφη Μήνυμα από ${message.member.toString()} στο ${message.channel.toString()}**
