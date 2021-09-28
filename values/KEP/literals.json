@@ -1,5 +1,6 @@
 {
     "examsPrefix": "[EXAMS]",
+    "lecturePrefix": "[L]",
     "reasons": {
         "blockedStudentAccount": "Already blocked student"
     },

@@ -140,10 +140,10 @@ function handleRequest(request: CommandInteraction | Message) {
                         filter: (reaction, user) => ['🗑️', '🗑', emoji].includes(reaction.emoji.name) && !user.bot,
                         time: 10000,
                         max: 1
-                    })
+                    });
                     if (collected.first().emoji.name === emoji)
                         await request.reply({ embeds: responseEmbeds });
-                    await msg.delete();
+                    await msg.delete(); //delete prompt either way
                 }
             }
             else
