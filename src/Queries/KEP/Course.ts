@@ -1,5 +1,5 @@
 import { courseTable, teacherTable, teacher_courseTable } from "../../../values/generic/DB.json";
-import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
+import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { Teacher } from "../../Entities/KEP/Teacher";
 
@@ -9,6 +9,10 @@ function fetchCourses(returnings?: (keyof Course)[]) {
 
 function addCourse(c: Course) {
     return saveBatch(courseTable, [c]);
+}
+
+function updateCourse(c: Course) {
+    return updateAll(courseTable, { "code": c.code }, c);
 }
 
 async function linkTeacherToCourse(teacherUsername: Teacher['username'], courseCode: Course['code']) {
@@ -33,5 +37,5 @@ function deleteCourse(code: Course['code']) {
     });
 }
 
-export { fetchCourses, addCourse, linkTeacherToCourse, fetchTeacherCourses, deleteCourse };
+export { fetchCourses, addCourse, updateCourse, linkTeacherToCourse, fetchTeacherCourses, deleteCourse };
 

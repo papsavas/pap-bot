@@ -278,8 +278,8 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             case channels.registration: {
                 if (interaction.customId.startsWith(buttons.appealId)) {
                     const [appealLiteral, am, userid] = interaction.customId.split('_');
-                    const threadName = `${am}_${userid}`;
-                    const appealChannel = /*interaction.channel as TextChannel;*/ await interaction.guild.channels.create(threadName, {
+                    const channelName = `${am}_${userid}`;
+                    const appealChannel = /*interaction.channel as TextChannel;*/ await interaction.guild.channels.create(channelName, {
                         type: 'GUILD_TEXT',
                         parent: categories.mod,
                         permissionOverwrites: [
@@ -312,19 +312,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                             }
                         ]
                     });
-                    const existingThread = interaction.guild.channels/*.threads*/.cache.find(c => c.name === threadName)
+                    const existingThread = (await interaction.guild.channels/*.threads*/.fetch())
+                        .find(c => c.name === channelName);
                     if (existingThread)
                         return interaction.reply({
-                            content: `Έχει ήδη δημιουργηθεί thread <#${existingThread.id}>`,
+                            content: `Έχει ήδη δημιουργηθεί κανάλι <#${existingThread.id}>`,
                             ephemeral: true
                         })
 
-                    /*const appealChannel = await channel.threads.create({
-                        autoArchiveDuration: "MAX",
-                        name: threadName,
-                        reason: "appeal",
-                        type: "GUILD_PRIVATE_THREAD",
-                    });*/
                     const conflictingStudent = this.students.find(s => s.am === am);
                     appealChannel.send({
                         content: `<@&${roles.head_mod}> <@${userid}>`,

@@ -1,7 +1,7 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
-import { examsPrefix } from "../../../../values/KEP/literals.json";
+import { lecturePrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -52,7 +52,8 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 function handleRequest(request: Message | CommandInteraction): Promise<unknown> {
     const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guildMap.get(kepGuildId) as KepGuild).events
-        .filter(ev => !ev.summary?.includes(examsPrefix));
+        .map(ev => ({ ...ev, summary: ev.summary.trimStart().trimEnd() }))
+        .filter(ev => ev.summary?.startsWith(lecturePrefix));
 
     const respond = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
         { content: response, ephemeral: true } :
@@ -62,14 +63,9 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
         return request.reply(respond("Δεν βρέθηκαν μαθήματα"));
 
     if (events.length === 0)
-        return request.reply(respond("Δεν βρέθηκαν προγραμματισμένα μαθήματα"));
+        return request.reply(respond("Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων"));
 
-    const studentClasses = events
-        .map(ev => Object.assign(ev, {
-            summary: ev.summary
-                .trimStart()
-                .trimEnd()
-        }))
+    const studentCourses = events
         .filter(ev => courses
             .find(c => textSimilarity(
                 c.name,
@@ -79,7 +75,7 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
         )
 
     const embeds = sliceToEmbeds({
-        data: studentClasses
+        data: studentCourses
             .map(ev => ({
                 name: ev.summary, value: ev.start.date
             })),
