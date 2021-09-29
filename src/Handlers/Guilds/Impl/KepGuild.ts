@@ -302,7 +302,8 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                                 allow: [
                                     "ATTACH_FILES",
                                     "VIEW_CHANNEL",
-                                    "SEND_MESSAGES"
+                                    "SEND_MESSAGES",
+                                    "READ_MESSAGE_HISTORY"
                                 ]
                             },
                             {
