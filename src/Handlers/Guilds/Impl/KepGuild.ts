@@ -322,7 +322,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         })
 
                     const conflictingStudent = this.students.find(s => s.am === am);
-                    appealChannel.send({
+                    return appealChannel.send({
                         content: `<@&${roles.head_mod}> <@${userid}>`,
                         embeds: [
                             new MessageEmbed({
@@ -351,7 +351,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         .catch(console.error);
 
                 }
-                break;
             }
 
             case channels.select_courses: {
