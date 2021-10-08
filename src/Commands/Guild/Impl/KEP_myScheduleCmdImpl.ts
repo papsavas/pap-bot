@@ -34,6 +34,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         (
             ["my_schedule", "schedule"], this._keyword
         );
+
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
@@ -41,6 +42,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
             type: 'CHAT_INPUT',
         }
     }
+
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const resp = generateEmbeds(interaction);
         return interaction.user.send({
@@ -84,8 +86,6 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
         .map(ev => ({ ...ev, summary: ev.summary.trimStart().trimEnd() }))
         //filter lectures
         .filter(ev => ev.summary?.startsWith(lecturePrefix))
-    //remove prefix
-    //.map(ev => ({ ...ev, summary: ev.summary.slice(lecturePrefix.length) }))
 
     const respond = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
         { content: response, ephemeral: true } :
@@ -121,15 +121,5 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
             .addFields(fieldBuilder(ev, courses.find(c => c.code.includes(ev.description))))
     )
 
-    /*const embeds = sliceToEmbeds({
-        data: studentEvents
-            .map(ev =>
-                fieldBuilder(ev, courses.find(c => c.code.includes(ev.description)))
-            ),
-        headerEmbed: {
-            title: `MySchedule`,
-            description: `Το εβδομαδιαίο σας πρόγραμμα`
-        }
-    })*/
     return [...embeds.values()];
 }
