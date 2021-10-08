@@ -59,7 +59,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
                         ephemeral: true,
                         embeds: resp
                     })
-                    : err
+                    : Promise.reject(err)
             );
     }
 
