@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, EmbedFieldData, InteractionReplyOptions, Message, MessageEmbed, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, MessageEmbed, ReplyMessageOptions, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
@@ -42,10 +42,30 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        return handleRequest(interaction)
+        const resp = generateEmbeds(interaction);
+        return interaction.user.send({
+            embeds: resp
+        }).catch(err =>
+            err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
+                interaction.reply({
+                    content: "Έχετε κλειστά DMs",
+                    ephemeral: true,
+                    embeds: resp
+                })
+                : err
+        );
     }
+
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        return handleRequest(message);
+        return message.author.send({
+            embeds: generateEmbeds(message)
+        }).catch(err =>
+            err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
+                message.reply({
+                    content: "Έχετε κλειστά DMs. Δεν θα αποσταλεί σε κοινή θεα. Χρησιμοποιείστε slash command για να το δείτε μόνο εσείς"
+                })
+                : err
+        );
     }
 
     getAliases(): string[] {
@@ -57,7 +77,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
     }
 }
 
-function handleRequest(request: Message | CommandInteraction): Promise<unknown> {
+function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
     const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guildMap.get(kepGuildId) as KepGuild).events
         //trim blanks
@@ -72,18 +92,20 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
         { content: response };
 
     if (!courses || courses.size === 0)
-        return request.reply(respond("Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις"));
+        return [
+            new MessageEmbed({ description: "Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις" })
+        ]
 
     if (events.length === 0)
-        return request.reply(respond("Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων"));
+        return [
+            new MessageEmbed({ description: "Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων" })
+        ]
 
     const studentEvents = events
         .filter(ev => courses
             //match by description (requires course code to be in event description)
             .find(c => c.code.includes(ev.description))
         )
-
-    //TODO: split to days
 
     const embeds = new Map<number, MessageEmbed>();
     [1, 2, 3, 4, 5]
@@ -109,8 +131,5 @@ function handleRequest(request: Message | CommandInteraction): Promise<unknown> 
             description: `Το εβδομαδιαίο σας πρόγραμμα`
         }
     })*/
-
-    return request.reply({
-        embeds: [...embeds.values()]
-    });
+    return [...embeds.values()];
 }
