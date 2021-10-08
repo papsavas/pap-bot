@@ -16,7 +16,7 @@ moment.locale('el');
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedFieldData => ({
     name: `• ${ev.summary ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "-"})`,
-    value: `📌 ${ev.location ?? ''} | 📅 ${moment(ev.start.dateTime).format('dddd')}, ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
+    value: `📌 ${ev.location ?? ''} |  ⌚ ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
 }));
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
@@ -74,7 +74,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
                     message.reply({
                         content: "Έχετε κλειστά DMs. Δεν θα αποσταλεί σε κοινή θεα. Χρησιμοποιείστε slash command για να το δείτε μόνο εσείς"
                     })
-                    : err
+                    : Promise.reject(err)
             );
     }
 
