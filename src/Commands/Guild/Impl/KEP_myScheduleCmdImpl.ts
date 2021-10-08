@@ -15,8 +15,8 @@ import { KEP_myScheduleCmd } from "../Interf/KEP_myScheduleCmd";
 moment.locale('el');
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedFieldData => ({
-    name: `• ${course?.name ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "-"})`,
-    value: `📅 ${moment(ev.start.dateTime).format('dddd')}, ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
+    name: `• ${ev.summary ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "-"})`,
+    value: `📌 ${ev.location ?? ''} | 📅 ${moment(ev.start.dateTime).format('dddd')}, ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
 }));
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
@@ -47,27 +47,35 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         const resp = generateEmbeds(interaction);
         return interaction.user.send({
             embeds: resp
-        }).catch(err =>
-            err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
-                interaction.reply({
-                    content: "Έχετε κλειστά DMs",
-                    ephemeral: true,
-                    embeds: resp
-                })
-                : err
-        );
+        })
+            .then(() => interaction.reply({
+                ephemeral: true,
+                content: "Απεστάλη με DM"
+            }))
+            .catch(err =>
+                err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
+                    interaction.reply({
+                        content: "Έχετε κλειστά DMs",
+                        ephemeral: true,
+                        embeds: resp
+                    })
+                    : err
+            );
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
         return message.author.send({
             embeds: generateEmbeds(message)
-        }).catch(err =>
-            err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
-                message.reply({
-                    content: "Έχετε κλειστά DMs. Δεν θα αποσταλεί σε κοινή θεα. Χρησιμοποιείστε slash command για να το δείτε μόνο εσείς"
-                })
-                : err
-        );
+        })
+            .then(() => message.reply({
+                content: "Απεστάλη με DM"
+            })).catch(err =>
+                err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
+                    message.reply({
+                        content: "Έχετε κλειστά DMs. Δεν θα αποσταλεί σε κοινή θεα. Χρησιμοποιείστε slash command για να το δείτε μόνο εσείς"
+                    })
+                    : err
+            );
     }
 
     getAliases(): string[] {
@@ -107,19 +115,25 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
             .find(c => c.code.includes(ev.description))
         )
 
+    const uniqueStudentEvents = new Map<string, calendar_v3.Schema$Event>();
+    studentEvents.forEach(ev => {
+        const key = ev.summary;
+        if (!uniqueStudentEvents.has(key))
+            uniqueStudentEvents.set(key, ev);
+    });
     const embeds = new Map<number, MessageEmbed>();
     [1, 2, 3, 4, 5]
         .map(d => embeds.set(d, new MessageEmbed({
             author: {
                 name: moment().day(d).format('dddd'),
-                icon_url: 'https://lh3.googleusercontent.com/proxy/5Clx-elof297RcQl3ClcG_5gPGFEmtri38m3BGxEYWllKQlLVbWJBz05L3l4sBUxemNgPv8ZGCqvYtH5jyV4-1bMvs-AQFQivyVTAQHh45OvBKSPB33MOyEsvR_uRSDrb-lhrCQs2gDb-sYJzUUO8PUaDbuKnGjkSRMhmQ'
+                icon_url: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/512/calendar-icon.png"
             }
         })))
-
-    studentEvents.forEach(ev =>
-        embeds.get(moment(ev.start.dateTime).day())
-            .addFields(fieldBuilder(ev, courses.find(c => c.code.includes(ev.description))))
-    )
+    uniqueStudentEvents
+        .forEach(ev =>
+            embeds.get(moment(ev.start.dateTime).day())
+                .addFields(fieldBuilder(ev, courses.find(c => c.code.includes(ev.description))))
+        )
 
     return [...embeds.values()];
 }
