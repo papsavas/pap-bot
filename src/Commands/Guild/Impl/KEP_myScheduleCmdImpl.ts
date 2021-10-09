@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, MessageEmbed, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, Message, MessageEmbed, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
@@ -95,10 +95,6 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
         //filter lectures
         .filter(ev => ev.summary?.startsWith(lecturePrefix))
 
-    const respond = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
-        { content: response, ephemeral: true } :
-        { content: response };
-
     if (!courses || courses.size === 0)
         return [
             new MessageEmbed({ description: "Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις" })
@@ -121,6 +117,13 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
         if (!uniqueStudentEvents.has(key))
             uniqueStudentEvents.set(key, ev);
     });
+
+    if (uniqueStudentEvents.size === 0)
+        return [
+            new MessageEmbed()
+                .setDescription("Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις")
+        ]
+
     const embeds = new Map<number, MessageEmbed>();
     [1, 2, 3, 4, 5]
         .map(d => embeds.set(d, new MessageEmbed({
@@ -129,6 +132,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
                 icon_url: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/512/calendar-icon.png"
             }
         })))
+
     uniqueStudentEvents
         .forEach(ev =>
             embeds.get(moment(ev.start.dateTime).day())
