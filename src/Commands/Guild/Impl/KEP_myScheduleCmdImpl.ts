@@ -91,7 +91,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
     const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guildMap.get(kepGuildId) as KepGuild).events
         //trim blanks
-        .map(ev => ({ ...ev, summary: ev.summary.trimStart().trimEnd() }))
+        .map(ev => ({ ...ev, summary: ev.summary.trim() }))
         //filter lectures
         .filter(ev => ev.summary?.startsWith(lecturePrefix))
 
@@ -108,7 +108,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
     const studentEvents = events
         .filter(ev => courses
             //match by description (requires course code to be in event description)
-            .find(c => c.code.includes(ev.description))
+            .find(c => c.code.trim().includes(ev.description))
         )
 
     const uniqueStudentEvents = new Map<string, calendar_v3.Schema$Event>();
