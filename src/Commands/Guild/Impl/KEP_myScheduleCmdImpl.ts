@@ -91,7 +91,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
     const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guildMap.get(kepGuildId) as KepGuild).events
         //trim blanks
-        .map(ev => ({ ...ev, summary: ev.summary.trim() }))
+        .map(ev => ({ ...ev, summary: ev.summary.trim(), description: ev.description.trim() }))
         //filter lectures
         .filter(ev => ev.summary?.startsWith(lecturePrefix))
 
