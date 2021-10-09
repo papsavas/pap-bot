@@ -284,6 +284,11 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         parent: categories.mod,
                         permissionOverwrites: [
                             {
+                                id: interaction.client.user.id,
+                                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'ATTACH_FILES', 'EMBED_LINKS'],
+                                type: "member"
+                            },
+                            {
                                 id: roles.head_mod,
                                 type: "role",
                                 allow: [
@@ -322,7 +327,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         })
 
                     const conflictingStudent = this.students.find(s => s.am === am);
-                    return appealChannel.send({
+                    await appealChannel.send({
                         content: `<@&${roles.head_mod}> <@${userid}>`,
                         embeds: [
                             new MessageEmbed({

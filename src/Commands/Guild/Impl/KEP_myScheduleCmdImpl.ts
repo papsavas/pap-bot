@@ -16,7 +16,7 @@ moment.locale('el');
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedFieldData => ({
     name: `• ${ev.summary ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "Δεν βρέθηκε κωδικός"})`,
-    value: `    📌 ${ev.location ?? ''}  |  ⌚ ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
+    value: `📌 ${ev.location ?? ''}  |  ⌚ ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
 }));
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
@@ -113,7 +113,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
 
     const uniqueStudentEvents = new Map<string, calendar_v3.Schema$Event>();
     studentEvents.forEach(ev => {
-        const key = `${moment(ev.start.dateTime).hour()}|${ev.summary}`;
+        const key = `${ev.description}${moment(ev.start.dateTime).hour()}`;
         if (!uniqueStudentEvents.has(key))
             uniqueStudentEvents.set(key, ev);
     });
