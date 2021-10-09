@@ -15,8 +15,8 @@ import { KEP_myScheduleCmd } from "../Interf/KEP_myScheduleCmd";
 moment.locale('el');
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedFieldData => ({
-    name: `• ${ev.summary ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "-"})`,
-    value: `📌 ${ev.location ?? ''} |  ⌚ ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
+    name: `• ${ev.summary ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "Δεν βρέθηκε κωδικός"})`,
+    value: `    📌 ${ev.location ?? ''}  |  ⌚ ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
 }));
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
