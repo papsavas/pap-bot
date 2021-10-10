@@ -177,7 +177,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         const interactionPromise: Promise<unknown> = interaction.replied || interaction.deferred ?
             interaction.followUp({
                 embeds: [interactionEmb],
-                ephimeral: true
+                ephemeral: true
             }) :
             interaction.reply({
                 ephemeral: true,
