@@ -29,8 +29,8 @@ const fetchTeacherCourses = () =>
         teacher_id: Teacher['uuid']
     }[]>;
 
-function deleteCourse(code: Course['code']) {
-    return findOne(courseTable, { "code": code }, ['uuid']).then(async (course) => {
+function deleteCourse(c: Course) {
+    return findOne(courseTable, { "code": c.code }, ['uuid']).then(async (course) => {
         //!order matters, otherwise "teacher_class" will be violating foreign key constraint, fixed with cascade
         await deleteBatch(teacher_courseTable, { "course_id": course['uuid'] });
         await deleteBatch(courseTable, { "uuid": course['uuid'] });
