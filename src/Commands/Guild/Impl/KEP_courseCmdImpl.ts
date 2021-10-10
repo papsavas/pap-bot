@@ -44,7 +44,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 return updateCourse(course);
             }
             case _delete: {
-                return deleteCourse(courseCode);
+                return deleteCourse(course);
             }
         }
         */
