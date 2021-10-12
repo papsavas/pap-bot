@@ -3,6 +3,7 @@ import { calendar_v3 } from 'googleapis';
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import urlRegex from 'url-regex';
+import { inDevelopment } from '../../..';
 import { categories, channels, roles } from "../../../../values/KEP/IDs.json";
 import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
@@ -20,7 +21,7 @@ import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
 import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
-import { banStudent, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
+import { banStudent, dropAllPendingStudents, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -85,6 +86,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         handleExaminedChannels(this.courses, this.events, this.guild.channels);
         handleActiveDrivePermissions();
         handleMutedMembers(this.guild);
+        if (!inDevelopment) await dropAllPendingStudents();
         return Promise.resolve('KEP Loaded');
     }
 
