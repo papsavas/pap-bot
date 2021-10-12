@@ -429,35 +429,38 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 }
 
 function handleExaminedChannels(courses: Course[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {
-    return events.map(ev => {
-        const course = courses.find(cl =>
-            textSimilarity(
-                ev.summary
+    return events
+        .filter(ev => ev.summary?.trimStart().startsWith(examsPrefix))
+        .map(ev => {
+            const course = courses.find(cl =>
+                //TODO: implement new search based on code description
+                textSimilarity(
+                    ev.summary
+                        .replace(examsPrefix, '')
+                        .trimStart()
+                        .trimEnd(),
+                    cl.name
+                ) > 0.85 ||
+                cl.code === ev.summary
                     .replace(examsPrefix, '')
                     .trimStart()
-                    .trimEnd(),
-                cl.name
-            ) > 0.85 ||
-            cl.code === ev.summary
-                .replace(examsPrefix, '')
-                .trimStart()
-                .trimEnd()
-        );
-        if (course) {
-            const channel = channelManager.cache.get(course.channel_id) as GuildChannel;
-            return scheduleTask(
-                ev.start.dateTime,
-                () => channel.permissionOverwrites.edit(course.role_id, {
-                    SEND_MESSAGES: false
-                })
-            ).then(() => scheduleTask(
-                ev.end.dateTime,
-                () => channel.permissionOverwrites.edit(course.role_id, {
-                    SEND_MESSAGES: true
-                })
-            ));
-        }
-    });
+                    .trimEnd()
+            );
+            if (course) {
+                const channel = channelManager.cache.get(course.channel_id) as GuildChannel;
+                return scheduleTask(
+                    ev.start.dateTime,
+                    () => channel.permissionOverwrites.edit(course.role_id, {
+                        SEND_MESSAGES: false
+                    })
+                ).then(() => scheduleTask(
+                    ev.end.dateTime,
+                    () => channel.permissionOverwrites.edit(course.role_id, {
+                        SEND_MESSAGES: true
+                    })
+                ));
+            }
+        });
 
 }
 

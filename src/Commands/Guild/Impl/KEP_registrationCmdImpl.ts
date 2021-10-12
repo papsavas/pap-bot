@@ -97,7 +97,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                 if (existingStudent)
                     return conflict(interaction, academicEmail.split('@')[0]);
                 if (!!await fetchPendingStudent(interaction.user.id))
-                    return interaction.editReply(`Έχετε ήδη λάβει κωδικό. Παρακαλώ χρησιμοποιείστε τον στο \`registration verify\``);
+                    return interaction.editReply(`Έχετε ήδη λάβει κωδικό. Παρακαλώ χρησιμοποιείστε τον στο \`/registration verify\``);
                 const pswd = Math.floor(generateRandomNumber(111111111, 999999999));
                 await savePendingStudent({
                     am: academicEmail.split('@')[0] as amType,
