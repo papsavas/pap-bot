@@ -21,7 +21,6 @@ import { fetchCourses } from '../../../Queries/KEP/Course';
 import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
 import { banStudent, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
-import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -428,27 +427,20 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 }
 
-function handleExaminedChannels(courses: Course[], events: calendar_v3.Schema$Event[], channelManager: GuildChannelManager): Promise<unknown>[] {
+function handleExaminedChannels(
+    courses: Course[],
+    events: calendar_v3.Schema$Event[],
+    channelManager: GuildChannelManager
+): void {
     return events
         .filter(ev => ev.summary?.trimStart().startsWith(examsPrefix))
-        .map(ev => {
-            const course = courses.find(cl =>
-                //TODO: implement new search based on code description
-                textSimilarity(
-                    ev.summary
-                        .replace(examsPrefix, '')
-                        .trimStart()
-                        .trimEnd(),
-                    cl.name
-                ) > 0.85 ||
-                cl.code === ev.summary
-                    .replace(examsPrefix, '')
-                    .trimStart()
-                    .trimEnd()
+        .forEach(async ev => {
+            const course = courses.find(c =>
+                c.code.includes(ev.description)
             );
             if (course) {
-                const channel = channelManager.cache.get(course.channel_id) as GuildChannel;
-                return scheduleTask(
+                const channel = await channelManager.fetch(course.channel_id) as GuildChannel;
+                scheduleTask(
                     ev.start.dateTime,
                     () => channel.permissionOverwrites.edit(course.role_id, {
                         SEND_MESSAGES: false
@@ -461,7 +453,6 @@ function handleExaminedChannels(courses: Course[], events: calendar_v3.Schema$Ev
                 ));
             }
         });
-
 }
 
 function handleActiveDrivePermissions() {
