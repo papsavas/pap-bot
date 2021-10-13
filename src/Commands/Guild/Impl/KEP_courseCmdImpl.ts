@@ -2,13 +2,15 @@ import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowfl
 import { guildMap } from "../../..";
 import { categories, guildId, roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { Course } from "../../../Entities/KEP/Course";
+import { Course, semesterRegex } from "../../../Entities/KEP/Course";
+import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { addCourse, dropCourse } from "../../../Queries/KEP/Course";
+import { addCourse, dropCourse, fetchCourses } from "../../../Queries/KEP/Course";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_courseCmd } from "../Interf/KEP_CourseCmd";
 
-const [_create, _update, _delete] = ["create", "update", "delete"];
+const [createLiteral, updateLiteral, deleteLiteral] = ["create", "update", "delete"];
+const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"];
 export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_courseCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
@@ -32,24 +34,24 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
             type: 'CHAT_INPUT',
             options: [
                 {
-                    name: _create,
+                    name: createLiteral,
                     description: `Δημιουργεί ένα νέο μάθημα`,
                     type: 'SUB_COMMAND',
                     options: [
                         {
-                            name: 'code',
+                            name: codeLiteral,
                             description: `Κωδικός μαθήματος`,
                             type: 'STRING',
                             required: true
                         },
                         {
-                            name: 'name',
+                            name: nameLiteral,
                             description: `Όνομα μαθήματος (κεφαλαία)`,
                             type: 'STRING',
                             required: true
                         },
                         {
-                            name: 'semester',
+                            name: semesterLiteral,
                             description: `Εξάμηνο μαθήματος (9 για διδακτικη)`,
                             type: 'NUMBER',
                             required: true
@@ -57,12 +59,12 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     ]
                 },
                 {
-                    name: _delete,
+                    name: deleteLiteral,
                     description: `Διαγράφει ένα υπάρχον μάθημα`,
                     type: 'SUB_COMMAND',
                     options: [
                         {
-                            name: 'code',
+                            name: codeLiteral,
                             description: `Κωδικός μαθήματος`,
                             type: 'STRING',
                             required: true
@@ -75,16 +77,33 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const subCmd = interaction.options.getSubcommand(true);
-        await interaction.deferReply({ ephemeral: true })
-        const course: Course = null; //TODO: construct course from user data
+        await interaction.deferReply({ ephemeral: true });
+        const code = interaction.options.getString(codeLiteral, true);
+        const course: Course = {
+            code,
+            name: null,
+            semester: null,
+            channel_id: null,
+            role_id: null
+        };
         const year = (typeof course.semester === "number") ? course.semester : parseInt(course.semester) / 1.5;
+        const kep = (guildMap.get(guildId) as KepGuild);
         try {
             switch (subCmd) {
-                case _create: {
+                case createLiteral: {
+                    course.name = interaction.options.getString(nameLiteral, true);
+                    const sem = interaction.options.getNumber(semesterLiteral, true);
+
+                    if (!sem.toString().match(semesterRegex))
+                        return interaction.editReply('Λάθος τιμή στον αριθμό εξαμήνου. (1-8, 9 για μαθήματα διδακτικής)');
+                    else
+                        course.semester = sem as Course['semester'];
+
                     const role = await interaction.guild.roles.create({
                         name: course.name,
                         reason: "created role for new course"
                     })
+
                     let categoryId: Snowflake;
                     if (year === 1)
                         categoryId = categories.etos1;
@@ -113,6 +132,11 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                                 type: "role"
                             },
                             {
+                                id: roles.pro,
+                                allow: ['MENTION_EVERYONE'],
+                                type: "role"
+                            },
+                            {
                                 id: roles.overseer,
                                 allow: ['VIEW_CHANNEL'],
                                 type: "role"
@@ -126,16 +150,23 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     })
                     course.channel_id = channel.id;
                     course.role_id = role.id;
-                    const res = await addCourse(course);
+                    await addCourse(course);
+
+                    //update kep cache
+                    kep.courses = await fetchCourses();
+                    kep.courseRoles.push(role);
+
+                    //TODO: refresh courses selectmenu
+
                     return interaction.editReply(`Το μάθημα **${course.name} (${course.code})** δημιουργήθηκε με επιτυχία!.
 Κανάλι: ${channel.toString()}, Ρόλος: ${role.toString()}`);
                 }
 
-                case _update: {
+                case updateLiteral: {
                     throw "not implemented"
                 }
 
-                case _delete: {
+                case deleteLiteral: {
                     await interaction.guild.roles.cache.get(course.role_id)
                         .delete(`${interaction.user.username} deleted course ${course.name}`);
                     await interaction.guild.channels.cache.get(course.channel_id)
