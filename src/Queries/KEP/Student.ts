@@ -54,6 +54,8 @@ function dropPendingStudent(member_id: Snowflake) {
     return deleteBatch(pendingStudentTable, { member_id });
 }
 
+const dropAllPendingStudents = () => deleteBatch(pendingStudentTable, true);
+
 const banStudent = (member_id: Snowflake) =>
     updateAll(studentTable, { member_id }, { "blocked": true });
 
@@ -69,6 +71,8 @@ export {
     savePendingStudent,
     fetchPendingStudent,
     dropPendingStudent,
+    dropAllPendingStudents,
     banStudent,
     unbanStudent
 };
+
