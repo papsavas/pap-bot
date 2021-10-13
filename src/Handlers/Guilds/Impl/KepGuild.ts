@@ -280,6 +280,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 if (interaction.customId.startsWith(buttons.appealId)) {
                     const [appealLiteral, am, userid] = interaction.customId.split('_');
                     const channelName = `${am}_${userid}`;
+                    const existingChannel = (await interaction.guild.channels/*.threads*/.fetch())
+                        .find(c => c.name === channelName);
+                    if (!!existingChannel)
+                        return interaction.reply({
+                            content: `Έχει ήδη δημιουργηθεί κανάλι <#${existingChannel.id}>`,
+                            ephemeral: true
+                        })
                     const appealChannel = /*interaction.channel as TextChannel;*/ await interaction.guild.channels.create(channelName, {
                         type: 'GUILD_TEXT',
                         parent: categories.mod,
@@ -319,13 +326,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                             }
                         ]
                     });
-                    const existingThread = (await interaction.guild.channels/*.threads*/.fetch())
-                        .find(c => c.name === channelName);
-                    if (existingThread)
-                        return interaction.reply({
-                            content: `Έχει ήδη δημιουργηθεί κανάλι <#${existingThread.id}>`,
-                            ephemeral: true
-                        })
 
                     const conflictingStudent = this.students.find(s => s.am === am);
                     await appealChannel.send({
