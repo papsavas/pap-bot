@@ -1,6 +1,6 @@
 import {
     ButtonInteraction,
-    Client, CommandInteraction, Constants, ContextMenuInteraction, Guild,
+    Client, CommandInteraction, ContextMenuInteraction, Guild,
     GuildBan,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User, VoiceState
@@ -147,7 +147,7 @@ export abstract class AbstractGuild implements GenericGuild {
             case "📌": case "📍": {
                 let response: string;
                 if (!reaction.message.pinnable) {
-                    response = `*Missing \`MANAGE_MESSAGES\` permission to pin this message*`;
+                    response = `*${user.username} this message cannot be pinned by you*`;
                 }
                 else if (reaction.message.pinned) {
                     response = `Message is already pinned`
@@ -157,10 +157,7 @@ export abstract class AbstractGuild implements GenericGuild {
                         await reaction.message.pin();
                         return
                     } catch (error) {
-                        if (error.code === Constants.APIErrors.MAXIMUM_PINS)
-                            response = `Maximum Number of pins reached`;
-                        else
-                            return console.log(error);
+                        response = error.toString()
                     }
                 }
 

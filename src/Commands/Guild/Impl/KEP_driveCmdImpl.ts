@@ -64,7 +64,7 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
             case registerLiteral: {
                 const existingPermission = await findDrivePerm(interaction.user.id)
                 if (!!existingPermission)
-                    return interaction.editReply(`Έχετε ήδη ενεργοποιημένη πρόσβαση μέχρι **${moment(existingPermission.destroyedAt).tz("Europe/Athens").format("DD/MM dddd, kk:mm")}**`)
+                    return interaction.editReply(`Έχετε ήδη ενεργοποιημένη πρόσβαση μέχρι **${moment(existingPermission.destroyedAt).tz("Europe/Athens").format("DD/MM dddd, kk:mm")}**\nΟ σύνδεσμος: ${driveLink}`)
                 const duration = inputHours ?? defaultHours;
                 const student = await fetchStudent({ member_id: interaction.user.id });
                 if (!student)
