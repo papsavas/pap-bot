@@ -297,7 +297,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                                 type: "member"
                             },
                             {
-                                id: roles.head_mod,
+                                id: roles.mod,
                                 type: "role",
                                 allow: [
                                     "VIEW_CHANNEL",
@@ -329,7 +329,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
                     const conflictingStudent = this.students.find(s => s.am === am);
                     await appealChannel.send({
-                        content: `<@&${roles.head_mod}> <@${userid}>`,
+                        content: `<@${userid}>`,
                         embeds: [
                             new MessageEmbed({
                                 title: "Έφεση",
