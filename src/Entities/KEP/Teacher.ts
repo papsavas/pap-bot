@@ -1,5 +1,4 @@
 import { Collection } from "discord.js";
-import { URL } from "url";
 import { Course } from "./Course";
 
 export interface Teacher {
@@ -8,7 +7,7 @@ export interface Teacher {
     email: string,
     courses: Collection<Course['role_id'], Course>,
     phone_number: `${number}`,
-    picture_url?: URL,
-    website?: URL
+    picture_url?: string,
+    website?: string
     uuid?: string
 }

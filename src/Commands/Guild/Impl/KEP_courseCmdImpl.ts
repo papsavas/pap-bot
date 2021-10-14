@@ -9,14 +9,14 @@ import { addCourse, dropCourse, fetchCourses } from "../../../Queries/KEP/Course
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_courseCmd } from "../Interf/KEP_CourseCmd";
 
-const [createLiteral, updateLiteral, deleteLiteral] = ["create", "update", "delete"];
+const [createLiteral, deleteLiteral] = ["create", "delete"];
 const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"];
 export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_courseCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `course`;
     protected _guide = `Διαχειρίζεται τα μαθήματα στη ΒΔ`;
-    protected _usage = `${this.keyword} create | update | delete ...`;
+    protected _usage = `${this.keyword} create <code> <name> <semester> | delete <code>`;
     private constructor() { super() }
     static async init(): Promise<KEP_courseCmd> {
         const cmd = new KEP_courseCmdImpl();
@@ -160,10 +160,6 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
 
                     return interaction.editReply(`Το μάθημα **${course.name} (${course.code})** δημιουργήθηκε με επιτυχία!.
 Κανάλι: ${channel.toString()}, Ρόλος: ${role.toString()}`);
-                }
-
-                case updateLiteral: {
-                    throw "not implemented"
                 }
 
                 case deleteLiteral: {
