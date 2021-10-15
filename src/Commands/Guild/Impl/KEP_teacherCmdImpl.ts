@@ -122,7 +122,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                     website
                 };
 
-                addTeacher(teacher)
+                return addTeacher(teacher)
                     .then(() =>
                         interaction.editReply({
                             embeds: [
