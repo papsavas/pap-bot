@@ -8,13 +8,17 @@ import { categories, channels, roles } from "../../../../values/KEP/IDs.json";
 import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
 import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
+import { KEP_courseCmdImpl } from '../../../Commands/Guild/Impl/KEP_courseCmdImpl';
+import { KEP_courseTeacherCmdImpl } from '../../../Commands/Guild/Impl/KEP_courseTeacherCmdImpl';
 import { KEP_dataCmdImpl } from '../../../Commands/Guild/Impl/KEP_dataCmdImpl';
 import { KEP_driveCmdImpl } from '../../../Commands/Guild/Impl/KEP_driveCmdImpl';
+import { KEP_eventsCmdImpl } from '../../../Commands/Guild/Impl/KEP_eventsCmdImpl';
 import { KEP_infoCmdImpl } from '../../../Commands/Guild/Impl/KEP_infoCmdImpl';
 import { KEP_muteCmdImpl } from '../../../Commands/Guild/Impl/KEP_muteCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
 import { KEP_registrationCmdImpl } from '../../../Commands/Guild/Impl/KEP_registrationCmdImpl';
+import { KEP_teacherCmdImpl } from '../../../Commands/Guild/Impl/KEP_teacherCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
@@ -40,7 +44,11 @@ const guildCommands = [
     KEP_infoCmdImpl,
     KEP_driveCmdImpl,
     KEP_dataCmdImpl,
-    KEP_muteCmdImpl
+    KEP_muteCmdImpl,
+    KEP_courseCmdImpl,
+    KEP_courseTeacherCmdImpl,
+    KEP_teacherCmdImpl,
+    KEP_eventsCmdImpl
 ]
 
 //TODO: create reminders for courses
