@@ -73,6 +73,9 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has("MANAGE_GUILD"))
+            return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: true })
         const subcommand = interaction.options.getSubcommand(true);
         const code = interaction.options.getString(codeLiteral, true);
@@ -81,6 +84,8 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
 
     }
     async execute(message: Message, { arg1, arg2, arg3 }: commandLiteral): Promise<unknown> {
+        if (!message.member.permissions.has("MANAGE_GUILD"))
+            return message.reply("`MANAGE_GUILD` permissions required")
         return message.reply(await handleRequest(arg1, arg2, arg3, this.usage));
     }
 
