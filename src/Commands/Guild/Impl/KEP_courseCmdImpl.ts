@@ -76,6 +76,9 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has("MANAGE_GUILD"))
+            return interaction.reply("`MANAGE_GUILD` permissions required")
         const subCmd = interaction.options.getSubcommand(true);
         await interaction.deferReply({ ephemeral: true });
         const code = interaction.options.getString(codeLiteral, true);
@@ -179,6 +182,8 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
 
     }
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
+        if (!message.member.permissions.has("MANAGE_GUILD"))
+            return message.reply("`MANAGE_GUILD` permissions required")
         return message.reply(`Παρακαλώ χρησιμοποιείστε Slash Command \`/${this.usage}\``)
     }
     getAliases(): string[] {

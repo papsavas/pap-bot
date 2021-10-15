@@ -44,11 +44,16 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has("MANAGE_GUILD"))
+            return interaction.reply("`MANAGE_GUILD` permissions required")
         const subCommand = interaction.options.getSubcommand(true);
         return handleRequest(subCommand);
 
     }
     async execute(message: Message, { arg1 }: commandLiteral): Promise<unknown> {
+        if (!message.member.permissions.has("MANAGE_GUILD"))
+            return message.reply("`MANAGE_GUILD` permissions required")
         return handleRequest(arg1);
     }
 

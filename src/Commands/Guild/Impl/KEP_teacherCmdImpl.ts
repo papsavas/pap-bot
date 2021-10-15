@@ -99,6 +99,9 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+        const member = await interaction.guild.members.fetch(interaction.user.id);
+        if (!member.permissions.has("MANAGE_GUILD"))
+            return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
         const username = interaction.options.getString(usernameLiteral, true);
