@@ -8,17 +8,13 @@ import {
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
-import { DmMemberCmdImpl } from "../../Commands/Guild/Impl/dmMemberCmdImpl";
 import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
 import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
 import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
-import { NsfwSwitchCmdImpl } from "../../Commands/Guild/Impl/nsfwSwitchCmdImpl";
 import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
-import { PrefixCmdImpl } from "../../Commands/Guild/Impl/prefixCmdImpl";
 import { setVoiceLobbyCmdImpl } from '../../Commands/Guild/Impl/setVoiceLobbyCmdImpl';
-import { ShowLogsCmdImpl } from "../../Commands/Guild/Impl/showLogsCmdImpl";
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
 import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
@@ -52,10 +48,10 @@ export abstract class AbstractGuild implements GenericGuild {
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
 
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
-        PollCmdImpl, DmMemberCmdImpl, PrefixCmdImpl,
+        PollCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
-        myResponsesCmdImpl, NsfwSwitchCmdImpl, ShowLogsCmdImpl, bookmarkCmdImpl,
+        myResponsesCmdImpl, bookmarkCmdImpl,
         PinMessageCmdImpl, UnpinMessageCmdImpl, setVoiceLobbyCmdImpl, openVoiceCmdImpl
     ].map(cmd => cmd.init())
 

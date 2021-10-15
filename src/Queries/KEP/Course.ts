@@ -15,11 +15,18 @@ function updateCourse(c: Course) {
     return updateAll(courseTable, { "code": c.code }, c);
 }
 
-async function linkTeacherToCourse(teacherUsername: Teacher['username'], courseCode: Course['code']) {
+async function linkTeacherToCourse(courseCode: Course['code'], teacherUsername: Teacher['username']) {
     const teacher = await findOne(teacherTable, { "username": teacherUsername }) as Teacher;
-    const courses = await findAll(courseTable, true) as Course[];
+    const courses = await fetchCourses();
     const course = courses.find(c => c.code.includes(courseCode)); //TODO: solve dual course codes
-    return saveBatch(teacher_courseTable, [{ "course_id": course.uuid, "teacher_id": teacher.uuid }]);
+    if (Boolean(teacher && course))
+        return saveBatch(teacher_courseTable, [{ "course_id": course.uuid, "teacher_id": teacher.uuid }]);
+    else
+        return `${teacher ? '' : teacherUsername} ${course ? '' : courseCode} not found`;
+}
+
+function unlinkTeacherFromCourse(courseCode: Course['code'], teacherUsername: Teacher['username']) {
+    return deleteBatch(teacher_courseTable, { "course_id": courseCode, "teacher_id": teacherUsername });
 }
 
 //TODO: replace with fetching table
@@ -29,7 +36,7 @@ const fetchTeacherCourses = () =>
         teacher_id: Teacher['uuid']
     }[]>;
 
-function deleteCourse(code: Course['code']) {
+function dropCourse(code: Course['code']) {
     return findOne(courseTable, { "code": code }, ['uuid']).then(async (course) => {
         //!order matters, otherwise "teacher_class" will be violating foreign key constraint, fixed with cascade
         await deleteBatch(teacher_courseTable, { "course_id": course['uuid'] });
@@ -37,5 +44,5 @@ function deleteCourse(code: Course['code']) {
     });
 }
 
-export { fetchCourses, addCourse, updateCourse, linkTeacherToCourse, fetchTeacherCourses, deleteCourse };
+export { fetchCourses, addCourse, updateCourse, linkTeacherToCourse, unlinkTeacherFromCourse, fetchTeacherCourses, dropCourse };
 
