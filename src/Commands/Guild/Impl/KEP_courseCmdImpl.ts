@@ -166,17 +166,11 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
 
                 case deleteLiteral: {
                     await dropCourse(course.code)
-                    let logs = '';
                     const role = await interaction.guild.roles.fetch(course.role_id);
                     const channel = await interaction.guild.channels.fetch(course.channel_id);
-                    await role
-                        .delete(`${interaction.user.username} deleted course ${course.name}`)
-                        .catch(err => logs += `${err}\n`)
-                    await channel
-                        .delete()
-                        .catch(err => logs += `${err}\n`);
-                    return interaction.editReply(logs.length === 0 ? `Επιτυχής Διαγραφή ${course.code} απο ΒΔ, ρόλο και κανάλι` : logs)
-
+                    await role.delete();
+                    await channel.delete()
+                    return interaction.editReply(`Επιτυχής Διαγραφή ${course.code} απο ΒΔ, ρόλο και κανάλι`);
                 }
                 default: {
                     return interaction.editReply("scenario not handled")
