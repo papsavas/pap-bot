@@ -18,6 +18,7 @@ import { KEP_muteCmdImpl } from '../../../Commands/Guild/Impl/KEP_muteCmdImpl';
 import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
 import { KEP_registrationCmdImpl } from '../../../Commands/Guild/Impl/KEP_registrationCmdImpl';
+import { KEP_surveillanceCmdImpl } from '../../../Commands/Guild/Impl/KEP_surveillanceCmdImpl';
 import { KEP_teacherCmdImpl } from '../../../Commands/Guild/Impl/KEP_teacherCmdImpl';
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { Course } from '../../../Entities/KEP/Course';
@@ -48,7 +49,8 @@ const guildCommands = [
     KEP_courseCmdImpl,
     KEP_courseTeacherCmdImpl,
     KEP_teacherCmdImpl,
-    KEP_eventsCmdImpl
+    KEP_eventsCmdImpl,
+    KEP_surveillanceCmdImpl
 ]
 
 //TODO: create reminders for courses
