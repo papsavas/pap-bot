@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Role, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import moment from "moment-timezone";
 import 'moment/locale/el';
@@ -56,7 +56,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
     public students: Collection<Snowflake, Student>;
     public courses: Course[];
-    public courseRoles: Role[];
     private constructor(id: Snowflake) {
         super(id);
     }

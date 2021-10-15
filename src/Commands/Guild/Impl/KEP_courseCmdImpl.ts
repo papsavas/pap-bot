@@ -89,7 +89,6 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
             channel_id: null,
             role_id: null
         };
-        const year = (typeof course.semester === "number") ? course.semester : parseInt(course.semester) / 1.5;
         const kep = (guildMap.get(guildId) as KepGuild);
         try {
             switch (subCmd) {
@@ -108,13 +107,14 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     })
 
                     let categoryId: Snowflake;
-                    if (year === 1)
+                    //TODO: check if etos4 is not full
+                    if (sem < 3)
                         categoryId = categories.etos1;
-                    else if (year === 2)
+                    else if (sem < 5)
                         categoryId = categories.etos2;
-                    else if (year === 3)
+                    else if (sem < 7)
                         categoryId = categories.etos3;
-                    else if (year === 4)
+                    else if (sem < 9)
                         categoryId = categories.etos4_2;
                     else
                         categoryId = categories.didaktiki;
@@ -157,7 +157,6 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
 
                     //update kep cache
                     kep.courses = await fetchCourses();
-                    kep.courseRoles.push(courseRole);
 
                     //TODO: refresh courses selectmenu
 
