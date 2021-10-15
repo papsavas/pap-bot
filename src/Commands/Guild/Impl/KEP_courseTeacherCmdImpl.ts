@@ -76,7 +76,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         const member = await interaction.guild.members.fetch(interaction.user.id);
         if (!member.permissions.has("MANAGE_GUILD"))
             return interaction.reply("`MANAGE_GUILD` permissions required")
-        await interaction.deferReply({ ephemeral: true })
+        await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
         const code = interaction.options.getString(codeLiteral, true);
         const username = interaction.options.getString(usernameLiteral, true);

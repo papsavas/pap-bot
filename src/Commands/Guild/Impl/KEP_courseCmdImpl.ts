@@ -80,7 +80,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         if (!member.permissions.has("MANAGE_GUILD"))
             return interaction.reply("`MANAGE_GUILD` permissions required")
         const subCmd = interaction.options.getSubcommand(true);
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: false });
         const code = interaction.options.getString(codeLiteral, true);
         const course: Course = {
             code,
@@ -166,11 +166,17 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 }
 
                 case deleteLiteral: {
-                    await interaction.guild.roles.cache.get(course.role_id)
-                        .delete(`${interaction.user.username} deleted course ${course.name}`);
-                    await interaction.guild.channels.cache.get(course.channel_id)
-                        .delete(`${interaction.user.username} deleted course ${course.name}`);
-                    return dropCourse(course.code);
+                    return dropCourse(course.code)
+                        .then(async () => {
+                            let logs = '';
+                            await interaction.guild.roles.cache.get(course.role_id)
+                                .delete(`${interaction.user.username} deleted course ${course.name}`)
+                                .catch(err => logs += `${err}\n`)
+                            await interaction.guild.channels.cache.get(course.channel_id)
+                                .delete(`${interaction.user.username} deleted course ${course.name}`)
+                                .catch(err => logs += `${err}\n`);
+                            return interaction.editReply(logs.length === 0 ? `Επιτυχής Διαγραφή ${course.code} απο ΒΔ, ρόλο και κανάλι` : logs)
+                        })
                 }
                 default: {
                     return interaction.editReply("scenario not handled")
