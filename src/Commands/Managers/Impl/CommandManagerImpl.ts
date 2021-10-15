@@ -32,7 +32,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                     choices: commands.map(cmd => ({
                         name: cmd.keyword,
                         value: cmd.guide?.substring(0, 99) ?? 'context app'
-                    })),
+                    })).slice(-25), //Discord API supports up to 25 choices
                     required: true
                 }
             ]
