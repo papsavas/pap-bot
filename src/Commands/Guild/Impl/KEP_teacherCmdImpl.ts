@@ -131,6 +131,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                             title: "Επιτυχής Δημιουργία Καθηγητ@",
 
                         }).addFields(Object.entries(teacher)
+                            .filter(([key, value]) => !!value)
                             .map(([key, value]) => ({ name: key, value })))
                     ]
                 })
@@ -138,7 +139,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
             case deleteLiteral: {
                 return deleteTeacher(username)
                     .then(() => interaction.editReply(`επιτυχής διαγραφή καθηγητ@ με username:\`${username}\`. Διαγράφηκαν αυτόματα όλες οι συσχετίσεις με μαθήματα`))
-                    .catch((err) => interaction.editReply(err));
+                    .catch((err) => interaction.editReply(err.toString()));
             }
         }
     }

@@ -36,7 +36,7 @@ export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP
         const role = await interaction.guild.roles.fetch(roles.overseer);
         return (member.roles.cache.has(roles.overseer) ?
             member.roles.remove(role) : member.roles.add(role))
-            .then(() => interaction.editReply("👌"))
+            .then(() => interaction.editReply("Χρησιμοποιείτε ξανά την εντολή για εμφανίσετε/αποκρύψετε τα κανάλια"))
             .catch(err => interaction.editReply(err.toString()))
 
     }

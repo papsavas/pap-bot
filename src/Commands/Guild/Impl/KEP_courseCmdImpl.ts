@@ -102,7 +102,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     else
                         course.semester = sem as Course['semester'];
 
-                    const role = await interaction.guild.roles.create({
+                    const courseRole = await interaction.guild.roles.create({
                         name: course.name,
                         reason: "created role for new course"
                     })
@@ -119,7 +119,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     else
                         categoryId = categories.didaktiki;
 
-                    const channel = await interaction.guild.channels.create(course.name, {
+                    const courseChannel = await interaction.guild.channels.create(course.name, {
                         parent: categoryId,
                         topic: `Το κανάλι του μαθήματος **${course.name}**. Κοιτάτε πάντα τα  📌***pinned*** για σημαντικό υλικό`,
                         reason: "created channel for new course",
@@ -130,7 +130,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                                 type: "role"
                             },
                             {
-                                id: course.role_id,
+                                id: courseRole.id,
                                 allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
                                 type: "role"
                             },
@@ -151,18 +151,18 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                             }
                         ]
                     })
-                    course.channel_id = channel.id;
-                    course.role_id = role.id;
+                    course.channel_id = courseChannel.id;
+                    course.role_id = courseRole.id;
                     await addCourse(course);
 
                     //update kep cache
                     kep.courses = await fetchCourses();
-                    kep.courseRoles.push(role);
+                    kep.courseRoles.push(courseRole);
 
                     //TODO: refresh courses selectmenu
 
                     return interaction.editReply(`Το μάθημα **${course.name} (${course.code})** δημιουργήθηκε με επιτυχία!.
-Κανάλι: ${channel.toString()}, Ρόλος: ${role.toString()}`);
+Κανάλι: ${courseChannel.toString()}, Ρόλος: ${courseRole.toString()}`);
                 }
 
                 case deleteLiteral: {
