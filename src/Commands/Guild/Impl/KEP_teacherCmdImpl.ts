@@ -3,7 +3,7 @@ import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Teacher } from "../../../Entities/KEP/Teacher";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { deleteTeacher } from "../../../Queries/KEP/Teacher";
+import { addTeacher, deleteTeacher } from "../../../Queries/KEP/Teacher";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_teacherCmd } from "../Interf/KEP_teacherCmd";
 
@@ -121,20 +121,25 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                     picture_url,
                     website
                 };
-                return interaction.editReply({
-                    embeds: [
-                        new MessageEmbed({
-                            author: {
-                                name: interaction.user.username,
-                                icon_url: interaction.user.avatarURL()
-                            },
-                            title: "Επιτυχής Δημιουργία Καθηγητ@",
 
-                        }).addFields(Object.entries(teacher)
-                            .filter(([key, value]) => !!value)
-                            .map(([key, value]) => ({ name: key, value })))
-                    ]
-                })
+                addTeacher(teacher)
+                    .then(() =>
+                        interaction.editReply({
+                            embeds: [
+                                new MessageEmbed({
+                                    author: {
+                                        name: interaction.user.username,
+                                        icon_url: interaction.user.avatarURL()
+                                    },
+                                    title: "Επιτυχής Δημιουργία Καθηγητ@",
+
+                                }).addFields(Object.entries(teacher)
+                                    .filter(([key, value]) => !!value)
+                                    .map(([key, value]) => ({ name: key, value })))
+                            ]
+                        })
+                    )
+                    .catch(err => interaction.editReply(err.toString()))
             }
             case deleteLiteral: {
                 return deleteTeacher(username)
