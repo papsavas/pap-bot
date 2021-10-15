@@ -15,7 +15,6 @@ import { KEP_driveCmdImpl } from '../../../Commands/Guild/Impl/KEP_driveCmdImpl'
 import { KEP_eventsCmdImpl } from '../../../Commands/Guild/Impl/KEP_eventsCmdImpl';
 import { KEP_infoCmdImpl } from '../../../Commands/Guild/Impl/KEP_infoCmdImpl';
 import { KEP_muteCmdImpl } from '../../../Commands/Guild/Impl/KEP_muteCmdImpl';
-import { KEP_myExamsCmdImpl } from '../../../Commands/Guild/Impl/KEP_myExamsCmdImpl';
 import { KEP_myScheduleCmdImpl } from '../../../Commands/Guild/Impl/KEP_myScheduleCmdImpl';
 import { KEP_registrationCmdImpl } from '../../../Commands/Guild/Impl/KEP_registrationCmdImpl';
 import { KEP_surveillanceCmdImpl } from '../../../Commands/Guild/Impl/KEP_surveillanceCmdImpl';
@@ -37,10 +36,9 @@ moment.tz("Europe/Athens");
 
 
 const guildCommands = [
-    //KEP_announceCmdImpl,
     KEP_registrationCmdImpl,
     KEP_adminCmdImpl,
-    KEP_myExamsCmdImpl,
+    //KEP_myExamsCmdImpl,
     KEP_myScheduleCmdImpl,
     KEP_infoCmdImpl,
     KEP_driveCmdImpl,
