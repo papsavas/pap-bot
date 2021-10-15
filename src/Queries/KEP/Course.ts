@@ -25,8 +25,10 @@ async function linkTeacherToCourse(courseCode: Course['code'], teacherUsername: 
         return `${teacher ? '' : teacherUsername} ${course ? '' : courseCode} not found`;
 }
 
-function unlinkTeacherFromCourse(courseCode: Course['code'], teacherUsername: Teacher['username']) {
-    return deleteBatch(teacher_courseTable, { "course_id": courseCode, "teacher_id": teacherUsername });
+async function unlinkTeacherFromCourse(courseCode: Course['code'], teacherUsername: Teacher['username']) {
+    const teacher = await findOne(teacherTable, { "username": teacherUsername }) as Teacher;
+    const course = await findOne(courseTable, { "code": courseCode }) as Course;
+    return deleteBatch(teacher_courseTable, { "course_id": course.uuid, "teacher_id": teacher.uuid });
 }
 
 //TODO: replace with fetching table
