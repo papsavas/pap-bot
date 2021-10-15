@@ -168,11 +168,11 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     return dropCourse(course.code)
                         .then(async () => {
                             let logs = '';
-                            await interaction.guild.roles.cache.get(course.role_id)
+                            await (await interaction.guild.roles.fetch(course.role_id))
                                 .delete(`${interaction.user.username} deleted course ${course.name}`)
                                 .catch(err => logs += `${err}\n`)
-                            await interaction.guild.channels.cache.get(course.channel_id)
-                                .delete(`${interaction.user.username} deleted course ${course.name}`)
+                            await (await interaction.guild.channels.fetch(course.channel_id))
+                                .delete()
                                 .catch(err => logs += `${err}\n`);
                             return interaction.editReply(logs.length === 0 ? `Επιτυχής Διαγραφή ${course.code} απο ΒΔ, ρόλο και κανάλι` : logs)
                         })

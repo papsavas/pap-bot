@@ -15,11 +15,13 @@ async function addTeacher(teacher: Teacher) {
     const { courses: teacherCourses, ...dbTeacher } = teacher;
     const [teacherUUID] = await saveBatch(teacherTable, [dbTeacher], 'uuid');
     const relation: { teacher_id: string, course_id: string }[] = [];
-    for (const c of teacherCourses.values()) {
-        const course = await findOne(courseTable, { "code": c.code }, ['uuid']);
-        relation.push({ teacher_id: teacherUUID, course_id: course['uuid'] });
+    if (!!teacherCourses) {
+        for (const c of teacherCourses.values()) {
+            const course = await findOne(courseTable, { "code": c.code }, ['uuid']);
+            relation.push({ teacher_id: teacherUUID, course_id: course['uuid'] });
+        }
+        await saveBatch(teacher_courseTable, relation);
     }
-    return saveBatch(teacher_courseTable, relation);
 }
 
 async function deleteTeacher(username: Teacher['username']) {
@@ -30,3 +32,4 @@ async function deleteTeacher(username: Teacher['username']) {
 }
 
 export { fetchTeachers, addTeacher, deleteTeacher };
+
