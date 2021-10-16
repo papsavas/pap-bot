@@ -126,28 +126,28 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                         permissionOverwrites: [
                             {
                                 id: roles.mod,
-                                allow: ['MANAGE_MESSAGES'],
-                                type: "role"
-                            },
-                            {
-                                id: courseRole.id,
-                                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
-                                type: "role"
+                                allow: ['MANAGE_MESSAGES', 'MANAGE_CHANNELS'],
+                                type: 'role'
                             },
                             {
                                 id: roles.pro,
                                 allow: ['MENTION_EVERYONE'],
-                                type: "role"
+                                type: 'role'
                             },
                             {
                                 id: roles.overseer,
                                 allow: ['VIEW_CHANNEL'],
-                                type: "role"
+                                type: 'role'
+                            },
+                            {
+                                id: courseRole.id,
+                                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+                                type: 'role'
                             },
                             {
                                 id: guildId,
-                                deny: ['VIEW_CHANNEL'],
-                                type: "role"
+                                deny: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+                                type: 'role'
                             }
                         ]
                     })
@@ -169,8 +169,8 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     const role = await interaction.guild.roles.fetch(course.role_id);
                     const channel = await interaction.guild.channels.fetch(course.channel_id);
                     await role.delete();
-                    await channel.delete()
-                    return interaction.editReply(`Επιτυχής Διαγραφή ${course.code} απο ΒΔ, ρόλο και κανάλι`);
+                    await channel.delete();
+                    return interaction.editReply(`Επιτυχής Διαγραφή **${course.name}(${course.code})** απο ΒΔ, ρόλο και κανάλι`);
                 }
                 default: {
                     return interaction.editReply("scenario not handled")
