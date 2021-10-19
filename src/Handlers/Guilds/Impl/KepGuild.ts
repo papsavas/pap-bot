@@ -155,7 +155,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                             icon_url: message.author.avatarURL({ format: 'png' })
                         },
                         color: `#ffffff`,
-                        description: `**🗑️ Διεγράφη Μήνυμα από ${message.member.toString()} στο ${message.channel.toString()}**
+                        description: `**🗑️ Διεγράφη Μήνυμα από ${message.member?.toString() ?? message.user.username} στο ${message.channel.toString()}**
     *Μήνυμα:* "**${message.content}**\nMedia: ${message.attachments.first()?.proxyURL ?? '-'}"`,
                         footer: {
                             text: `sent at: ${moment(message.createdTimestamp).format('LLLL')}`
