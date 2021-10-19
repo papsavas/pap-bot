@@ -47,12 +47,16 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         const member = await interaction.guild.members.fetch(interaction.user.id);
         if (!member.permissions.has("MANAGE_GUILD"))
             return interaction.reply("`MANAGE_GUILD` permissions required")
+        await interaction.deferReply({ ephemeral: true });
         const subCommand = interaction.options.getSubcommand(true);
         let res: string;
-        return handleRequest(subCommand)
-            .then(() => res = `execution succeeded`)
-            .catch(err => res = err.toString())
-            .then(() => interaction.reply(res));
+        try {
+            await handleRequest(subCommand);
+            res = 'events refreshed';
+        } catch (e) {
+            res = e.toString();
+        }
+        return interaction.editReply(res);
 
     }
     async execute(message: Message, { arg1 }: commandLiteral): Promise<unknown> {
