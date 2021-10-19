@@ -105,6 +105,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
             new MessageEmbed({ description: "Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων" })
         ]
 
+    //filter events by student's selected courses
     const studentEvents = events
         .filter(ev => courses
             //match by description (requires course code to be in event description)
@@ -113,7 +114,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
 
     const uniqueStudentEvents = new Map<string, calendar_v3.Schema$Event>();
     studentEvents.forEach(ev => {
-        const key = `${ev.summary}${moment(ev.start.dateTime).hour()}`.trim();
+        const key = `${ev.summary}${moment(ev.start.dateTime).hour()}`.trimStart().trimEnd();
         if (!uniqueStudentEvents.has(key))
             uniqueStudentEvents.set(key, ev);
     });
@@ -126,7 +127,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
 
     const embeds = new Map<number, MessageEmbed>();
     [1, 2, 3, 4, 5]
-        .map(d => embeds.set(d, new MessageEmbed({
+        .forEach(d => embeds.set(d, new MessageEmbed({
             author: {
                 name: moment().day(d).format('dddd'),
                 icon_url: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/512/calendar-icon.png"
