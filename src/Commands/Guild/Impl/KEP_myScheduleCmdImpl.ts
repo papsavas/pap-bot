@@ -114,7 +114,7 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
 
     const uniqueStudentEvents = new Map<string, calendar_v3.Schema$Event>();
     studentEvents.forEach(ev => {
-        const key = `${ev.summary}${moment(ev.start.dateTime).utc().hour()}`.trim();
+        const key = `${ev.summary}${moment.utc(ev.start.dateTime).hour()}`.trim();
         if (!uniqueStudentEvents.has(key))
             uniqueStudentEvents.set(key, ev);
     });
