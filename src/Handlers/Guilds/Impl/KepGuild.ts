@@ -1,5 +1,6 @@
 import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
+import { sanitizeDiacritics, toGreek } from "greek-utils";
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import urlRegex from 'url-regex';
@@ -24,14 +25,15 @@ import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { fetchCourses } from '../../../Queries/KEP/Course';
 import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
+import { fetchKeywords } from '../../../Queries/KEP/Keywords';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
 import { banStudent, dropAllPendingStudents, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
+import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
-moment.locale('el');
 moment.tz("Europe/Athens");
 
 
@@ -56,6 +58,8 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
     public students: Collection<Snowflake, Student>;
     public courses: Course[];
+    public keywords: string[];
+    public logsChannel: TextChannel;
     private constructor(id: Snowflake) {
         super(id);
     }
@@ -76,9 +80,11 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     async onReady(client: Client): Promise<unknown> {
         await super.onReady(client);
         this.events = await fetchEvents();
+        this.keywords = (await fetchKeywords()).map(k => k['keyword']);
         this.students = await fetchStudents();
-        const members = await this.guild.members.fetch()
+        const members = await this.guild.members.fetch();
         this.courses = await fetchCourses();
+        this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
         //load students
         for (const student of this.students.values()) {
             const member = members.get(student.member_id);
@@ -98,6 +104,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Message): Promise<unknown> {
+        scanContent(message, this.keywords, this.logsChannel);
         switch (message.channel.id) { //channels
             case channels.registration: {
                 if (message.deletable) await message.delete();
@@ -506,5 +513,39 @@ async function handleMutedMembers(guild: Guild) {
                 })
             }
         })
+    }
+}
+
+function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
+    const strippedContent = sanitizeDiacritics(toGreek(content)).trim();
+    const found = keywords.find(k =>
+        strippedContent.includes(k) ||
+        strippedContent
+            .split(' ')
+            .some(s => textSimilarity(s, k) > 0.9) ||
+        [...strippedContent]
+            .some(s => [...k]
+                .join(" ")
+                .includes(s)
+            )
+    );
+    if (found) {
+        logChannel.send({
+            embeds: [new MessageEmbed({
+                author: {
+                    name: member.displayName ?? author.username,
+                    icon_url: author.avatarURL()
+                },
+                title: `Keyword Detected: "${found}"`,
+                description: `\`***Μήνυμα:***\` ${content.replace(found, `**${found}**`)}`,
+                color: "LIGHT_GREY",
+                image: { proxyURL: attachments?.first()?.proxyURL },
+                fields: [
+                    { name: "Channel", value: channel.toString(), inline: true },
+                    { name: "URL", value: `[Jump](${url})`, inline: true }
+                ],
+                timestamp: new Date(),
+            })]
+        }).catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }
