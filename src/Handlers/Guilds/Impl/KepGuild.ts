@@ -523,11 +523,6 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
         strippedContent
             .split(' ')
             .some(s => textSimilarity(s, k) > 0.9) ||
-        [...strippedContent]
-            .some(s => [...k]
-                .join(" ")
-                .includes(s)
-            )
     );
     if (found) {
         logChannel.send({
@@ -537,7 +532,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                     icon_url: author.avatarURL()
                 },
                 title: `Keyword Detected: "${found}"`,
-                description: `\`***Μήνυμα:***\` ${content.replace(found, `**${found}**`)}`,
+                description: `***\`Μήνυμα:\`*** ${content.replace(found, `**${found}**`)}`,
                 color: "LIGHT_GREY",
                 image: { proxyURL: attachments?.first()?.proxyURL },
                 fields: [
