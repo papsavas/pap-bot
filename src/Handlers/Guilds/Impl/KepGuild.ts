@@ -517,10 +517,11 @@ async function handleMutedMembers(guild: Guild) {
 }
 
 function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
-    const strippedContent = sanitizeDiacritics(toGreek(content)).trim();
+    const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
     const found = keywords.find(k =>
-        strippedContent.includes(k) ||
-        strippedContent
+        normalize(content)
+            .includes(k) ||
+        normalize(content)
             .split(' ')
             .some(s => textSimilarity(s, k) > 0.9)
     );
