@@ -208,6 +208,18 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
                 }
 
+                case channels.logs: {
+                    switch (reaction.emoji.name) {
+                        case '🗑': {
+                            return reaction.message.deletable ? reaction.message.delete() : null
+                        }
+
+                        case '👀': {
+                            return reaction.message.reactions.removeAll().catch()
+                        }
+                    }
+                }
+
                 default:
                     return super.onMessageReactionAdd(reaction, user);
             }
@@ -517,13 +529,12 @@ async function handleMutedMembers(guild: Guild) {
 }
 
 function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
-    const strippedContent = sanitizeDiacritics(toGreek(content)).trim();
-    const found = keywords.find(k =>
-        strippedContent.includes(k) ||
-        strippedContent
-            .split(' ')
-            .some(s => textSimilarity(s, k) > 0.9)
+    const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
+    const index = normalize(content).split(' ').findIndex(c =>
+        keywords.includes(c) ||
+        keywords.some(k => textSimilarity(c, k) > 0.9)
     );
+    const found = index === -1 ? undefined : content.split(' ')[index];
     if (found) {
         logChannel.send({
             embeds: [new MessageEmbed({
@@ -532,7 +543,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                     icon_url: author.avatarURL()
                 },
                 title: `Keyword Detected: "${found}"`,
-                description: `***\`Μήνυμα:\`*** ${content.replace(found, `**${found}**`)}`,
+                description: `${content.replace(found, `**${found}**`)}`,
                 color: "LIGHT_GREY",
                 image: { proxyURL: attachments?.first()?.proxyURL },
                 fields: [
@@ -541,6 +552,11 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                 ],
                 timestamp: new Date(),
             })]
-        }).catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
+        })
+            .then(msg => {
+                msg.react('🗑').catch();
+                msg.react('👀').catch();
+            })
+            .catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }
