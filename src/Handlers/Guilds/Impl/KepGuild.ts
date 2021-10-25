@@ -532,6 +532,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
     const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
     const index = normalize(content).split(' ').findIndex(c =>
         keywords.includes(c) ||
+        keywords.some(k => c.includes(k)) ||
         keywords.some(k => textSimilarity(c, k) > 0.9)
     );
     const found = index === -1 ? undefined : content.split(' ')[index];
