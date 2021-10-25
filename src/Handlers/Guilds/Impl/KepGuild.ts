@@ -522,7 +522,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
         strippedContent.includes(k) ||
         strippedContent
             .split(' ')
-            .some(s => textSimilarity(s, k) > 0.9) ||
+            .some(s => textSimilarity(s, k) > 0.9)
     );
     if (found) {
         logChannel.send({
