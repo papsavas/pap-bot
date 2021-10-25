@@ -208,6 +208,18 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
                 }
 
+                case channels.logs: {
+                    switch (reaction.emoji.name) {
+                        case '🗑': {
+                            return reaction.message.deletable ? reaction.message.delete() : null
+                        }
+
+                        case '👀': {
+                            return reaction.message.reactions.removeAll().catch()
+                        }
+                    }
+                }
+
                 default:
                     return super.onMessageReactionAdd(reaction, user);
             }
@@ -518,13 +530,11 @@ async function handleMutedMembers(guild: Guild) {
 
 function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
     const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
-    const found = keywords.find(k =>
-        normalize(content)
-            .includes(k) ||
-        normalize(content)
-            .split(' ')
-            .some(s => textSimilarity(s, k) > 0.9)
+    const index = normalize(content).split(' ').findIndex(c =>
+        keywords.includes(c) ||
+        keywords.some(k => textSimilarity(c, k) > 0.9)
     );
+    const found = index === -1 ? undefined : content.split(' ')[index];
     if (found) {
         logChannel.send({
             embeds: [new MessageEmbed({
@@ -532,8 +542,8 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                     name: member.displayName ?? author.username,
                     icon_url: author.avatarURL()
                 },
-                title: `Keyword Detected: "${found}"`,
-                description: `***\`Μήνυμα:\`*** ${content.replace(found, `**${found}**`)}`,
+                title: `Keyword Detected: "${index}"`,
+                description: `${content.replace(found, `**${found}**`)}`,
                 color: "LIGHT_GREY",
                 image: { proxyURL: attachments?.first()?.proxyURL },
                 fields: [
@@ -542,6 +552,11 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                 ],
                 timestamp: new Date(),
             })]
-        }).catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
+        })
+            .then(msg => {
+                msg.react('🗑').catch();
+                msg.react('👀').catch();
+            })
+            .catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }
