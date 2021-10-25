@@ -542,7 +542,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                     name: member.displayName ?? author.username,
                     icon_url: author.avatarURL()
                 },
-                title: `Keyword Detected: "${index}"`,
+                title: `Keyword Detected: "${found}"`,
                 description: `${content.replace(found, `**${found}**`)}`,
                 color: "LIGHT_GREY",
                 image: { proxyURL: attachments?.first()?.proxyURL },
