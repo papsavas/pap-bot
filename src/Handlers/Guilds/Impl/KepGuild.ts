@@ -58,8 +58,9 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
     public students: Collection<Snowflake, Student>;
     public courses: Course[];
-    public keywords: string[];
-    public logsChannel: TextChannel;
+    private keywords: string[];
+    private logsChannel: TextChannel;
+    private contentScanChannel: TextChannel;
     private constructor(id: Snowflake) {
         super(id);
     }
@@ -85,6 +86,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         const members = await this.guild.members.fetch();
         this.courses = await fetchCourses();
         this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
+        this.contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
         //load students
         for (const student of this.students.values()) {
             const member = members.get(student.member_id);
@@ -104,7 +106,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Message): Promise<unknown> {
-        scanContent(message, this.keywords, this.logsChannel);
+        scanContent(message, this.keywords, this.contentScanChannel);
         switch (message.channel.id) { //channels
             case channels.registration: {
                 if (message.deletable) await message.delete();
@@ -208,7 +210,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
                 }
 
-                case channels.logs: {
+                case channels.content_scan: {
                     switch (reaction.emoji.name) {
                         case '🗑': {
                             return reaction.message.deletable ? reaction.message.delete() : null
@@ -548,8 +550,8 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                 color: "LIGHT_GREY",
                 image: { proxyURL: attachments?.first()?.proxyURL },
                 fields: [
-                    { name: "Channel", value: channel.toString(), inline: true },
-                    { name: "URL", value: `[Jump](${url})`, inline: true }
+                    { name: "Channel", value: channel.toString(), inline: false },
+                    { name: "URL", value: `[Jump](${url})`, inline: false }
                 ],
                 timestamp: new Date(),
             })]
