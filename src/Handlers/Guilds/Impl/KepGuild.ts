@@ -59,7 +59,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     public students: Collection<Snowflake, Student>;
     public courses: Course[];
     private keywords: string[];
-    private logsChannel: TextChannel;
+    public logsChannel: TextChannel;
     private contentScanChannel: TextChannel;
     private constructor(id: Snowflake) {
         super(id);

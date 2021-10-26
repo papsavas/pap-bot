@@ -1,6 +1,6 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
-import { buttons, messages, reasons } from "../../../../values/KEP/literals.json";
+import { buttons, messages } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Course } from "../../../Entities/KEP/Course";
 import { amType, Student } from "../../../Entities/KEP/Student";
@@ -71,13 +71,27 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const registeredMember = await fetchStudent({ member_id: interaction.user.id });
         if (registeredMember?.blocked) {
+            const member = await interaction.guild.members.fetch(interaction.user.id);
             await interaction.reply({
                 content: `Έχετε αποκλειστεί`,
                 ephemeral: true
             });
-            const member = interaction.guild.members.cache.get(interaction.user.id);
-            if (member.bannable) await member.ban({ reason: reasons.blockedStudentAccount })
-            return
+            await (guildMap.get(interaction.guildId) as KepGuild).logsChannel.send({
+                embeds: [{
+                    author: {
+                        name: interaction.user.username,
+                        iconURL: interaction.user.avatarURL()
+                    },
+                    title: "Απόπειρα εγγραφής αποκλεισμένου χρήστη",
+                    color: "DARK_RED",
+                    timestamp: new Date(),
+                    fields: [
+                        { name: "Αριθμός μητρωου", value: registeredMember.am },
+                        { name: "ID Προηγούμενου Λογαριασμού", value: registeredMember.member_id },
+                        { name: "Τωρινός Λογαριασμός", value: member?.toString() },
+                    ]
+                }]
+            })
         }
         if (registeredMember)
             return interaction.reply({
