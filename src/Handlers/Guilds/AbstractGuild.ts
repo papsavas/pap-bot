@@ -156,7 +156,6 @@ export abstract class AbstractGuild implements GenericGuild {
                         response = error.toString()
                     }
                 }
-
                 const msg = await reaction.message.channel.send(response);
                 await msg.react("🗑️");
                 const collected = await msg.awaitReactions({
