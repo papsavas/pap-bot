@@ -5,10 +5,10 @@ import { RequireAtLeastOne } from "../../tools/types";
 
 
 const fetchTeachers = (
-    clase?: RequireAtLeastOne<Teacher, "username" | "uuid" | "email">,
+    clause?: RequireAtLeastOne<Teacher>,
     returnings?: (keyof Teacher)[]
 ) =>
-    findAll(teacherTable, clase ?? !clase, returnings) as Promise<Teacher[]>;
+    findAll(teacherTable, clause ?? !clause, returnings) as Promise<Teacher[]>;
 
 
 async function addTeacher(teacher: Teacher) {

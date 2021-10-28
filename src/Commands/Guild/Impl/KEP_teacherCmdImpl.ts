@@ -1,13 +1,13 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, MessageEmbed, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Teacher } from "../../../Entities/KEP/Teacher";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { addTeacher, deleteTeacher } from "../../../Queries/KEP/Teacher";
+import { addTeacher, deleteTeacher, fetchTeachers } from "../../../Queries/KEP/Teacher";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_teacherCmd } from "../Interf/KEP_teacherCmd";
 
-const [createLiteral, deleteLiteral] = ["create", "delete"];
+const [createLiteral, deleteLiteral, listLiteral] = ["create", "delete", "list"];
 const [
     usernameLiteral,
     fullNameLiteral,
@@ -26,7 +26,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `teacher`;
     protected _guide = `Διαχειρίζεται τους καθηγητές στη ΒΔ`;
-    protected _usage = `${this.keyword} create <username> <full_name> <phone_number>, [picture_url], [website] | delete <username>`;
+    protected _usage = `${this.keyword} create <username> <full_name> <phone_number>, [picture_url], [website] | delete <username> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_teacherCmd> {
         const cmd = new KEP_teacherCmdImpl();
@@ -93,6 +93,12 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                         },
 
                     ]
+                },
+                ,
+                {
+                    name: listLiteral,
+                    description: `Εμφανίζει το καταχωρημένο Ακαδημαϊκό Προσωπικό`,
+                    type: 'SUB_COMMAND',
                 }
             ]
 
@@ -145,6 +151,15 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                 return deleteTeacher(username)
                     .then(() => interaction.editReply(`επιτυχής διαγραφή καθηγητ@ με username:\`${username}\`. Διαγράφηκαν αυτόματα όλες οι συσχετίσεις με μαθήματα`))
                     .catch((err) => interaction.editReply(err.toString()));
+            }
+
+            case listLiteral: {
+                const text = JSON.stringify(await fetchTeachers());
+                const buffer = Buffer.from(text);
+                const file = new MessageAttachment(buffer, new Date().toDateString() + "_Teachers.json");
+                return interaction.editReply({
+                    files: [file]
+                });
             }
         }
     }
