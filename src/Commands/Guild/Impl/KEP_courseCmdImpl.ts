@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { categories, guildId, roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -9,14 +9,14 @@ import { addCourse, dropCourse, fetchCourses } from "../../../Queries/KEP/Course
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_courseCmd } from "../Interf/KEP_courseCmd";
 
-const [createLiteral, deleteLiteral] = ["create", "delete"];
+const [createLiteral, deleteLiteral, listLiteral] = ["create", "delete", "list"];
 const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"];
 export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_courseCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `course`;
     protected _guide = `Διαχειρίζεται τα μαθήματα στη ΒΔ`;
-    protected _usage = `${this.keyword} create <code> <name> <semester> | delete <code>`;
+    protected _usage = `${this.keyword} create <code> <name> <semester> | delete <code> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_courseCmd> {
         const cmd = new KEP_courseCmdImpl();
@@ -71,6 +71,11 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                         },
 
                     ]
+                },
+                {
+                    name: listLiteral,
+                    description: `Εμφανίζει όλα τα καταχωρημένα μαθήματα`,
+                    type: 'SUB_COMMAND',
                 }
             ]
         }
@@ -172,6 +177,16 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     await channel.delete();
                     return interaction.editReply(`Επιτυχής Διαγραφή **${course.name}(${course.code})** απο ΒΔ, ρόλο και κανάλι`);
                 }
+
+                case listLiteral: {
+                    const text = JSON.stringify(await fetchCourses());
+                    const buffer = Buffer.from(text);
+                    const file = new MessageAttachment(buffer, new Date().toDateString() + "_Courses.json");
+                    return interaction.editReply({
+                        files: [file]
+                    });
+                }
+
                 default: {
                     return interaction.editReply("scenario not handled")
                 }

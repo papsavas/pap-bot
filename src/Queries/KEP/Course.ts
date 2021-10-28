@@ -2,9 +2,15 @@ import { courseTable, teacherTable, teacher_courseTable } from "../../../values/
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { Teacher } from "../../Entities/KEP/Teacher";
+import { RequireAtLeastOne } from "../../tools/types";
 
-function fetchCourses(returnings?: (keyof Course)[]) {
-    return findAll(courseTable, true, returnings) as Promise<Course[]>;
+
+
+function fetchCourses(
+    clause?: RequireAtLeastOne<Course>,
+    returnings?: (keyof Course)[]
+) {
+    return findAll(courseTable, clause ?? !clause, returnings) as Promise<Course[]>;
 }
 
 function addCourse(c: Course) {

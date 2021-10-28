@@ -6,7 +6,7 @@ import { PendingStudent, Student } from "../../Entities/KEP/Student";
 import { RequireAtLeastOne } from "../../tools/types";
 
 async function fetchStudent(
-    clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">,
+    clause: RequireAtLeastOne<Student>,
     returnings?: (keyof Student)[]): Promise<Student> {
     return findOne(studentTable, clause, returnings) as Promise<Student>;
 }
@@ -36,7 +36,7 @@ function addStudents(students: Student[], returnings?: keyof Student): Promise<u
     return saveBatch(studentTable, students, returnings);
 }
 
-async function dropStudents(clause: RequireAtLeastOne<Student, "am" | "email" | "member_id" | "uuid">): Promise<number> {
+async function dropStudents(clause: RequireAtLeastOne<Student>): Promise<number> {
     return deleteBatch(studentTable, clause);
 }
 
