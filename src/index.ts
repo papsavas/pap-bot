@@ -177,33 +177,11 @@ PAP.on('interactionCreate', async interaction => {
         }
     }
 
-    else if (interaction.isContextMenu()) {
-        if (globalCommandsIDs.includes(interaction.commandId)) {
-            globalCommandHandler.onSlashCommand(interaction)
-                .catch(console.error);
-        }
-        else if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
-                ?.onSlashCommand(interaction)
-                .catch(console.error);
-        }
-        else if (interaction.channel.type === "DM") {
-            dmHandler.onSlashCommand(interaction)
-                .catch(console.error);
-            console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
-    from ${interaction.user.tag}`)
-        }
-        else {
-            console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
-        }
-    }
-
     else if (interaction.isButton()) {
         if (interaction.guildId) {
             guildMap.get(interaction.guildId)
                 ?.onButton(interaction)
                 .catch(console.error);
-
         }
         else {
             dmHandler.onButton(interaction)
