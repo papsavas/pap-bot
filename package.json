@@ -3,6 +3,10 @@
   "version": "2.0.0",
   "description": "PAPbot",
   "main": "src/index.ts",
+  "engines": {
+    "node": "16.x",
+    "npm": "7.x"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/src/index.js",
