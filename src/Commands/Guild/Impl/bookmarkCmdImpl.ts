@@ -31,6 +31,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
             type: 'MESSAGE'
         }
     }
+
     async interactiveExecute(interaction: ContextMenuInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true })
         const message = await interaction.channel.messages.fetch(interaction.targetId)
@@ -91,7 +92,5 @@ function messageUser(user: User, message: Message) {
                 timestamp: new Date(),
             }), ...message.embeds.map(emb => new MessageEmbed(emb))
         ]
-
-
     })
 }

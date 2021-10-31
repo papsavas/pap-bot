@@ -4,7 +4,9 @@ const firebase = require("firebase");
 require("firebase/firestore");
 const admin = require('firebase-admin');
 const FieldValue = admin.firestore.FieldValue;
-require('dotenv').config({ path: require('find-config')('.env') })
+
+if (process.env.NODE_ENV !== 'production')
+    require('dotenv').config({ path: require('find-config')('.env') })
 
 const serviceAccount: ServiceAccount =
 {

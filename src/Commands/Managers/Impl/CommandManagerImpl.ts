@@ -1,5 +1,5 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager,
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandDataResolvable, ApplicationCommandManager,
     Collection, CommandInteraction, Constants, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
@@ -46,7 +46,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             return interaction.reply({
                 embeds: [
                     new MessageEmbed({
-                        description: interaction.options.getString('command')
+                        description: (interaction as CommandInteraction).options.getString('command')
                     })
                 ]
                 , ephemeral: true
@@ -114,7 +114,7 @@ export abstract class CommandManagerImpl implements CommandManager {
 
     async registerCommand(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
-        command: ApplicationCommand | ApplicationCommandData
+        command: ApplicationCommandDataResolvable
     ): Promise<ApplicationCommand> {
         const cmd = await commandManager.create(command);
         await this.saveCommandData(new Collection<Snowflake, ApplicationCommand>().set(cmd.id, cmd));
@@ -144,7 +144,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
     //TODO: fix this mess
-    protected invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
+    protected invalidSlashCommand(err: Error, interaction: CommandInteraction | ContextMenuInteraction, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new MessageEmbed({
             author: {
                 name: interaction.guild?.name ?? interaction.user.username,
