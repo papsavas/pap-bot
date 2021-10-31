@@ -47,7 +47,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
 
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const member = await interaction.guild.members.fetch(interaction.member.user.id);
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return interaction.reply({
@@ -65,7 +65,7 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         */
         let command = await interaction.guild.commands.fetch(command_id);
         //enable for @everyone
-        command = await command.edit({ ...command, defaultPermission: true });
+        command = await command.edit({ defaultPermission: false, description: command.description, name: command.name })
         await interaction.guild.commands.permissions.set({
             command: command_id,
             permissions: []
@@ -80,33 +80,8 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         return interaction.editReply(`Command ${commandLiteral} unlocked`);
     }
 
-    async execute(message: Message, receivedCommand: commandLiteral): Promise<any> {
-        if (!message.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return message.reply(`\`MANAGE_GUILD permissions required\``);
-        const guild_id = message.guild.id;
-        const commands = guildMap.get(guild_id).commandManager.commands;
-        const commandLiteral = receivedCommand.arg1 as Snowflake;
-        const command_id: Snowflake = (await fetchCommandID(commandLiteral, guild_id)).firstKey();
-        if (!command_id)
-            return message.reply(`command ${commandLiteral} not found`);
-        /*
-         * override perms for manual command in DB
-         */
-        await dropCommandPerms(command_id, guild_id);
-
-        /**
-         * override perms for interaction
-         */
-        let command = await message.guild.commands.fetch(command_id);
-        //enable for @everyone
-        command = await command.edit(Object.assign(command, { defaultPermission: true }));
-
-        await message.guild.commands.permissions.set({
-            command: command_id,
-            permissions: []
-        });
-
-        return Promise.resolve()
+    async execute(message: Message, receivedCommand: commandLiteral): Promise<unknown> {
+        return message.reply(`Please use slash command \`/${this.usage}\``)
     }
 
     getAliases(): string[] {
