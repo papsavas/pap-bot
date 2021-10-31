@@ -23,7 +23,7 @@ export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
 let testChannel: TextChannel;
 
-export const inDevelopment: boolean = process.env.NODE_ENV === 'development';
+export const inDevelopment: boolean = process.env.NODE_ENV !== 'production';
 
 console.log(`inDevelopment is ${inDevelopment}`);
 export const guildMap: GuildMap = new Collection<Snowflake, GenericGuild>();

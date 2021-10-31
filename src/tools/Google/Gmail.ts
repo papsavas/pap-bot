@@ -1,7 +1,8 @@
 import { google } from 'googleapis';
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets';
 import { Gauth } from './Gauth';
-require('dotenv').config({ path: require('find-config')('.env') })
+if (process.env.NODE_ENV !== 'production')
+    require('dotenv').config({ path: require('find-config')('.env') })
 
 const SCOPES = [
     'https://mail.google.com/',

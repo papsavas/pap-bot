@@ -3,8 +3,8 @@ import knex, { Knex } from "knex";
 import { v4 } from "uuid";
 import TableBuilder = Knex.TableBuilder;
 
-require('dotenv').config({ path: require('find-config')('.env') })
-
+if (process.env.NODE_ENV !== 'production')
+    require('dotenv').config({ path: require('find-config')('.env') })
 class AbstractRepository {
     knex: Knex<any, unknown[]>;
     constructor() {
