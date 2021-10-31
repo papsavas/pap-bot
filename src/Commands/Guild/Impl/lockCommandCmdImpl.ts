@@ -7,7 +7,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { lockCommandCmd } from "../Interf/lockCommandCmd";
 
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
-
+//TODO: implement handeRequest
 export class LockCommandCmdImpl extends AbstractGuildCommand implements lockCommandCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
@@ -81,7 +81,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true });
         const member = (interaction.member instanceof GuildMember) ?
             interaction.member :
@@ -112,7 +112,7 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         }));
         let command = await interaction.guild.commands.fetch(command_id);
         //disable for @everyone
-        command = await command.edit(Object.assign(command, { defaultPermission: false }));
+        command = await command.edit({ defaultPermission: false, description: command.description, name: command.name })
         await interaction.guild.commands.permissions.add({
             command: command_id,
             permissions: allowedPerms
@@ -125,45 +125,8 @@ export class LockCommandCmdImpl extends AbstractGuildCommand implements lockComm
         return interaction.editReply(`Command ${commandLiteral} locked for ${rolesKeyArr.map(id => `<@&${id}>`).toString()}`);
     }
 
-    async execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<any> {
-        if (!receivedMessage.member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return receivedMessage.reply(`\`MANAGE_GUILD permissions required\``);
-        const guild_id = receivedMessage.guild.id;
-        const rolesKeyArr: Snowflake[] = [...receivedMessage.mentions.roles.keys()]
-            .filter(id => id !== guild_id); //filter out @everyone
-
-        if (rolesKeyArr.length < 1)
-            return receivedMessage.reply(`you need to provide atleast 1 role.\n*\`@everyone\` doesn't count*`);
-        const commandLiteral = receivedCommand.arg1; //cannot retrieve command from aliases, must be exact
-        const command_id: Snowflake = (await fetchCommandID(commandLiteral, guild_id)).firstKey();
-        if (!command_id)
-            return receivedMessage.reply(`command ${commandLiteral} not found`);
-
-        /*
-        * override perms for interaction
-        */
-        const allowedPerms = [...new Set(rolesKeyArr)].map(id => ({
-            id: id,
-            type: 'ROLE',
-            permission: true
-        })) as ApplicationCommandPermissionData[]
-        let command = await receivedMessage.guild.commands.fetch(command_id);
-
-        //disable for @everyone
-        command = await command.edit({ ...command, defaultPermission: false });
-
-        await receivedMessage.guild.commands.permissions.add({
-            command: command_id,
-            permissions: allowedPerms
-        });
-
-
-        /*
-        * override perms for manual command in DB
-        */
-        await overrideCommandPerms(guild_id, command_id, [...new Set(rolesKeyArr)]);
-
-
+    async execute(message: Message, receivedCommand: commandLiteral): Promise<unknown> {
+        return message.reply(`Please use slash command \`/${this.usage}\``)
     }
 
     getAliases(): string[] {

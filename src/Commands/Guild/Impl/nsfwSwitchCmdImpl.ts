@@ -1,4 +1,5 @@
 import {
+    ButtonInteraction,
     ChatInputApplicationCommandData, Collection, CommandInteraction, Message,
     MessageActionRow, MessageButton, MessageComponentInteraction,
     Permissions,
@@ -81,7 +82,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                 (
                     { filter, time: 10000 }
                 );
-            const enabled = btn.customId === 'on';
+            const enabled = (btn as ButtonInteraction).customId === 'on';
             const literal = enabled ? "Enabled" : "Disabled";
             await updateGuildSettings(commandInteraction.guildId, Object.assign(oldSettings, { "nsfw_responses": enabled }));
             await guildMap.get(commandInteraction.guildId).loadResponses();
@@ -141,7 +142,7 @@ export class NsfwSwitchCmdImpl extends AbstractGuildCommand implements nsfwSwitc
                     content: `failed to respond in time`,
                     components: []
                 });
-            const enabled = btn.customId === 'on';
+            const enabled = (btn as ButtonInteraction).customId === 'on';
             const literal = enabled ? "Enabled" : "Disabled";
             await updateGuildSettings(message.guild.id, Object.assign(oldSettings, { "nsfw_responses": enabled }));
             await guildMap.get(message.guild.id).loadResponses();
