@@ -35,7 +35,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
     }
     private readonly _aliases = this.addKeywordToAliases
         (
-            [], this.keyword
+            ["teachers"], this.keyword
         );
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
@@ -94,7 +94,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
 
                     ]
                 },
-                ,
+
                 {
                     name: listLiteral,
                     description: `Εμφανίζει το καταχωρημένο Ακαδημαϊκό Προσωπικό`,
@@ -110,7 +110,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
             return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
-        const username = interaction.options.getString(usernameLiteral, true);
+        const username = interaction.options.getString(usernameLiteral, false);
         switch (subcommand) {
             case createLiteral: {
                 const full_name = interaction.options.getString(fullNameLiteral, true);

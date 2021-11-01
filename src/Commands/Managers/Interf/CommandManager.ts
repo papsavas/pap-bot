@@ -1,5 +1,5 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection,
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandResolvable, Collection,
     CommandInteraction, ContextMenuInteraction, GuildApplicationCommandManager, Message, Snowflake
 } from "discord.js";
 import { GenericCommand } from "../../GenericCommand";
@@ -11,6 +11,15 @@ export interface CommandManager {
     registerCommand(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
         commandData: ApplicationCommandData
+    ): Promise<ApplicationCommand>;
+    editCommand(commandManager: ApplicationCommandManager,
+        command: ApplicationCommandResolvable,
+        data: ApplicationCommandData,
+        guildId: Snowflake): Promise<ApplicationCommand>;
+    editCommand(
+        commandManager: GuildApplicationCommandManager,
+        command: ApplicationCommandResolvable,
+        data: ApplicationCommandData
     ): Promise<ApplicationCommand>;
     updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
         Promise<Collection<Snowflake, ApplicationCommand<{}>>>

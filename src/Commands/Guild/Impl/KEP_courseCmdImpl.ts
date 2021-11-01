@@ -25,7 +25,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
     }
     private readonly _aliases = this.addKeywordToAliases
         (
-            [], this.keyword
+            ["courses"], this.keyword
         );
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
@@ -86,18 +86,18 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
             return interaction.reply("`MANAGE_GUILD` permissions required")
         const subCmd = interaction.options.getSubcommand(true);
         await interaction.deferReply({ ephemeral: false });
-        const code = interaction.options.getString(codeLiteral, true);
-        const course: Course = {
-            code,
-            name: null,
-            semester: null,
-            channel_id: null,
-            role_id: null
-        };
         const kep = (guildMap.get(guildId) as KepGuild);
         try {
             switch (subCmd) {
                 case createLiteral: {
+                    const code = interaction.options.getString(codeLiteral, true);
+                    const course: Course = {
+                        code,
+                        name: null,
+                        semester: null,
+                        channel_id: null,
+                        role_id: null
+                    };
                     course.name = interaction.options.getString(nameLiteral, true);
                     const sem = interaction.options.getNumber(semesterLiteral, true);
 
@@ -170,6 +170,14 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 }
 
                 case deleteLiteral: {
+                    const code = interaction.options.getString(codeLiteral, true);
+                    const course: Course = {
+                        code,
+                        name: null,
+                        semester: null,
+                        channel_id: null,
+                        role_id: null
+                    };
                     await dropCourse(course.code)
                     const role = await interaction.guild.roles.fetch(course.role_id);
                     const channel = await interaction.guild.channels.fetch(course.channel_id);

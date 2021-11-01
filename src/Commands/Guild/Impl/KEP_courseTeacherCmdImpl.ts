@@ -14,7 +14,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `course_teacher`;
-    protected _guide = `Δημιουργεί συσχέτιση μεταξύ μαθήματος και καθηγητή`;
+    protected _guide = `Συσχέτιση μεταξύ μαθήματος και καθηγητή`;
     protected _usage = `${this.keyword} link | unlink <course_code> <teacher_username> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_courseTeacherCmd> {
@@ -24,7 +24,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
     }
     private readonly _aliases = this.addKeywordToAliases
         (
-            ["courseteacher", "teachercourse", "teacher_course"], this.keyword
+            ["courseteacher", "teachercourse", "teacher_course", "course_teacher"], this.keyword
         );
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
@@ -70,10 +70,10 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
                         }
                     ]
                 },
-                ,
+
                 {
                     name: listLiteral,
-                    description: `Εμφανίζει τις καταχωρημένες διδασκαλίες`,
+                    description: `Εμφανίζει καταχωρημένες διδασκαλίες`,
                     type: 'SUB_COMMAND',
                 }
             ]
@@ -85,8 +85,8 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
             return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
-        const code = interaction.options.getString(codeLiteral, true);
-        const username = interaction.options.getString(usernameLiteral, true);
+        const code = interaction.options.getString(codeLiteral, false);
+        const username = interaction.options.getString(usernameLiteral, false);
         return handleRequest(interaction, subcommand, code, username, this.usage);
 
     }
