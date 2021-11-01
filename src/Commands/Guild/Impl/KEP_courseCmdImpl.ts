@@ -187,9 +187,9 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 }
 
                 case listLiteral: {
-                    const text = JSON.stringify(await fetchCourses());
+                    const text = JSON.stringify(await fetchCourses(), null, "\t");
                     const buffer = Buffer.from(text);
-                    const file = new MessageAttachment(buffer, new Date().toDateString() + "_Courses.json");
+                    const file = new MessageAttachment(buffer, new Date().toISOString() + "_Courses.json");
                     return interaction.editReply({
                         files: [file]
                     });
