@@ -110,9 +110,10 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
             return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
-        const username = interaction.options.getString(usernameLiteral, false);
+
         switch (subcommand) {
             case createLiteral: {
+                const username = interaction.options.getString(usernameLiteral, true);
                 const full_name = interaction.options.getString(fullNameLiteral, true);
                 const phone_number = interaction.options.getString(phoneNumberLiteral, true);
                 const picture_url = interaction.options.getString(pictureUrlLiteral);
@@ -148,6 +149,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                     .catch(err => interaction.editReply(err.toString()))
             }
             case deleteLiteral: {
+                const username = interaction.options.getString(usernameLiteral, true);
                 return deleteTeacher(username)
                     .then(() => interaction.editReply(`επιτυχής διαγραφή καθηγητ@ με username:\`${username}\`. Διαγράφηκαν αυτόματα όλες οι συσχετίσεις με μαθήματα`))
                     .catch((err) => interaction.editReply(err.toString()));
