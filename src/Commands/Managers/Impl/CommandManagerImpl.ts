@@ -1,5 +1,6 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandDataResolvable, ApplicationCommandManager,
+    ApplicationCommandResolvable,
     Collection, CommandInteraction, Constants, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
@@ -97,6 +98,18 @@ export abstract class CommandManagerImpl implements CommandManager {
         else
             return message.react('❔').catch();
     };
+
+    async editCommand(
+        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        command: ApplicationCommandResolvable,
+        data: ApplicationCommandData,
+        guildId?: Snowflake
+    ): Promise<ApplicationCommand> {
+        const cmd = commandManager instanceof GuildApplicationCommandManager ?
+            await commandManager.edit(command, data) : await commandManager.edit(command, data, guildId);
+        await this.saveCommandData(new Collection([[cmd.id, cmd]]));
+        return cmd;
+    }
 
     async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
         : Promise<Collection<Snowflake, ApplicationCommand<{}>>> {
