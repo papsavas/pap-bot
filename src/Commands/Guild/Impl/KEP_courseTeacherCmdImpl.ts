@@ -147,6 +147,6 @@ async function list(): Promise<MessageAttachment> {
         return `${teacher.username} (${teacher.full_name}) - ${course.name} (${course.code})`
     });
     const buffer = Buffer.from(textArr.sort().join("\n"));
-    return new MessageAttachment(buffer, new Date().toISOString() + "teacher_courses.txt");
+    return new MessageAttachment(buffer, new Date().toISOString() + "_teacher_courses.txt");
 }
 
