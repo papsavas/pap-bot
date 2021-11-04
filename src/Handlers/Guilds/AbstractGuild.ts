@@ -245,6 +245,9 @@ export abstract class AbstractGuild implements GenericGuild {
                     }
                 );
                 await newState.setChannel(privateChannel, 'move to personal channel');
+                member.send(`Use \`/open-voice\` command to unlock this channel for others (roles or users)`)
+                    .then(msg => msg.react("🗑"))
+                    .catch();
                 this.privateVoiceChannels.push(privateChannel.id);
             }
         }
