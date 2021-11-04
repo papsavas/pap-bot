@@ -1,8 +1,9 @@
 import { keywordsTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, saveBatch } from "../../DB/GenericCRUD";
 
-function fetchKeywords() {
-    return findAll(keywordsTable, true);
+async function fetchKeywords(): Promise<string[]> {
+    return (await findAll(keywordsTable, true)).
+        map(k => k['keyword']);
 }
 
 function setKeywords(keywords: string[]) {
