@@ -4,8 +4,7 @@
   "description": "PAPbot",
   "main": "src/index.ts",
   "engines": {
-    "node": "16.x",
-    "npm": "7.x"
+    "node": "16.x"
   },
   "scripts": {
     "build": "tsc",
@@ -18,7 +17,7 @@
     "@types/uuid": "^8.3.0",
     "axios": "^0.21.1",
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.3.0",
+    "discord.js": "^13.3.1",
     "find-config": "^1.0.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",

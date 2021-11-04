@@ -50,25 +50,31 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         return newCommands;
     }
 
-    private syncPermissions(
+    private async syncPermissions(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
         commands: Collection<Snowflake, ApplicationCommand<{}>>
     ) {
-
-        return Promise.all(
-            commands.map(async cmd => {
-                const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id)).map(res => ({
+        for (const cmd of commands.values()) {
+            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id))
+                .map(res => ({
                     id: res.role_id,
                     type: 'ROLE',
                     permission: true
                 }))
-                commandManager.permissions.set({
-                    command: cmd.id,
-                    guild: this.guildID,
-                    permissions: dbPerms
+            if (dbPerms.every(p => p.id !== cmd.guildId))
+                //disable defaultPermission
+                await cmd.edit({
+                    defaultPermission: false,
+                    description: cmd.description,
+                    name: cmd.name
                 })
+            commandManager.permissions.set({
+                command: cmd.id,
+                guild: cmd.guildId,
+                permissions: dbPerms
             })
-        );
+                .then(() => console.log(`Synced permissions for ${cmd.name}`))
+        }
     }
 
     async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {

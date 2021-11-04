@@ -65,7 +65,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         super(id);
     }
 
-    static async init(guild_id: Snowflake): Promise<GenericGuild> {
+    static async init(guild_id: Snowflake): Promise<KepGuild> {
         const guild = new KepGuild(guild_id);
         guild.specifiedCommands = guildCommands.map(cmd => cmd.init());
         guild.commandManager = new GuildCommandManagerImpl(
@@ -81,7 +81,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     async onReady(client: Client): Promise<unknown> {
         await super.onReady(client);
         this.events = await fetchEvents();
-        this.keywords = (await fetchKeywords()).map(k => k['keyword']);
+        this.keywords = await fetchKeywords();
         this.students = await fetchStudents();
         const members = await this.guild.members.fetch();
         this.courses = await fetchCourses();
@@ -94,9 +94,12 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 await dropStudents({ am: student.am }).catch(console.error);
                 continue;
             }
-            for (const c of this.courses)
-                if (member.roles.cache.has(c.role_id))
-                    this.students.get(student.member_id).courses.set(c.role_id, c);
+            //assign courses
+            for (const rId of [...member.roles.cache.keys()]) {
+                const sc = this.courses.find(c => c.role_id === rId);
+                if (sc)
+                    student.courses.set(sc.role_id, sc);
+            }
         }
         handleExaminedChannels(this.courses, this.events, this.guild.channels);
         handleActiveDrivePermissions();
@@ -137,8 +140,8 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             }
 
             case channels.feedback: {
-                await message.react('👎');
                 await message.react('👍');
+                await message.react('👎');
                 break;
             }
 
@@ -178,6 +181,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
         try {
             switch (reaction.message.channel.id) {
+
                 case channels.anonymous_approval: {
                     const emb = reaction.message.embeds[0];
                     if (Boolean(emb)) {
@@ -232,6 +236,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     async onSelectMenu(select: SelectMenuInteraction) {
         switch (select.channel.id) {
+
             case channels.select_courses: {
                 const member = await select.guild.members.fetch(select.user.id);
                 const student = this.students.get(member.id);
@@ -258,7 +263,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     oldSemesterRoles
                         .filter(r => !selectedCourses.find(c => c.role_id === r.id))
                 ]
-
 
                 studentCourses.sweep(sc => removedRoles.has(sc.role_id));
                 for (const course of newSemesterCourses)
