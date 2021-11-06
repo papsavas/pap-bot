@@ -13,7 +13,6 @@ import { generateRandomNumber } from "../../../tools/randomNumber";
 import { studentEmailregex } from "../../../tools/regexs";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_registrationCmd } from "../Interf/KEP_registrationCmd";
-
 const [registerName, verifyName] = ['register', 'verify'];
 const [email, password] = ['email', 'password']
 
@@ -120,9 +119,14 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                     password: pswd
                 })
                 await interaction.editReply(`Θα σας αποσταλεί ένας ${pswd.toString().length}ψήφιος κωδικός στο **${academicEmail}**`);
-                await sendEmail(academicEmail, "Verification Password", `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration ${verifyName}\n
+                await sendEmail({
+                    from: "Κοινότητα Εφαρμοσμένης Πληροφορικής",
+                    to: academicEmail as string,
+                    subject: "Verification Password",
+                    message: `Καταχωρήστε τον παρακάτω κωδικό χρησιμοποιώντας την εντολή /registration ${verifyName}\n
 ${pswd}\n
-Αγνοείστε αυτό το μήνυμα εάν δεν προσπαθήσατε να εγγραφείτε στον Discord Server της Κοινότητα Εφαρμοσμένης Πληροφορικής`)
+Αγνοείστε αυτό το μήνυμα εάν δεν προσπαθήσατε να εγγραφείτε στον Discord Server της Κοινότητα Εφαρμοσμένης Πληροφορικής`
+                });
                 await interaction.followUp({
                     content: `Το email έχει αποσταλεί 📨\n__Καταχωρήστε τον κωδικό (ως αριθμό) στην εντολή **\`${verifyName}\`**__ \`(/registration ${verifyName})\``,
                     ephemeral: true

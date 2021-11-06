@@ -9,6 +9,10 @@ import { Message, Snowflake } from "discord.js";
 export function separateIds(link: Message['url']): [Snowflake, Snowflake, Snowflake] {
     const s = link.split('/');
     const l = s.length;
-    return [s[l - 3], s[l - 2], s[l - 1]];
+    return [
+        s[l - 3],
+        s[l - 2],
+        s[l - 1]
+    ];
 
 }
