@@ -102,12 +102,11 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
             return this.respond(source, { content: "`MANAGE_GUILD` permissions needed", ephemeral: true });
         switch (subcommand) {
             case nsfwLiteral:
-                return this.prefixHandler(
+                return this.nsfwHandler(
                     source,
-                    (resp) => this.respond(source, resp),
-                    args[newPrefixOptLiteral] as string
-
+                    (resp) => this.respond(source, resp)
                 );
+
             case lobbyLiteral:
                 return this.lobbyHandler(
                     source,
@@ -115,9 +114,11 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
                     args[voiceOptLiteral] as GuildChannel
                 )
             case prefixLiteral:
-                return this.nsfwHandler(
+                return this.prefixHandler(
                     source,
-                    (resp) => this.respond(source, resp)
+                    (resp) => this.respond(source, resp),
+                    args[newPrefixOptLiteral] as string
+
                 );
         }
     }

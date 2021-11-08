@@ -47,6 +47,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
         const newCommands = await super.updateCommands(commandManager);
         await this.syncPermissions(commandManager, newCommands);
+        console.log(`___DONE_SYNCING_PERMS___`);
         return newCommands;
     }
 
@@ -61,13 +62,17 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
                     type: 'ROLE',
                     permission: true
                 }))
-            if (dbPerms.every(p => p.id !== cmd.guildId))
+            const defaultPerm = (defaultPermission: boolean) => cmd.edit({
+                defaultPermission,
+                description: cmd.description,
+                name: cmd.name
+            })
+            if (dbPerms.length === 0)
+                // no role restrictions are applied, unlock
+                await defaultPerm(true);
+            else if (dbPerms.every(p => p.id !== cmd.guildId))
                 //disable defaultPermission
-                await cmd.edit({
-                    defaultPermission: false,
-                    description: cmd.description,
-                    name: cmd.name
-                })
+                await defaultPerm(false);
             await commandManager.permissions.set({
                 command: cmd.id,
                 guild: cmd.guildId,
