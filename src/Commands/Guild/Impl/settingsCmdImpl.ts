@@ -71,7 +71,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         await interaction.deferReply({ ephemeral: true });
         const args = {};
         [voiceOptLiteral, newPrefixOptLiteral]
-            .forEach(s => args[s] = interaction.options.get(s));
+            .forEach(s => args[s] = interaction.options.get(s)?.value);
         return this.coreHandler(subcommand, interaction, args);
     }
 
