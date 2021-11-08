@@ -92,11 +92,14 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         return guildMap.get(guildID).addGuildLog(log);
     }
 
-    private coreHandler = (
+    private coreHandler = async (
         subcommand: string,
         source: BaseCommandInteraction | Message,
         args: { [key: string]: string | GuildChannel } = {}
     ) => {
+        const member = await source.guild.members.fetch(source.member.user.id);
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return this.respond(source, { content: "`MANAGE_GUILD` permissions needed", ephemeral: true });
         switch (subcommand) {
             case nsfwLiteral:
                 return this.prefixHandler(
