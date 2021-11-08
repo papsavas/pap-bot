@@ -3,7 +3,7 @@ export default function UpperLowerCaseSwitching(text: string): string {
     const word = text;
     let upperNum = 0;
     const mid = 0.5;
-    for (var i = 0; i < word.length; i++) {
+    for (let i = 0; i < word.length; i++) {
         if (word[i] === ' ') {
             newWord += word[i];
             continue

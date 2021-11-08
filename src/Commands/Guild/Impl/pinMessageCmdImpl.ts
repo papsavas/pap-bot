@@ -9,7 +9,6 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
 const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
 
-//TODO: implement request handler
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;

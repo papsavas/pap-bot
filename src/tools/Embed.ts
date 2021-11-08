@@ -1,13 +1,35 @@
 import { EmbedFieldData, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
 
-function paginationEmbed(
-    userMessage: Message, targetStructure: string[], perPage: number,
-    headerEmbed: MessageEmbed, fieldBuilder: (resp: string, index: number, start: number) => string[],
-    timeout: number, targetChannel = userMessage.channel
-): Promise<void | Error> {
+interface paginatedEmbedOptions {
+    userMessage: Message,
+    targetStructure: string[],
+    perPage: number,
+    headerEmbed: MessageEmbed,
+    fieldBuilder: (resp: string, index: number, start: number) => string[],
+    timeout: number,
+    targetChannel?: Message['channel'],
+}
+
+interface slicedEmbedOptions {
+    data: EmbedFieldData[],
+    headerEmbed: Omit<MessageEmbedOptions, "fields">,
+    size?: number;
+}
+
+function paginatedEmbed(
+    {
+        userMessage,
+        targetStructure,
+        perPage,
+        headerEmbed,
+        fieldBuilder,
+        timeout,
+        targetChannel = userMessage.channel
+    }: paginatedEmbedOptions
+): Promise<void> {
     if (perPage > 25) perPage = 25;
 
-    const generateEmbed = start => {
+    const generateEmbed = (start: number) => {
         /**
          * @param {number} start The index to start from.
          */
@@ -21,17 +43,19 @@ function paginationEmbed(
         });
         return embed
     }
-
-    return userMessage.reply({ embeds: [generateEmbed(0)] })
+    return targetChannel.send({ embeds: [generateEmbed(0)] })
         .then(message => {
             if (targetStructure.length <= perPage) return
             // react with the right arrow (so that the user can click it) (left arrow isn't needed because it is the start)
-            message.react('⬅️').then(r => message.react('➡️'));
+            message.react('⬅️')
+                .then(r => message.react('➡️'));
             const collector = message.createReactionCollector(
                 // only collect left and right arrow reactions from the message author
 
                 {
-                    filter: (reaction, user) => ['⬅️', '➡️'].includes(reaction.emoji.name) && user.id === userMessage.author.id,
+                    filter: (reaction, user) =>
+                        ['⬅️', '➡️'].includes(reaction.emoji.name) &&
+                        user.id === userMessage.author.id,
                     time: timeout
                 });
 
@@ -49,19 +73,13 @@ function paginationEmbed(
                 if (currentIndex !== 0) await message.react('⬅️');
                 // react with right arrow if it isn't the end
                 if (currentIndex + perPage < targetStructure.length) await message.react('➡️');
-                // })
             })
-        }
-        ).catch(err => new Error(err));
+        })
 }
 
-
-function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
-    //TODO: fix field overflow
-    data: EmbedFieldData[],
-    headerEmbed: Omit<MessageEmbedOptions, "fields">,
-    size?: number;
-}): MessageEmbed[] {
+function sliceToEmbeds({
+    data, headerEmbed, size = 20
+}: slicedEmbedOptions): MessageEmbed[] {
     if (size > 20) throw new Error("embed fields are 20 max");
     const embeds = [new MessageEmbed(headerEmbed)];
     for (let i = 0; i < data.length; i += size) {
@@ -71,4 +89,5 @@ function sliceToEmbeds({ data, headerEmbed, size = 20 }: {
     return embeds;
 }
 
-export { paginationEmbed, sliceToEmbeds };
+export { paginatedEmbed, sliceToEmbeds };
+

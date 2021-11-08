@@ -23,6 +23,6 @@ export interface CommandManager {
     ): Promise<ApplicationCommand>;
     updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
         Promise<Collection<Snowflake, ApplicationCommand<{}>>>
-    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager, guildId?: Snowflake): Promise<unknown>;
+    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager): Promise<unknown>;
 
 }

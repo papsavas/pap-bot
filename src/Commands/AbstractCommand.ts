@@ -1,4 +1,4 @@
-import { Collection, CommandInteraction, ContextMenuInteraction, Message, Snowflake } from "discord.js";
+import { BaseCommandInteraction, Collection, CommandInteraction, ContextMenuInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
@@ -43,7 +43,21 @@ export abstract class AbstractCommand implements GenericCommand {
 
     abstract getAliases(): string[];
 
-
+    respond = async (
+        source: Message | BaseCommandInteraction,
+        response: ReplyMessageOptions | InteractionReplyOptions
+    ) => {
+        if (source instanceof BaseCommandInteraction)
+            if (source.replied)
+                await source.followUp(response)
+            else
+                if (source.deferred)
+                    await source.editReply(response)
+                else
+                    await source.reply(response)
+        else
+            await source.reply(response)
+    }
     matchAliases(possibleCommand: string): boolean {
         return this.getAliases()
             .some((alias: string) => alias === possibleCommand?.toLowerCase());

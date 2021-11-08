@@ -64,13 +64,14 @@ export class UnlockCommandCmdImpl extends AbstractGuildCommand implements unlock
         * override perms for interaction
         */
         let command = await interaction.guild.commands.fetch(command_id);
-        //enable for @everyone
-        command = await command.edit({ defaultPermission: false, description: command.description, name: command.name })
         await interaction.guild.commands.permissions.set({
             command: command_id,
             permissions: []
 
         });
+
+        //enable for @everyone
+        command = await command.edit({ defaultPermission: true, description: command.description, name: command.name })
 
         /*
         * override perms for manual command in DB

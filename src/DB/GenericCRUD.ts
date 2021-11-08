@@ -10,7 +10,7 @@ class AbstractRepository {
     constructor() {
         this.knex = knex({
             client: 'pg',
-            connection: process.env.NODE_ENV === 'production' ? {
+            connection: process.env.NODE_ENV.includes('production') ? {
                 connectionString: process.env.DATABASE_URL,
                 ssl: { rejectUnauthorized: false },
             } : {

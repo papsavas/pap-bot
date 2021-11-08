@@ -14,7 +14,7 @@ import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelC
 import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
 import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
-import { setVoiceLobbyCmdImpl } from '../../Commands/Guild/Impl/setVoiceLobbyCmdImpl';
+import { settingsCmdImpl } from '../../Commands/Guild/Impl/settingsCmdImpl';
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
 import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
@@ -52,7 +52,7 @@ export abstract class AbstractGuild implements GenericGuild {
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
         LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
         myResponsesCmdImpl, bookmarkCmdImpl,
-        PinMessageCmdImpl, UnpinMessageCmdImpl, setVoiceLobbyCmdImpl, openVoiceCmdImpl
+        PinMessageCmdImpl, UnpinMessageCmdImpl, openVoiceCmdImpl, settingsCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager;

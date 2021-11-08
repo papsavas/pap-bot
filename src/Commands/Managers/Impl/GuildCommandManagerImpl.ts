@@ -68,12 +68,12 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
                     description: cmd.description,
                     name: cmd.name
                 })
-            commandManager.permissions.set({
+            await commandManager.permissions.set({
                 command: cmd.id,
                 guild: cmd.guildId,
                 permissions: dbPerms
             })
-                .then(() => console.log(`Synced permissions for ${cmd.name}`))
+                .then(() => console.log(`Synced permissions for ${cmd.name} - ${cmd.guild.name}`))
         }
     }
 
