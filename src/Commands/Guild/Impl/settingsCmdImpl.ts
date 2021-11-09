@@ -13,7 +13,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `settings`;
     protected _guide = `edits guild settings`;
-    protected _usage = `settings nsfw | voice-lobby <channel_id> | prefix [new_prefix]`;
+    protected _usage = `${this.keyword} nsfw | voice-lobby <channel_id> | prefix [new_prefix]`;
     private constructor() { super() }
     static async init(): Promise<settingsCmd> {
         const cmd = new settingsCmdImpl();
