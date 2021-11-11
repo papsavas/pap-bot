@@ -8,15 +8,14 @@ import {
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
+import { commandPermsCmdImpl } from '../../Commands/Guild/Impl/commandPermsCmdImpl';
 import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
-import { LockCommandCmdImpl } from "../../Commands/Guild/Impl/lockCommandCmdImpl";
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
 import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
 import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
 import { settingsCmdImpl } from '../../Commands/Guild/Impl/settingsCmdImpl';
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
-import { UnlockCommandCmdImpl } from "../../Commands/Guild/Impl/unlockCommandCmdImpl";
 import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
 import { guildSettings } from "../../Entities/Generic/guildSettings";
@@ -50,7 +49,7 @@ export abstract class AbstractGuild implements GenericGuild {
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
-        LockCommandCmdImpl, UnlockCommandCmdImpl, ShowPermsCmdsImpl,
+        commandPermsCmdImpl, ShowPermsCmdsImpl,
         myResponsesCmdImpl, bookmarkCmdImpl,
         PinMessageCmdImpl, UnpinMessageCmdImpl, openVoiceCmdImpl, settingsCmdImpl
     ].map(cmd => cmd.init())

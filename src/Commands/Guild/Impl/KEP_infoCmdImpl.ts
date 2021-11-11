@@ -75,7 +75,9 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
 }
 
 function fetchInfo(query: string): string {
-    switch (query.toLowerCase().trimEnd()) {
+    //TODO: convert to non diacritics || 
+    //TODO: access values from json
+    switch (query.toLowerCase().trim()) {
         case "πρόγραμμα_εξεταστικής":
         case "προγραμμα_εξεταστικης":
         case "programma_exetastikis":
@@ -108,6 +110,11 @@ function fetchInfo(query: string): string {
         case "ημερολογιο":
         case "hmerologio":
             return i.calendar;
+
+        case "bible":
+        case "βιβλος":
+        case "βίβλος":
+            return i.bible;
 
         default:
             return `Δεν βρέθηκε \`${query}\``
