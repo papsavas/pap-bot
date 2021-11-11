@@ -23,6 +23,10 @@
         {
             "name": "ακαδημαϊκό_ημερολόγιο",
             "description": "Ακαδημαϊκό ημερολόγιο τωρινής περιόδου"
+        },
+        {
+            "name": "bible",
+            "description": "Βίβλος της Εφαρμοσμένης Πληροφορικής"
         }
     ],
     "exams": "https://docs.google.com/spreadsheets/d/1MvTMObAsv5vERNcVQXLv0yV3_uRGPwd99HFHQn4zQDI",
@@ -30,5 +34,6 @@
     "drive": "https://drive.google.com/drive/folders/1NJiK7ir7OByypLsYiugBWpDRmzImvbfq",
     "faq": "https://www.uom.gr/dai/syxnes-erothseis-gia-to-programma-spoydon",
     "calendar": "https://www.uom.gr/akadhmaiko-hmerologio/akadhmaiko-hmerologio-2021-2022",
-    "curriculum": "https://www.uom.gr/assets/site/public/nodes/1302/11180-P_S_2021_22_final.pdf"
+    "curriculum": "https://www.uom.gr/assets/site/public/nodes/1302/11180-P_S_2021_22_final.pdf",
+    "bible": "https://docs.google.com/document/d/1selmq4oLxl9FXT6DUpNqRK3gVsJwoBch27JMDtwPLeE"
 }
