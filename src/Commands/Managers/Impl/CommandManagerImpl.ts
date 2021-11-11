@@ -59,7 +59,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             return candidateCommand.interactiveExecute(interaction)
                 .catch(err => this.invalidSlashCommand(err, interaction, interaction.commandName));
         else
-            return interaction.reply(`Command not found`);
+            return interaction.reply(`Command \`${interaction.commandName}\` not found`);
     };
 
     async onManualCommand(message: Message): Promise<unknown> {
