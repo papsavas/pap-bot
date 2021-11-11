@@ -129,7 +129,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
                 .map((n, i) =>
                     interaction.options.getRole(`role${n}`, i === 0)?.id)
             const roleKeys = filteredRoles
-                .filter(id => id !== guild_id); //filter out @everyone
+                .filter(id => !!id && id !== guild_id); //filter out  undefined and @everyone
             if (roleKeys.length === 0)
                 return interaction.editReply(`no point on locking for \`@everyone\`, mind as well unlock it 😉`)
             //override perms for interaction
