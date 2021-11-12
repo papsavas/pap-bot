@@ -1,13 +1,12 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandResolvable, Collection,
-    CommandInteraction, ContextMenuInteraction, GuildApplicationCommandManager, Message, Snowflake
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandResolvable, BaseCommandInteraction, Collection, GuildApplicationCommandManager, Message, Snowflake
 } from "discord.js";
 import { GenericCommand } from "../../GenericCommand";
 
 export interface CommandManager {
     readonly commands: GenericCommand[];
     onManualCommand(message: Message): Promise<unknown>;
-    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown>
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown>
     registerCommand(
         commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
         commandData: ApplicationCommandData

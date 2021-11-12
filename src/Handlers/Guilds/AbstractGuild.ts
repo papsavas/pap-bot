@@ -1,6 +1,7 @@
 import {
+    BaseCommandInteraction,
     ButtonInteraction,
-    Client, CommandInteraction, ContextMenuInteraction, Guild,
+    Client, Guild,
     GuildBan,
     GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
     Snowflake, User, VoiceState
@@ -107,7 +108,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<any> {
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<any> {
         return this.commandManager.onSlashCommand(interaction);
     }
 

@@ -156,7 +156,7 @@ PAP.on('applicationCommandUpdate', (oldCommand, newCommand) => {
 })
 
 PAP.on('interactionCreate', async interaction => {
-    if (interaction.isCommand()) {
+    if (interaction.isApplicationCommand()) {
         if (globalCommandsIDs.includes(interaction.commandId)) {
             globalCommandHandler.onSlashCommand(interaction)
                 .catch(console.error);

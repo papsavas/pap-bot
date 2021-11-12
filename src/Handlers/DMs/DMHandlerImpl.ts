@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
+import { BaseCommandInteraction, ButtonInteraction, Client, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
 import { DmHandler } from "./GenericDm";
 
 export class DMHandlerImpl implements DmHandler {
@@ -15,7 +15,7 @@ export class DMHandlerImpl implements DmHandler {
         return Promise.resolve('DM handler loaded');
     }
 
-    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
         return interaction.reply({ content: `Dm commands coming soon`, ephemeral: true })
         //return this.commandManager.onSlashCommand(interaction);
     }

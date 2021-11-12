@@ -1,7 +1,8 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandDataResolvable, ApplicationCommandManager,
     ApplicationCommandResolvable,
-    Collection, CommandInteraction, Constants, ContextMenuInteraction, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+    BaseCommandInteraction,
+    Collection, CommandInteraction, Constants, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -40,7 +41,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
 
-    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown> {
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
         //TODO: fetch command to access "usage"
         if (interaction.commandName.startsWith('help'))
             return interaction.reply({
@@ -156,7 +157,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
     //TODO: fix this mess
-    protected invalidSlashCommand(err: Error, interaction: CommandInteraction | ContextMenuInteraction, primaryCommandLiteral: string) {
+    protected invalidSlashCommand(err: Error, interaction: BaseCommandInteraction, primaryCommandLiteral: string) {
         const bugsChannelEmbed = new MessageEmbed({
             author: {
                 name: interaction.guild?.name ?? interaction.user.username,
