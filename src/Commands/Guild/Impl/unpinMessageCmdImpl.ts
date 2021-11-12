@@ -1,20 +1,16 @@
-import { ApplicationCommandOptionData, Collection, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
+import { Collection, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 
-
-const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
-const reasonOptionLiteral: ApplicationCommandOptionData['name'] = 'reason';
-
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `unpin`;
     protected _guide = `Unpins a message`;
-    protected _usage = `unpin <msg_id> [reason]`;
+    protected _usage = `Right click on message => Apps => ${this.keyword}`;
 
     private constructor() { super() }
 
@@ -72,7 +68,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        return message.reply(`Use context menu command (right click on message => Apps => ${this.keyword})`)
+        return message.reply(`Use context menu command (${this.usage})`);
 
     }
 

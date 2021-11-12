@@ -10,7 +10,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `pin`;
     protected _guide = `Pins a message`;
-    protected _usage = `pin <msg_id> [reason]`;
+    protected _usage = `Right click on message => Apps => ${this.keyword}`;
     private constructor() { super() }
 
     static async init(): Promise<pinMessageCmd> {
@@ -67,7 +67,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        return message.reply(`Use context menu command (right click on message => Apps => ${this.keyword})`)
+        return message.reply(`Use context menu command (${this.usage})`);
 
     }
 
