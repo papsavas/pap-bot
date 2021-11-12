@@ -9,6 +9,11 @@ import { commandPermsCmd } from "../Interf/commandPermsCmd";
 const [lockLiteral, unlockLiteral] = ["lock", "unlock"];
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command_name';
 
+/*
+TODO: support global commands
+!Problem: input choices exceed limit of 25
+?Solution: global / guild (second) subcommand
+*/
 export class commandPermsCmdImpl extends AbstractGuildCommand implements commandPermsCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
