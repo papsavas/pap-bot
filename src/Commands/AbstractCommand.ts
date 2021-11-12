@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, Collection, CommandInteraction, ContextMenuInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { BaseCommandInteraction, Collection, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
@@ -39,7 +39,7 @@ export abstract class AbstractCommand implements GenericCommand {
 
     abstract execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
 
-    abstract interactiveExecute(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown>;
+    abstract interactiveExecute(interaction: BaseCommandInteraction): Promise<unknown>;
 
     abstract getAliases(): string[];
 

@@ -1,5 +1,5 @@
 
-import { ApplicationCommand, ButtonInteraction, Client, Collection, CommandInteraction, ContextMenuInteraction, Guild, GuildBan, GuildMember, Message, MessageReaction, SelectMenuInteraction, Snowflake, User, VoiceState } from 'discord.js';
+import { ApplicationCommand, BaseCommandInteraction, ButtonInteraction, Client, Collection, Guild, GuildBan, GuildMember, Message, MessageReaction, SelectMenuInteraction, Snowflake, User, VoiceState } from 'discord.js';
 import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
 import { guildSettings } from "../../Entities/Generic/guildSettings";
 export interface GenericGuild {
@@ -14,7 +14,7 @@ export interface GenericGuild {
 
     onGuildLeave(guild: Guild): Promise<unknown>;
 
-    onSlashCommand(interaction: CommandInteraction | ContextMenuInteraction): Promise<unknown>;
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown>;
 
     onButton(interaction: ButtonInteraction): Promise<unknown>;
 

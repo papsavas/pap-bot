@@ -1,9 +1,9 @@
-import { ButtonInteraction, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
+import { BaseCommandInteraction, ButtonInteraction, Client, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
 
 export interface DmHandler {
     onReady(client: Client): Promise<unknown>;
 
-    onSlashCommand(interaction: CommandInteraction): Promise<unknown>;
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown>;
 
     onButton(interaction: ButtonInteraction): Promise<unknown>
 

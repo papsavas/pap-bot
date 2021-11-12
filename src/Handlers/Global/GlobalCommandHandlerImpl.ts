@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js';
+import { BaseCommandInteraction } from 'discord.js';
 import { MockMessageCmdImpl } from '../../Commands/Global/Impl/mockMessageCmdImpl';
 import { tictactoeCmdImpl } from '../../Commands/Global/Impl/tictactoeCmdImpl';
 import { userNotesCmdImpl } from '../../Commands/Global/Impl/userNotesCmdImpl';
@@ -23,7 +23,7 @@ export class GlobalCommandHandlerImpl implements GlobalCommandHandler {
         );
         return global;
     }
-    onSlashCommand(interaction: CommandInteraction): Promise<unknown> {
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
         return this.commandManager.onSlashCommand(interaction);
     }
 }

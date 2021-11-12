@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, Collection, CommandInteraction, ContextMenuInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { BaseCommandInteraction, Collection, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
 export interface GenericCommand {
     /**
@@ -12,7 +12,7 @@ export interface GenericCommand {
     usage: string;
     type: commandSpecifier;
 
-    interactiveExecute(commandInteraction: CommandInteraction | ContextMenuInteraction): Promise<unknown>;
+    interactiveExecute(commandInteraction: BaseCommandInteraction): Promise<unknown>;
 
     execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
 
