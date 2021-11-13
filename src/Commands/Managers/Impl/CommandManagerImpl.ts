@@ -111,8 +111,9 @@ export abstract class CommandManagerImpl implements CommandManager {
         return cmd;
     }
 
-    async updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager)
-        : Promise<Collection<Snowflake, ApplicationCommand<{}>>> {
+    async updateCommands(commandManager: ApplicationCommandManager) {
+        if (this.commands.length > 25)
+            throw `Commands Exceed max size (25). Size: ${this.commands.length}`
         const applicationCommands: ApplicationCommandData[] = this.fetchCommandData(this.commands);
         console.log(`updating ${this.commands[0].type} commands`);
         applicationCommands.push(this.helpCommandData);
@@ -125,10 +126,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         return newCommands;
     }
 
-    async registerCommand(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
-        command: ApplicationCommandDataResolvable
-    ): Promise<ApplicationCommand> {
+    async registerCommand(commandManager: ApplicationCommandManager, command: ApplicationCommandDataResolvable) {
         const cmd = await commandManager.create(command);
         await this.saveCommandData(new Collection<Snowflake, ApplicationCommand>().set(cmd.id, cmd));
         return cmd;
@@ -203,7 +201,12 @@ export abstract class CommandManagerImpl implements CommandManager {
 
 
     //TODO: fix this mess
-    protected async invalidCommand(err: Error, commandMessage: Message, commandImpl: GenericCommand, primaryCommandLiteral: string, prefix: string) {
+    protected async invalidCommand(
+        err: Error, commandMessage: Message,
+        commandImpl: GenericCommand,
+        primaryCommandLiteral: string,
+        prefix: string
+    ) {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.message}`);
         const bugsChannelEmbed = new MessageEmbed({
             author: {

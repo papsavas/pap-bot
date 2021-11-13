@@ -1,5 +1,5 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, GuildApplicationCommandManager, Snowflake
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, Snowflake
 } from 'discord.js';
 import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
@@ -44,7 +44,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         );
     }
 
-    async updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager) {
+    async updateCommands(commandManager: ApplicationCommandManager) {
         const newCommands = await super.updateCommands(commandManager);
         await this.syncPermissions(commandManager, newCommands);
         console.log(`___DONE_SYNCING_PERMS___`);
@@ -52,7 +52,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     }
 
     private async syncPermissions(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        commandManager: ApplicationCommandManager,
         commands: Collection<Snowflake, ApplicationCommand<{}>>
     ) {
         for (const cmd of commands.values()) {
@@ -82,7 +82,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         }
     }
 
-    async clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager) {
+    async clearCommands(commandManager: ApplicationCommandManager) {
         return commandManager.set([]);
     }
 }
