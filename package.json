@@ -14,8 +14,6 @@
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
   "dependencies": {
-    "@types/uuid": "^8.3.0",
-    "axios": "^0.21.1",
     "discord-api-types": "^0.18.1",
     "discord.js": "^13.3.1",
     "find-config": "^1.0.0",
@@ -44,6 +42,7 @@
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.168",
     "@types/pg": "^7.14.11",
+    "@types/uuid": "^8.3.1",
     "dotenv": "^10.0.0",
     "jest": "^27.0.6",
     "ts-jest": "^27.0.4",

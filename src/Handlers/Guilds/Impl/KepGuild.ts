@@ -139,8 +139,10 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             }
 
             case channels.feedback: {
-                await message.react('👍');
-                await message.react('👎');
+                if (message.type === "DEFAULT") {
+                    await message.react('👍');
+                    await message.react('👎');
+                }
                 break;
             }
 
