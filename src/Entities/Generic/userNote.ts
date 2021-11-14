@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-export interface userNote {
+export interface UserNote {
     uuid?: string,
     user_id: Snowflake,
     note: string,

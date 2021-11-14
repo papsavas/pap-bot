@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-export interface guildSettings {
+export interface GuildSettings {
     prefix: string;
     guild_id: Snowflake;
     voice_lobby: Snowflake;

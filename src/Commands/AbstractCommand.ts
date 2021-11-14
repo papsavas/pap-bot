@@ -1,5 +1,5 @@
 import { BaseCommandInteraction, Collection, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
-import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
+import { commandLiteral, CommandScope } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
 export abstract class AbstractCommand implements GenericCommand {
@@ -7,7 +7,7 @@ export abstract class AbstractCommand implements GenericCommand {
     protected abstract _keyword: string;
     protected abstract _guide: string;
     protected abstract _usage: string;
-    protected abstract _type: commandSpecifier;
+    protected abstract _type: CommandScope;
 
     get type() {
         return this._type;

@@ -1,5 +1,5 @@
 import { BaseCommandInteraction, Collection, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
-import { commandLiteral, commandSpecifier } from "../Entities/Generic/command";
+import { commandLiteral, CommandScope } from "../Entities/Generic/command";
 export interface GenericCommand {
     /**
      * The id of the command.
@@ -10,7 +10,7 @@ export interface GenericCommand {
     keyword: string;
     guide: string;
     usage: string;
-    type: commandSpecifier;
+    type: CommandScope;
 
     interactiveExecute(commandInteraction: BaseCommandInteraction): Promise<unknown>;
 

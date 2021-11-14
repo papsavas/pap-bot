@@ -3,14 +3,14 @@ import moment, { Moment } from "moment-timezone";
 import 'moment/locale/el';
 import { drivePermsTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
-import { drivePermission } from "../../Entities/KEP/Drive";
+import { DrivePermission } from "../../Entities/KEP/Drive";
 moment.locale('el');
 moment.tz("Europe/Athens");
 
 
 
 function findDrivePerm(member_id: Snowflake) {
-    return findOne(drivePermsTable, { member_id }) as Promise<drivePermission>;
+    return findOne(drivePermsTable, { member_id }) as Promise<DrivePermission>;
 }
 
 function saveDrivePermission(permId: string, until: Moment, memberId: Snowflake) {
@@ -29,7 +29,7 @@ function dropDrivePermission(permId: string) {
 }
 
 function fetchDrivePermissions(member_id?: Snowflake) {
-    return findAll(drivePermsTable, member_id ? { member_id } : true) as Promise<drivePermission[]>;
+    return findAll(drivePermsTable, member_id ? { member_id } : true) as Promise<DrivePermission[]>;
 }
 
 export { findDrivePerm, saveDrivePermission, dropDrivePermission, fetchDrivePermissions };

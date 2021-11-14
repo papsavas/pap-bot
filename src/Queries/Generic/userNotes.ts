@@ -1,9 +1,9 @@
 import { Snowflake } from "discord.js";
 import { userNotesTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, saveBatch, updateAll } from "../../DB/GenericCRUD";
-import { userNote } from "../../Entities/Generic/userNote";
+import { UserNote } from "../../Entities/Generic/userNote";
 
-async function addNote(user_id: Snowflake, note: string): Promise<userNote[]> {
+async function addNote(user_id: Snowflake, note: string): Promise<UserNote[]> {
     return saveBatch(userNotesTable, [
         {
             "user_id": user_id,
@@ -13,7 +13,7 @@ async function addNote(user_id: Snowflake, note: string): Promise<userNote[]> {
     ])
 }
 
-async function editNote(user_id: Snowflake, old_note: string, new_note: string): Promise<userNote[]> {
+async function editNote(user_id: Snowflake, old_note: string, new_note: string): Promise<UserNote[]> {
     return updateAll(userNotesTable, {
         "user_id": user_id,
         "note": old_note
@@ -37,7 +37,7 @@ function clearNotes(user_id: Snowflake): Promise<number> {
     })
 }
 
-async function fetchAllNotes(user_id: Snowflake): Promise<userNote[]> {
+async function fetchAllNotes(user_id: Snowflake): Promise<UserNote[]> {
     const notes = await findAll(userNotesTable, {
         "user_id": user_id
     });

@@ -1,10 +1,10 @@
 import { Snowflake } from "discord.js";
 import { guildMap } from "../../../src/index";
 import { findOne, updateAll } from "../../DB/GenericCRUD";
-import { guildSettings } from "../../Entities/Generic/guildSettings";
+import { GuildSettings } from "../../Entities/Generic/guildSettings";
 
-async function fetchGuildSettings(guildID: Snowflake): Promise<guildSettings> {
-    return findOne('guild_settings', { 'guild_id': guildID }) as Promise<guildSettings>;
+async function fetchGuildSettings(guildID: Snowflake): Promise<GuildSettings> {
+    return findOne('guild_settings', { 'guild_id': guildID }) as Promise<GuildSettings>;
 }
 
 function updateGuildSettings(guildID: Snowflake, newData: {}) {

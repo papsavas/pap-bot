@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-export interface drivePermission {
+export interface DrivePermission {
     perm_id: string;
     member_id: Snowflake;
     createdAt: Date;

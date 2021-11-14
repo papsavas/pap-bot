@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-export interface mutedMember {
+export interface MutedMember {
     member_id: Snowflake;
     provoker_id: Snowflake;
     roles: Snowflake[];

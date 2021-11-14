@@ -1,19 +1,18 @@
 import { Snowflake } from "discord.js";
 
 type commandLiteral = {
-    //prefix: string;
     fullCommand: string;
     splitCommand: string[];
     primaryCommand: string;
-    arg1: string | undefined;
-    arg2: string | undefined;
-    arg3: string | undefined;
-    commandless1: string | undefined;
-    commandless2: string | undefined;
-    commandless3: string | undefined;
+    arg1?: string;
+    arg2?: string;
+    arg3?: string;
+    commandless1?: string;
+    commandless2?: string;
+    commandless3?: string;
 }
 
-interface CommandType {
+interface CommandOptions {
     id: Snowflake;
     keyword: string;
     guide: string;
@@ -24,9 +23,10 @@ interface CommandType {
 }
 
 
-enum commandSpecifier {
+enum CommandScope {
     GUILD = "GUILD",
     GLOBAL = "GLOBAL"
 }
 
-export { commandLiteral, CommandType, commandSpecifier };
+export { commandLiteral, CommandOptions, CommandScope };
+
