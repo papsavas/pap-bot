@@ -9,6 +9,11 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/src/index.js",
+    "launch": "npm run timezone && ts-node src/index.ts",
+    "timezone": "set TZ='Europe/Athens'",
+    "dev": "set NODE_ENV='development' && npm run launch",
+    "prod": "set NODE_ENV='production1' && npm run launch",
+    "production": "set NODE_ENV='production' && npm run launch",
     "test": "jest --passWithNoTests"
   },
   "author": "Papageorgiadis Savvas",
@@ -45,7 +50,6 @@
     "@types/uuid": "^8.3.1",
     "dotenv": "^10.0.0",
     "jest": "^27.0.6",
-    "ts-jest": "^27.0.4",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.4"
   }
 }

@@ -22,8 +22,8 @@ export interface CommandManager {
         command: ApplicationCommandResolvable,
         data: ApplicationCommandData
     ): Promise<ApplicationCommand>;
-    updateCommands(commandManager: ApplicationCommandManager):
+    updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager):
         Promise<Collection<Snowflake, ApplicationCommand<{}>>>
-    clearCommands(commandManager: ApplicationCommandManager): Promise<unknown>;
+    clearCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager): Promise<unknown>;
 
 }
