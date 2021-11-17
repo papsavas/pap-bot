@@ -146,6 +146,18 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 break;
             }
 
+            case channels.questions: {
+                return message.type === "DEFAULT" ?
+                    message.startThread({
+                        name: message.id,
+                        autoArchiveDuration: "MAX",
+                        reason: `question asked by ${message.author.tag}`
+                    }) :
+                    message.deletable ?
+                        message.delete() :
+                        message.react('🗑')
+            }
+
 
         }
 
