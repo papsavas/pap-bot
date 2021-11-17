@@ -1,6 +1,6 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { userNote } from '../../../Entities/Generic/userNote';
+import { UserNote } from '../../../Entities/Generic/userNote';
 import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
@@ -135,7 +135,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
                     return interaction.editReply(`Removed **${await clearNotes(user_id)}** notes`);
                 }
                 case 'show': {
-                    const notes: userNote[] = await fetchAllNotes(user_id);
+                    const notes: UserNote[] = await fetchAllNotes(user_id);
                     return await interaction.editReply(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
                 }
 
@@ -180,7 +180,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
                 return user.send(`Removed **${await clearNotes(user_id)}** notes`);
 
             case 'show':
-                const notes: userNote[] = await fetchAllNotes(user_id);
+                const notes: UserNote[] = await fetchAllNotes(user_id);
                 return user.send(`here are your notes\n\`\`\`${notes.toString()}\`\`\``);
 
             case undefined:

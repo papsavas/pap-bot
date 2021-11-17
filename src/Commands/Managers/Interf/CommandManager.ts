@@ -8,20 +8,22 @@ export interface CommandManager {
     onManualCommand(message: Message): Promise<unknown>;
     onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown>
     registerCommand(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager,
+        commandManager: ApplicationCommandManager,
         commandData: ApplicationCommandData
     ): Promise<ApplicationCommand>;
-    editCommand(commandManager: ApplicationCommandManager,
+    editCommand(
+        commandManager: ApplicationCommandManager,
         command: ApplicationCommandResolvable,
         data: ApplicationCommandData,
-        guildId: Snowflake): Promise<ApplicationCommand>;
+        guildId: Snowflake
+    ): Promise<ApplicationCommand>;
     editCommand(
         commandManager: GuildApplicationCommandManager,
         command: ApplicationCommandResolvable,
         data: ApplicationCommandData
     ): Promise<ApplicationCommand>;
-    updateCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager):
+    updateCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager):
         Promise<Collection<Snowflake, ApplicationCommand<{}>>>
-    clearCommands(commandManager: ApplicationCommandManager | GuildApplicationCommandManager): Promise<unknown>;
+    clearCommands(commandManager: GuildApplicationCommandManager | ApplicationCommandManager): Promise<unknown>;
 
 }

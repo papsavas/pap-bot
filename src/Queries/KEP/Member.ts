@@ -2,7 +2,7 @@ import { Snowflake } from "discord.js";
 import moment, { Moment } from "moment-timezone";
 import { mutedMemberTable } from "../../../values/generic/DB.json";
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
-import { mutedMember } from "../../Entities/KEP/Member";
+import { MutedMember } from "../../Entities/KEP/Member";
 moment.locale("el");
 moment.tz("Europe/Athens");
 
@@ -21,11 +21,11 @@ function dropMutedMember(member_id: Snowflake) {
 }
 
 function fetchMutedMembers() {
-    return findAll(mutedMemberTable, true) as Promise<mutedMember[]>
+    return findAll(mutedMemberTable, true) as Promise<MutedMember[]>
 }
 
 function findMutedMember(member_id: Snowflake) {
-    return findOne(mutedMemberTable, { member_id }) as Promise<mutedMember>
+    return findOne(mutedMemberTable, { member_id }) as Promise<MutedMember>
 }
 
 export { saveMutedMember, dropMutedMember, fetchMutedMembers, findMutedMember };

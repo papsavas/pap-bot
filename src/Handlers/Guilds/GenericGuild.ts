@@ -1,7 +1,7 @@
 
 import { ApplicationCommand, BaseCommandInteraction, ButtonInteraction, Client, Collection, Guild, GuildBan, GuildMember, Message, MessageReaction, SelectMenuInteraction, Snowflake, User, VoiceState } from 'discord.js';
 import { GuildCommandManager } from '../../Commands/Managers/Interf/GuildCommandManager';
-import { guildSettings } from "../../Entities/Generic/guildSettings";
+import { GuildSettings } from "../../Entities/Generic/guildSettings";
 export interface GenericGuild {
 
     readonly commandManager: GuildCommandManager;
@@ -42,7 +42,7 @@ export interface GenericGuild {
 
     addGuildLog(log: string): string;
 
-    getSettings(): guildSettings;
+    getSettings(): GuildSettings;
 
     setPrefix(newPrefix: string): void;
 

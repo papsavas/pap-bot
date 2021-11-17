@@ -19,8 +19,8 @@ import { settingsCmdImpl } from '../../Commands/Guild/Impl/settingsCmdImpl';
 import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
-import { guildSettings } from "../../Entities/Generic/guildSettings";
-import { memberResponses } from "../../Entities/Generic/MemberResponses";
+import { GuildSettings } from "../../Entities/Generic/guildSettings";
+import { MemberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
 import { dropGuild } from '../../Queries/Generic/Guild';
 import { addLog } from "../../Queries/Generic/guildLogs";
@@ -36,8 +36,8 @@ import { GenericGuild } from "./GenericGuild";
 export abstract class AbstractGuild implements GenericGuild {
 
     private _responses: string[];
-    private _settings: guildSettings;
-    private _userResponses: memberResponses;
+    private _settings: GuildSettings;
+    private _userResponses: MemberResponses;
     private _guild: Guild;
     private _logs: string[] = [];
 
@@ -65,7 +65,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return this._guild;
     }
 
-    get userResponses(): memberResponses {
+    get userResponses(): MemberResponses {
         return this._userResponses;
     }
 
@@ -75,7 +75,7 @@ export abstract class AbstractGuild implements GenericGuild {
 
     static async init(guild_id: Snowflake): Promise<unknown> { return Promise.resolve() };
 
-    getSettings(): guildSettings {
+    getSettings(): GuildSettings {
         return this._settings;
     }
 
