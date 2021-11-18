@@ -108,7 +108,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Message): Promise<unknown> {
-        scanContent(message, this.keywords, this.contentScanChannel);
+        if ([
+            categories.etos1, categories.etos2,
+            categories.etos3, categories.etos4,
+            categories.etos4_2, categories.didaktiki,
+            categories.sxolh
+        ].includes((message.channel as GuildChannel).parentId))
+            scanContent(message, this.keywords, this.contentScanChannel);
         switch (message.channel.id) { //channels
             case channels.registration: {
                 if (message.deletable) await message.delete();
