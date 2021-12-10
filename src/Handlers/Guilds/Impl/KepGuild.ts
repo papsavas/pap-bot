@@ -498,7 +498,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                             .then(() => interaction.editReply("Message Deleted"));
                     }
 
-                    case buttons.surveillance: {
+                    case buttons.surveillanceSus: {
                         const member = await interaction.guild.members.fetch(interaction.user.id);
                         return (member.roles.cache.has(roles.overseer) ?
                             member.roles.remove(roles.overseer) : member.roles.add(roles.overseer))
@@ -613,7 +613,7 @@ async function handleMutedMembers(guild: Guild) {
     }
 }
 
-const { warnSus, focusSus, resolvedSus, deleteSus, surveillance } = buttons;
+const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
 
 const susWarnBtn = new MessageButton({
     customId: warnSus,
@@ -647,7 +647,7 @@ const susJumpBtn = (url: string) => new MessageButton({
 })
 
 const susSurveillanceBtn = new MessageButton({
-    customId: surveillance,
+    customId: surveillanceSus,
     style: "PRIMARY",
     emoji: "🚨",
     label: "Surveillance"

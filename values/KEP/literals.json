@@ -14,6 +14,6 @@
         "focusSus": "focus_sus_btn",
         "resolvedSus": "resolved_sus_btn",
         "deleteSus": "delete_sus_btn",
-        "surveillance": "surveillance_sus_btn"
+        "surveillanceSus": "surveillance_sus_btn"
     }
 }
