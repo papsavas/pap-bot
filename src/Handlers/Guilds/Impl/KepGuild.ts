@@ -489,12 +489,12 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 switch (interaction.customId) {
 
                     case buttons.warnSus: {
-                        return interaction.editReply(`Until pop up release, warns are added manually.\n\`~warn <member_id> <reason>\` στο <#${channels.skynet}>`)
+                        return interaction.editReply(`Until pop up release, warns are added manually.\n\`~warn <member_id> <reason>\` at <#${channels.skynet}>`)
                     }
 
                     case buttons.focusSus: {
                         return message.edit({
-                            content: `<@&746309963500093470> **Requires Attention**`,
+                            content: `<@&${roles.mod}> **Requires Attention**`,
                             embeds: message.embeds.map(e => e.setColor("RED")),
                             components: [new MessageActionRow().setComponents(
                                 new MessageButton(susWarnBtn), new MessageButton(susFocusBtn).setDisabled(), new MessageButton(susResolvedBtn), new MessageButton(susDeleteBtn).setDisabled(),
