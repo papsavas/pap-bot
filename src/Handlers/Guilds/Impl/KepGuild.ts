@@ -53,38 +53,6 @@ const guildCommands = [
     KEP_surveillanceCmdImpl
 ]
 
-const { warnSus, focusSus, resolvedSus, deleteSus } = buttons;
-
-const susWarnBtn = new MessageButton({
-    customId: warnSus,
-    style: "PRIMARY",
-    label: "Warn",
-    emoji: "⚠"
-})
-const susFocusBtn = new MessageButton({
-    customId: focusSus,
-    style: "DANGER",
-    emoji: "🎯",
-    label: "Focus",
-});
-const susResolvedBtn = new MessageButton({
-    customId: resolvedSus,
-    style: "SUCCESS",
-    emoji: "✅",
-    label: "Resolved",
-})
-const susDeleteBtn = new MessageButton({
-    customId: deleteSus,
-    style: "SECONDARY",
-    emoji: "🗑",
-    label: "Delete"
-})
-
-const susJumpBtn = (url: string) => new MessageButton({
-    style: "LINK",
-    url,
-    label: "Jump",
-})
 
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
@@ -496,11 +464,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         return message.edit({
                             content: `<@&${roles.mod}> **Requires Attention**`,
                             embeds: message.embeds.map(e => e.setColor("RED")),
-                            components: [new MessageActionRow().setComponents(
-                                new MessageButton(susWarnBtn), new MessageButton(susFocusBtn).setDisabled(), new MessageButton(susResolvedBtn), new MessageButton(susDeleteBtn).setDisabled(),
-                                //include jump button
-                                message.components[0].components.find(c => !c.customId)
-                            )],
+                            components: [
+                                new MessageActionRow().setComponents(
+                                    new MessageButton(susWarnBtn), new MessageButton(susFocusBtn).setDisabled(), new MessageButton(susResolvedBtn), new MessageButton(susDeleteBtn).setDisabled(),
+                                    //include jump button
+                                    message.components[0].components.find(c => !c.customId)
+                                ),
+                                new MessageActionRow().setComponents(new MessageButton(susSurveillanceBtn))
+                            ],
                             allowedMentions: { parse: ["roles"] }
                         })
                             .then(() => interaction.editReply("Marked as focused"))
@@ -525,6 +496,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     case buttons.deleteSus: {
                         return message.delete()
                             .then(() => interaction.editReply("Message Deleted"));
+                    }
+
+                    case buttons.surveillanceSus: {
+                        const member = await interaction.guild.members.fetch(interaction.user.id);
+                        return (member.roles.cache.has(roles.overseer) ?
+                            member.roles.remove(roles.overseer) : member.roles.add(roles.overseer))
+                            .then(() => interaction.editReply("Surveillance role toggled"))
                     }
 
                     default:
@@ -635,6 +613,47 @@ async function handleMutedMembers(guild: Guild) {
     }
 }
 
+const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
+
+const susWarnBtn = new MessageButton({
+    customId: warnSus,
+    style: "PRIMARY",
+    label: "Warn",
+    emoji: "⚠"
+})
+const susFocusBtn = new MessageButton({
+    customId: focusSus,
+    style: "DANGER",
+    emoji: "🎯",
+    label: "Focus",
+});
+const susResolvedBtn = new MessageButton({
+    customId: resolvedSus,
+    style: "SUCCESS",
+    emoji: "✅",
+    label: "Resolved",
+})
+const susDeleteBtn = new MessageButton({
+    customId: deleteSus,
+    style: "SECONDARY",
+    emoji: "🗑",
+    label: "Delete"
+})
+
+const susJumpBtn = (url: string) => new MessageButton({
+    style: "LINK",
+    url,
+    label: "Jump",
+})
+
+const susSurveillanceBtn = new MessageButton({
+    customId: surveillanceSus,
+    style: "PRIMARY",
+    emoji: "🚨",
+    label: "Surveillance"
+
+})
+
 function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
     const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
     const index = normalize(content).split(' ').findIndex(c =>
@@ -661,11 +680,15 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                 ],
                 timestamp: new Date(),
             })],
-            components: [new MessageActionRow().addComponents(
-                [susWarnBtn, susFocusBtn, susResolvedBtn, susDeleteBtn, susJumpBtn(url)]
-                    .map(source => new MessageButton(source))
-            )],
+            components: [
+                new MessageActionRow().addComponents(
+                    [susWarnBtn, susFocusBtn, susResolvedBtn, susDeleteBtn, susJumpBtn(url)]
+                        .map(source => new MessageButton(source))
+                ),
+                new MessageActionRow().addComponents(susSurveillanceBtn)
+            ],
         })
             .catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }
+
