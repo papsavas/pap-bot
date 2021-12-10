@@ -480,7 +480,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
                     case buttons.resolvedSus: {
                         return message.edit({
-                            content: `*Marked as resolved by ${interaction.member.toString()} at ${moment().format("LLLL")}*`,
+                            content: `*Marked as resolved by ${interaction.member.toString()} at ${moment().tz("Europe/Athens").format("LLLL")}*`,
                             allowedMentions: { parse: [] },
                             embeds: message.embeds.map(e => e.setColor("GREEN").setTitle("Resolved ✅\n" + e.title)),
                             components: message.components
