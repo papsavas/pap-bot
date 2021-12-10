@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import { sanitizeDiacritics, toGreek } from "greek-utils";
 import moment from "moment-timezone";
@@ -52,6 +52,39 @@ const guildCommands = [
     KEP_eventsCmdImpl,
     KEP_surveillanceCmdImpl
 ]
+
+const { warnSus, focusSus, resolvedSus, deleteSus } = buttons;
+
+const susWarnBtn = new MessageButton({
+    customId: warnSus,
+    style: "PRIMARY",
+    label: "Warn",
+    emoji: "⚠"
+})
+const susFocusBtn = new MessageButton({
+    customId: focusSus,
+    style: "DANGER",
+    emoji: "🎯",
+    label: "Focus",
+});
+const susResolvedBtn = new MessageButton({
+    customId: resolvedSus,
+    style: "SUCCESS",
+    emoji: "✅",
+    label: "Resolved",
+})
+const susDeleteBtn = new MessageButton({
+    customId: deleteSus,
+    style: "SECONDARY",
+    emoji: "🗑",
+    label: "Delete"
+})
+
+const susJumpBtn = (url: string) => new MessageButton({
+    style: "LINK",
+    url,
+    label: "Jump",
+})
 
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
@@ -450,6 +483,55 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 });
             }
 
+            case channels.content_scan: {
+                await interaction.deferReply({ ephemeral: true })
+                const message = await interaction.channel.messages.fetch(interaction.message.id);
+                switch (interaction.customId) {
+
+                    case buttons.warnSus: {
+                        return interaction.editReply(`Until pop up release, warns are added manually.\n\`~warn <member_id> <reason>\` at <#${channels.skynet}>`)
+                    }
+
+                    case buttons.focusSus: {
+                        return message.edit({
+                            content: `<@&${roles.mod}> **Requires Attention**`,
+                            embeds: message.embeds.map(e => e.setColor("RED")),
+                            components: [new MessageActionRow().setComponents(
+                                new MessageButton(susWarnBtn), new MessageButton(susFocusBtn).setDisabled(), new MessageButton(susResolvedBtn), new MessageButton(susDeleteBtn).setDisabled(),
+                                //include jump button
+                                message.components[0].components.find(c => !c.customId)
+                            )],
+                            allowedMentions: { parse: ["roles"] }
+                        })
+                            .then(() => interaction.editReply("Marked as focused"))
+
+                    }
+
+                    case buttons.resolvedSus: {
+                        return message.edit({
+                            content: `*Marked as resolved by ${interaction.member.toString()} at ${moment().format("LLLL")}*`,
+                            allowedMentions: { parse: [] },
+                            embeds: message.embeds.map(e => e.setColor("GREEN").setTitle("Resolved ✅\n" + e.title)),
+                            components: message.components
+                                .map(ar => ar.setComponents(
+                                    ar.components
+                                        .map(c => c.customId ? c.setDisabled() : c) //keep link btn enabled
+                                ))
+
+                        })
+                            .then(() => interaction.editReply("Marked as Resolved"))
+                    }
+
+                    case buttons.deleteSus: {
+                        return message.delete()
+                            .then(() => interaction.editReply("Message Deleted"));
+                    }
+
+                    default:
+                        return interaction.editReply(`No listener for button \`${interaction.customId}\``);
+                }
+            }
+
             default:
                 return super.onButton(interaction);
         }
@@ -574,15 +656,16 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
                 image: { proxyURL: attachments?.first()?.proxyURL },
                 fields: [
                     { name: "Channel", value: channel.toString(), inline: false },
-                    { name: "URL", value: `[Jump](${url})`, inline: false }
+                    { name: "Member", value: member.toString(), inline: false },
+                    { name: "Member ID", value: member.id, inline: true }
                 ],
                 timestamp: new Date(),
-            })]
+            })],
+            components: [new MessageActionRow().addComponents(
+                [susWarnBtn, susFocusBtn, susResolvedBtn, susDeleteBtn, susJumpBtn(url)]
+                    .map(source => new MessageButton(source))
+            )],
         })
-            .then(msg => {
-                msg.react('🗑').catch();
-                msg.react('👀').catch();
-            })
             .catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }

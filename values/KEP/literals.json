@@ -9,6 +9,10 @@
     },
     "buttons": {
         "appealId": "appeal",
-        "appealLabel": "έφεση"
+        "appealLabel": "έφεση",
+        "warnSus": "warn_sus_btn",
+        "focusSus": "focus_sus_btn",
+        "resolvedSus": "resolved_sus_btn",
+        "deleteSus": "delete_sus_btn"
     }
 }
