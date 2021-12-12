@@ -125,7 +125,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private prefixHandler = async (
         source: BaseCommandInteraction | Message,
-        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<void>,
+        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         newPrefix?: string
     ) => {
         const guildHandler = guildMap.get(source.guildId);
@@ -145,7 +145,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private lobbyHandler = async (
         source: BaseCommandInteraction | Message,
-        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<void>,
+        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         voice: GuildChannel
     ) => {
 
@@ -160,7 +160,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private nsfwHandler = async (
         source: BaseCommandInteraction | Message,
-        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<void>,
+        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
     ) => {
         const member = await source.guild.members.fetch(source.member.user.id);
         const perm = Permissions.FLAGS.MANAGE_GUILD;
