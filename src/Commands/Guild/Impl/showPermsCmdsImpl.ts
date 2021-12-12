@@ -6,6 +6,8 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPermsCmd } from "../Interf/showPermsCmd";
 
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
+
+//TODO: include in command_perms command
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;

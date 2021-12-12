@@ -7,10 +7,9 @@ import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
-import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
 
-export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
+export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `logs`;

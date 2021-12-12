@@ -20,7 +20,7 @@ export interface GenericCommand {
 
     matchAliases(possibleCommand: string | undefined): boolean;
 
-    respond(source: Message, response: ReplyMessageOptions): Promise<void>;
-    respond(source: BaseCommandInteraction, response: InteractionReplyOptions): Promise<void>;
+    respond(source: Message, response: ReplyMessageOptions): Promise<unknown>;
+    respond(source: BaseCommandInteraction, response: InteractionReplyOptions): Promise<unknown>;
 
 }
