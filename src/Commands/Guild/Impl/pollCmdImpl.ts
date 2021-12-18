@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
@@ -11,7 +10,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `poll`;
     protected _guide = `Creates a simple poll using 👍-👎`;
-    protected _usage = `poll <text>`;
+    protected _usage = `${this.keyword} <text>`;
     private constructor() { super() }
 
     static async init(): Promise<pollCmd> {
@@ -20,7 +19,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['poll', 'πολλ'],
             this.keyword
@@ -105,9 +104,6 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
                 botmsg.react('👎');
                 if (commandMsg.deletable)
                     commandMsg.delete()
-                        .catch(err => {
-                            //this.logErrorOnBugsChannel(err, bundle);
-                        });
             })
     }
 
@@ -115,7 +111,5 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return this._aliases
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

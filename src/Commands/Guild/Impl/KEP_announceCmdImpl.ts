@@ -2,7 +2,6 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from '../AbstractGuildCommand';
 import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
@@ -13,7 +12,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `announce`;
     protected _guide = `Ανακοινώνει ένα μήνυμα στα νέα-ενημερώσεις`;
-    protected _usage = `announce <message> [<roles>]`;
+    protected _usage = `${this.keyword} <message> [<roles>]`;
     private constructor() {
         super()
     }
@@ -23,7 +22,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['announce', 'ann'], this.keyword
         );
@@ -133,7 +132,4 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
 }

@@ -1,6 +1,5 @@
 import { APIRole } from "discord-api-types";
 import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Role, Snowflake, User } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -18,7 +17,7 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["open_voice", "unlock_voice", "unlock-voice"], this.keyword
         );
@@ -68,7 +67,5 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

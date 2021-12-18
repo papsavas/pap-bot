@@ -1,5 +1,4 @@
 import { ApplicationCommandData, ApplicationCommandOptionData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import * as i from "../../../../values/KEP/info.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -14,7 +13,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `info`;
     protected _guide = `Εμφανίζει διάφορες πληροφορίες σχετικά με τη σχολή`;
-    protected _usage = `info <πληροφορία>`;
+    protected _usage = `${this.keyword} <πληροφορία>`;
 
     private constructor() { super() }
 
@@ -23,7 +22,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["info", "i"], this.keyword
         );
@@ -69,9 +68,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 function fetchInfo(query: string): string {

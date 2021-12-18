@@ -23,7 +23,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["courses"], this.keyword
         );
@@ -212,7 +212,5 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

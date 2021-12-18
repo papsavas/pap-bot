@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
@@ -25,7 +24,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
             this.keyword
@@ -128,8 +127,6 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 
 }

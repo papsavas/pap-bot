@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 import { Snowflake } from "discord.js";
 import { findAll, saveBatch } from "../../DB/GenericCRUD";
 import { guildLog } from "../../Entities/Generic/guildLog";
@@ -23,3 +26,4 @@ async function addLog(guild_id: Snowflake, log: string, member_id?: Snowflake): 
 }
 
 export { loadGuildLogs, addLog };
+

@@ -60,7 +60,13 @@ export abstract class AbstractCommand implements GenericCommand {
             .some((alias: string) => alias === possibleCommand?.toLowerCase());
     }
 
-    protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
+    /**
+     * 
+     * @param {string[]} aliases 
+     * @param {string} keyword 
+     * @returns {string[]} An array of aliases with the keyword included
+     */
+    protected mergeAliases(aliases: string[], keyword: string): string[] {
         return aliases.includes(keyword) ? aliases : [...aliases, keyword]
     }
 }

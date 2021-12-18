@@ -1,7 +1,6 @@
 import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import moment from "moment-timezone";
 import 'moment/locale/el';
-import { guildMap } from "../../..";
 import { drive as driveLink } from "../../../../values/KEP/info.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -23,14 +22,14 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `drive`;
     protected _guide = `Λειτουργίες που αφορούν το dai archive`;
-    protected _usage = `drive register`;
+    protected _usage = `${this.keyword} register`;
     private constructor() { super() }
     static async init(): Promise<KEP_driveCmd> {
         const cmd = new KEP_driveCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["drive", "gdrive"], this.keyword
         );
@@ -89,7 +88,5 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

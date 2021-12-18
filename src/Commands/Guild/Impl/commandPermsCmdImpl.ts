@@ -28,7 +28,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -166,7 +166,5 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

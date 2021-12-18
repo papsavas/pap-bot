@@ -40,8 +40,6 @@ export interface GenericGuild {
 
     onGuildBanRemove(ban: GuildBan): Promise<unknown>;
 
-    addGuildLog(log: string): string;
-
     getSettings(): GuildSettings;
 
     setPrefix(newPrefix: string): void;

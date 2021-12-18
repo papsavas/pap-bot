@@ -1,5 +1,4 @@
 import { ApplicationCommandData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { tictactoeCmd } from "../Interf/tictactoeCmd";
@@ -63,7 +62,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['tictactoe', 'tic-tac-toe', 'triliza', 'τριλιζα'], this.keyword
         );
@@ -190,7 +189,5 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

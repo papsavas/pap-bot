@@ -1,5 +1,4 @@
 import { BaseCommandInteraction, Collection, Constants, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake, User } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -20,7 +19,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['bookmark', 'bm'], this.keyword
         );
@@ -63,9 +62,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 

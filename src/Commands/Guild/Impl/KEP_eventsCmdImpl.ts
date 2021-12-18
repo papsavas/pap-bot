@@ -13,7 +13,7 @@ const refreshLiteral = "refresh";
 export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_eventsCmd {
 
     protected _id: Collection<Snowflake, Snowflake>;
-    protected _keyword = `events`;
+    protected _keyword = `calendar_events`;
     protected _guide = `Διαχειρίζεται τα events στο google calendar`;
     protected _usage = `${this.keyword} ${refreshLiteral}}`;
     private constructor() { super() }
@@ -24,7 +24,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["event"], this.keyword
         );
@@ -69,9 +69,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 function handleRequest(subcommand: string) {

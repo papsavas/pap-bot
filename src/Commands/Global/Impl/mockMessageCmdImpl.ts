@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
 import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
@@ -22,7 +21,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['mock'],
             this.keyword
@@ -59,7 +58,5 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

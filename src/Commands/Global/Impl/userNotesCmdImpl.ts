@@ -1,7 +1,6 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { UserNote } from '../../../Entities/Generic/userNote';
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
@@ -25,7 +24,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],
             this.keyword
@@ -194,7 +193,5 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

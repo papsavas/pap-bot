@@ -20,7 +20,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -88,9 +88,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 
     private coreHandler = async (
         subcommand: string,

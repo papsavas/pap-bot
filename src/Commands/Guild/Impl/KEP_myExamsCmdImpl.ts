@@ -25,7 +25,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `myexams`;
     protected _guide = `Εμφανίζει τα επερχόμενα εξεταζόμενα μαθήματά σας`;
-    protected _usage = `myexams`;
+    protected _usage = `${this.keyword}`;
     private constructor() { super() }
 
     static async init(): Promise<KEP_myExamsCmd> {
@@ -34,7 +34,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['my_exams', 'exams', 'myexams'], this._keyword
         );
@@ -58,9 +58,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 function handleRequest(request: CommandInteraction | Message) {

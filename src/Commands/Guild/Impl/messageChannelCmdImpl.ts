@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { messageChannelCmd } from "../Interf/messageChannelCmd";
@@ -13,7 +12,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
     protected _id: Collection<Snowflake, Snowflake>;
     protected _keyword = `send`;
     protected _guide = `Messages a specific channel on the guild`;
-    protected _usage = `send <channel> <text>`;
+    protected _usage = `${this.keyword} <channel> <text>`;
     private constructor() { super() }
 
     static async init(): Promise<messageChannelCmd> {
@@ -22,7 +21,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['send', 'msgchannel', 'messagechannel', 'message_channel'],
             this.keyword
@@ -81,16 +80,11 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         const sendChannel = mentions.channels.first();
         if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
             return sendChannel.send(commandless2)
-                .then(() => this.addGuildLog(guild.id, `sent ${commandless2} to ${sendChannel.id}`));
         else
             throw new Error(`Channel not found`);
     }
 
     getAliases(): string[] {
         return this._aliases;
-    }
-
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
     }
 }
