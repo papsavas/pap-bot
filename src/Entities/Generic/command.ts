@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-const argDigits = [1, 2, 3, 4] as const;
+const argDigits = <const>[1, 2, 3, 4];
 type ArgDigits = typeof argDigits[number];
 type Arg = `arg${ArgDigits}`;
 type Args = `args${ArgDigits}`;
