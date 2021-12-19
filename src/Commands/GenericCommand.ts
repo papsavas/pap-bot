@@ -11,16 +11,10 @@ export interface GenericCommand {
     guide: string;
     usage: string;
     type: CommandScope;
-
     interactiveExecute(commandInteraction: BaseCommandInteraction): Promise<unknown>;
-
     execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
-
     getAliases(): string[];
-
     matchAliases(possibleCommand: string | undefined): boolean;
-
     respond(source: Message, response: ReplyMessageOptions): Promise<unknown>;
     respond(source: BaseCommandInteraction, response: InteractionReplyOptions): Promise<unknown>;
-
 }

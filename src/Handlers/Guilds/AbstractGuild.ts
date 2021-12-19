@@ -34,10 +34,10 @@ import { GenericGuild } from "./GenericGuild";
 
 export abstract class AbstractGuild implements GenericGuild {
 
-    private _responses: string[];
-    private _settings: GuildSettings;
-    private _userResponses: MemberResponses;
-    private _guild: Guild;
+    private _responses: string[] = null;
+    private _settings: GuildSettings = null;
+    private _userResponses: MemberResponses = null;
+    private _guild: Guild = null;
 
     //keeping it on cache, not that important
     private privateVoiceChannels: Snowflake[] = [];
@@ -53,7 +53,7 @@ export abstract class AbstractGuild implements GenericGuild {
         PinMessageCmdImpl, UnpinMessageCmdImpl, openVoiceCmdImpl, settingsCmdImpl
     ].map(cmd => cmd.init())
 
-    commandManager: GuildCommandManager;
+    commandManager: GuildCommandManager = null;
 
     protected constructor(guild_id: Snowflake) {
         this.guildID = guild_id;
