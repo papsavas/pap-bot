@@ -10,7 +10,7 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 //TODO: include in command_perms command
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `perms`;
     protected _guide = `Shows permissions for specific command`;
     protected _usage = `${this.keyword} <command>`;

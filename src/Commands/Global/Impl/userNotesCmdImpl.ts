@@ -10,10 +10,10 @@ import { userNotesCmd } from '../Interf/userNotesCmd';
 
 export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `notes`;
     protected _guide = `Your personal notes`;
-    protected _usage = `notes add <note> / remove <index> / edit <index> <note> / clear / show`;
+    protected _usage = `${this.keyword} add <note> / remove <index> / edit <index> <note> / clear / show`;
 
     private constructor() { super() }
 

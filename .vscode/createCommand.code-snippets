@@ -13,7 +13,7 @@
 		"prefix": "commandImpl",
 		"body": [
 			"export class ${3:Impl} extends ${5:Abstract__Command} implements ${4:interface}{\n",
-			"protected _id: Collection<Snowflake, Snowflake>;\nprotected _keyword = ``;\nprotected _guide = ``;\nprotected _usage = `${this.keyword}`;\n private constructor() {super()}",
+			"protected _id: Collection<Snowflake, Snowflake> = new Collection(null);\nprotected _keyword = ``;\nprotected _guide = ``;\nprotected _usage = `${this.keyword}`;\n private constructor() {super()}",
 			"static async init(): Promise<$4>{\nconst cmd = new $3();\ncmd._id = await fetchCommandID(cmd.keyword);\nreturn cmd;\n}",
 			"private readonly _aliases = this.addKeywordToAliases\n(\n[],this.keyword\n);",
 			"getCommandData(guild_id: Snowflake): ApplicationCommandData { return {\nname: this.keyword,\ndescription: this.guide,\ntype: 'CHAT_INPUT'\n}\n}",

@@ -6,7 +6,7 @@ import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `unpin`;
     protected _guide = `Unpins a message`;
     protected _usage = `Right click on message => Apps => ${this.keyword}`;

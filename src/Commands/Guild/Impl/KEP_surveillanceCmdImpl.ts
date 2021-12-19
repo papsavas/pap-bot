@@ -8,7 +8,7 @@ import { KEP_surveillanceCmd } from "../Interf/KEP_surveillanceCmd";
 
 export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP_surveillanceCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `surveillance`;
     protected _guide = `(Ξε)κλειδώνει όλα τα κανάλια μαθημάτων`;
     protected _usage = `${this.keyword}`;

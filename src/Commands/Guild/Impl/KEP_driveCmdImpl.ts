@@ -19,7 +19,7 @@ const enabledHours = [3, 6, 12];
 
 export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `drive`;
     protected _guide = `Λειτουργίες που αφορούν το dai archive`;
     protected _usage = `${this.keyword} register`;

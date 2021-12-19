@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
-import { commandLiteral } from "../../../Entities/Generic/command";
+import { commandLiteral } from '../../../Entities/Generic/command';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
 import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
@@ -8,10 +8,10 @@ import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `mock`;
     protected _guide = `Mocks text`;
-    protected _usage = `mock <text>`;
+    protected _usage = `${this.keyword} <text>`;
 
     private constructor() { super() }
 

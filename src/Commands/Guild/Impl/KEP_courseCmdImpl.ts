@@ -13,7 +13,7 @@ const [createLiteral, deleteLiteral, listLiteral] = ["create", "delete", "list"]
 const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"];
 export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_courseCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `course`;
     protected _guide = `Διαχειρίζεται τα μαθήματα στη ΒΔ`;
     protected _usage = `${this.keyword} create <code> <name> <semester> | delete <code> | list`;

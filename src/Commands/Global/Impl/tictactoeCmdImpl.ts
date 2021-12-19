@@ -50,10 +50,10 @@ const isWin = (board: MessageButton[][]) => {
 
 export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoeCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `tictactoe`;
     protected _guide = `Spawns a tic-tac-toe board`;
-    protected _usage = `tictactoe`;
+    protected _usage = `${this.keyword}`;
     private constructor() { super() }
 
     static async init(): Promise<tictactoeCmd> {

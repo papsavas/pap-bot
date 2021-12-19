@@ -20,7 +20,7 @@ const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedField
 }));
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `myschedule`;
     protected _guide = `Σας εμφανίζει το εβδομαδιαίο σας πρόγραμμα`;
     protected _usage = `${this.keyword}`;

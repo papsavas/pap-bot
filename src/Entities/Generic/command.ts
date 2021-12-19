@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 
-type commandLiteral = {
+interface commandLiteral {
     fullCommand: string;
     splitCommand: string[];
     primaryCommand: string;

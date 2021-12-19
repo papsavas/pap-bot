@@ -16,7 +16,7 @@ const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `dm`;
     protected _guide = `Sends DM to a specific member`;
     protected _usage = `${this.keyword} member/username/nickname message`;

@@ -7,7 +7,7 @@ import { pollCmd } from "../Interf/pollCmd";
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `poll`;
     protected _guide = `Creates a simple poll using 👍-👎`;
     protected _usage = `${this.keyword} <text>`;

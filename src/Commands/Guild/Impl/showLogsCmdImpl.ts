@@ -12,7 +12,7 @@ import { showLogsCmd } from "../Interf/showLogsCmd";
  */
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `logs`;
     protected _guide = `Prints guilds logs`;
     protected _usage = `${this.keyword}`;

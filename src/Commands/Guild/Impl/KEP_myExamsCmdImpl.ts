@@ -22,7 +22,7 @@ const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
 }));
 export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myExamsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `myexams`;
     protected _guide = `Εμφανίζει τα επερχόμενα εξεταζόμενα μαθήματά σας`;
     protected _usage = `${this.keyword}`;

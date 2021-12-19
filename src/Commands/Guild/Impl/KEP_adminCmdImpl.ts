@@ -9,7 +9,7 @@ const [onLiteral, offLiteral] = ["on", "off"];
 
 export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `admin`;
     protected _guide = `Enables/Disables ADMIN permission`;
     protected _usage = `${this.keyword}`;

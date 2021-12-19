@@ -10,7 +10,7 @@ const [nsfwLiteral, lobbyLiteral, prefixLiteral] = ["nsfw", "voice-lobby", "pref
 const [voiceOptLiteral, newPrefixOptLiteral] = ["voice_channel", "new_prefix"]
 
 export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `settings`;
     protected _guide = `edits guild settings`;
     protected _usage = `${this.keyword} nsfw | voice-lobby <channel_id> | prefix [new_prefix]`;

@@ -18,7 +18,7 @@ TODO: support global commands
 //TODO: include listing perms
 export class commandPermsCmdImpl extends AbstractGuildCommand implements commandPermsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `command_perms`;
     protected _guide = `Lock/Unlock commands`;
     protected _usage = `${this.keyword} ${lockLiteral} <command> <role1> [role2...] | ${unlockLiteral} <command>`;

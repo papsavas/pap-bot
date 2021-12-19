@@ -12,7 +12,7 @@ moment.tz("Europe/Athens");
 
 export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `mute`;
     protected _guide = `Mutes a member for certain amount of time`;
     protected _usage = `${this.keyword} <user> <amount> [reason]`;

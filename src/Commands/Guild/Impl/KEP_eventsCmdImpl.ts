@@ -12,7 +12,7 @@ const refreshLiteral = "refresh";
 
 export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_eventsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `calendar_events`;
     protected _guide = `Διαχειρίζεται τα events στο google calendar`;
     protected _usage = `${this.keyword} ${refreshLiteral}}`;

@@ -14,7 +14,7 @@ const response: ApplicationCommandOptionData['name'] = 'response';
 const usage = "myresponses add <response> | remove <index> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `myresponses`;
     protected _guide = `Manage your submitted responses`;
     protected _usage = `${this.keyword}`;

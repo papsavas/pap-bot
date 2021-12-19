@@ -18,7 +18,7 @@ const [email, password] = ['email', 'password']
 
 export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP_registrationCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `registration`;
     protected _guide = `Εγγραφή στην κοινότητα Εφ. Πληροφορικής`;
     protected _usage = `${this.keyword} register/verify`;

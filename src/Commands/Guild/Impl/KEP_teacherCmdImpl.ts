@@ -22,7 +22,7 @@ const [
     ];
 export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teacherCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `teacher`;
     protected _guide = `Διαχειρίζεται τους καθηγητές στη ΒΔ`;
     protected _usage = `${this.keyword} create <username> <full_name> <phone_number>, [picture_url], [website] | delete <username> | list`;

@@ -7,7 +7,7 @@ import { openVoiceCmd } from "../Interf/openVoiceCmd";
 
 export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `open-voice`;
     protected _guide = `Unlocks voice for member or role`;
     protected _usage = `${this.keyword} <member | role>`;

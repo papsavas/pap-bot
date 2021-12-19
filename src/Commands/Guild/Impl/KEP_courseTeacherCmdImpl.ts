@@ -11,7 +11,7 @@ const [linkLiteral, unlinkLiteral, listLiteral] = ['link', 'unlink', 'list'];
 const [codeLiteral, usernameLiteral] = ['code', 'username'];
 export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KEP_courseTeacherCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `course_teacher`;
     protected _guide = `Συσχέτιση μεταξύ μαθήματος και καθηγητή`;
     protected _usage = `${this.keyword} link | unlink <course_code> <teacher_username> | list`;

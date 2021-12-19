@@ -6,7 +6,7 @@ import { bookmarkCmd } from "../Interf/bookmarkCmd";
 
 export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `bookmark`;
     protected _guide = null;
     protected _usage = null;

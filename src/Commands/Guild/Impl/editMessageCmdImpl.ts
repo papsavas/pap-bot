@@ -12,7 +12,7 @@ const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 //TODO: use message link for channel and message id
 //* Requires Command Re-Registration  
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `editmsg`;
     protected _guide = `Edits a bot's text message`;
     protected _usage = `${this.keyword} <channel> <msg_id> <text>`;

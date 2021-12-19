@@ -6,7 +6,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `pin`;
     protected _guide = `Pins a message`;
     protected _usage = `Right click on message => Apps => ${this.keyword}`;
