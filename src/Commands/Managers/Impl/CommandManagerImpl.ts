@@ -5,7 +5,7 @@ import {
     Collection, CommandInteraction, Constants, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
-import { commandLiteral } from "../../../Entities/Generic/command";
+import { argDigits, commandLiteral, ToArgsType, ToArgType } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
@@ -140,17 +140,15 @@ export abstract class CommandManagerImpl implements CommandManager {
         const splitCommand: string[] = fullCommand
             .split(/(\s+)/)
             .filter(e => e.trim().length > 0) //split command from space(s);
+        const arg = Object.fromEntries(argDigits.map(k => [`arg${k}`, splitCommand[k]]));
+        const args = Object.fromEntries(argDigits.map(k => [`args${k}`, splitCommand.slice(k).join(' ')]));
+
         return {
-            //prefix,
             fullCommand,
             splitCommand,
             primaryCommand: splitCommand[0],
-            arg1: splitCommand[1],
-            arg2: splitCommand[2],
-            arg3: splitCommand[3],
-            commandless1: splitCommand.slice(1).join(' '),
-            commandless2: splitCommand.slice(2).join(' '),
-            commandless3: splitCommand.slice(3).join(' ')
+            ...arg as ToArgType<typeof arg>,
+            ...args as ToArgsType<typeof args>
         }
     }
 

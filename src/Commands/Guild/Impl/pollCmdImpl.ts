@@ -76,7 +76,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             .catch(err => interaction.reply(`something went wrong`))
     }
 
-    execute(message: Message, { commandless1 }: commandLiteral) {
+    execute(message: Message, { args1 }: commandLiteral) {
         const commandMsg = message;
         return (commandMsg.channel as TextChannel).send({
             embeds: [
@@ -84,7 +84,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
                     {
                         title: `Ψηφίστε`,
                         color: '#D8F612',
-                        description: commandless1,
+                        description: args1,
                         author: {
                             name: commandMsg.member.displayName,
                             icon_url: commandMsg.member.user.avatarURL({ format: 'png' })

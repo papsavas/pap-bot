@@ -47,8 +47,8 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return interaction.reply(UpperLowerCaseSwitching(interaction.options.getString(textOptionLiteral, true)));
     }
 
-    execute(message: Message, { commandless1 }: commandLiteral): Promise<any> {
-        return message.channel.send(UpperLowerCaseSwitching(commandless1))
+    execute(message: Message, { args1 }: commandLiteral): Promise<any> {
+        return message.channel.send(UpperLowerCaseSwitching(args1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();
             })

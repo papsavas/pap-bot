@@ -94,14 +94,14 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
     async execute(
         message: Message,
-        { commandless2 }: commandLiteral
+        { args2 }: commandLiteral
     ) {
         const { guild, attachments, mentions, member } = message;
         if (!member.permissions.has(requiredPerm))
             return message.reply.call(`\`\`\`{${permLiteral} permissions required\`\`\``);
 
         const user = mentions.users.first();
-        const text = commandless2;
+        const text = args2;
         if (!text && !attachments)
             throw new Error('Cannot send empty message');
 

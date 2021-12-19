@@ -73,13 +73,13 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     }
 
-    async execute(message: Message, { commandless2 }: commandLiteral) {
+    async execute(message: Message, { args2 }: commandLiteral) {
         const { guild, mentions, member } = message;
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return message.reply(`\`MANAGE_GUILD\` permissions required`);
         const sendChannel = mentions.channels.first();
         if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
-            return sendChannel.send(commandless2)
+            return sendChannel.send(args2)
         else
             throw new Error(`Channel not found`);
     }

@@ -86,9 +86,9 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
         })
     }
 
-    async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
+    async execute(message: Message, { arg1, args2 }: commandLiteral): Promise<any> {
         return message.reply({
-            embeds: await embedResponse(message, arg1, commandless2)
+            embeds: await embedResponse(message, arg1, args2)
         })
 
     }

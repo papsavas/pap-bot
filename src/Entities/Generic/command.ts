@@ -1,15 +1,22 @@
 import { Snowflake } from "discord.js";
 
-interface commandLiteral {
+const argDigits = [1, 2, 3, 4] as const;
+type ArgDigits = typeof argDigits[number];
+type Arg = `arg${ArgDigits}`;
+type Args = `args${ArgDigits}`;
+type ArgType = Record<Arg, string>
+type ArgsType = Record<Args, string>
+type ToArgType<T> = {
+    [K in keyof T as Arg]: string
+}
+type ToArgsType<T> = {
+    [K in keyof T as Args]: string
+}
+
+type commandLiteral = ArgType & ArgsType & {
     fullCommand: string;
     splitCommand: string[];
     primaryCommand: string;
-    arg1?: string;
-    arg2?: string;
-    arg3?: string;
-    commandless1?: string;
-    commandless2?: string;
-    commandless3?: string;
 }
 
 interface CommandOptions {
@@ -28,5 +35,5 @@ enum CommandScope {
     GLOBAL = "GLOBAL"
 }
 
-export { commandLiteral, CommandOptions, CommandScope };
+export { commandLiteral, CommandOptions, CommandScope, ToArgType, ToArgsType, ArgDigits, argDigits };
 
