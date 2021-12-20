@@ -14,7 +14,8 @@
     "dev": "set NODE_ENV='development' && npm run launch",
     "prod": "set NODE_ENV='production1' && npm run launch",
     "production": "set NODE_ENV='production' && npm run launch",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "devtest": "tsc -p tsconfig.test.json && npm test",
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",

@@ -1,6 +1,8 @@
 import { Collection, Snowflake } from "discord.js";
 import { Course } from "./Course";
 
+export { amType, Student, PendingStudent, StudentFine };
+
 type digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type digitZeroLess = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 type tmType = `tm${1}${digitZeroLess}${digit}${digit | ''}${digit | ''}`;
@@ -28,5 +30,4 @@ interface StudentFine {
     uuid?: string;
 }
 
-export { amType, Student, PendingStudent, StudentFine };
 
