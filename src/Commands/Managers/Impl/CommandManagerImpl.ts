@@ -5,7 +5,7 @@ import {
     Collection, CommandInteraction, Constants, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
-import { argDigits, commandLiteral, ToArgsType, ToArgType } from "../../../Entities/Generic/command";
+import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
@@ -147,8 +147,8 @@ export abstract class CommandManagerImpl implements CommandManager {
             fullCommand,
             splitCommand,
             primaryCommand: splitCommand[0],
-            ...arg as ToArgType<typeof arg>,
-            ...args as ToArgsType<typeof args>
+            ...arg as ToArgxType<typeof arg>,
+            ...args as ToArgsxType<typeof args>
         }
     }
 

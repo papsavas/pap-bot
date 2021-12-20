@@ -1,3 +1,4 @@
+export { googleToken, googleCredentials };
 interface googleToken {
     "access_token": string,
     "refresh_token": string,
@@ -24,4 +25,4 @@ interface googleCredentials {
     "web"?: coreCredentials
 }
 
-export { googleToken, googleCredentials };
+
