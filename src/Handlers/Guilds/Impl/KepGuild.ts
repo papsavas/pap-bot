@@ -24,7 +24,7 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
 import { Teacher } from '../../../Entities/KEP/Teacher';
-import { fetchCourses } from '../../../Queries/KEP/Course';
+import { fetchCourses, fetchTeacherCourses } from '../../../Queries/KEP/Course';
 import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
 import { fetchKeywords } from '../../../Queries/KEP/Keywords';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
@@ -91,6 +91,21 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         this.courses = await fetchCourses();
         this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
         this.contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
+
+        //load teachers
+        const tc = await fetchTeacherCourses();
+        for (const teacher of this.teachers.values()) {
+            const courses = tc
+                .filter(tc => tc.teacher_id === teacher.uuid)
+                .map(tc => {
+                    const course = this.courses.find(c => c.uuid === tc.course_id);
+                    return course ?
+                        [course.role_id, course] as [Course['role_id'], Course] :
+                        null
+                })
+            teacher.courses = new Collection(courses);
+        }
+
         //load students
         for (const student of this.students.values()) {
             const member = members.get(student.member_id);
