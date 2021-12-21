@@ -3,6 +3,7 @@ import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 import { RequireAtLeastOne } from "../../tools/types";
 
+export { fetchTeachers, addTeacher, deleteTeacher };
 
 const fetchTeachers = (
     clause?: RequireAtLeastOne<Teacher>,
@@ -31,5 +32,4 @@ async function deleteTeacher(username: Teacher['username']) {
     await deleteBatch(teacherTable, { "uuid": teacher['uuid'] });
 }
 
-export { fetchTeachers, addTeacher, deleteTeacher };
 

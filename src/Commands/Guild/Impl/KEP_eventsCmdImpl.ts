@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
 import { guildMap } from "../../..";
 import { guildId } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -14,7 +14,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `calendar_events`;
-    protected _guide = `Διαχειρίζεται τα events στο google calendar`;
+    protected _guide = `Διαχειρίζεται τα events του Google Calendar`;
     protected _usage = `${this.keyword} ${refreshLiteral}}`;
     private constructor() { super() }
 
@@ -44,43 +44,32 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has("MANAGE_GUILD"))
-            return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: true });
         const subCommand = interaction.options.getSubcommand(true);
-        let res: string;
-        try {
-            await handleRequest(subCommand);
-            res = 'events refreshed';
-        } catch (e) {
-            res = e.toString();
-        }
-        return interaction.editReply(res);
+        return this.handleRequest(interaction, subCommand);
 
     }
     async execute(message: Message, { arg1 }: commandLiteral): Promise<unknown> {
-        if (!message.member.permissions.has("MANAGE_GUILD"))
-            return message.reply("`MANAGE_GUILD` permissions required")
-        return handleRequest(arg1);
+        return this.handleRequest(message, arg1);
     }
 
     getAliases(): string[] {
         return this._aliases;
     }
 
-
-}
-
-function handleRequest(subcommand: string) {
-    switch (subcommand) {
-
-        case refreshLiteral: {
-            return reloadEvents();
+    async handleRequest(source: Message | CommandInteraction, subcommand: string) {
+        const member = source.member instanceof GuildMember ?
+            source.member : await source.guild.members.fetch(source.member.user.id);
+        if (!member.permissions.has("MANAGE_GUILD"))
+            return this.respond(source, { content: "`MANAGE_GUILD` permissions required" });
+        switch (subcommand) {
+            case refreshLiteral: {
+                return reloadEvents()
+                    .then(() => this.respond(source, { content: "Events reloaded" }));
+            }
+            default:
+                return Promise.reject("invalid subcommand")
         }
-
-        default:
-            return Promise.reject("invalid subcommand")
     }
 }
 
