@@ -31,7 +31,7 @@ import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Qu
 import { banStudent, dropAllPendingStudents, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { fetchTeachers } from '../../../Queries/KEP/Teacher';
 import { textSimilarity } from '../../../tools/cmptxt';
-import { fetchEvents } from '../../../tools/Google/Gcalendar';
+import { fetchCalendarEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
@@ -83,7 +83,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     async onReady(client: Client): Promise<unknown> {
         await super.onReady(client);
-        this.events = await fetchEvents();
+        this.events = await fetchCalendarEvents();
         this.keywords = await fetchKeywords();
         this.teachers = new Collection((await fetchTeachers()).map(t => [t.username, t]));
         const members = await this.guild.members.fetch();

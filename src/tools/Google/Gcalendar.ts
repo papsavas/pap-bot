@@ -1,6 +1,7 @@
-import { google } from 'googleapis';
+import { calendar_v3, google } from 'googleapis';
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets';
 import { Gauth } from './Gauth';
+export { fetchCalendarEvents, insertCalendarEvent };
 
 if (process.env.NODE_ENV !== 'production')
     require('dotenv').config({ path: require('find-config')('.env') })
@@ -22,6 +23,7 @@ const credentials: googleCredentials = {
         ]
     }
 };
+
 const token: googleToken = {
     access_token: process.env.GCALENDAR_ACCESS_TOKEN,
     refresh_token: process.env.GCALENDAR_REFRESH_TOKEN,
@@ -32,7 +34,7 @@ const token: googleToken = {
 
 const authP = Gauth(credentials, token, SCOPES);
 
-export async function fetchEvents(past = false) {
+async function fetchCalendarEvents(past = false) {
     const calendar = google.calendar({ version: "v3", auth: await authP });
     const res = await calendar.events.list({
         calendarId: 'primary',
@@ -42,4 +44,15 @@ export async function fetchEvents(past = false) {
         orderBy: 'startTime',
     });
     return res.status === 200 ? res.data.items ?? [] : Promise.reject(res.statusText);
+}
+
+async function insertCalendarEvent(options: calendar_v3.Schema$Event, user?: string) {
+    const calendar = google.calendar({ version: "v3", auth: await authP });
+    return calendar.events.insert(
+        {
+            calendarId: 'primary',
+            requestBody: options,
+            quotaUser: user?.substring(0, 40)
+        }
+    );
 }

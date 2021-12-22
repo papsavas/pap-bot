@@ -35,7 +35,7 @@ const token: googleToken = {
 
 const authP = Gauth(credentials, token, ["https://www.googleapis.com/auth/spreadsheets"]);
 
-async function fetchSheet(params: sheets_v4.Params$Resource$Spreadsheets$Values$Get): Promise<any> {
+async function fetchSheet(params: sheets_v4.Params$Resource$Spreadsheets$Values$Get) {
     const sheets = google.sheets({ version: 'v4', auth: await authP });
     return sheets.spreadsheets.values.get(params)
 }
