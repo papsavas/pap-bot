@@ -29,9 +29,6 @@ interface CourseEvent {
     end: Date;
     info?: string;
     location?: string;
-    /**
-     * Weekly
-     */
     recurring?: {
         recurrance: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
         count: number;
