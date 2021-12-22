@@ -134,7 +134,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                                 //@ts-expect-error
                                 colorId: type === lectureLiteral ? "10" : "2",
                                 recurrence: e.recurring ?
-                                    [`RRULE:FREQ=${e.recurring.recurrance};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase().substring(0, 2)}`]
+                                    [`RRULE:FREQ=${e.recurring.recurrance};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
                                     : undefined
 
                             }))
