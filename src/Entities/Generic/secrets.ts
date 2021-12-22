@@ -14,7 +14,7 @@ interface coreCredentials {
     "token_uri": string,
     "auth_provider_x509_cert_url": string,
     "client_secret": string,
-    "redirect_uris"?: [
+    "redirect_uris": [
         string,
         string,
     ]
