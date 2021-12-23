@@ -30,7 +30,7 @@ interface CourseEvent {
     info?: string;
     location?: string;
     recurring?: {
-        recurrance: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+        recurrence: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
         count: number;
     }
 }

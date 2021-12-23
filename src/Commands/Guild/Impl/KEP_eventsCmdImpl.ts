@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Snowflake } from "discord.js";
 import moment from "moment";
 import { guildMap } from "../../..";
 import { guildId } from "../../../../values/KEP/IDs.json";
@@ -80,7 +80,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         }
     }
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true, fetchReply: true });
         const subCommand = interaction.options.getSubcommand(true);
         return this.handleRequest(interaction, subCommand);
 
@@ -93,28 +93,65 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         return this._aliases;
     }
 
-    async handleRequest(source: CommandInteraction, subcommand: string) {
-        const member = source.member instanceof GuildMember ?
-            source.member : await source.guild.members.fetch(source.member.user.id);
+    async handleRequest(interaction: CommandInteraction, subcommand: string) {
+        const member = interaction.member instanceof GuildMember ?
+            interaction.member : await interaction.guild.members.fetch(interaction.member.user.id);
         if (!member.permissions.has("MANAGE_GUILD"))
-            return this.respond(source, { content: "`MANAGE_GUILD` permissions required" });
+            return interaction.editReply({ content: "`MANAGE_GUILD` permissions required" });
         switch (subcommand) {
             case refreshLiteral: {
                 return reloadEvents()
-                    .then(() => this.respond(source, { content: "Events reloaded" }));
+                    .then(() => interaction.editReply({ content: "Events reloaded" }));
             }
-
             case registerLiteral: {
-                const url = source.options.getString(urlOption, true);
-                const field = source.options.getString(fieldOption, true);
-                const type = source.options.getString(typeOption, true) as typeof lectureLiteral | typeof examLiteral;
+                const url = interaction.options.getString(urlOption, true);
+                const field = interaction.options.getString(fieldOption, true);
+                const type = interaction.options.getString(typeOption, true) as typeof lectureLiteral | typeof examLiteral;
                 if (type === lectureLiteral)
-                    return this.respond(source, { content: "Δεν υποστηρίζεται η εγγραφή Προγράμματος Διδασκαλίας" });
+                    return interaction.editReply({ content: "Δεν υποστηρίζεται η εγγραφή Προγράμματος Διδασκαλίας" });
                 const courseEvents = await fetchCourseEvents(field, url);
+                const text = JSON.stringify(courseEvents, null, "\t");
+                const buffer = Buffer.from(text);
+                const file = new MessageAttachment(buffer, new Date().toISOString() + "_CalendarPendingEvents.json");
+                await interaction.editReply({
+                    content: "Is this format valid?",
+                    files: [file],
+                    components: [new MessageActionRow({
+                        components: [
+                            new MessageButton({
+                                customId: "yes",
+                                label: "Yes",
+                                emoji: "✅",
+                                style: "SUCCESS"
+                            }),
+                            new MessageButton({
+                                customId: "no",
+                                label: "No",
+                                emoji: "❌",
+                                style: "DANGER"
+                            })
+                        ]
+                    })]
+                });
+
+                try {
+                    const resp = await interaction.channel.awaitMessageComponent({
+                        filter: (i) =>
+                            i.user.id === interaction.user.id && ['yes', 'no'].includes(i.customId),
+                        componentType: "BUTTON",
+                        time: 60000
+
+                    });
+                    if (resp.customId === "no") {
+                        return interaction.editReply({ content: "Command Cancelled" });
+                    }
+                } catch (err) {
+                    return interaction.editReply({ content: `Command Failed. Reason: \`${err.toString()}\`` })
+                }
 
                 courseEvents.forEach(ce =>
                     //@ts-expect-error
-                    ce.recurring = type === lectureLiteral ? { recurrance: "WEEKLY", count: 13 } : undefined)
+                    ce.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined)
                 return Promise.all(
                     courseEvents
                         .map(e =>
@@ -134,13 +171,13 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                                 //@ts-expect-error
                                 colorId: type === lectureLiteral ? "10" : "2",
                                 recurrence: e.recurring ?
-                                    [`RRULE:FREQ=${e.recurring.recurrance};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
+                                    [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
                                     : undefined
 
                             }))
                 )
                     .then(() => reloadEvents())
-                    .then(() => this.respond(source, { content: "Events registered & reloaded" }));
+                    .then(() => interaction.editReply({ content: "Events registered & reloaded" }));
             }
             default:
                 return Promise.reject("invalid subcommand")
