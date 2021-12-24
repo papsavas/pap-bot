@@ -1,6 +1,5 @@
 
 import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import { roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -9,7 +8,7 @@ import { KEP_surveillanceCmd } from "../Interf/KEP_surveillanceCmd";
 
 export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP_surveillanceCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `surveillance`;
     protected _guide = `(Ξε)κλειδώνει όλα τα κανάλια μαθημάτων`;
     protected _usage = `${this.keyword}`;
@@ -19,7 +18,7 @@ export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["επιτήρηση", "επιτηρηση", "epitirisi", "epithrhsh"], this.keyword
         );
@@ -50,7 +49,5 @@ export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

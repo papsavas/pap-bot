@@ -1,7 +1,6 @@
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { UserNote } from '../../../Entities/Generic/userNote';
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { addNote, clearNotes, deleteNote, editNote, fetchAllNotes } from '../../../Queries/Generic/userNotes';
 import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
@@ -11,10 +10,10 @@ import { userNotesCmd } from '../Interf/userNotesCmd';
 
 export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `notes`;
     protected _guide = `Your personal notes`;
-    protected _usage = `notes add <note> / remove <index> / edit <index> <note> / clear / show`;
+    protected _usage = `${this.keyword} add <note> / remove <index> / edit <index> <note> / clear / show`;
 
     private constructor() { super() }
 
@@ -25,7 +24,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],
             this.keyword
@@ -150,7 +149,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     }
 
-    async execute(message: Message, { arg1, commandless2 }: commandLiteral) {
+    async execute(message: Message, { arg1, args2 }: commandLiteral) {
         const { author } = message
         if (message.channel.type !== "DM")
             return message.reply({
@@ -161,17 +160,17 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         console.log(arg1);
         switch (arg1) {
             case 'add':
-                const addedNote = commandless2.trimStart().trimEnd();
+                const addedNote = args2.trimStart().trimEnd();
                 await addNote(user_id, addedNote);
                 return user.send(`you added: \`\`\`${addedNote}\`\`\``);
 
             case 'edit':
-                const [oldNote, newNote] = commandless2.split('|', 2);
+                const [oldNote, newNote] = args2.split('|', 2);
                 const res = await editNote(user_id, oldNote.trimStart().trimEnd(), newNote.trimStart().trimEnd());
                 return user.send(res[0].note ? `note edited to \`${res[0].note?.substr(0, 10)}...\`` : `note \`${oldNote.trimStart().trimEnd()}\` does not exist`);
 
             case 'remove':
-                const removingNote = commandless2.trimStart().trimEnd();
+                const removingNote = args2.trimStart().trimEnd();
                 const n = await deleteNote(user_id, removingNote);
                 return user.send(`removed **${n}** notes`);
 
@@ -194,7 +193,5 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

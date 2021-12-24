@@ -1,5 +1,4 @@
 import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, User } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -9,10 +8,10 @@ import { KEP_dataCmd } from "../Interf/KEP_dataCmd";
 
 export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `data`;
     protected _guide = `Εμφανίζει λεπτομέρειες για συγκεκριμένο μέλος`;
-    protected _usage = `data (am <am> | member <member>)`;
+    protected _usage = `${this.keyword} (am <am> | member <member>)`;
 
     private constructor() { super() }
 
@@ -22,7 +21,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["data", "d"], this.keyword
         );
@@ -87,9 +86,6 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
 }
 
 const findStudent = (id: amType | User) =>

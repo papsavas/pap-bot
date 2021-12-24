@@ -4,7 +4,6 @@ import {
     GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { dmMemberCmd } from "../Interf/dmMemberCmd";
@@ -17,10 +16,10 @@ const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `dm`;
     protected _guide = `Sends DM to a specific member`;
-    protected _usage = `dm member/username/nickname message`;
+    protected _usage = `${this.keyword} member/username/nickname message`;
     private constructor() { super() }
 
     static async init(): Promise<dmMemberCmd> {
@@ -29,7 +28,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['directmessage', 'message', 'dm'],
             this.keyword
@@ -95,14 +94,14 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
     async execute(
         message: Message,
-        { commandless2 }: commandLiteral
+        { args2 }: commandLiteral
     ) {
         const { guild, attachments, mentions, member } = message;
         if (!member.permissions.has(requiredPerm))
             return message.reply.call(`\`\`\`{${permLiteral} permissions required\`\`\``);
 
         const user = mentions.users.first();
-        const text = commandless2;
+        const text = args2;
         if (!text && !attachments)
             throw new Error('Cannot send empty message');
 
@@ -136,7 +135,5 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

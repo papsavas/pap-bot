@@ -1,6 +1,5 @@
 import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import moment from "moment-timezone";
-import { guildMap } from "../../..";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -13,17 +12,17 @@ moment.tz("Europe/Athens");
 
 export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `mute`;
     protected _guide = `Mutes a member for certain amount of time`;
-    protected _usage = `mute <user> <amount> [reason]`;
+    protected _usage = `${this.keyword} <user> <amount> [reason]`;
     private constructor() { super() }
     static async init(): Promise<KEP_muteCmd> {
         const cmd = new KEP_muteCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["mute", "sks"], this.keyword
         );
@@ -72,7 +71,8 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         await member.roles.remove(roles);
         await member.roles.add(muteRole);
         const unmuteAt = moment().add(amount, "hours");
-        await saveMutedMember(member.id, unmuteAt, provoker_id, roles, reason)
+        await saveMutedMember(member.id, unmuteAt, provoker_id, roles, reason);
+        await member.timeout(unmuteAt.milliseconds(), reason);
         const logs = interaction.guild.channels.cache.get(kepChannels.logs) as TextChannel;
         const headerEmb = new MessageEmbed({
             author: {
@@ -113,7 +113,5 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

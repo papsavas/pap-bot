@@ -23,7 +23,6 @@ import { GuildSettings } from "../../Entities/Generic/guildSettings";
 import { MemberResponses } from "../../Entities/Generic/MemberResponses";
 import { genericGuildResponses } from "../../Queries/Generic/GenericGuildResponses";
 import { dropGuild } from '../../Queries/Generic/Guild';
-import { addLog } from "../../Queries/Generic/guildLogs";
 import { fetchGuildSettings } from '../../Queries/Generic/GuildSettings';
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../../tools/randomArrayValue";
@@ -35,11 +34,10 @@ import { GenericGuild } from "./GenericGuild";
 
 export abstract class AbstractGuild implements GenericGuild {
 
-    private _responses: string[];
-    private _settings: GuildSettings;
-    private _userResponses: MemberResponses;
-    private _guild: Guild;
-    private _logs: string[] = [];
+    private _responses: string[] = null;
+    private _settings: GuildSettings = null;
+    private _userResponses: MemberResponses = null;
+    private _guild: Guild = null;
 
     //keeping it on cache, not that important
     private privateVoiceChannels: Snowflake[] = [];
@@ -55,7 +53,7 @@ export abstract class AbstractGuild implements GenericGuild {
         PinMessageCmdImpl, UnpinMessageCmdImpl, openVoiceCmdImpl, settingsCmdImpl
     ].map(cmd => cmd.init())
 
-    commandManager: GuildCommandManager;
+    commandManager: GuildCommandManager = null;
 
     protected constructor(guild_id: Snowflake) {
         this.guildID = guild_id;
@@ -67,10 +65,6 @@ export abstract class AbstractGuild implements GenericGuild {
 
     get userResponses(): MemberResponses {
         return this._userResponses;
-    }
-
-    get logs(): string[] {
-        return this._logs;
     }
 
     static async init(guild_id: Snowflake): Promise<unknown> { return Promise.resolve() };
@@ -96,12 +90,12 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onGuildMemberAdd(member: GuildMember): Promise<any> {
-        return Promise.resolve(this.addGuildLog(`member ${member.displayName} joined the guild`));
+        return Promise.resolve(`member ${member.displayName} joined the guild`);
 
     }
 
     onGuildMemberRemove(member: GuildMember): Promise<any> {
-        return Promise.resolve(this.addGuildLog(`member ${member.displayName} left the guild`));
+        return Promise.resolve(`member ${member.displayName} left the guild`);
     }
 
     onGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<any> {
@@ -135,7 +129,7 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     onMessageDelete(deletedMessage: Message): Promise<any> {
-        return Promise.resolve(this.addGuildLog(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`));
+        return Promise.resolve(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`);
     }
 
     async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
@@ -264,13 +258,6 @@ export abstract class AbstractGuild implements GenericGuild {
 
     onGuildBanRemove(ban: GuildBan): Promise<unknown> {
         return Promise.resolve(`unbanned ${ban.user.tag}`);
-    }
-
-    addGuildLog(log: string, member_id: Snowflake = null): string {
-        this.logs.push(log);
-        addLog(this.guildID, log, member_id)
-            .catch(er => console.error(er));
-        return log;
     }
 
     setPrefix(newPrefix: string): void {

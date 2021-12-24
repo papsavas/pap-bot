@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
-import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
+import { commandLiteral } from '../../../Entities/Generic/command';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
 import { AbstractGlobalCommand } from '../AbstractGlobalCommand';
@@ -9,10 +8,10 @@ import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `mock`;
     protected _guide = `Mocks text`;
-    protected _usage = `mock <text>`;
+    protected _usage = `${this.keyword} <text>`;
 
     private constructor() { super() }
 
@@ -22,7 +21,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['mock'],
             this.keyword
@@ -48,8 +47,8 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return interaction.reply(UpperLowerCaseSwitching(interaction.options.getString(textOptionLiteral, true)));
     }
 
-    execute(message: Message, { commandless1 }: commandLiteral): Promise<any> {
-        return message.channel.send(UpperLowerCaseSwitching(commandless1))
+    execute(message: Message, { args1 }: commandLiteral): Promise<any> {
+        return message.channel.send(UpperLowerCaseSwitching(args1))
             .then(mockedMessage => {
                 if (message.deletable) message.delete().catch();
             })
@@ -59,7 +58,5 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

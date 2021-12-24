@@ -1,7 +1,6 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
 import Profanity from "profanity-js";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadSwearWords } from "../../../Queries/Generic/loadSwearWords";
 import { addMemberResponse, fetchGuildMemberResponses, memberResponsesCount, removeMemberResponse } from "../../../Queries/Generic/MemberResponses";
@@ -15,10 +14,10 @@ const response: ApplicationCommandOptionData['name'] = 'response';
 const usage = "myresponses add <response> | remove <index> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `myresponses`;
     protected _guide = `Manage your submitted responses`;
-    protected _usage = usage;
+    protected _usage = `${this.keyword}`;
 
     private constructor() { super() }
 
@@ -29,7 +28,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     }
 
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
             this.keyword
@@ -87,9 +86,9 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
         })
     }
 
-    async execute(message: Message, { arg1, commandless2 }: commandLiteral): Promise<any> {
+    async execute(message: Message, { arg1, args2 }: commandLiteral): Promise<any> {
         return message.reply({
-            embeds: await embedResponse(message, arg1, commandless2)
+            embeds: await embedResponse(message, arg1, args2)
         })
 
     }
@@ -99,9 +98,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     }
 
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 
 }
 

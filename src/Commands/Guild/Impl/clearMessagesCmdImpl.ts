@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
@@ -8,10 +7,10 @@ import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
 
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `clear`;
     protected _guide = `Deletes a provided number of recent messages`;
-    protected _usage = `$clear number`;
+    protected _usage = `${this.keyword} number`;
     private constructor() { super() }
 
     static async init(): Promise<clearMessagesCmd> {
@@ -21,7 +20,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['clear', 'clean', 'purge'],
             this.keyword
@@ -51,7 +50,6 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
 
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
-            //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
             let descr = '';
             [...delMessages.values()].reverse().map(msg => {
 
@@ -85,7 +83,6 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES))
             return (channel as TextChannel).bulkDelete(number)
                 .then(delMessages => {
-                    //addGuildLog(`${member.displayName} deleted ${number} messages in ${(channel as TextChannel).name}`);
                     let descr = '';
                     [...delMessages.values()].reverse().map(msg => {
                         try {
@@ -112,8 +109,6 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 

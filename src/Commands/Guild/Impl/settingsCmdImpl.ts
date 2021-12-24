@@ -10,7 +10,7 @@ const [nsfwLiteral, lobbyLiteral, prefixLiteral] = ["nsfw", "voice-lobby", "pref
 const [voiceOptLiteral, newPrefixOptLiteral] = ["voice_channel", "new_prefix"]
 
 export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `settings`;
     protected _guide = `edits guild settings`;
     protected _usage = `${this.keyword} nsfw | voice-lobby <channel_id> | prefix [new_prefix]`;
@@ -20,7 +20,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -88,9 +88,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 
     private coreHandler = async (
         subcommand: string,
@@ -125,7 +123,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private prefixHandler = async (
         source: BaseCommandInteraction | Message,
-        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<void>,
+        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         newPrefix?: string
     ) => {
         const guildHandler = guildMap.get(source.guildId);
@@ -145,7 +143,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private lobbyHandler = async (
         source: BaseCommandInteraction | Message,
-        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<void>,
+        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         voice: GuildChannel
     ) => {
 
@@ -160,7 +158,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private nsfwHandler = async (
         source: BaseCommandInteraction | Message,
-        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<void>,
+        respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
     ) => {
         const member = await source.guild.members.fetch(source.member.user.id);
         const perm = Permissions.FLAGS.MANAGE_GUILD;

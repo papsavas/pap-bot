@@ -1,21 +1,21 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEditOptions, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from '../../../index';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
+import { resolveMessageURL } from '../../../tools/resolveMessageURL';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { editMessageCmd } from "../Interf/editMessageCmd";
 
 
-const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
-const msgidOptionLiteral: ApplicationCommandOptionData['name'] = 'message_id';
+const msgURLOptionLiteral: ApplicationCommandOptionData['name'] = 'message_url';
 const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 
 //TODO: use message link for channel and message id
+//* Requires Command Re-Registration  
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `editmsg`;
     protected _guide = `Edits a bot's text message`;
-    protected _usage = `editmessage <channel> <msg_id> <text>`;
+    protected _usage = `${this.keyword} <msg_url> <text>`;
     private constructor() { super() }
 
     static async init(): Promise<editMessageCmd> {
@@ -24,7 +24,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
             this.keyword
@@ -37,14 +37,8 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
             type: 'CHAT_INPUT',
             options: [
                 {
-                    name: channelOptionLiteral,
-                    description: 'target channel',
-                    type: 'CHANNEL',
-                    required: true
-                },
-                {
-                    name: msgidOptionLiteral,
-                    description: 'the id of the message',
+                    name: msgURLOptionLiteral,
+                    description: 'the URL of the message',
                     type: 'STRING',
                     required: true
                 },
@@ -58,77 +52,47 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: CommandInteraction) {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
-            return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
-        const targetChannel = interaction.options.getChannel(channelOptionLiteral, true);
-        const messageID = interaction.options.getString(msgidOptionLiteral, true) as Snowflake;
         await interaction.deferReply({ ephemeral: true });
-        const targetMessage = await (targetChannel as TextChannel)?.messages.fetch(messageID);
-        if (targetMessage.author.id !== interaction.client.user.id)
-            return interaction.reply('Cannot edit a message authored by another user');
-        const editedMessage = await targetMessage?.edit(interaction.options.getString(editedMsgOptionLiteral, true));
-        return interaction.editReply({
-            embeds:
-                [
-                    new MessageEmbed({
-                        description: `[edited message](${editedMessage.url})`
-                    })
-                ]
-        });
+        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            return interaction.editReply(`\`MANAGE_GUILD\` permissions required`);
+        const messageURL = interaction.options.getString(msgURLOptionLiteral, true) as Snowflake;
+        const newMessageContent = interaction.options.getString(editedMsgOptionLiteral, true);
+        return this.handler(interaction, messageURL, { content: newMessageContent });
+
     }
 
-    async execute(
-        message: Message,
-        { arg1, arg2, commandless2, commandless3 }: commandLiteral
-    ): Promise<any> {
-        const { channel, mentions, guild, url, member } = message;
+    async execute(message: Message, { arg1, args2 }: commandLiteral) {
+        const { member } = message;
         if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
             return message.reply(`\`MANAGE_GUILD\` permissions required`);
-        try {
-            const fetchedMessage = await channel.messages.fetch(arg1 as Snowflake)
-            const editedMessage = await fetchedMessage
-                .edit(commandless2)
-            await channel.send({
-                embeds: [{
-                    description: `[edited message](${editedMessage.url})`
-                }]
-            });
-            return new Promise((res, rej) => res('edit message success'));
-        } catch (err) {
-            if ([Constants.APIErrors.INVALID_FORM_BODY, Constants.APIErrors.UNKNOWN_MESSAGE].includes(err.code)) {
-                try {
-                    const targetChannel = guild.channels.cache
-                        .find(c => c.id == mentions.channels?.firstKey())
-
-                    const targetMessage = await (targetChannel as TextChannel)?.messages.fetch(arg2 as Snowflake);
-
-                    const editedMessage = await targetMessage?.edit(commandless3);
-                    const sendLinkMessage = await channel.send({
-                        embeds: [
-                            new MessageEmbed(
-                                { description: `[edited message](${editedMessage.url})` }
-                            )
-                        ]
-                    });
-                    return Promise.reject('edit message success');
-                } catch (err) {
-                    return Promise.reject(`edit message failed\n${url}`);
-                }
-            } else {
-                return Promise.reject(`edit message failed\nreason:${err.toString()}`);
-            }
-        }
-
+        return this.handler(message, arg1, { content: args2 });
     }
 
     getAliases(): string[] {
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
+    async handler(source: Message | CommandInteraction, messageURL: Message['url'], newMessageOptions: MessageEditOptions) {
+        const [guildId, channelId, messageId] = resolveMessageURL(messageURL);
+        if (!!channelId || guildId !== source.guildId)
+            return this.respond(source, { content: "Please provide a valid message URL (right click => Copy Message Link)" });
+        const targetChannel = source.guild.channels.cache.get(channelId);
+        const targetMessage = await (targetChannel as TextChannel)?.messages.fetch(messageId);
+        if (targetMessage.author.id !== source.client.user.id)
+            return this.respond(source, { content: 'Cannot edit a message authored by another user' });
+        return targetMessage?.edit(newMessageOptions)
+            .then(editedMessage =>
+                this.respond(source, {
+                    embeds:
+                        [
+                            new MessageEmbed({
+                                description: `[edited message](${editedMessage.url})`
+                            })
+                        ]
+                })
+            );
     }
-
 }
+

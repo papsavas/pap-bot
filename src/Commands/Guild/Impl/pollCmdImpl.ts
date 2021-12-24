@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { pollCmd } from "../Interf/pollCmd";
@@ -8,10 +7,10 @@ import { pollCmd } from "../Interf/pollCmd";
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `poll`;
     protected _guide = `Creates a simple poll using 👍-👎`;
-    protected _usage = `poll <text>`;
+    protected _usage = `${this.keyword} <text>`;
     private constructor() { super() }
 
     static async init(): Promise<pollCmd> {
@@ -20,7 +19,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['poll', 'πολλ'],
             this.keyword
@@ -77,7 +76,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             .catch(err => interaction.reply(`something went wrong`))
     }
 
-    execute(message: Message, { commandless1 }: commandLiteral) {
+    execute(message: Message, { args1 }: commandLiteral) {
         const commandMsg = message;
         return (commandMsg.channel as TextChannel).send({
             embeds: [
@@ -85,7 +84,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
                     {
                         title: `Ψηφίστε`,
                         color: '#D8F612',
-                        description: commandless1,
+                        description: args1,
                         author: {
                             name: commandMsg.member.displayName,
                             icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
@@ -105,9 +104,6 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
                 botmsg.react('👎');
                 if (commandMsg.deletable)
                     commandMsg.delete()
-                        .catch(err => {
-                            //this.logErrorOnBugsChannel(err, bundle);
-                        });
             })
     }
 
@@ -115,7 +111,5 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return this._aliases
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

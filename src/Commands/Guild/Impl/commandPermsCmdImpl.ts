@@ -14,9 +14,11 @@ TODO: support global commands
 !Problem: input choices exceed limit of 25
 ?Solution: global / guild (second) subcommand
 */
+
+//TODO: include listing perms
 export class commandPermsCmdImpl extends AbstractGuildCommand implements commandPermsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `command_perms`;
     protected _guide = `Lock/Unlock commands`;
     protected _usage = `${this.keyword} ${lockLiteral} <command> <role1> [role2...] | ${unlockLiteral} <command>`;
@@ -26,7 +28,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -164,7 +166,5 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

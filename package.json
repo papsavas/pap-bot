@@ -14,13 +14,14 @@
     "dev": "set NODE_ENV='development' && npm run launch",
     "prod": "set NODE_ENV='production1' && npm run launch",
     "production": "set NODE_ENV='production' && npm run launch",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "devtest": "tsc -p tsconfig.test.json && npm test"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
   "dependencies": {
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.3.1",
+    "discord.js": "^13.4.0",
     "find-config": "^1.0.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",

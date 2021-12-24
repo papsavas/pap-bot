@@ -13,7 +13,7 @@ const [createLiteral, deleteLiteral, listLiteral] = ["create", "delete", "list"]
 const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"];
 export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_courseCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `course`;
     protected _guide = `Διαχειρίζεται τα μαθήματα στη ΒΔ`;
     protected _usage = `${this.keyword} create <code> <name> <semester> | delete <code> | list`;
@@ -23,7 +23,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["courses"], this.keyword
         );
@@ -212,7 +212,5 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

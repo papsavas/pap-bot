@@ -46,24 +46,27 @@ export abstract class AbstractCommand implements GenericCommand {
     respond = async (
         source: Message | BaseCommandInteraction,
         response: ReplyMessageOptions | InteractionReplyOptions
-    ) => {
-        if (source instanceof BaseCommandInteraction)
-            if (source.replied)
-                await source.followUp(response)
-            else
-                if (source.deferred)
-                    await source.editReply(response)
-                else
-                    await source.reply(response)
-        else
-            await source.reply(response)
-    }
+    ) =>
+        source instanceof BaseCommandInteraction ?
+            source.replied ?
+                source.followUp(response) :
+                source.deferred ?
+                    source.editReply(response) :
+                    source.reply(response) :
+            source.reply(response)
+
     matchAliases(possibleCommand: string): boolean {
         return this.getAliases()
             .some((alias: string) => alias === possibleCommand?.toLowerCase());
     }
 
-    protected addKeywordToAliases(aliases: string[], keyword: string): string[] {
+    /**
+     * 
+     * @param {string[]} aliases 
+     * @param {string} keyword 
+     * @returns {string[]} An array of aliases with the keyword included
+     */
+    protected mergeAliases(aliases: string[], keyword: string): string[] {
         return aliases.includes(keyword) ? aliases : [...aliases, keyword]
     }
 }

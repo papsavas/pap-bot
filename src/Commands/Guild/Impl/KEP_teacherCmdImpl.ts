@@ -1,5 +1,4 @@
 import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, MessageEmbed, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Teacher } from "../../../Entities/KEP/Teacher";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -23,7 +22,7 @@ const [
     ];
 export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teacherCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `teacher`;
     protected _guide = `Διαχειρίζεται τους καθηγητές στη ΒΔ`;
     protected _usage = `${this.keyword} create <username> <full_name> <phone_number>, [picture_url], [website] | delete <username> | list`;
@@ -33,7 +32,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["teachers"], this.keyword
         );
@@ -172,7 +171,5 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

@@ -6,12 +6,14 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPermsCmd } from "../Interf/showPermsCmd";
 
 const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
+
+//TODO: include in command_perms command
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `perms`;
     protected _guide = `Shows permissions for specific command`;
-    protected _usage = `perms <command>`;
+    protected _usage = `${this.keyword} <command>`;
 
     private constructor() { super() }
 
@@ -21,7 +23,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['perms', 'perm', 'showperms', 'show_perms'],
             this.keyword
@@ -83,9 +85,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[string, string]> {

@@ -23,13 +23,15 @@ import { KEP_teacherCmdImpl } from '../../../Commands/Guild/Impl/KEP_teacherCmdI
 import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCommandManagerImpl';
 import { Course } from '../../../Entities/KEP/Course';
 import { Student } from '../../../Entities/KEP/Student';
-import { fetchCourses } from '../../../Queries/KEP/Course';
+import { Teacher } from '../../../Entities/KEP/Teacher';
+import { fetchCourses, fetchTeacherCourses } from '../../../Queries/KEP/Course';
 import { dropDrivePermission, fetchDrivePermissions } from '../../../Queries/KEP/Drive';
 import { fetchKeywords } from '../../../Queries/KEP/Keywords';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
 import { banStudent, dropAllPendingStudents, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
+import { fetchTeachers } from '../../../Queries/KEP/Teacher';
 import { textSimilarity } from '../../../tools/cmptxt';
-import { fetchEvents } from '../../../tools/Google/Gcalendar';
+import { fetchCalendarEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
@@ -56,6 +58,7 @@ const guildCommands = [
 
 export class KepGuild extends AbstractGuild implements GenericGuild {
     public events: calendar_v3.Schema$Event[];
+    public teachers: Collection<Teacher['username'], Teacher>;
     public students: Collection<Snowflake, Student>;
     public courses: Course[];
     private keywords: string[];
@@ -80,13 +83,29 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
 
     async onReady(client: Client): Promise<unknown> {
         await super.onReady(client);
-        this.events = await fetchEvents();
+        this.events = await fetchCalendarEvents();
         this.keywords = await fetchKeywords();
-        this.students = await fetchStudents();
+        this.teachers = new Collection((await fetchTeachers()).map(t => [t.username, t]));
         const members = await this.guild.members.fetch();
+        this.students = await fetchStudents();
         this.courses = await fetchCourses();
         this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
         this.contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
+
+        //load teachers
+        const tc = await fetchTeacherCourses();
+        for (const teacher of this.teachers.values()) {
+            const courses = tc
+                .filter(tc => tc.teacher_id === teacher.uuid)
+                .map(tc => {
+                    const course = this.courses.find(c => c.uuid === tc.course_id);
+                    return course ?
+                        [course.role_id, course] as [Course['role_id'], Course] :
+                        null
+                })
+            teacher.courses = new Collection(courses);
+        }
+
         //load students
         for (const student of this.students.values()) {
             const member = members.get(student.member_id);

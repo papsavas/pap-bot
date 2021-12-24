@@ -1,5 +1,4 @@
 import { Collection, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -7,7 +6,7 @@ import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `unpin`;
     protected _guide = `Unpins a message`;
     protected _usage = `Right click on message => Apps => ${this.keyword}`;
@@ -20,7 +19,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['unpin', 'ανπιν'],
             this.keyword
@@ -76,7 +75,5 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }

@@ -18,17 +18,17 @@ const [email, password] = ['email', 'password']
 
 export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP_registrationCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `registration`;
     protected _guide = `Εγγραφή στην κοινότητα Εφ. Πληροφορικής`;
-    protected _usage = `registration register/verify`;
+    protected _usage = `${this.keyword} register/verify`;
     private constructor() { super() }
     static async init(): Promise<KEP_registrationCmd> {
         const cmd = new KEP_registrationCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             [], this._keyword,
         );
@@ -182,9 +182,7 @@ ${pswd}\n
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 async function conflict(interaction: CommandInteraction, am: string): Promise<unknown> {

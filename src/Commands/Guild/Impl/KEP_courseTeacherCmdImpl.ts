@@ -1,6 +1,5 @@
 
 import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchCourses, fetchTeacherCourses, linkTeacherToCourse, unlinkTeacherFromCourse } from "../../../Queries/KEP/Course";
@@ -12,7 +11,7 @@ const [linkLiteral, unlinkLiteral, listLiteral] = ['link', 'unlink', 'list'];
 const [codeLiteral, usernameLiteral] = ['code', 'username'];
 export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KEP_courseTeacherCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `course_teacher`;
     protected _guide = `Συσχέτιση μεταξύ μαθήματος και καθηγητή`;
     protected _usage = `${this.keyword} link | unlink <course_code> <teacher_username> | list`;
@@ -22,7 +21,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ["courseteacher", "teachercourse", "teacher_course", "course_teacher"], this.keyword
         );
@@ -100,9 +99,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
 
 const handleRequest = async (source: Message | CommandInteraction, action: string, code: string, username: string, usage: string) => {

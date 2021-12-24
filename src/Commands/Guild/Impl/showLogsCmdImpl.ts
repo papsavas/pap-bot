@@ -1,21 +1,21 @@
 
 import { ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
-import { guildMap } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { loadGuildLogs } from "../../../Queries/Generic/guildLogs";
 import { sliceToEmbeds } from "../../../tools/Embed";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showLogsCmd } from "../Interf/showLogsCmd";
-import { unlockCommandCmd } from "../Interf/unlockCommandCmd";
 
+/**
+ * @deprecated
+ */
+export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd {
 
-export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockCommandCmd {
-
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `logs`;
     protected _guide = `Prints guilds logs`;
-    protected _usage = `logs`;
+    protected _usage = `${this.keyword}`;
 
     private constructor() { super() }
 
@@ -25,7 +25,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['log', 'logs'],
             this.keyword
@@ -138,8 +138,6 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements unlockComma
         return this._aliases
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 
 }

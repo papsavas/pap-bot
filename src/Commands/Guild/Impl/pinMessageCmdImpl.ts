@@ -1,5 +1,4 @@
 import { Collection, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { pinMessageCmd } from "../../Guild/Interf/pinMessageCmd";
@@ -7,7 +6,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `pin`;
     protected _guide = `Pins a message`;
     protected _usage = `Right click on message => Apps => ${this.keyword}`;
@@ -19,7 +18,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['pin', 'πιν'],
             this.keyword
@@ -75,8 +74,6 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         return this._aliases;
     }
 
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 
 }

@@ -1,5 +1,4 @@
-import { Collection, Constants, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake, User } from "discord.js";
-import { guildMap } from "../../..";
+import { BaseCommandInteraction, Collection, Constants, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -7,7 +6,7 @@ import { bookmarkCmd } from "../Interf/bookmarkCmd";
 
 export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd {
 
-    protected _id: Collection<Snowflake, Snowflake>;
+    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
     protected _keyword = `bookmark`;
     protected _guide = null;
     protected _usage = null;
@@ -20,7 +19,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
         return cmd;
     }
 
-    private readonly _aliases = this.addKeywordToAliases
+    private readonly _aliases = this.mergeAliases
         (
             ['bookmark', 'bm'], this.keyword
         );
@@ -34,8 +33,17 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
 
     async interactiveExecute(interaction: ContextMenuInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true })
-        const message = await interaction.channel.messages.fetch(interaction.targetId)
-        const user = interaction.user;
+        return this.handler(interaction, interaction.targetId);
+
+    }
+
+    async execute(message: Message, { }: commandLiteral): Promise<unknown> {
+        return this.handler(message, message.id);
+    }
+
+    async handler(source: Message | BaseCommandInteraction, msgId: Snowflake) {
+        const message = await source.channel.messages.fetch(msgId)
+        const user = source instanceof Message ? source.author : source.user;
         let response: string;
         try {
             await messageUser(user, message);
@@ -47,31 +55,17 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
                 response = error.message
         }
         finally {
-            return interaction.editReply(response);
-        }
-    }
-
-    async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        let response: string;
-        try {
-            await messageUser(message.author, message);
-        } catch (error) {
-            response = error.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
-                "Your DMs are closed, i cannot message you"
-                : error.message
-        }
-        finally {
-            return message.reply(response);
+            return this.respond(source, { content: response });
         }
     }
 
     getAliases(): string[] {
         return this._aliases;
     }
-    addGuildLog(guildID: Snowflake, log: string) {
-        return guildMap.get(guildID).addGuildLog(log);
-    }
+
 }
+
+
 
 function messageUser(user: User, message: Message) {
     return user.send({

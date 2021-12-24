@@ -5,7 +5,7 @@ import {
     Collection, CommandInteraction, Constants, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
-import { commandLiteral } from "../../../Entities/Generic/command";
+import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
 import { bugsChannel, guildMap } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
@@ -140,39 +140,21 @@ export abstract class CommandManagerImpl implements CommandManager {
         const splitCommand: string[] = fullCommand
             .split(/(\s+)/)
             .filter(e => e.trim().length > 0) //split command from space(s);
+        const arg = Object.fromEntries(argDigits.map(k => [`arg${k}`, splitCommand[k]]));
+        const args = Object.fromEntries(argDigits.map(k => [`args${k}`, splitCommand.slice(k).join(' ')]));
+
         return {
-            //prefix,
             fullCommand,
             splitCommand,
             primaryCommand: splitCommand[0],
-            arg1: splitCommand[1],
-            arg2: splitCommand[2],
-            arg3: splitCommand[3],
-            commandless1: splitCommand.slice(1).join(' '),
-            commandless2: splitCommand.slice(2).join(' '),
-            commandless3: splitCommand.slice(3).join(' ')
+            ...arg as ToArgxType<typeof arg>,
+            ...args as ToArgsxType<typeof args>
         }
     }
 
     //TODO: fix this mess
-    protected invalidSlashCommand(err: Error, interaction: BaseCommandInteraction, primaryCommandLiteral: string) {
-        const bugsChannelEmbed = new MessageEmbed({
-            author: {
-                name: interaction.guild?.name ?? interaction.user.username,
-                icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
-            },
-            thumbnail: {
-                proxy_url: interaction.guild?.iconURL({ format: "png", size: 512 }) ?? interaction.user.avatarURL({ format: "png", size: 512 }),
-            },
-            title: primaryCommandLiteral,
-            color: "DARK_RED",
-            timestamp: new Date()
-        });
-        bugsChannelEmbed.setDescription(err.message);
-        bugsChannelEmbed.addField(`caused by`, interaction.id);
-        bugsChannel.send({ embeds: [bugsChannelEmbed] })
-            .catch(internalErr => console.log("internal error\n", internalErr));
-
+    protected async invalidSlashCommand(err: Error, interaction: BaseCommandInteraction, primaryCommandLiteral: string) {
+        await submitBug(err, interaction, primaryCommandLiteral);
         const interactionEmb = new MessageEmbed(
             {
                 author: {
@@ -202,27 +184,14 @@ export abstract class CommandManagerImpl implements CommandManager {
 
     //TODO: fix this mess
     protected async invalidCommand(
-        err: Error, commandMessage: Message,
+        err: Error,
+        commandMessage: Message,
         commandImpl: GenericCommand,
         primaryCommandLiteral: string,
         prefix: string
     ) {
         console.log(`Error on Command ${primaryCommandLiteral}\n${err.message}`);
-        const bugsChannelEmbed = new MessageEmbed({
-            author: {
-                name: commandMessage.guild?.name ?? commandMessage.author.username,
-                icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
-            },
-            thumbnail: {
-                proxy_url: commandMessage.guild?.iconURL({ format: "png", size: 512 }) ?? commandMessage.author.avatarURL({ format: "png", size: 512 }),
-            },
-            title: primaryCommandLiteral,
-            color: "DARK_RED",
-            timestamp: new Date()
-        });
-        bugsChannelEmbed.setDescription(err.message);
-        bugsChannelEmbed.addField(`caused by`, commandMessage?.url);
-        await bugsChannel.send({ embeds: [bugsChannelEmbed] }).catch(internalErr => console.log("internal error\n", internalErr));
+        await submitBug(err, commandMessage, primaryCommandLiteral);
         //send feedback to member
         return commandMessage.reply({
             embeds: [
@@ -263,4 +232,30 @@ export abstract class CommandManagerImpl implements CommandManager {
         else
             return message.reply(`command not found`);
     }
+}
+
+async function submitBug(error: Error, source: Message | BaseCommandInteraction, commandName: string) {
+    const user = await source.client.users.fetch(source.member.user.id);
+    return bugsChannel.send({
+        embeds: [
+            new MessageEmbed({
+                author: {
+                    name: source.guild?.name ?? user.username,
+                    icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
+                },
+                thumbnail: {
+                    url: source.guild?.iconURL({ format: "png", size: 256 }) ??
+                        user.avatarURL({ format: "webp", size: 256 }),
+                },
+                title: commandName,
+                description: error.message,
+                fields: [
+                    { name: "Caused by", value: source instanceof Message ? source.url : source.id, inline: true }
+                ],
+                color: "DARK_RED",
+                timestamp: new Date()
+            })
+        ]
+    })
+        .catch(err => console.log(`Cannot message #bugs\n${err.toString()}`));
 }
