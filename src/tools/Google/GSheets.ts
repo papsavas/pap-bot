@@ -1,4 +1,5 @@
 import { google, sheets_v4 } from "googleapis";
+import { GaxiosResponse } from "googleapis-common";
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets';
 import { Gauth } from './Gauth';
 
@@ -34,8 +35,16 @@ const token: googleToken = {
 }
 
 const authP = Gauth(credentials, token, ["https://www.googleapis.com/auth/spreadsheets"]);
-
-async function fetchSheet(params: sheets_v4.Params$Resource$Spreadsheets$Values$Get) {
+export interface SheetResponse {
+    values: GaxiosResponse<sheets_v4.Schema$ValueRange>,
+    spreadsheet?: GaxiosResponse<sheets_v4.Schema$Spreadsheet>
+}
+async function fetchSheet(
+    params: sheets_v4.Params$Resource$Spreadsheets$Values$Get,
+    sheetParams?: sheets_v4.Params$Resource$Spreadsheets$Get)
+    : Promise<SheetResponse> {
     const sheets = google.sheets({ version: 'v4', auth: await authP });
-    return sheets.spreadsheets.values.get(params)
+    const spreadsheet = sheetParams ? await sheets.spreadsheets.get(sheetParams) : undefined;
+    const values = await sheets.spreadsheets.values.get(params)
+    return { values, spreadsheet };
 }

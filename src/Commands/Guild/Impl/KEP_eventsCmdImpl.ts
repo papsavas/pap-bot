@@ -7,7 +7,7 @@ import { examsPrefix, lecturePrefix } from "../../../../values/KEP/literals.json
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
-import { fetchCourseEvents } from "../../../Queries/KEP/Calendar";
+import { fetchCourseEvents } from "../../../Queries/KEP/GSheets";
 import { fetchCalendarEvents, insertCalendarEvent } from "../../../tools/Google/Gcalendar";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_eventsCmd } from "../Interf/KEP_eventsCmd";
@@ -143,10 +143,16 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
 
                     });
                     if (resp.customId === "no") {
-                        return interaction.editReply({ content: "Command Cancelled" });
+                        return interaction.editReply({
+                            content: "Command Cancelled",
+                            components: [], files: []
+                        });
                     }
                 } catch (err) {
-                    return interaction.editReply({ content: `Command Failed. Reason: \`${err.toString()}\`` })
+                    return interaction.editReply({
+                        content: `Command Failed. Reason: \`${err.toString()}\``,
+                        components: [], files: []
+                    })
                 }
 
                 courseEvents.forEach(ce =>
@@ -167,7 +173,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                                     dateTime: e.end.toISOString(),
                                     timeZone: "Europe/Athens"
                                 },
-                                location: e.location,
+                                location: e.location ?? e.url,
                                 //@ts-expect-error
                                 colorId: type === lectureLiteral ? "10" : "2",
                                 recurrence: e.recurring ?
@@ -177,7 +183,10 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                             }))
                 )
                     .then(() => reloadEvents())
-                    .then(() => interaction.editReply({ content: "Events registered & reloaded" }));
+                    .then(() => interaction.editReply({
+                        content: "Events registered & reloaded",
+                        components: [], files: []
+                    }));
             }
             default:
                 return Promise.reject("invalid subcommand")

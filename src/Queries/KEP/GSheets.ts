@@ -1,22 +1,31 @@
-import { GaxiosResponse } from "gaxios";
-import { sheets_v4 } from "googleapis";
 import moment from "moment";
 import { exams as examSheetURL } from "../../../values/KEP/info.json";
 import { CourseEvent } from "../../Entities/KEP/Course";
-import { fetchSheet } from "../../tools/Google/GSheets";
+import { fetchSheet, SheetResponse } from "../../tools/Google/GSheets";
 export { fetchCourseEvents };
+
+//TODO: add cell url
 
 function fetchCourseEvents(sheetName: string, spreadSheetURL?: string) {
     const resolveID = (s: string) => s?.split("/")?.pop();
-    return fetchSheet({
-        spreadsheetId: resolveID(spreadSheetURL) ?? resolveID(examSheetURL),
-        range: sheetName
-    })
+    const spreadsheetId = resolveID(spreadSheetURL) ?? resolveID(examSheetURL);
+    return fetchSheet(
+        {
+            spreadsheetId,
+            range: sheetName
+        },
+        {
+            spreadsheetId,
+            ranges: [sheetName]
+        }
+    )
         .then(parseData);
 }
 
-function parseData(res: GaxiosResponse<sheets_v4.Schema$ValueRange>): CourseEvent[] {
-    const values = res.data.values;
+function parseData(res: SheetResponse): CourseEvent[] {
+    const values = res.values.data.values;
+    const spreadsheet = res.spreadsheet?.data;
+    console.log(spreadsheet.sheets[0].properties); //TODO: remove
     const retArr = [];
     for (let i = 1; i < values.length; i++) {
         const title = (values[i][1] as string)?.split("(");
@@ -38,6 +47,7 @@ function parseData(res: GaxiosResponse<sheets_v4.Schema$ValueRange>): CourseEven
                 .set({ hour: moment(values[i][3], "HH:mm").hour() }).toDate(),
             end: moment(values[i][2], "dddd, DD MMMM YYYY", "el")
                 .set({ hour: moment(values[i][4], "HH:mm").hour() }).toDate(),
+            url: `https://docs.google.com/spreadsheets/d/${spreadsheet.spreadsheetId}/edit#gid=${spreadsheet.sheets[0].properties.sheetId}&range=B${i + 1}`
         }
         retArr.push(formatted);
     }
