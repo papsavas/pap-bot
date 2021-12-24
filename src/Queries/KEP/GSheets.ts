@@ -25,7 +25,6 @@ function fetchCourseEvents(sheetName: string, spreadSheetURL?: string) {
 function parseData(res: SheetResponse): CourseEvent[] {
     const values = res.values.data.values;
     const spreadsheet = res.spreadsheet?.data;
-    console.log(spreadsheet.sheets[0].properties); //TODO: remove
     const retArr = [];
     for (let i = 1; i < values.length; i++) {
         const title = (values[i][1] as string)?.split("(");
