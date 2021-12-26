@@ -34,9 +34,6 @@ export abstract class AbstractCommand implements GenericCommand {
         return this._usage;
     }
 
-
-    static init() { }
-
     abstract execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
 
     abstract interactiveExecute(interaction: BaseCommandInteraction): Promise<unknown>;

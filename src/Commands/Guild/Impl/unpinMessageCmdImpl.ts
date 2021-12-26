@@ -19,7 +19,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['unpin', 'ανπιν'],
             this.keyword
@@ -72,7 +72,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

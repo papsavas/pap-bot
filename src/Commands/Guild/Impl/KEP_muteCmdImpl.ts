@@ -22,7 +22,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["mute", "sks"], this.keyword
         );
@@ -111,7 +111,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

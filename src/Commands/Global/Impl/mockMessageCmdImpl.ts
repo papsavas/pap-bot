@@ -21,7 +21,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['mock'],
             this.keyword
@@ -55,7 +55,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

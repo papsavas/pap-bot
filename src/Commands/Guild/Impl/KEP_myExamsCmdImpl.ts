@@ -34,7 +34,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['my_exams', 'exams', 'myexams'], this._keyword
         );
@@ -56,7 +56,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

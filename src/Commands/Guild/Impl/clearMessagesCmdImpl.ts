@@ -20,7 +20,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['clear', 'clean', 'purge'],
             this.keyword
@@ -106,7 +106,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

@@ -19,7 +19,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['bookmark', 'bm'], this.keyword
         );
@@ -60,7 +60,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

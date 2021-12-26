@@ -20,7 +20,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -85,7 +85,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

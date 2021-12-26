@@ -61,9 +61,9 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     public teachers: Collection<Teacher['username'], Teacher>;
     public students: Collection<Snowflake, Student>;
     public courses: Course[];
-    private keywords: string[];
+    #keywords: string[];
     public logsChannel: TextChannel;
-    private contentScanChannel: TextChannel;
+    #contentScanChannel: TextChannel;
     private constructor(id: Snowflake) {
         super(id);
     }
@@ -84,13 +84,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     async onReady(client: Client): Promise<unknown> {
         await super.onReady(client);
         this.events = await fetchCalendarEvents();
-        this.keywords = await fetchKeywords();
+        this.#keywords = await fetchKeywords();
         this.teachers = new Collection((await fetchTeachers()).map(t => [t.username, t]));
         const members = await this.guild.members.fetch();
         this.students = await fetchStudents();
         this.courses = await fetchCourses();
         this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
-        this.contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
+        this.#contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
 
         //load teachers
         const tc = await fetchTeacherCourses();
@@ -134,7 +134,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             categories.etos4_2, categories.didaktiki,
             categories.sxolh
         ].includes((message.channel as GuildChannel).parentId))
-            scanContent(message, this.keywords, this.contentScanChannel);
+            scanContent(message, this.#keywords, this.#contentScanChannel);
         switch (message.channel.id) { //channels
             case channels.registration: {
                 if (message.deletable) await message.delete();

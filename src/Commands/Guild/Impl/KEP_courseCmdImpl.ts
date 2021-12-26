@@ -23,7 +23,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["courses"], this.keyword
         );
@@ -210,7 +210,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         return message.reply(`Παρακαλώ χρησιμοποιείστε Slash Command \`/${this.usage}\``)
     }
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

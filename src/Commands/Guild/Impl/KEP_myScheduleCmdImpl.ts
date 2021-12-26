@@ -30,7 +30,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["my_schedule", "schedule"], this._keyword
         );
@@ -79,7 +79,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

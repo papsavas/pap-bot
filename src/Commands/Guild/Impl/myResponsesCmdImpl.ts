@@ -28,7 +28,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     }
 
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
             this.keyword
@@ -94,7 +94,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     }
 
     getAliases(): string[] {
-        return this._aliases
+        return this.#aliases
     }
 
 

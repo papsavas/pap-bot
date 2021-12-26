@@ -26,23 +26,24 @@ import { dropGuild } from '../../Queries/Generic/Guild';
 import { fetchGuildSettings } from '../../Queries/Generic/GuildSettings';
 import { fetchAllGuildMemberResponses } from "../../Queries/Generic/MemberResponses";
 import { randomArrayValue } from "../../tools/randomArrayValue";
+import AbstractHandler from '../AbstractHandler';
 import { openVoiceCmdImpl } from './../../Commands/Guild/Impl/openVoiceCmdImpl';
 import { GenericGuild } from "./GenericGuild";
 
 
 
 
-export abstract class AbstractGuild implements GenericGuild {
+export abstract class AbstractGuild extends AbstractHandler implements GenericGuild {
 
-    private _responses: string[] = null;
-    private _settings: GuildSettings = null;
-    private _userResponses: MemberResponses = null;
-    private _guild: Guild = null;
+    #responses: string[] = null;
+    #settings: GuildSettings = null;
+    #userResponses: MemberResponses = null;
+    #guild: Guild = null;
 
     //keeping it on cache, not that important
-    private privateVoiceChannels: Snowflake[] = [];
+    #privateVoiceChannels: Snowflake[] = [];
 
-    protected readonly guildID: Snowflake;
+    protected readonly guildId: Snowflake = null;
     protected specifiedCommands?: Promise<GenericGuildCommand>[];
 
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
@@ -56,28 +57,27 @@ export abstract class AbstractGuild implements GenericGuild {
     commandManager: GuildCommandManager = null;
 
     protected constructor(guild_id: Snowflake) {
-        this.guildID = guild_id;
+        super(guild_id);
+        this.guildId = guild_id;
     }
 
     get guild(): Guild {
-        return this._guild;
+        return this.#guild;
     }
 
     get userResponses(): MemberResponses {
-        return this._userResponses;
+        return this.#userResponses;
     }
 
-    static async init(guild_id: Snowflake): Promise<unknown> { return Promise.resolve() };
-
     getSettings(): GuildSettings {
-        return this._settings;
+        return this.#settings;
     }
 
     async onReady(client: Client): Promise<unknown> {
-        this._guild = client.guilds.cache.get(this.guildID);
-        this._settings = await fetchGuildSettings(this.guildID);
+        this.#guild = client.guilds.cache.get(this.guildId);
+        this.#settings = await fetchGuildSettings(this.guildId);
         await this.loadResponses()
-        return Promise.resolve(`loaded ${this.guild.name}`);
+        return super.onReady(client);
     }
 
     onGuildJoin(guild: Guild) {
@@ -121,13 +121,13 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Message): Promise<unknown> {
-        if (message.content.startsWith(this._settings.prefix)) {
+        if (message.content.startsWith(this.#settings.prefix)) {
             return this.commandManager.onManualCommand(message);
         }
 
         if (message.mentions.users.first()?.id === message.client.user.id) {
             return message.channel.sendTyping()
-                .then(() => message.reply(randomArrayValue(this._responses)))
+                .then(() => message.reply(randomArrayValue(this.#responses)))
                 .catch(err => console.log(err));
         }
 
@@ -214,7 +214,7 @@ export abstract class AbstractGuild implements GenericGuild {
             !!oldState.channel && oldState?.channel?.id !== newState?.channel?.id
         ];
         if (joined) {
-            if (newState.channel.id === this._settings.voice_lobby) {
+            if (newState.channel.id === this.#settings.voice_lobby) {
                 const categoryId = newState.channel.parentId;
                 const privateChannel = await newState.guild.channels.create(
                     `🔒 ${member.displayName}'s table`,
@@ -248,12 +248,12 @@ export abstract class AbstractGuild implements GenericGuild {
                 member.send(`Use \`/open-voice\` command to unlock this channel for others (roles or users)`)
                     .then(msg => msg.react("🗑"))
                     .catch();
-                this.privateVoiceChannels.push(privateChannel.id);
+                this.#privateVoiceChannels.push(privateChannel.id);
             }
         }
         if (left) {
             const channel = oldState.channel;
-            if (this.privateVoiceChannels.includes(channel.id) && channel.members.size === 0)
+            if (this.#privateVoiceChannels.includes(channel.id) && channel.members.size === 0)
                 await channel.delete();
         }
     }
@@ -267,11 +267,11 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     setPrefix(newPrefix: string): void {
-        this._settings.prefix = newPrefix;
+        this.#settings.prefix = newPrefix;
     }
 
     patchVoiceLobbySetting(v: Snowflake): void {
-        this._settings.voice_lobby = v;
+        this.#settings.voice_lobby = v;
     }
 
     fetchCommands() {
@@ -279,9 +279,9 @@ export abstract class AbstractGuild implements GenericGuild {
     }
 
     async loadResponses() {
-        const genericResponses = await genericGuildResponses(this.guildID, this._settings?.nsfw_responses);
-        const memberResponses: string[] = await fetchAllGuildMemberResponses(this.guildID);
-        this._responses = memberResponses.concat(genericResponses);
+        const genericResponses = await genericGuildResponses(this.guildId, this.#settings?.nsfw_responses);
+        const memberResponses: string[] = await fetchAllGuildMemberResponses(this.guildId);
+        this.#responses = memberResponses.concat(genericResponses);
     }
 
 }

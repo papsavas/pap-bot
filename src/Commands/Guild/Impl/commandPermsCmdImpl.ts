@@ -28,7 +28,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -163,7 +163,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

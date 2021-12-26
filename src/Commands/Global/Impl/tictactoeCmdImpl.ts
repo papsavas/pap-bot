@@ -62,7 +62,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['tictactoe', 'tic-tac-toe', 'triliza', 'τριλιζα'], this.keyword
         );
@@ -187,7 +187,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         return
     }
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

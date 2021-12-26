@@ -17,7 +17,7 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["open_voice", "unlock_voice", "unlock-voice"], this.keyword
         );
@@ -65,7 +65,7 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

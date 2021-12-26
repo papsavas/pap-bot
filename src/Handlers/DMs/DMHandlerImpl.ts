@@ -1,23 +1,21 @@
-import { BaseCommandInteraction, ButtonInteraction, Client, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
+import { BaseCommandInteraction, ButtonInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
+import AbstractHandler from "../AbstractHandler";
 import { DmHandler } from "./GenericDm";
 
-export class DMHandlerImpl implements DmHandler {
+export class DMHandlerImpl extends AbstractHandler implements DmHandler {
 
 
-    private constructor() { }
+    private constructor() {
+        super("DM Handler")
+    }
 
     static async init(): Promise<DmHandler> {
         const dm = new DMHandlerImpl();
-        return dm
-    }
-
-    onReady(client: Client): Promise<string> {
-        return Promise.resolve('DM handler loaded');
+        return dm;
     }
 
     onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
         return interaction.reply({ content: `No action specified`, ephemeral: true })
-        //return this.commandManager.onSlashCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<unknown> {

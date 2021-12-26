@@ -21,7 +21,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['send', 'msgchannel', 'messagechannel', 'message_channel'],
             this.keyword
@@ -85,6 +85,6 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 }
