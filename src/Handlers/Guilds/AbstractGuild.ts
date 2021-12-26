@@ -89,32 +89,38 @@ export abstract class AbstractGuild implements GenericGuild {
         await this.commandManager.clearCommands(guild.commands).catch(console.error);
     }
 
-    onGuildMemberAdd(member: GuildMember): Promise<any> {
+    onGuildMemberAdd(member: GuildMember): Promise<unknown> {
         return Promise.resolve(`member ${member.displayName} joined the guild`);
 
     }
 
-    onGuildMemberRemove(member: GuildMember): Promise<any> {
+    onGuildMemberRemove(member: GuildMember): Promise<unknown> {
         return Promise.resolve(`member ${member.displayName} left the guild`);
     }
 
-    onGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<any> {
+    onGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<unknown> {
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onSlashCommand(interaction: BaseCommandInteraction): Promise<any> {
+    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
         return this.commandManager.onSlashCommand(interaction);
     }
 
-    onButton(interaction: ButtonInteraction): Promise<any> {
-        return Promise.resolve(`button ${interaction.customId} received from ${interaction.guild.name}`);
+    onButton(interaction: ButtonInteraction): Promise<unknown> {
+        return interaction.reply({
+            content: "No action specified",
+            ephemeral: true
+        });
     }
 
-    onSelectMenu(interaction: SelectMenuInteraction): Promise<any> {
-        return Promise.resolve(`select ${interaction.customId} received from ${interaction.guild.name}`);
+    onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown> {
+        return interaction.reply({
+            content: "No action specified",
+            ephemeral: true
+        });
     }
 
-    async onMessage(message: Message): Promise<any> {
+    async onMessage(message: Message): Promise<unknown> {
         if (message.content.startsWith(this._settings.prefix)) {
             return this.commandManager.onManualCommand(message);
         }
@@ -128,7 +134,7 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`message received`);
     }
 
-    onMessageDelete(deletedMessage: Message): Promise<any> {
+    onMessageDelete(deletedMessage: Message): Promise<unknown> {
         return Promise.resolve(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`);
     }
 
@@ -193,11 +199,11 @@ export abstract class AbstractGuild implements GenericGuild {
         return Promise.resolve(`reaction added`);
     }
 
-    onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<any> {
+    onMessageReactionRemove(reaction: MessageReaction, user: User): Promise<unknown> {
         return Promise.resolve(`reaction removed`);
     }
 
-    async onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+    async onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState): Promise<unknown> {
         const clientMember = newState.guild.members.cache.get(newState.client.user.id);
         if (!clientMember.permissions.has('ADMINISTRATOR'))
             return

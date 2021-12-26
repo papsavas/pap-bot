@@ -17,11 +17,11 @@ export class GlobalCommandHandlerImpl implements GlobalCommandHandler {
     private constructor() { }
 
     static async init(): Promise<GlobalCommandHandler> {
-        const global = new GlobalCommandHandlerImpl();
-        global.commandManager = new GlobalCommandManagerImpl(
+        const handler = new GlobalCommandHandlerImpl();
+        handler.commandManager = new GlobalCommandManagerImpl(
             await Promise.all(globalCommands.map(cmd => cmd.init()))
         );
-        return global;
+        return handler;
     }
     onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
         return this.commandManager.onSlashCommand(interaction);

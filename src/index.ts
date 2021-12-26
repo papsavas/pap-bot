@@ -1,5 +1,5 @@
 import {
-    Client, Collection, CommandInteraction, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
+    Client, Collection, GuildChannelManager, GuildMember, Message, MessageEmbed, MessageReaction, Snowflake, TextChannel, User
 } from 'discord.js';
 import _ from 'lodash';
 import moment from 'moment-timezone';
@@ -169,11 +169,9 @@ PAP.on('interactionCreate', async interaction => {
         else if (interaction.channel.type === "DM") {
             dmHandler.onSlashCommand(interaction)
                 .catch(console.error);
-            console.log(`dm interaction received\n${(interaction as CommandInteraction).commandName}
-    from ${interaction.user.tag}`)
         }
         else {
-            console.log(`unspecified interaction channel\n${interaction.toJSON()}`)
+            console.log(`unspecified interaction channel type\n${interaction.toJSON()}`)
         }
     }
 

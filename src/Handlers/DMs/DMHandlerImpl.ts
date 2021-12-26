@@ -16,16 +16,16 @@ export class DMHandlerImpl implements DmHandler {
     }
 
     onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
-        return interaction.reply({ content: `Dm commands coming soon`, ephemeral: true })
+        return interaction.reply({ content: `No action specified`, ephemeral: true })
         //return this.commandManager.onSlashCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<unknown> {
-        return Promise.resolve(`button ${interaction.customId} received from ${interaction.user.id}`);
+        return interaction.reply({ content: `No action specified`, ephemeral: true })
     }
 
     onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown> {
-        return Promise.resolve(`select ${interaction.customId} received from ${interaction.user.id}`);
+        return interaction.reply({ content: `No action specified`, ephemeral: true })
     }
 
     onMessage(message: Message): Promise<unknown> {

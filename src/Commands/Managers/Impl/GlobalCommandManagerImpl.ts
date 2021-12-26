@@ -10,7 +10,6 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
     declare readonly commands: GenericGlobalCommand[]
     constructor(globalCommands: GenericGlobalCommand[]) {
         super(globalCommands);
-        this.commands = globalCommands;
     }
 
     fetchCommandData(commands: GenericGlobalCommand[]): ApplicationCommandData[] {
