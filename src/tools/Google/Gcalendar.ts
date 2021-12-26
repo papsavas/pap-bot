@@ -6,7 +6,14 @@ export { fetchCalendarEvents, insertCalendarEvent };
 if (process.env.NODE_ENV !== 'production')
     require('dotenv').config({ path: require('find-config')('.env') })
 
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const SCOPES = [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/calendar.events',
+    'https://www.googleapis.com/auth/calendar.events.readonly',
+
+];
+
 const maxResults: number = 300;
 
 const credentials: googleCredentials = {
@@ -27,9 +34,9 @@ const credentials: googleCredentials = {
 const token: googleToken = {
     access_token: process.env.GCALENDAR_ACCESS_TOKEN,
     refresh_token: process.env.GCALENDAR_REFRESH_TOKEN,
-    scope: "https://www.googleapis.com/auth/calendar.readonly",
-    token_type: "Bearer",
-    expiry_date: 1591354563667
+    "scope": "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/calendar.events",
+    "token_type": "Bearer",
+    "expiry_date": 1640557954633
 }
 
 const authP = Gauth(credentials, token, SCOPES);
