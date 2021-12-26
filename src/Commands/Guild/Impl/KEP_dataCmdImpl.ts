@@ -21,7 +21,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["data", "d"], this.keyword
         );
@@ -83,7 +83,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

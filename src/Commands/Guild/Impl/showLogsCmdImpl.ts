@@ -25,7 +25,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['log', 'logs'],
             this.keyword
@@ -135,7 +135,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd
     }
 
     getAliases(): string[] {
-        return this._aliases
+        return this.#aliases
     }
 
 

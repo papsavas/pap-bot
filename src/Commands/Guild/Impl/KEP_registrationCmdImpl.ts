@@ -28,7 +28,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             [], this._keyword,
         );
@@ -179,7 +179,7 @@ ${pswd}\n
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

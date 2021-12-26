@@ -22,7 +22,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['announce', 'ann'], this.keyword
         );
@@ -129,7 +129,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 }

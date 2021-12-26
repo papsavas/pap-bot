@@ -22,7 +22,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["info", "i"], this.keyword
         );
@@ -65,7 +65,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

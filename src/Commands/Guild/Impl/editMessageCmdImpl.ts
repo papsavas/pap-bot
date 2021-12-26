@@ -24,7 +24,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
             this.keyword
@@ -71,7 +71,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
     async handler(source: Message | CommandInteraction, messageURL: Message['url'], newMessageOptions: MessageEditOptions) {

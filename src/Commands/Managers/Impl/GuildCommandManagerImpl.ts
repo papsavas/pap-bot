@@ -15,7 +15,6 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     constructor(guild_id: Snowflake, guildCommands: GenericGuildCommand[]) {
         super(guildCommands);
         this.guildID = guild_id;
-        this.commands = guildCommands;
     }
 
     fetchCommandData(commands: GenericGuildCommand[]): ApplicationCommandData[] {

@@ -28,7 +28,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['directmessage', 'message', 'dm'],
             this.keyword
@@ -132,7 +132,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

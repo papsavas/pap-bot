@@ -22,7 +22,7 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['adm', 'admin'], this._keyword
         );
@@ -83,7 +83,7 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

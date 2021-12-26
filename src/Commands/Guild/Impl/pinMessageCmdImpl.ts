@@ -18,7 +18,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['pin', 'πιν'],
             this.keyword
@@ -71,7 +71,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

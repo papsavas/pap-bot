@@ -1,19 +1,5 @@
-import { BaseCommandInteraction, ButtonInteraction, Client, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
+import GenericHandler from "../GenericHandler";
 
-export interface DmHandler {
-    onReady(client: Client): Promise<unknown>;
+export interface DmHandler extends GenericHandler {
 
-    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown>;
-
-    onButton(interaction: ButtonInteraction): Promise<unknown>
-
-    onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown>
-
-    onMessage(message: Message): Promise<unknown>;
-
-    onMessageDelete(deletedMessage: Message): Promise<unknown>;
-
-    onMessageReactionAdd(messageReaction: MessageReaction, user: User): Promise<unknown>;
-
-    onMessageReactionRemove(messageReaction: MessageReaction, user: User): Promise<unknown>;
 }

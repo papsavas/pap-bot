@@ -21,7 +21,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["courseteacher", "teachercourse", "teacher_course", "course_teacher"], this.keyword
         );
@@ -96,7 +96,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

@@ -23,7 +23,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['perms', 'perm', 'showperms', 'show_perms'],
             this.keyword
@@ -82,7 +82,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

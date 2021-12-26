@@ -19,7 +19,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['poll', 'πολλ'],
             this.keyword
@@ -108,7 +108,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
     }
 
     getAliases(): string[] {
-        return this._aliases
+        return this.#aliases
     }
 
 

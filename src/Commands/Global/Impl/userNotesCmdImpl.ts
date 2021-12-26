@@ -24,7 +24,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],
             this.keyword
@@ -190,7 +190,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
 

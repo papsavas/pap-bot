@@ -31,7 +31,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         return cmd;
     }
 
-    private readonly _aliases = this.mergeAliases
+    readonly #aliases = this.mergeAliases
         (
             ["event"], this.keyword
         );
@@ -90,7 +90,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
     }
 
     getAliases(): string[] {
-        return this._aliases;
+        return this.#aliases;
     }
 
     async handleRequest(interaction: CommandInteraction, subcommand: string) {

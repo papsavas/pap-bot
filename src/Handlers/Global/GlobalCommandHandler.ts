@@ -1,7 +1,7 @@
-import { BaseCommandInteraction } from "discord.js";
 import { GlobalCommandManager } from "../../Commands/Managers/Interf/GlobalCommandManager";
+import GenericHandler from "../GenericHandler";
 
-export interface GlobalCommandHandler {
+export interface GlobalCommandHandler extends GenericHandler {
     readonly commandManager: GlobalCommandManager
-    onSlashCommand(interaction: BaseCommandInteraction): Promise<any>;
+
 }
