@@ -145,10 +145,9 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     });
 
                     if (btn.customId === "no") {
-                        return interaction.editReply("Command Cancelled")
-                            .then(() => msg.delete());
+                        return interaction.editReply("Command Cancelled");
                     }
-
+                    await btn.deferUpdate();
                 } catch (err) {
                     return interaction.editReply("`" + err.toString() + "`")
                         .then(() => msg.delete());
@@ -179,7 +178,6 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 )
                     .then(() => reloadEvents())
                     .then(() => interaction.editReply("Events registered & reloaded ✅"))
-                    .then(() => msg.delete())
                     .catch(err => interaction.followUp({
                         embeds: [new MessageEmbed({
                             title: "Missed event",
