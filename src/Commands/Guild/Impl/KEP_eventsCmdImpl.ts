@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, MessageEmbed, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
 import { guildMap } from "../../..";
@@ -156,7 +156,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                         components: [], attachments: []
                     })
                 }
-                Promise.all(
+                return Promise.all(
                     courseEvents.map(async e => {
                         e.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined;
                         await snooze(1000); //avoid rate exceeding requests
@@ -187,6 +187,11 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     }))
                     .catch(err => interaction.followUp({
                         content: `Missed event ${(err as GaxiosError).response.data?.summary ?? "unknown"}`,
+                        embeds: [new MessageEmbed({
+                            title: "Missed event",
+                            fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "unknown"}` }],
+                            color: "DARK_RED"
+                        })],
                         ephemeral: true
                     }))
 
