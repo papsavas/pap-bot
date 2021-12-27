@@ -161,26 +161,29 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 return Promise.all(
                     courseEvents
                         .map(e =>
-                            insertCalendarEvent({
-                                //@ts-expect-error
-                                summary: `${type === "lecture" ? `${lecturePrefix}` : `${examsPrefix}`} ${e.title} ${e.info ? `(${e.info})` : ""}`,
-                                description: e.code,
-                                start: {
-                                    dateTime: e.start.toISOString(),
-                                    timeZone: "Europe/Athens"
-                                },
-                                end: {
-                                    dateTime: e.end.toISOString(),
-                                    timeZone: "Europe/Athens"
-                                },
-                                location: e.location ?? e.url,
-                                //@ts-expect-error
-                                colorId: type === lectureLiteral ? "10" : "2",
-                                recurrence: e.recurring ?
-                                    [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
-                                    : undefined
+                            setTimeout(() =>
+                                insertCalendarEvent({
+                                    //@ts-expect-error
+                                    summary: `${type === "lecture" ? `${lecturePrefix}` : `${examsPrefix}`} ${e.title} ${e.info ? `(${e.info})` : ""}`,
+                                    description: e.code,
+                                    start: {
+                                        dateTime: e.start.toISOString(),
+                                        timeZone: "Europe/Athens"
+                                    },
+                                    end: {
+                                        dateTime: e.end.toISOString(),
+                                        timeZone: "Europe/Athens"
+                                    },
+                                    location: e.location ?? e.url,
+                                    //@ts-expect-error
+                                    colorId: type === lectureLiteral ? "10" : "2",
+                                    recurrence: e.recurring ?
+                                        [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
+                                        : undefined
 
-                            }))
+                                })
+                                , 1000)
+                        )
                 )
                     .then(() => reloadEvents())
                     .then(() => interaction.editReply({
