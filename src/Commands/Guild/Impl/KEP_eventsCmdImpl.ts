@@ -131,7 +131,8 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                                 style: "DANGER"
                             })
                         ]
-                    })]
+                    })],
+                    fetchReply: true
                 });
                 const msg = await interaction.channel.messages.fetch(msgRef.id);
                 try {
