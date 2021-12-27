@@ -141,7 +141,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                         time: 60000
 
                     });
-                    await btn.deferReply({ ephemeral: true });
+
                     if (btn.customId === "no") {
                         return interaction.editReply({
                             content: "Command Cancelled",
