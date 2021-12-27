@@ -190,7 +190,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     .catch(err => interaction.followUp({
                         embeds: [new MessageEmbed({
                             title: "Missed event",
-                            description: err.response?.data ? undefined : err.toString(),
+                            description: err.response?.data.summary ? undefined : err.toString(),
                             fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "-"}` }],
                             color: "DARK_RED"
                         })],

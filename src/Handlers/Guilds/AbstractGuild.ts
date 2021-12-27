@@ -108,14 +108,14 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
 
     onButton(interaction: ButtonInteraction): Promise<unknown> {
         return interaction.reply({
-            content: "No action specified",
+            content: `[${interaction.component.type}]: No action specified`,
             ephemeral: true
         });
     }
 
     onSelectMenu(interaction: SelectMenuInteraction): Promise<unknown> {
         return interaction.reply({
-            content: "No action specified",
+            content: `[${interaction.component.type}]: No action specified`,
             ephemeral: true
         });
     }
