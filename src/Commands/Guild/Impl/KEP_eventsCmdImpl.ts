@@ -186,7 +186,6 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                         components: [], attachments: []
                     }))
                     .catch(err => interaction.followUp({
-                        content: `Missed event ${(err as GaxiosError).response.data?.summary ?? "unknown"}`,
                         embeds: [new MessageEmbed({
                             title: "Missed event",
                             fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "unknown"}` }],
