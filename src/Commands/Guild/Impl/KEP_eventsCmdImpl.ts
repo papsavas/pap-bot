@@ -9,6 +9,7 @@ import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchCourseEvents } from "../../../Queries/KEP/GSheets";
 import { fetchCalendarEvents, insertCalendarEvent } from "../../../tools/Google/Gcalendar";
+import { snooze } from "../../../tools/scheduler";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_eventsCmd } from "../Interf/KEP_eventsCmd";
 
@@ -107,8 +108,6 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 const url = interaction.options.getString(urlOption, true);
                 const field = interaction.options.getString(fieldOption, true);
                 const type = interaction.options.getString(typeOption, true) as typeof lectureLiteral | typeof examLiteral;
-                if (type === lectureLiteral)
-                    return interaction.editReply({ content: "Δεν υποστηρίζεται η εγγραφή Προγράμματος Διδασκαλίας" });
                 const courseEvents = await fetchCourseEvents(field, url);
                 const text = JSON.stringify(courseEvents, null, "\t");
                 const buffer = Buffer.from(text);
@@ -145,51 +144,43 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     if (resp.customId === "no") {
                         return interaction.editReply({
                             content: "Command Cancelled",
-                            components: [], files: []
+                            components: [], attachments: []
                         });
                     }
                 } catch (err) {
                     return interaction.editReply({
                         content: `Command Failed. Reason: \`${err.toString()}\``,
-                        components: [], files: []
+                        components: [], attachments: []
                     })
                 }
+                for (const e of courseEvents) {
+                    e.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined;
+                    await snooze(1000); //avoid rate exceeding requests
+                    return insertCalendarEvent({
+                        summary: `${type === "lecture" ? `${lecturePrefix}` : `${examsPrefix}`} ${e.title} ${e.info ? `(${e.info})` : ""}`,
+                        description: e.code,
+                        start: {
+                            dateTime: e.start.toISOString(),
+                            timeZone: "Europe/Athens"
+                        },
+                        end: {
+                            dateTime: e.end.toISOString(),
+                            timeZone: "Europe/Athens"
+                        },
+                        location: e.location ?? e.url,
+                        colorId: type === lectureLiteral ? "10" : "2",
+                        recurrence: e.recurring ?
+                            [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
+                            : undefined
 
-                courseEvents.forEach(ce =>
-                    //@ts-expect-error
-                    ce.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined)
-                return Promise.all(
-                    courseEvents
-                        .map(e =>
-                            setTimeout(() =>
-                                insertCalendarEvent({
-                                    //@ts-expect-error
-                                    summary: `${type === "lecture" ? `${lecturePrefix}` : `${examsPrefix}`} ${e.title} ${e.info ? `(${e.info})` : ""}`,
-                                    description: e.code,
-                                    start: {
-                                        dateTime: e.start.toISOString(),
-                                        timeZone: "Europe/Athens"
-                                    },
-                                    end: {
-                                        dateTime: e.end.toISOString(),
-                                        timeZone: "Europe/Athens"
-                                    },
-                                    location: e.location ?? e.url,
-                                    //@ts-expect-error
-                                    colorId: type === lectureLiteral ? "10" : "2",
-                                    recurrence: e.recurring ?
-                                        [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
-                                        : undefined
+                    })
+                        .then(() => reloadEvents())
+                        .then(() => interaction.editReply({
+                            content: "Events registered & reloaded ✅",
+                            components: [], attachments: []
+                        }));
+                }
 
-                                })
-                                , 1000)
-                        )
-                )
-                    .then(() => reloadEvents())
-                    .then(() => interaction.editReply({
-                        content: "Events registered & reloaded",
-                        components: [], files: []
-                    }));
             }
             default:
                 return Promise.reject("invalid subcommand")
