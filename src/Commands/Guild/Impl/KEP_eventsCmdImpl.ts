@@ -113,7 +113,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 const text = JSON.stringify(courseEvents, null, "\t");
                 const buffer = Buffer.from(text);
                 const file = new MessageAttachment(buffer, new Date().toISOString() + "_CalendarPendingEvents.json");
-                await interaction.editReply({
+                const msgRef = await interaction.followUp({
                     content: "Is this format valid?",
                     files: [file],
                     components: [new MessageActionRow({
@@ -133,9 +133,9 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                         ]
                     })]
                 });
-
+                const msg = await interaction.channel.messages.fetch(msgRef.id);
                 try {
-                    const btn = await interaction.channel.awaitMessageComponent({
+                    const btn = await msg.awaitMessageComponent({
                         filter: (i) =>
                             i.user.id === interaction.user.id && ['yes', 'no'].includes(i.customId),
                         componentType: "BUTTON",
@@ -144,17 +144,13 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     });
 
                     if (btn.customId === "no") {
-                        return interaction.editReply({
-                            content: "Command Cancelled",
-                            components: [], attachments: []
-                        });
+                        return interaction.editReply("Command Cancelled")
+                            .then(() => msg.delete());
                     }
 
                 } catch (err) {
-                    return interaction.editReply({
-                        content: `Command Failed. Reason: \`${err.toString()}\``,
-                        components: [], attachments: []
-                    })
+                    return interaction.editReply("`" + err.toString() + "`")
+                        .then(() => msg.delete());
                 }
                 return Promise.all(
                     courseEvents.map(async e => {
@@ -181,10 +177,8 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     })
                 )
                     .then(() => reloadEvents())
-                    .then(() => interaction.editReply({
-                        content: "Events registered & reloaded ✅",
-                        components: [], attachments: []
-                    }))
+                    .then(() => interaction.editReply("Events registered & reloaded ✅"))
+                    .then(() => msg.delete())
                     .catch(err => interaction.followUp({
                         embeds: [new MessageEmbed({
                             title: "Missed event",
