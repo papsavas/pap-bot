@@ -1,0 +1,11 @@
+{
+    "clientEvent": {
+        "scope": "typescript",
+        "prefix": "clientEvent",
+        "description": "create a client event boiler-plate code",
+        "body": [
+            "import { ClientEvents } from \"discord.js\";\n\n",
+            "const name: keyof ClientEvents = \"$1\"\n\nconst execute = async ($2) => {\n\n}\n\n export default {name, execute}"
+        ]
+    }
+}
