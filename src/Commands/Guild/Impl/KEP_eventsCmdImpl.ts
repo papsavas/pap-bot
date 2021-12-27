@@ -113,7 +113,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 const text = JSON.stringify(courseEvents, null, "\t");
                 const buffer = Buffer.from(text);
                 const file = new MessageAttachment(buffer, new Date().toISOString() + "_CalendarPendingEvents.json");
-                const msgRef = await interaction.followUp({
+                await interaction.editReply({
                     content: "Is this format valid?",
                     files: [file],
                     components: [new MessageActionRow({
@@ -131,12 +131,11 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                                 style: "DANGER"
                             })
                         ]
-                    })],
-                    fetchReply: true
+                    })]
                 });
-                const msg = await interaction.channel.messages.fetch(msgRef.id);
+
                 try {
-                    const btn = await msg.awaitMessageComponent({
+                    const btn = await interaction.channel.awaitMessageComponent({
                         filter: (i) =>
                             i.user.id === interaction.user.id && ['yes', 'no'].includes(i.customId),
                         componentType: "BUTTON",
@@ -147,10 +146,12 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     if (btn.customId === "no") {
                         return interaction.editReply("Command Cancelled");
                     }
-                    await btn.deferUpdate();
+
+                    if (btn.customId === "yes")
+                        await interaction.editReply({ content: `Registering ${courseEvents.length} events...` });
+
                 } catch (err) {
                     return interaction.editReply("`" + err.toString() + "`")
-                        .then(() => msg.delete());
                 }
                 return Promise.all(
                     courseEvents.map(async e => {
@@ -177,7 +178,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     })
                 )
                     .then(() => reloadEvents())
-                    .then(() => interaction.editReply("Events registered & reloaded ✅"))
+                    .then(() => interaction.followUp("Events registered & reloaded in cache ✅"))
                     .catch(err => interaction.followUp({
                         embeds: [new MessageEmbed({
                             title: "Missed event",
