@@ -149,7 +149,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                             components: [], attachments: []
                         });
                     }
-                    await btn.reply(`This might take a while... *(${courseEvents.keys.length} seconds)*`);
+
                 } catch (err) {
                     return interaction.editReply({
                         content: `Command Failed. Reason: \`${err.toString()}\``,
