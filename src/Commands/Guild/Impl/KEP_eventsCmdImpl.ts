@@ -144,16 +144,26 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     });
 
                     if (btn.customId === "no") {
-                        return interaction.editReply("Command Cancelled");
+                        return interaction.editReply({
+                            content: "Command Cancelled",
+                            components: [],
+                            files: [],
+                            attachments: []
+                        });
                     }
 
                     if (btn.customId === "yes")
-                        await interaction.editReply({ content: `Registering ${courseEvents.length} events...` });
+                        await interaction.editReply({
+                            content: `Registering ${courseEvents.length} events ⏳`,
+                            components: [],
+                            files: [],
+                            attachments: []
+                        });
 
                 } catch (err) {
                     return interaction.editReply("`" + err.toString() + "`")
                 }
-                return Promise.all(
+                await Promise.all(
                     courseEvents.map(async e => {
                         e.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined;
                         await snooze(1000); //avoid rate exceeding requests
@@ -177,16 +187,18 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                         })
                     })
                 )
-                    .then(() => reloadEvents())
-                    .then(() => interaction.followUp("Events registered & reloaded in cache ✅"))
                     .catch(err => interaction.followUp({
                         embeds: [new MessageEmbed({
                             title: "Missed event",
-                            fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "unknown"}` }],
+                            description: err.response?.data ? undefined : err.toString(),
+                            fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "-"}` }],
                             color: "DARK_RED"
                         })],
                         ephemeral: true
                     }))
+
+                return reloadEvents()
+                    .then(() => interaction.followUp("Events registered & reloaded in cache ✅"))
 
             }
             default:
