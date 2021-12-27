@@ -134,14 +134,15 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 });
 
                 try {
-                    const resp = await interaction.channel.awaitMessageComponent({
+                    const btn = await interaction.channel.awaitMessageComponent({
                         filter: (i) =>
                             i.user.id === interaction.user.id && ['yes', 'no'].includes(i.customId),
                         componentType: "BUTTON",
                         time: 60000
 
                     });
-                    if (resp.customId === "no") {
+                    await btn.deferReply({ ephemeral: true });
+                    if (btn.customId === "no") {
                         return interaction.editReply({
                             content: "Command Cancelled",
                             components: [], attachments: []
