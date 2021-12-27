@@ -148,39 +148,46 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                             components: [], attachments: []
                         });
                     }
+                    await btn.reply(`This might take a while... *(${courseEvents.keys.length} seconds)*`);
                 } catch (err) {
                     return interaction.editReply({
                         content: `Command Failed. Reason: \`${err.toString()}\``,
                         components: [], attachments: []
                     })
                 }
-                for (const e of courseEvents) {
-                    e.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined;
-                    await snooze(1000); //avoid rate exceeding requests
-                    return insertCalendarEvent({
-                        summary: `${type === "lecture" ? `${lecturePrefix}` : `${examsPrefix}`} ${e.title} ${e.info ? `(${e.info})` : ""}`,
-                        description: e.code,
-                        start: {
-                            dateTime: e.start.toISOString(),
-                            timeZone: "Europe/Athens"
-                        },
-                        end: {
-                            dateTime: e.end.toISOString(),
-                            timeZone: "Europe/Athens"
-                        },
-                        location: e.location ?? e.url,
-                        colorId: type === lectureLiteral ? "10" : "2",
-                        recurrence: e.recurring ?
-                            [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
-                            : undefined
+                Promise.all(
+                    courseEvents.map(async e => {
+                        e.recurring = type === lectureLiteral ? { recurrence: "WEEKLY", count: 13 } : undefined;
+                        await snooze(1000); //avoid rate exceeding requests
+                        return insertCalendarEvent({
+                            summary: `${type === "lecture" ? `${lecturePrefix}` : `${examsPrefix}`} ${e.title} ${e.info ? `(${e.info})` : ""}`,
+                            description: e.code,
+                            start: {
+                                dateTime: e.start.toISOString(),
+                                timeZone: "Europe/Athens"
+                            },
+                            end: {
+                                dateTime: e.end.toISOString(),
+                                timeZone: "Europe/Athens"
+                            },
+                            location: e.location ?? e.url,
+                            colorId: type === lectureLiteral ? "10" : "2",
+                            recurrence: e.recurring ?
+                                [`RRULE:FREQ=${e.recurring.recurrence};COUNT=${e.recurring.count};BYDAY=${moment(e.start).format("dd").toUpperCase()}`]
+                                : undefined
 
+                        })
                     })
-                        .then(() => reloadEvents())
-                        .then(() => interaction.editReply({
-                            content: "Events registered & reloaded ✅",
-                            components: [], attachments: []
-                        }));
-                }
+                )
+                    .then(() => reloadEvents())
+                    .then(() => interaction.editReply({
+                        content: "Events registered & reloaded ✅",
+                        components: [], attachments: []
+                    }))
+                    .catch(err => interaction.followUp({
+                        content: `Missed event: ${e.title}`,
+                        ephemeral: true
+                    }))
 
             }
             default:
