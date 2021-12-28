@@ -8,7 +8,7 @@ import { mockMessageCmd } from '../Interf/mockMessageCmd';
 
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `mock`;
     readonly guide = `Mocks text`;
     readonly usage = `${this.keyword} <text>`;
@@ -17,7 +17,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
 
     static async init(): Promise<mockMessageCmd> {
         const cmd = new MockMessageCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
