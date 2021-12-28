@@ -13,9 +13,9 @@ import { showLogsCmd } from "../Interf/showLogsCmd";
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `logs`;
-    protected _guide = `Prints guilds logs`;
-    protected _usage = `${this.keyword}`;
+    readonly keyword = `logs`;
+    readonly guide = `Prints guilds logs`;
+    readonly usage = `${this.keyword}`;
 
     private constructor() { super() }
 
@@ -25,7 +25,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['log', 'logs'],
             this.keyword

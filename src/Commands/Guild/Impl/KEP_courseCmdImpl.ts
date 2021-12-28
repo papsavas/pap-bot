@@ -14,16 +14,16 @@ const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"]
 export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_courseCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `course`;
-    protected _guide = `Διαχειρίζεται τα μαθήματα στη ΒΔ`;
-    protected _usage = `${this.keyword} create <code> <name> <semester> | delete <code> | list`;
+    readonly keyword = `course`;
+    readonly guide = `Διαχειρίζεται τα μαθήματα στη ΒΔ`;
+    readonly usage = `${this.keyword} create <code> <name> <semester> | delete <code> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_courseCmd> {
         const cmd = new KEP_courseCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["courses"], this.keyword
         );
@@ -209,8 +209,6 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
             return message.reply("`MANAGE_GUILD` permissions required")
         return message.reply(`Παρακαλώ χρησιμοποιείστε Slash Command \`/${this.usage}\``)
     }
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }

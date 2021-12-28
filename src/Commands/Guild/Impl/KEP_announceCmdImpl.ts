@@ -10,9 +10,9 @@ const contentLiteral = `content`
 export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_announceCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `announce`;
-    protected _guide = `Ανακοινώνει ένα μήνυμα στα νέα-ενημερώσεις`;
-    protected _usage = `${this.keyword} <message> [<roles>]`;
+    readonly keyword = `announce`;
+    readonly guide = `Ανακοινώνει ένα μήνυμα στα νέα-ενημερώσεις`;
+    readonly usage = `${this.keyword} <message> [<roles>]`;
     private constructor() {
         super()
     }
@@ -22,7 +22,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['announce', 'ann'], this.keyword
         );
@@ -128,8 +128,6 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         return message.reply(`Χρησιμοποιείτε την εντολή ως slash command \`/${this.keyword}\` ώστε να μπορείτε να δηλώσετε και ρόλους για ping`);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }

@@ -11,9 +11,9 @@ const cmdOptionLiteral: ApplicationCommandOptionData['name'] = 'command';
 export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPermsCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `perms`;
-    protected _guide = `Shows permissions for specific command`;
-    protected _usage = `${this.keyword} <command>`;
+    readonly keyword = `perms`;
+    readonly guide = `Shows permissions for specific command`;
+    readonly usage = `${this.keyword} <command>`;
 
     private constructor() { super() }
 
@@ -23,7 +23,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['perms', 'perm', 'showperms', 'show_perms'],
             this.keyword
@@ -81,9 +81,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         });
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

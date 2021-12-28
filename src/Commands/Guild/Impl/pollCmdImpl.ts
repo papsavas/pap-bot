@@ -8,9 +8,9 @@ const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `poll`;
-    protected _guide = `Creates a simple poll using 👍-👎`;
-    protected _usage = `${this.keyword} <text>`;
+    readonly keyword = `poll`;
+    readonly guide = `Creates a simple poll using 👍-👎`;
+    readonly usage = `${this.keyword} <text>`;
     private constructor() { super() }
 
     static async init(): Promise<pollCmd> {
@@ -19,7 +19,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['poll', 'πολλ'],
             this.keyword

@@ -51,9 +51,9 @@ const isWin = (board: MessageButton[][]) => {
 export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoeCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `tictactoe`;
-    protected _guide = `Spawns a tic-tac-toe board`;
-    protected _usage = `${this.keyword}`;
+    readonly keyword = `tictactoe`;
+    readonly guide = `Spawns a tic-tac-toe board`;
+    readonly usage = `${this.keyword}`;
     private constructor() { super() }
 
     static async init(): Promise<tictactoeCmd> {
@@ -62,7 +62,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['tictactoe', 'tic-tac-toe', 'triliza', 'τριλιζα'], this.keyword
         );
@@ -186,8 +186,6 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
     async execute(message: Message, commandLiteral): Promise<void> {
         return
     }
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }

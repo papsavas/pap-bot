@@ -21,18 +21,18 @@ const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedField
 export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_myScheduleCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `myschedule`;
-    protected _guide = `Σας εμφανίζει το εβδομαδιαίο σας πρόγραμμα`;
-    protected _usage = `${this.keyword}`;
+    readonly keyword = `myschedule`;
+    readonly guide = `Σας εμφανίζει το εβδομαδιαίο σας πρόγραμμα`;
+    readonly usage = `${this.keyword}`;
     private constructor() { super() }
     static async init(): Promise<KEP_myScheduleCmd> {
         const cmd = new KEP_myScheduleCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
-            ["my_schedule", "schedule"], this._keyword
+            ["my_schedule", "schedule"], this.keyword
         );
 
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
@@ -78,9 +78,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
             );
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

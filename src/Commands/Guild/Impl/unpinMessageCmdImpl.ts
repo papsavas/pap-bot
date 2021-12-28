@@ -7,9 +7,9 @@ import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `unpin`;
-    protected _guide = `Unpins a message`;
-    protected _usage = `Right click on message => Apps => ${this.keyword}`;
+    readonly keyword = `unpin`;
+    readonly guide = `Unpins a message`;
+    readonly usage = `Right click on message => Apps => ${this.keyword}`;
 
     private constructor() { super() }
 
@@ -19,7 +19,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['unpin', 'ανπιν'],
             this.keyword
@@ -71,9 +71,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
 
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

@@ -8,16 +8,16 @@ import { openVoiceCmd } from "../Interf/openVoiceCmd";
 export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `open-voice`;
-    protected _guide = `Unlocks voice for member or role`;
-    protected _usage = `${this.keyword} <member | role>`;
+    readonly keyword = `open-voice`;
+    readonly guide = `Unlocks voice for member or role`;
+    readonly usage = `${this.keyword} <member | role>`;
     private constructor() { super() }
     static async init(): Promise<openVoiceCmd> {
         const cmd = new openVoiceCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["open_voice", "unlock_voice", "unlock-voice"], this.keyword
         );
@@ -64,8 +64,6 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
         return message.reply(`Please use slash command => \`/${this.usage}\``);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }

@@ -11,16 +11,16 @@ const [voiceOptLiteral, newPrefixOptLiteral] = ["voice_channel", "new_prefix"]
 
 export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd {
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `settings`;
-    protected _guide = `edits guild settings`;
-    protected _usage = `${this.keyword} nsfw | voice-lobby <channel_id> | prefix [new_prefix]`;
+    readonly keyword = `settings`;
+    readonly guide = `edits guild settings`;
+    readonly usage = `${this.keyword} nsfw | voice-lobby <channel_id> | prefix [new_prefix]`;
     private constructor() { super() }
     static async init(): Promise<settingsCmd> {
         const cmd = new settingsCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -84,9 +84,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         return this.coreHandler(subcommand, message, args);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 

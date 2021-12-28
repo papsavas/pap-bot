@@ -19,16 +19,16 @@ TODO: support global commands
 export class commandPermsCmdImpl extends AbstractGuildCommand implements commandPermsCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `command_perms`;
-    protected _guide = `Lock/Unlock commands`;
-    protected _usage = `${this.keyword} ${lockLiteral} <command> <role1> [role2...] | ${unlockLiteral} <command>`;
+    readonly keyword = `command_perms`;
+    readonly guide = `Lock/Unlock commands`;
+    readonly usage = `${this.keyword} ${lockLiteral} <command> <role1> [role2...] | ${unlockLiteral} <command>`;
     private constructor() { super() }
     static async init(): Promise<commandPermsCmd> {
         const cmd = new commandPermsCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             [], this.keyword
         );
@@ -162,9 +162,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         return message.reply(`Please use Slash Command \`/${this.usage}\``);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

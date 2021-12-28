@@ -12,16 +12,16 @@ const [codeLiteral, usernameLiteral] = ['code', 'username'];
 export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KEP_courseTeacherCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `course_teacher`;
-    protected _guide = `Συσχέτιση μεταξύ μαθήματος και καθηγητή`;
-    protected _usage = `${this.keyword} link | unlink <course_code> <teacher_username> | list`;
+    readonly keyword = `course_teacher`;
+    readonly guide = `Συσχέτιση μεταξύ μαθήματος και καθηγητή`;
+    readonly usage = `${this.keyword} link | unlink <course_code> <teacher_username> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_courseTeacherCmd> {
         const cmd = new KEP_courseTeacherCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["courseteacher", "teachercourse", "teacher_course", "course_teacher"], this.keyword
         );
@@ -95,9 +95,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         return handleRequest(message, arg1, arg2, arg3, this.usage);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

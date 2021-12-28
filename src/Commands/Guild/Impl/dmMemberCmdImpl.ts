@@ -17,9 +17,9 @@ const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `dm`;
-    protected _guide = `Sends DM to a specific member`;
-    protected _usage = `${this.keyword} member/username/nickname message`;
+    readonly keyword = `dm`;
+    readonly guide = `Sends DM to a specific member`;
+    readonly usage = `${this.keyword} member/username/nickname message`;
     private constructor() { super() }
 
     static async init(): Promise<dmMemberCmd> {
@@ -28,7 +28,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['directmessage', 'message', 'dm'],
             this.keyword
@@ -131,9 +131,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
             })
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

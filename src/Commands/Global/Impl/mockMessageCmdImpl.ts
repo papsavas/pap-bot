@@ -9,9 +9,9 @@ import { mockMessageCmd } from '../Interf/mockMessageCmd';
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMessageCmd {
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `mock`;
-    protected _guide = `Mocks text`;
-    protected _usage = `${this.keyword} <text>`;
+    readonly keyword = `mock`;
+    readonly guide = `Mocks text`;
+    readonly usage = `${this.keyword} <text>`;
 
     private constructor() { super() }
 
@@ -21,7 +21,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['mock'],
             this.keyword
@@ -54,9 +54,7 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
             })
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

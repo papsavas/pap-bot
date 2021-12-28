@@ -9,16 +9,16 @@ import { KEP_surveillanceCmd } from "../Interf/KEP_surveillanceCmd";
 export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP_surveillanceCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `surveillance`;
-    protected _guide = `(Ξε)κλειδώνει όλα τα κανάλια μαθημάτων`;
-    protected _usage = `${this.keyword}`;
+    readonly keyword = `surveillance`;
+    readonly guide = `(Ξε)κλειδώνει όλα τα κανάλια μαθημάτων`;
+    readonly usage = `${this.keyword}`;
     private constructor() { super() }
     static async init(): Promise<KEP_surveillanceCmd> {
         const cmd = new KEP_surveillanceCmdImpl();
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["επιτήρηση", "επιτηρηση", "epitirisi", "epithrhsh"], this.keyword
         );
@@ -46,8 +46,6 @@ export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP
             member.roles.remove(role) : member.roles.add(role))
             .catch(err => message.reply(err.toString()))
     }
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }

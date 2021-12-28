@@ -11,9 +11,9 @@ const targetLiteral: ApplicationCommandOptionData['name'] = "target"
 export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `info`;
-    protected _guide = `Εμφανίζει διάφορες πληροφορίες σχετικά με τη σχολή`;
-    protected _usage = `${this.keyword} <πληροφορία>`;
+    readonly keyword = `info`;
+    readonly guide = `Εμφανίζει διάφορες πληροφορίες σχετικά με τη σχολή`;
+    readonly usage = `${this.keyword} <πληροφορία>`;
 
     private constructor() { super() }
 
@@ -22,7 +22,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
         cmd._id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["info", "i"], this.keyword
         );
@@ -64,9 +64,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
         return message.reply(i);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

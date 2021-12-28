@@ -15,9 +15,9 @@ const usage = "myresponses add <response> | remove <index> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `myresponses`;
-    protected _guide = `Manage your submitted responses`;
-    protected _usage = `${this.keyword}`;
+    readonly keyword = `myresponses`;
+    readonly guide = `Manage your submitted responses`;
+    readonly usage = `${this.keyword}`;
 
     private constructor() { super() }
 
@@ -28,7 +28,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
     }
 
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
             this.keyword

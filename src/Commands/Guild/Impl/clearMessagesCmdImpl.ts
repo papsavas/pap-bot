@@ -8,9 +8,9 @@ const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
 
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `clear`;
-    protected _guide = `Deletes a provided number of recent messages`;
-    protected _usage = `${this.keyword} number`;
+    readonly keyword = `clear`;
+    readonly guide = `Deletes a provided number of recent messages`;
+    readonly usage = `${this.keyword} number`;
     private constructor() { super() }
 
     static async init(): Promise<clearMessagesCmd> {
@@ -20,7 +20,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
     }
 
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['clear', 'clean', 'purge'],
             this.keyword
@@ -104,11 +104,5 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         else
             return Promise.reject('Requires `MANAGE_MESSAGES` permission')
     }
-
-    getAliases(): string[] {
-        return this.#aliases;
-    }
-
-
 }
 

@@ -10,9 +10,9 @@ const msgOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 
 export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `send`;
-    protected _guide = `Messages a specific channel on the guild`;
-    protected _usage = `${this.keyword} <channel> <text>`;
+    readonly keyword = `send`;
+    readonly guide = `Messages a specific channel on the guild`;
+    readonly usage = `${this.keyword} <channel> <text>`;
     private constructor() { super() }
 
     static async init(): Promise<messageChannelCmd> {
@@ -21,7 +21,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['send', 'msgchannel', 'messagechannel', 'message_channel'],
             this.keyword
@@ -84,7 +84,5 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
             throw new Error(`Channel not found`);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 }

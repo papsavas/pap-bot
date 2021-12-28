@@ -9,9 +9,9 @@ import { KEP_dataCmd } from "../Interf/KEP_dataCmd";
 export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd {
 
     protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `data`;
-    protected _guide = `Εμφανίζει λεπτομέρειες για συγκεκριμένο μέλος`;
-    protected _usage = `${this.keyword} (am <am> | member <member>)`;
+    readonly keyword = `data`;
+    readonly guide = `Εμφανίζει λεπτομέρειες για συγκεκριμένο μέλος`;
+    readonly usage = `${this.keyword} (am <am> | member <member>)`;
 
     private constructor() { super() }
 
@@ -21,7 +21,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["data", "d"], this.keyword
         );
@@ -82,9 +82,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         return message.reply("Για λόγους ασφαλείας, χρησιμοποιείστε **Slash Command** `/data`")
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }
 
