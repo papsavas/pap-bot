@@ -3,7 +3,8 @@ import { commandLiteral, CommandScope } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
 export abstract class AbstractCommand implements GenericCommand {
-    readonly id: Collection<Snowflake, Snowflake>;
+    //TODO: protect
+    id: Collection<Snowflake, Snowflake>;
     readonly aliases: string[];
     readonly abstract keyword: string;
     readonly abstract guide: string;
