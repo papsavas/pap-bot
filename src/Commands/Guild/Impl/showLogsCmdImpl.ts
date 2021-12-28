@@ -12,20 +12,20 @@ import { showLogsCmd } from "../Interf/showLogsCmd";
  */
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `logs`;
-    protected _guide = `Prints guilds logs`;
-    protected _usage = `${this.keyword}`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `logs`;
+    readonly guide = `Prints guilds logs`;
+    readonly usage = `${this.keyword}`;
 
     private constructor() { super() }
 
     static async init(): Promise<showLogsCmd> {
         const cmd = new ShowLogsCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['log', 'logs'],
             this.keyword
@@ -134,9 +134,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd
         }
     }
 
-    getAliases(): string[] {
-        return this.#aliases
-    }
+
 
 
 

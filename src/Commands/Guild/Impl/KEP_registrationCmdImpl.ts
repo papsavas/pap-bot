@@ -18,19 +18,19 @@ const [email, password] = ['email', 'password']
 
 export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP_registrationCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `registration`;
-    protected _guide = `Εγγραφή στην κοινότητα Εφ. Πληροφορικής`;
-    protected _usage = `${this.keyword} register/verify`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `registration`;
+    readonly guide = `Εγγραφή στην κοινότητα Εφ. Πληροφορικής`;
+    readonly usage = `${this.keyword} register/verify`;
     private constructor() { super() }
     static async init(): Promise<KEP_registrationCmd> {
         const cmd = new KEP_registrationCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
-            [], this._keyword,
+            [], this.keyword,
         );
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
@@ -178,9 +178,7 @@ ${pswd}\n
         return message.reply(`Παρακαλώ χρησιμοποιείστε **slash command** πατώντας \`/\` στο κανάλι <#${kepChannels.registration}> και επιλέγοντας \`/registration register\``);
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

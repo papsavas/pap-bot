@@ -29,7 +29,7 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
                     guide: cmd.description,
                     global: true,
                     aliases: this.commands
-                        .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+                        .find((cmds) => cmds.matchAliases(cmd.name))?.aliases ?? []
 
                 })
             )

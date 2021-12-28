@@ -21,19 +21,19 @@ const lectureLiteral = "lecture";
 const examLiteral = "exam";
 export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_eventsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `calendar_events`;
-    protected _guide = `Διαχειρίζεται τα events του Google Calendar`;
-    protected _usage = `${this.keyword} ${refreshLiteral}} | ${registerLiteral} <${urlOption}> <${fieldOption}>`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `calendar_events`;
+    readonly guide = `Διαχειρίζεται τα events του Google Calendar`;
+    readonly usage = `${this.keyword} ${refreshLiteral}} | ${registerLiteral} <${urlOption}> <${fieldOption}>`;
     private constructor() { super() }
 
     static async init(): Promise<KEP_eventsCmd> {
         const cmd = new KEP_eventsCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["event"], this.keyword
         );
@@ -91,9 +91,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         return message.reply("Παρακαλώ χρησιμοποιείστε Slash Command\n" + this.usage)
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
     async handleRequest(interaction: CommandInteraction, subcommand: string) {
         const member = interaction.member instanceof GuildMember ?

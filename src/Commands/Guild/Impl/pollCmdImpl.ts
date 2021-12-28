@@ -7,19 +7,19 @@ import { pollCmd } from "../Interf/pollCmd";
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `poll`;
-    protected _guide = `Creates a simple poll using 👍-👎`;
-    protected _usage = `${this.keyword} <text>`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `poll`;
+    readonly guide = `Creates a simple poll using 👍-👎`;
+    readonly usage = `${this.keyword} <text>`;
     private constructor() { super() }
 
     static async init(): Promise<pollCmd> {
         const cmd = new PollCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['poll', 'πολλ'],
             this.keyword
@@ -107,9 +107,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             })
     }
 
-    getAliases(): string[] {
-        return this.#aliases
-    }
+
 
 
 }

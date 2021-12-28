@@ -36,7 +36,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
                     global: false,
                     guild_id: this.guildID,
                     aliases: this.commands
-                        .find((cmds) => cmds.matchAliases(cmd.name))?.getAliases() ?? []
+                        .find((cmds) => cmds.matchAliases(cmd.name))?.aliases ?? []
 
                 })
             ).values()]

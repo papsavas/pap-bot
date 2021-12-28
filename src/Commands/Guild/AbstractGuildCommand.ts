@@ -5,7 +5,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { GenericGuildCommand } from "./GenericGuildCommand";
 
 export abstract class AbstractGuildCommand extends AbstractCommand implements GenericGuildCommand {
-    protected _type = CommandScope.GUILD;
+    readonly type = CommandScope.GUILD;
 
     abstract getCommandData(guildID: Snowflake): ApplicationCommandData;
 }

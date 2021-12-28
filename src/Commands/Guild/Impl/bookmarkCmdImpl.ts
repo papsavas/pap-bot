@@ -6,20 +6,20 @@ import { bookmarkCmd } from "../Interf/bookmarkCmd";
 
 export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `bookmark`;
-    protected _guide = null;
-    protected _usage = null;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `bookmark`;
+    readonly guide = null;
+    readonly usage = null;
 
     private constructor() { super() }
 
     static async init(): Promise<bookmarkCmd> {
         const cmd = new bookmarkCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['bookmark', 'bm'], this.keyword
         );
@@ -58,11 +58,6 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
             return this.respond(source, { content: response });
         }
     }
-
-    getAliases(): string[] {
-        return this.#aliases;
-    }
-
 }
 
 
