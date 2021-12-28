@@ -93,9 +93,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 
     }
 
-    getAliases(): string[] {
-        return this.#aliases
-    }
+
 
 
 

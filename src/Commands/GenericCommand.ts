@@ -6,7 +6,7 @@ export interface GenericCommand {
      * Key = id,
      * Value = guild_id
      */
-    readonly id: Collection<Snowflake, Snowflake>;
+    id: Collection<Snowflake, Snowflake>;
     readonly aliases: string[];
     readonly keyword: string;
     readonly guide: string;

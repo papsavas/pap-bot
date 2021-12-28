@@ -107,9 +107,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
             })
     }
 
-    getAliases(): string[] {
-        return this.#aliases
-    }
+
 
 
 }

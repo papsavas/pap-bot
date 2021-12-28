@@ -134,9 +134,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd
         }
     }
 
-    getAliases(): string[] {
-        return this.#aliases
-    }
+
 
 
 

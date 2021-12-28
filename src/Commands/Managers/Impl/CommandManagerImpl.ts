@@ -210,7 +210,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                         title: prefix + commandImpl.keyword,
                         description: '**usage:** ' + prefix + commandImpl.usage,
                         fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
-                        footer: { text: commandImpl.getAliases().toString() },
+                        footer: { text: commandImpl.aliases.toString() },
                         color: "RED"
                     })
             ]
@@ -231,7 +231,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                             title: providedCommand.keyword,
                             description: providedCommand.guide,
                             fields: [{ name: "Usage", value: providedCommand.usage, inline: true }],
-                            footer: { text: providedCommand.getAliases().toString() }
+                            footer: { text: providedCommand.aliases.toString() }
                         })
                     ]
             })
