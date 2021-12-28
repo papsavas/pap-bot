@@ -6,7 +6,7 @@ import { unpinMessageCmd } from "../Interf/unpinMessageCmd";
 
 export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `unpin`;
     readonly guide = `Unpins a message`;
     readonly usage = `Right click on message => Apps => ${this.keyword}`;
@@ -15,7 +15,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
 
     static async init(): Promise<unpinMessageCmd> {
         const cmd = new UnpinMessageCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

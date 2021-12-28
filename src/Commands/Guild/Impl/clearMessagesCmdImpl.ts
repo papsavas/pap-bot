@@ -7,7 +7,7 @@ import { clearMessagesCmd } from "../Interf/clearMessagesCmd";
 const numberOptionLiteral: ApplicationCommandOptionData['name'] = 'number';
 
 export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearMessagesCmd {
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `clear`;
     readonly guide = `Deletes a provided number of recent messages`;
     readonly usage = `${this.keyword} number`;
@@ -15,7 +15,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
 
     static async init(): Promise<clearMessagesCmd> {
         const cmd = new ClearMessagesCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

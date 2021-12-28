@@ -18,14 +18,14 @@ TODO: support global commands
 //TODO: include listing perms
 export class commandPermsCmdImpl extends AbstractGuildCommand implements commandPermsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `command_perms`;
     readonly guide = `Lock/Unlock commands`;
     readonly usage = `${this.keyword} ${lockLiteral} <command> <role1> [role2...] | ${unlockLiteral} <command>`;
     private constructor() { super() }
     static async init(): Promise<commandPermsCmd> {
         const cmd = new commandPermsCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
     readonly aliases = this.mergeAliases

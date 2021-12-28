@@ -9,7 +9,7 @@ import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
 const contentLiteral = `content`
 export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_announceCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `announce`;
     readonly guide = `Ανακοινώνει ένα μήνυμα στα νέα-ενημερώσεις`;
     readonly usage = `${this.keyword} <message> [<roles>]`;
@@ -19,7 +19,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
     static async init(): Promise<KEP_announceCmd> {
         const cmd = new KEP_announceCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
     readonly aliases = this.mergeAliases

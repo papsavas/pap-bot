@@ -6,7 +6,7 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `pin`;
     readonly guide = `Pins a message`;
     readonly usage = `Right click on message => Apps => ${this.keyword}`;
@@ -14,7 +14,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
 
     static async init(): Promise<pinMessageCmd> {
         const cmd = new PinMessageCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

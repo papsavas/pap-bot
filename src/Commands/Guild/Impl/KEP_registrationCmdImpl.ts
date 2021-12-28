@@ -18,14 +18,14 @@ const [email, password] = ['email', 'password']
 
 export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP_registrationCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `registration`;
     readonly guide = `Εγγραφή στην κοινότητα Εφ. Πληροφορικής`;
     readonly usage = `${this.keyword} register/verify`;
     private constructor() { super() }
     static async init(): Promise<KEP_registrationCmd> {
         const cmd = new KEP_registrationCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
     readonly aliases = this.mergeAliases

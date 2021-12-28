@@ -9,7 +9,7 @@ const [onLiteral, offLiteral] = ["on", "off"];
 
 export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `admin`;
     readonly guide = `Enables/Disables ADMIN permission`;
     readonly usage = `${this.keyword}`;
@@ -18,7 +18,7 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
 
     static async init(): Promise<KEP_adminCmd> {
         const cmd = new KEP_adminCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

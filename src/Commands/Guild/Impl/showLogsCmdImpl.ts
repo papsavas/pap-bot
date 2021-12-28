@@ -12,7 +12,7 @@ import { showLogsCmd } from "../Interf/showLogsCmd";
  */
 export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `logs`;
     readonly guide = `Prints guilds logs`;
     readonly usage = `${this.keyword}`;
@@ -21,7 +21,7 @@ export class ShowLogsCmdImpl extends AbstractGuildCommand implements showLogsCmd
 
     static async init(): Promise<showLogsCmd> {
         const cmd = new ShowLogsCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

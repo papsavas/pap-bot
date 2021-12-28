@@ -7,7 +7,7 @@ import { pollCmd } from "../Interf/pollCmd";
 const textOptionLiteral: ApplicationCommandOptionData['name'] = 'text';
 export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `poll`;
     readonly guide = `Creates a simple poll using 👍-👎`;
     readonly usage = `${this.keyword} <text>`;
@@ -15,7 +15,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
 
     static async init(): Promise<pollCmd> {
         const cmd = new PollCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

@@ -19,14 +19,14 @@ const enabledHours = [3, 6, 12];
 
 export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `drive`;
     readonly guide = `Λειτουργίες που αφορούν το dai archive`;
     readonly usage = `${this.keyword} register`;
     private constructor() { super() }
     static async init(): Promise<KEP_driveCmd> {
         const cmd = new KEP_driveCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
     readonly aliases = this.mergeAliases

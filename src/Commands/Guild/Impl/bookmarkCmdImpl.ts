@@ -6,7 +6,7 @@ import { bookmarkCmd } from "../Interf/bookmarkCmd";
 
 export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `bookmark`;
     readonly guide = null;
     readonly usage = null;
@@ -15,7 +15,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
 
     static async init(): Promise<bookmarkCmd> {
         const cmd = new bookmarkCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

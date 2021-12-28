@@ -3,23 +3,14 @@ import { commandLiteral, CommandScope } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
 export abstract class AbstractCommand implements GenericCommand {
-    protected abstract _id: Collection<Snowflake, Snowflake>;
+    readonly id: Collection<Snowflake, Snowflake>;
     readonly aliases: string[];
     readonly abstract keyword: string;
     readonly abstract guide: string;
     readonly abstract usage: string;
     readonly abstract type: CommandScope;
 
-    get id() {
-        return this._id;
-    }
-
-    set id(id) {
-        this._id = id;
-    }
-
     abstract execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
-
     abstract interactiveExecute(interaction: BaseCommandInteraction): Promise<unknown>;
 
     respond = async (

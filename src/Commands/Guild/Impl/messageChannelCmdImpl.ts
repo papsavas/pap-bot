@@ -9,7 +9,7 @@ const channelOptionLiteral: ApplicationCommandOptionData['name'] = 'channel';
 const msgOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 
 export class MessageChannelCmdImpl extends AbstractGuildCommand implements messageChannelCmd {
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `send`;
     readonly guide = `Messages a specific channel on the guild`;
     readonly usage = `${this.keyword} <channel> <text>`;
@@ -17,7 +17,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     static async init(): Promise<messageChannelCmd> {
         const cmd = new MessageChannelCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

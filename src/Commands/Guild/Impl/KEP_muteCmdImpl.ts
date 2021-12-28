@@ -12,14 +12,14 @@ moment.tz("Europe/Athens");
 
 export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `mute`;
     readonly guide = `Mutes a member for certain amount of time`;
     readonly usage = `${this.keyword} <user> <amount> [reason]`;
     private constructor() { super() }
     static async init(): Promise<KEP_muteCmd> {
         const cmd = new KEP_muteCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
     readonly aliases = this.mergeAliases

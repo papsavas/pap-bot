@@ -8,7 +8,7 @@ import { KEP_dataCmd } from "../Interf/KEP_dataCmd";
 
 export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `data`;
     readonly guide = `Εμφανίζει λεπτομέρειες για συγκεκριμένο μέλος`;
     readonly usage = `${this.keyword} (am <am> | member <member>)`;
@@ -17,7 +17,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
 
     static async init(): Promise<KEP_dataCmd> {
         const cmd = new KEP_dataCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

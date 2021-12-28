@@ -14,7 +14,7 @@ const response: ApplicationCommandOptionData['name'] = 'response';
 const usage = "myresponses add <response> | remove <index> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `myresponses`;
     readonly guide = `Manage your submitted responses`;
     readonly usage = `${this.keyword}`;
@@ -23,7 +23,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 
     static async init(): Promise<myResponsesCmd> {
         const cmd = new myResponsesCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

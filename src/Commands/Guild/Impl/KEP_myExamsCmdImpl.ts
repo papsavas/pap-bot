@@ -22,7 +22,7 @@ const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
 }));
 export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myExamsCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `myexams`;
     readonly guide = `Εμφανίζει τα επερχόμενα εξεταζόμενα μαθήματά σας`;
     readonly usage = `${this.keyword}`;
@@ -30,7 +30,7 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
 
     static async init(): Promise<KEP_myExamsCmd> {
         const cmd = new KEP_myExamsCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 

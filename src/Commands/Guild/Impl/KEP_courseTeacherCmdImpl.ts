@@ -11,14 +11,14 @@ const [linkLiteral, unlinkLiteral, listLiteral] = ['link', 'unlink', 'list'];
 const [codeLiteral, usernameLiteral] = ['code', 'username'];
 export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KEP_courseTeacherCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
     readonly keyword = `course_teacher`;
     readonly guide = `Συσχέτιση μεταξύ μαθήματος και καθηγητή`;
     readonly usage = `${this.keyword} link | unlink <course_code> <teacher_username> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_courseTeacherCmd> {
         const cmd = new KEP_courseTeacherCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
     readonly aliases = this.mergeAliases
