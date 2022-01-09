@@ -5,7 +5,7 @@ import { AbstractCommand } from "../AbstractCommand";
 import { GenericGlobalCommand } from "./GenericGlobalCommand";
 
 export abstract class AbstractGlobalCommand extends AbstractCommand implements GenericGlobalCommand {
-    protected _type = CommandScope.GLOBAL;
+    readonly type = CommandScope.GLOBAL;
     abstract getCommandData(): ApplicationCommandData;
 
 }

@@ -3,42 +3,16 @@ import { commandLiteral, CommandScope } from "../Entities/Generic/command";
 import { GenericCommand } from "./GenericCommand";
 
 export abstract class AbstractCommand implements GenericCommand {
-    protected abstract _id: Collection<Snowflake, Snowflake>;
-    protected abstract _keyword: string;
-    protected abstract _guide: string;
-    protected abstract _usage: string;
-    protected abstract _type: CommandScope;
-
-    get type() {
-        return this._type;
-    }
-
-
-    get id() {
-        return this._id;
-    }
-
-    set id(id) {
-        this._id = id;
-    }
-
-    get keyword() {
-        return this._keyword;
-    }
-
-    get guide() {
-        return this._guide;
-    }
-
-    get usage() {
-        return this._usage;
-    }
+    //TODO: protect
+    id: Collection<Snowflake, Snowflake>;
+    readonly aliases: string[];
+    readonly abstract keyword: string;
+    readonly abstract guide: string;
+    readonly abstract usage: string;
+    readonly abstract type: CommandScope;
 
     abstract execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
-
     abstract interactiveExecute(interaction: BaseCommandInteraction): Promise<unknown>;
-
-    abstract getAliases(): string[];
 
     respond = async (
         source: Message | BaseCommandInteraction,
@@ -53,7 +27,7 @@ export abstract class AbstractCommand implements GenericCommand {
             source.reply(response)
 
     matchAliases(possibleCommand: string): boolean {
-        return this.getAliases()
+        return this.aliases
             .some((alias: string) => alias === possibleCommand?.toLowerCase());
     }
 

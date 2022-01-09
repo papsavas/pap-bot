@@ -12,17 +12,17 @@ moment.tz("Europe/Athens");
 
 export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `mute`;
-    protected _guide = `Mutes a member for certain amount of time`;
-    protected _usage = `${this.keyword} <user> <amount> [reason]`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `mute`;
+    readonly guide = `Mutes a member for certain amount of time`;
+    readonly usage = `${this.keyword} <user> <amount> [reason]`;
     private constructor() { super() }
     static async init(): Promise<KEP_muteCmd> {
         const cmd = new KEP_muteCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["mute", "sks"], this.keyword
         );
@@ -72,8 +72,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         await member.roles.add(muteRole);
         const unmuteAt = moment().add(amount, "hours");
         await saveMutedMember(member.id, unmuteAt, provoker_id, roles, reason);
-        //?remove until upstream gets fixed
-        //await member.timeout(unmuteAt.milliseconds(), reason);
+        await member.disableCommunicationUntil(unmuteAt.toDate(), reason);
         const logs = interaction.guild.channels.cache.get(kepChannels.logs) as TextChannel;
         const headerEmb = new MessageEmbed({
             author: {
@@ -110,9 +109,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         return message.reply("Please use **Slash Command** `/mute`")
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

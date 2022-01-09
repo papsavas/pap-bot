@@ -12,19 +12,19 @@ const editedMsgOptionLiteral: ApplicationCommandOptionData['name'] = 'edit';
 //TODO: use message link for channel and message id
 //* Requires Command Re-Registration  
 export class EditMessageCmdImpl extends AbstractGuildCommand implements editMessageCmd {
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `editmsg`;
-    protected _guide = `Edits a bot's text message`;
-    protected _usage = `${this.keyword} <msg_url> <text>`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `editmsg`;
+    readonly guide = `Edits a bot's text message`;
+    readonly usage = `${this.keyword} <msg_url> <text>`;
     private constructor() { super() }
 
     static async init(): Promise<editMessageCmd> {
         const cmd = new EditMessageCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['editmessage', 'messageedit', 'messagedit', 'editmsg', 'msgedit'],
             this.keyword
@@ -70,9 +70,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         return this.handler(message, arg1, { content: args2 });
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
     async handler(source: Message | CommandInteraction, messageURL: Message['url'], newMessageOptions: MessageEditOptions) {
         const [guildId, channelId, messageId] = resolveMessageURL(messageURL);

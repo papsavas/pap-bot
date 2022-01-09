@@ -6,19 +6,19 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 
 export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessageCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `pin`;
-    protected _guide = `Pins a message`;
-    protected _usage = `Right click on message => Apps => ${this.keyword}`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `pin`;
+    readonly guide = `Pins a message`;
+    readonly usage = `Right click on message => Apps => ${this.keyword}`;
     private constructor() { super() }
 
     static async init(): Promise<pinMessageCmd> {
         const cmd = new PinMessageCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['pin', 'πιν'],
             this.keyword
@@ -70,9 +70,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
 
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 

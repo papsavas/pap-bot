@@ -10,21 +10,21 @@ import { userNotesCmd } from '../Interf/userNotesCmd';
 
 export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `notes`;
-    protected _guide = `Your personal notes`;
-    protected _usage = `${this.keyword} add <note> / remove <index> / edit <index> <note> / clear / show`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `notes`;
+    readonly guide = `Your personal notes`;
+    readonly usage = `${this.keyword} add <note> / remove <index> / edit <index> <note> / clear / show`;
 
     private constructor() { super() }
 
     static async init(): Promise<userNotesCmd> {
         const cmd = new userNotesCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['notes', 'note', 'mynotes', 'my_notes'],
             this.keyword
@@ -189,9 +189,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         }
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 
 }

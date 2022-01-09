@@ -14,21 +14,21 @@ const response: ApplicationCommandOptionData['name'] = 'response';
 const usage = "myresponses add <response> | remove <index> | show";
 export class myResponsesCmdImpl extends AbstractGuildCommand implements myResponsesCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `myresponses`;
-    protected _guide = `Manage your submitted responses`;
-    protected _usage = `${this.keyword}`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `myresponses`;
+    readonly guide = `Manage your submitted responses`;
+    readonly usage = `${this.keyword}`;
 
     private constructor() { super() }
 
     static async init(): Promise<myResponsesCmd> {
         const cmd = new myResponsesCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
 
 
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ['myresponses', 'my_responses', 'responses', 'myresp', 'myresps'],
             this.keyword
@@ -93,9 +93,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 
     }
 
-    getAliases(): string[] {
-        return this.#aliases
-    }
+
 
 
 

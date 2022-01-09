@@ -22,17 +22,17 @@ const [
     ];
 export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teacherCmd {
 
-    protected _id: Collection<Snowflake, Snowflake> = new Collection(null);
-    protected _keyword = `teacher`;
-    protected _guide = `Διαχειρίζεται τους καθηγητές στη ΒΔ`;
-    protected _usage = `${this.keyword} create <username> <full_name> <phone_number>, [picture_url], [website] | delete <username> | list`;
+    id: Collection<Snowflake, Snowflake> = new Collection(null);
+    readonly keyword = `teacher`;
+    readonly guide = `Διαχειρίζεται τους καθηγητές στη ΒΔ`;
+    readonly usage = `${this.keyword} create <username> <full_name> <phone_number>, [picture_url], [website] | delete <username> | list`;
     private constructor() { super() }
     static async init(): Promise<KEP_teacherCmd> {
         const cmd = new KEP_teacherCmdImpl();
-        cmd._id = await fetchCommandID(cmd.keyword);
+        cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
-    readonly #aliases = this.mergeAliases
+    readonly aliases = this.mergeAliases
         (
             ["teachers"], this.keyword
         );
@@ -168,8 +168,6 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
         return message.reply(`Παρακαλώ χρησιμοποιείστε Slash Command \`/${this.usage}\``)
     }
 
-    getAliases(): string[] {
-        return this.#aliases;
-    }
+
 
 }
