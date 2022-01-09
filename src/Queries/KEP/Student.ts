@@ -59,7 +59,6 @@ const dropAllPendingStudents = () => deleteBatch(pendingStudentTable, true);
 const banStudent = (member_id: Snowflake) =>
     updateAll(studentTable, { member_id }, { "blocked": true });
 
-
 const unbanStudent = (member_id: Snowflake) =>
     updateAll(studentTable, { member_id }, { "blocked": false });
 

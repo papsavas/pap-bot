@@ -546,7 +546,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         await super.onGuildBanAdd(ban);
         const { user } = ban;
         const logs = this.guild.channels.cache.get(channels.logs) as TextChannel;
-        logs.send(`Banned ${user.username}`);
+        logs.send(`Banned **${this.students.get(user.id)?.am}**`);
         return banStudent(user.id);
     }
 
@@ -554,7 +554,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         await super.onGuildBanRemove(unban);
         const { user } = unban;
         const logs = this.guild.channels.cache.get(channels.logs) as TextChannel;
-        logs.send(`Unbanned ${user.username}`);
+        logs.send(`Unbanned **${this.students.get(user.id)?.am}**`);
         return unbanStudent(user.id);
     }
 }
