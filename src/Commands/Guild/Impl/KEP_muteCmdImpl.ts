@@ -72,8 +72,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         await member.roles.add(muteRole);
         const unmuteAt = moment().add(amount, "hours");
         await saveMutedMember(member.id, unmuteAt, provoker_id, roles, reason);
-        //?remove until upstream gets fixed
-        //await member.timeout(unmuteAt.milliseconds(), reason);
+        await member.timeout(unmuteAt.milliseconds(), reason);
         const logs = interaction.guild.channels.cache.get(kepChannels.logs) as TextChannel;
         const headerEmb = new MessageEmbed({
             author: {
