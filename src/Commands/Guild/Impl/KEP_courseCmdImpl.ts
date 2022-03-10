@@ -1,5 +1,5 @@
 import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
+import { guilds } from "../../..";
 import { categories, guildId, roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Course, semesterRegex } from "../../../Entities/KEP/Course";
@@ -86,7 +86,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
             return interaction.reply("`MANAGE_GUILD` permissions required")
         const subCmd = interaction.options.getSubcommand(true);
         await interaction.deferReply({ ephemeral: false });
-        const kep = (guildMap.get(guildId) as KepGuild);
+        const kep = (guilds.get(guildId) as KepGuild);
         try {
             switch (subCmd) {
                 case createLiteral: {

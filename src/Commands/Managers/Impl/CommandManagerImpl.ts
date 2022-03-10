@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
 import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
-import { bugsChannel, guildMap } from "../../../index";
+import { bugsChannel, guilds } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
@@ -65,7 +65,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     };
 
     async onManualCommand(message: Message): Promise<unknown> {
-        const guildHandler = guildMap.get(message.guild?.id);
+        const guildHandler = guilds.get(message.guild?.id);
         const prefix = guildHandler?.getSettings().prefix ?? defaultPrefix;
         const commandMessage = message;
         const candidateCommand = this.sliceCommandLiterals(message, prefix);

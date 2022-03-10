@@ -1,6 +1,6 @@
 
 import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissionData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
+import { guilds } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { dropCommandPerms, fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -48,7 +48,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
                             description: 'command name to override perms',
                             type: 'STRING',
                             required: true,
-                            choices: guildMap.get(guild_id).commandManager.commands
+                            choices: guilds.get(guild_id).commandManager.commands
                                 .map(cmd => ({
                                     name: cmd.keyword,
                                     value: cmd.keyword
@@ -98,7 +98,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
                             description: 'command name to unlock',
                             type: 'STRING',
                             required: true,
-                            choices: guildMap.get(guild_id).commandManager.commands
+                            choices: guilds.get(guild_id).commandManager.commands
                                 .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
                         }
                     ]

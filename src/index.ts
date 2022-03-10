@@ -7,7 +7,7 @@ import { creatorID, guildID as botGuildID } from '../bot.config.json';
 import { guildId as kepGuildId } from "../values/KEP/IDs.json";
 import { channels as botGuildChannels } from "../values/PAP/IDs.json";
 import { guildId as woapGuildId } from "../values/WOAP/IDs.json";
-import { GuildMap } from './Entities/Generic/guildMap';
+import { Guilds } from './Entities/Generic/guildMap';
 import { DMHandlerImpl } from './Handlers/DMs/DMHandlerImpl';
 import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
@@ -26,7 +26,7 @@ let testChannel: TextChannel;
 export const inDevelopment: boolean = process.env.NODE_ENV !== 'production';
 
 console.log(`inDevelopment is ${inDevelopment}`);
-export const guildMap: GuildMap = new Collection<Snowflake, GenericGuild>();
+export const guilds: Guilds = new Collection<Snowflake, GenericGuild>();
 let dmHandler: DmHandler;
 let globalCommandHandler: GlobalCommandHandler;
 export let globalCommandsIDs: Snowflake[];
@@ -88,12 +88,12 @@ PAP.on('ready', async () => {
         globalCommandsIDs = await fetchGlobalCommandIds();
 
         // Initializing the guilds
-        guildMap.set(kepGuildId, await KepGuild.init(kepGuildId));
-        guildMap.set(woapGuildId, await WoapGuild.init(woapGuildId));
+        guilds.set(kepGuildId, await KepGuild.init(kepGuildId));
+        guilds.set(woapGuildId, await WoapGuild.init(woapGuildId));
         for (const guildID of [...PAP.guilds.cache.keys()] as Snowflake[]) {
-            if (!guildMap.has(guildID))
-                guildMap.set(guildID, await DefaultGuild.init(guildID));
-            const g = guildMap.get(guildID);
+            if (!guilds.has(guildID))
+                guilds.set(guildID, await DefaultGuild.init(guildID));
+            const g = guilds.get(guildID);
             await g.onReady(PAP); //block until all guilds are loaded
         };
         console.log('smooth init');
@@ -114,8 +114,8 @@ PAP.on('guildCreate', async (guild) => {
     console.log(`joined ${guild.name} guild`);
     try {
         await saveGuild(guild) //required before init
-        guildMap.set(guild.id, await DefaultGuild.init(guild.id));
-        const g = guildMap.get(guild.id);
+        guilds.set(guild.id, await DefaultGuild.init(guild.id));
+        const g = guilds.get(guild.id);
         await g.onGuildJoin(guild);
         await g.onReady(PAP);
         console.log(`${guild.name} ready`)
@@ -126,9 +126,9 @@ PAP.on('guildCreate', async (guild) => {
 
 PAP.on('guildDelete', async guild => {
     console.log(`left ${guild.name} guild`);
-    const g = guildMap.get(guild.id);
+    const g = guilds.get(guild.id);
     g.onGuildLeave(guild)
-        .then(() => guildMap.delete(guild.id))
+        .then(() => guilds.delete(guild.id))
         .catch(console.error);
 })
 
@@ -162,7 +162,7 @@ PAP.on('interactionCreate', async interaction => {
                 .catch(console.error);
         }
         else if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
+            guilds.get(interaction.guildId)
                 ?.onSlashCommand(interaction)
                 .catch(console.error);
         }
@@ -177,7 +177,7 @@ PAP.on('interactionCreate', async interaction => {
 
     else if (interaction.isButton()) {
         if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
+            guilds.get(interaction.guildId)
                 ?.onButton(interaction)
                 .catch(console.error);
         }
@@ -190,7 +190,7 @@ PAP.on('interactionCreate', async interaction => {
 
     else if (interaction.isSelectMenu()) {
         if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
+            guilds.get(interaction.guildId)
                 ?.onSelectMenu(interaction)
                 .catch(console.error);
         }
@@ -251,7 +251,7 @@ PAP.on('messageCreate', (receivedMessage) => {
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD': {
-            guildMap.get(receivedMessage.guild.id)
+            guilds.get(receivedMessage.guild.id)
                 ?.onMessage(receivedMessage)
                 .catch(console.error);
             break;
@@ -276,7 +276,7 @@ PAP.on('messageDelete', async (deletedMessage) => {
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD':
-            guildMap.get(deletedMessage.guild?.id)
+            guilds.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(console.error);
             break;
@@ -298,7 +298,7 @@ PAP.on('messageReactionAdd', async (reaction, user) => {
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD':
-            guildMap.get(reaction.message.guild?.id)
+            guilds.get(reaction.message.guild?.id)
                 ?.onMessageReactionAdd(
                     r as MessageReaction,
                     u as User,
@@ -322,7 +322,7 @@ PAP.on('messageReactionRemove', async (reaction, user) => {
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD':
-            guildMap.get(reaction.message.guild?.id)
+            guilds.get(reaction.message.guild?.id)
                 ?.onMessageReactionRemove(
                     r as MessageReaction,
                     u as User,
@@ -332,26 +332,26 @@ PAP.on('messageReactionRemove', async (reaction, user) => {
 });
 
 PAP.on('voiceStateUpdate', (oldState, newState) => {
-    guildMap.get(newState.guild.id)
+    guilds.get(newState.guild.id)
         ?.onVoiceStateUpdate(oldState, newState)
         .catch(console.error);
 })
 
 PAP.on('guildMemberAdd', (member) => {
-    guildMap.get(member.guild.id)
+    guilds.get(member.guild.id)
         ?.onGuildMemberAdd(member)
         .catch(console.error);
 });
 
 PAP.on('guildMemberRemove', async (member) => {
     const m = member.partial ? await member.fetch() : member;
-    guildMap.get(m.guild.id)
+    guilds.get(m.guild.id)
         .onGuildMemberRemove(m as GuildMember)
         .catch(console.error);
 });
 
 PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
-    guildMap.get(newMember.guild.id)
+    guilds.get(newMember.guild.id)
         ?.onGuildMemberUpdate(
             oldMember.partial ? await oldMember.fetch() : oldMember as GuildMember,
             newMember)
@@ -359,13 +359,13 @@ PAP.on('guildMemberUpdate', async (oldMember, newMember) => {
 });
 
 PAP.on('guildBanAdd', ban => {
-    guildMap.get(ban.guild.id)
+    guilds.get(ban.guild.id)
         ?.onGuildBanAdd(ban)
         .catch(console.error);
 })
 
 PAP.on('guildBanRemove', ban => {
-    guildMap.get(ban.guild.id)
+    guilds.get(ban.guild.id)
         ?.onGuildBanRemove(ban)
         .catch(console.error);
 })

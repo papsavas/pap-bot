@@ -3,7 +3,7 @@ import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
 import urlRegex from "url-regex";
-import { guildMap } from "../../..";
+import { guilds } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -63,8 +63,8 @@ function handleRequest(request: CommandInteraction | Message) {
     const user = request.type === "APPLICATION_COMMAND" ?
         (request as CommandInteraction).user :
         (request as Message).author;
-    const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(user.id)?.courses;
-    const events = (guildMap.get(kepGuildId) as KepGuild).events
+    const courses = (guilds.get(kepGuildId) as KepGuild).students.get(user.id)?.courses;
+    const events = (guilds.get(kepGuildId) as KepGuild).events
         .filter(ev => ev.summary?.startsWith(examsPrefix));
 
 

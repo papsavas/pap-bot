@@ -1,5 +1,5 @@
 import { ApplicationCommandData, BaseCommandInteraction, ButtonInteraction, Collection, CommandInteraction, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageActionRow, MessageButton, MessageComponentInteraction, Permissions, ReplyMessageOptions, Snowflake } from "discord.js";
-import { guildMap } from "../../..";
+import { guilds } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildSettings, setVoiceLobby, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
@@ -124,7 +124,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         newPrefix?: string
     ) => {
-        const guildHandler = guildMap.get(source.guildId);
+        const guildHandler = guilds.get(source.guildId);
         if (!!newPrefix) {
             const member = source.member instanceof GuildMember ?
                 source.member : await source.guild.members.fetch(source.member.user.id);
@@ -201,7 +201,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
             const enabled = (btn as ButtonInteraction).customId === 'on';
             const literal = enabled ? "Enabled" : "Disabled";
             await updateGuildSettings(source.guildId, { ...oldSettings, "nsfw_responses": enabled });
-            await guildMap.get(source.guildId).loadResponses();
+            await guilds.get(source.guildId).loadResponses();
             return respond({
                 content: `**${literal}** \`nsfw\` mode`,
                 components: []
