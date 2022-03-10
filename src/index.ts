@@ -110,7 +110,7 @@ PAP.on('ready', async () => {
     }
 });
 
-const eventFiles = readdirSync("./src/Events/Impl")
+const eventFiles = readdirSync(__dirname + "/Events/Impl")
     .filter(file => Object.values(Constants.Events)
         .includes(file.split('.')[0])
     );
