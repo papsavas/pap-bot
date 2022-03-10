@@ -1,16 +1,16 @@
 import { ClientEvents } from "discord.js";
-import { GuildMap } from "../Entities/Generic/guildMap";
+import { Guilds } from "../Entities/Generic/Guilds";
 import { DmHandler } from "../Handlers/DMs/GenericDm";
 import { GlobalCommandHandler } from "../Handlers/Global/GlobalCommandHandler";
 import GenericEvent from "./GenericEvent";
 
 export default abstract class AbstractEvent implements GenericEvent {
-    protected guildMap: GuildMap = null;
+    protected guilds: Guilds = null;
     protected globalHandler: GlobalCommandHandler = null;
     protected dmHandler: DmHandler = null;
     #name: keyof ClientEvents = null;
-    constructor(guildMap: GuildMap, globalHandler: GlobalCommandHandler, dmHandler: DmHandler) {
-        this.guildMap = guildMap;
+    constructor(guilds: Guilds, globalHandler: GlobalCommandHandler, dmHandler: DmHandler) {
+        this.guilds = guilds;
         this.globalHandler = globalHandler;
         this.dmHandler = dmHandler;
     }

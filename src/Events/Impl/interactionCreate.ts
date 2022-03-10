@@ -1,5 +1,5 @@
 import { ClientEvents, Interaction, MessageEmbed } from "discord.js";
-import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guildMap } from "../..";
+import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guilds } from "../..";
 
 
 
@@ -12,7 +12,7 @@ const execute = async (interaction: Interaction) => {
                 .catch(console.error);
         }
         else if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
+            guilds.get(interaction.guildId)
                 ?.onSlashCommand(interaction)
                 .catch(console.error);
         }
@@ -27,7 +27,7 @@ const execute = async (interaction: Interaction) => {
 
     else if (interaction.isButton()) {
         if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
+            guilds.get(interaction.guildId)
                 ?.onButton(interaction)
                 .catch(console.error);
         }
@@ -40,7 +40,7 @@ const execute = async (interaction: Interaction) => {
 
     else if (interaction.isSelectMenu()) {
         if (interaction.guildId) {
-            guildMap.get(interaction.guildId)
+            guilds.get(interaction.guildId)
                 ?.onSelectMenu(interaction)
                 .catch(console.error);
         }

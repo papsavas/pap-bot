@@ -1,5 +1,5 @@
 import { ClientEvents, Message } from "discord.js";
-import { dmHandler, guildMap, PAP } from "../..";
+import { dmHandler, guilds, PAP } from "../..";
 import { creatorID } from '../../../bot.config.json';
 
 const name: keyof ClientEvents = 'messageCreate';
@@ -35,7 +35,7 @@ const execute = async (message: Message) => {
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD': {
-            guildMap.get(message.guild.id)
+            guilds.get(message.guild.id)
                 ?.onMessage(message)
                 .catch(console.error);
             break;

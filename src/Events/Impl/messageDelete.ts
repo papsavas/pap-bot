@@ -1,5 +1,5 @@
 import { ClientEvents, Message, PartialMessage } from "discord.js";
-import { dmHandler, guildMap } from "../..";
+import { dmHandler, guilds } from "../..";
 
 
 const name: keyof ClientEvents = "messageDelete";
@@ -21,7 +21,7 @@ const execute = async (deletedMessage: Message<boolean> | PartialMessage) => {
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD':
-            guildMap.get(deletedMessage.guild?.id)
+            guilds.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(console.error);
             break;

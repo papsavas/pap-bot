@@ -1,11 +1,11 @@
 import { ClientEvents, GuildMember } from "discord.js";
-import { guildMap } from "../..";
+import { guilds } from "../..";
 
 
 const name: keyof ClientEvents = "guildMemberAdd";
 
 const execute = async (member: GuildMember) => {
-    guildMap.get(member.guild.id)
+    guilds.get(member.guild.id)
         ?.onGuildMemberAdd(member)
         .catch(console.error);
 }

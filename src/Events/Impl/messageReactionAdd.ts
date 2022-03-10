@@ -1,5 +1,5 @@
 import { ClientEvents, MessageReaction, PartialMessageReaction, PartialUser, User } from "discord.js";
-import { dmHandler, guildMap } from "../..";
+import { dmHandler, guilds } from "../..";
 
 
 const name: keyof ClientEvents = "messageReactionAdd";
@@ -19,7 +19,7 @@ const execute = async (reaction: MessageReaction | PartialMessageReaction, user:
         case 'GUILD_PUBLIC_THREAD':
         case 'GUILD_NEWS':
         case 'GUILD_NEWS_THREAD':
-            guildMap.get(reaction.message.guild?.id)
+            guilds.get(reaction.message.guild?.id)
                 ?.onMessageReactionAdd(
                     r as MessageReaction,
                     u as User,
