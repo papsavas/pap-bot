@@ -5,7 +5,7 @@ import { commandLiteral } from "../../../Entities/Generic/command";
 import { Course } from "../../../Entities/KEP/Course";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
-import { guildMap } from "../../../index";
+import { guilds } from "../../../index";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { addStudents, dropPendingStudent, fetchPendingStudent, fetchStudent, savePendingStudent } from "../../../Queries/KEP/Student";
 import { sendEmail } from "../../../tools/Google/Gmail";
@@ -75,7 +75,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                 content: `Έχετε αποκλειστεί`,
                 ephemeral: true
             });
-            await (guildMap.get(interaction.guildId) as KepGuild).logsChannel.send({
+            await (guilds.get(interaction.guildId) as KepGuild).logsChannel.send({
                 embeds: [{
                     author: {
                         name: interaction.user.username,
@@ -152,10 +152,10 @@ ${pswd}\n
                     const student = await fetchStudent({ member_id: interaction.user.id });
                     student.courses = new Collection<Snowflake, Course>();
                     await member.roles.add(interaction.guild.roles.cache.get(kepRoles.student));
-                    const channel = guildMap.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
+                    const channel = guilds.get(interaction.guild.id)?.guild.channels.cache.get(kepChannels.new_members) as TextChannel;
                     await channel.send(`<@${pendingStudent.member_id}> **:** ${pendingStudent.am}`);
 
-                    const students = (guildMap.get(interaction.guild.id) as KepGuild).students;
+                    const students = (guilds.get(interaction.guild.id) as KepGuild).students;
                     //TODO: fix duplicate db query, return entire record on submit
                     students.set(interaction.user.id, student); //update cache
                     await interaction.editReply(`Επιτυχής εγγραφή ✅

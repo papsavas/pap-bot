@@ -2,7 +2,7 @@ import { ChatInputApplicationCommandData, Collection, CommandInteraction, Consta
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
-import { guildMap } from "../../..";
+import { guilds } from "../../..";
 import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
 import { lecturePrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -84,8 +84,8 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 }
 
 function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
-    const courses = (guildMap.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
-    const events = (guildMap.get(kepGuildId) as KepGuild).events
+    const courses = (guilds.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
+    const events = (guilds.get(kepGuildId) as KepGuild).events
         //trim blanks
         .map(ev => ({ ...ev, summary: ev?.summary?.trim(), description: ev?.description?.trim() }))
         //filter lectures

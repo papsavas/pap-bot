@@ -2,7 +2,7 @@
 import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, MessageEmbed, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
-import { guildMap } from "../../..";
+import { guilds } from "../../..";
 import { guildId } from "../../../../values/KEP/IDs.json";
 import { examsPrefix, lecturePrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -206,6 +206,6 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
 }
 
 async function reloadEvents() {
-    const kep = guildMap.get(guildId) as KepGuild;
+    const kep = guilds.get(guildId) as KepGuild;
     kep.events = await fetchCalendarEvents();
 }

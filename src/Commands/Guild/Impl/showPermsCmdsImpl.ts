@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
 import { commandLiteral } from '../../../Entities/Generic/command';
-import { guildMap } from "../../../index";
+import { guilds } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPermsCmd } from "../Interf/showPermsCmd";
@@ -40,7 +40,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                     description: 'permissions for command',
                     type: 'STRING',
                     required: true,
-                    choices: guildMap.get(guild_id).commandManager.commands
+                    choices: guilds.get(guild_id).commandManager.commands
                         .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
                 }
             ]
@@ -55,7 +55,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
                 content: `command ${commandLiteral} not found`,
                 ephemeral: true
             });
-        const guild_prefix = guildMap.get(interaction.guildId).getSettings().prefix;
+        const guild_prefix = guilds.get(interaction.guildId).getSettings().prefix;
         await interaction.deferReply({ ephemeral: true });
         const [apiResponse, manualResponse] = await generateResponses(interaction.guild, command_id);
         return interaction.editReply({
@@ -72,7 +72,7 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
             return message.reply({
                 content: `command ${commandLiteral} not found`
             });
-        const guild_prefix = guildMap.get(message.guildId).getSettings().prefix;
+        const guild_prefix = guilds.get(message.guildId).getSettings().prefix;
         const [apiResponse, manualResponse] = await generateResponses(message.guild, command_id);
         return message.reply({
             embeds: [
