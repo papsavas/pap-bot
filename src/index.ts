@@ -110,13 +110,13 @@ PAP.on('ready', async () => {
     }
 });
 
-const eventFiles = readdirSync("./events/Impl")
+const eventFiles = readdirSync("./Events/Impl")
     .filter(file => Object.values(Constants.Events)
         .includes(file.split('.')[0])
     );
 
 for (const file of eventFiles) {
-    const event: GenericEvent = require(`./events/Impl/${file}`);
+    const event: GenericEvent = require(`./Events/Impl/${file}`);
     PAP.on(event.name, async (...args) => {
         event.execute(...args)
             .catch(err => console.error(err))
