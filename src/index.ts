@@ -27,8 +27,8 @@ export const inDevelopment: boolean = process.env.NODE_ENV !== 'production';
 
 console.log(`inDevelopment is ${inDevelopment}`);
 export const guilds: Guilds = new Collection<Snowflake, GenericGuild>();
-let dmHandler: DmHandler;
-let globalCommandHandler: GlobalCommandHandler;
+export let dmHandler: DmHandler;
+export let globalCommandHandler: GlobalCommandHandler;
 export let globalCommandsIDs: Snowflake[];
 
 if (inDevelopment)
@@ -110,13 +110,12 @@ PAP.on('ready', async () => {
     }
 });
 
-const eventFiles = readdirSync("./Events/Impl")
+const eventFiles = readdirSync("./src/Events/Impl")
     .filter(file => Object.values(Constants.Events)
         .includes(file.split('.')[0])
     );
-
 for (const file of eventFiles) {
-    const event: GenericEvent = require(`./Events/Impl/${file}`);
+    const event: GenericEvent = require(`./Events/Impl/${file}`).default;
     PAP.on(event.name, async (...args) => {
         event.execute(...args)
             .catch(err => console.error(err))
