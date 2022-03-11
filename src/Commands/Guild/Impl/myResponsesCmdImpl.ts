@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, Snowflake } from "discord.js";
 import Profanity from "profanity-js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -100,11 +100,11 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 
 }
 
-async function embedResponse(request: CommandInteraction | Message, subcommand: string, input?: string | number): Promise<MessageEmbed[]> {
+async function embedResponse(request: CommandInteraction | Message, subcommand: string, input?: string | number): Promise<Embed[]> {
     const guild_id = request.guildId;
     const member_id = request.member.user.id;
     if (!subcommand)
-        return [new MessageEmbed({
+        return [new Embed({
             title: `Wrong syntax [subcommand]`,
             description: '**usage:** ' + usage,
             color: "RED"
@@ -113,14 +113,14 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
         case add: {
             const response = (input as string).trimEnd();
             if (!response)
-                return [new MessageEmbed({
+                return [new Embed({
                     title: `Wrong syntax [response]`,
                     description: '**usage:** ' + usage,
                     color: "RED"
                 })]
             if (await memberResponsesCount(member_id, guild_id) > 20)
                 return [
-                    new MessageEmbed({
+                    new Embed({
                         title: "Quantity Limit",
                         description: `You can only have 20 responses per guild`,
                         color: "RED"
@@ -132,7 +132,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
                 new Profanity().isProfane(response);
             await addMemberResponse(guild_id, member_id, response, nsfw);
             return [
-                new MessageEmbed({
+                new Embed({
                     title: `Response Added`,
                     description: ` your response has been added`,
                     fields: [
@@ -146,13 +146,13 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
         case remove: {
             const index = input as number;
             if (typeof index === 'undefined')
-                return [new MessageEmbed({
+                return [new Embed({
                     title: `Wrong syntax [index]`,
                     description: '**usage:** ' + usage,
                     color: "RED"
                 })]
             const res = await removeMemberResponse(guild_id, member_id, index);
-            return [new MessageEmbed({
+            return [new Embed({
                 title: `Remove Response`,
                 description: res
             })]
@@ -162,7 +162,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
             const responses: string[] = (await fetchGuildMemberResponses(guild_id, member_id));
             if (responses.length === 0)
                 return [
-                    new MessageEmbed({
+                    new Embed({
                         title: `Your responses`,
                         description: `You have no responses in this guild. Add using **myresponses add <response>**`,
                     })
@@ -178,7 +178,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
         }
 
         default:
-            return [new MessageEmbed({
+            return [new Embed({
                 title: `Invalid Subcommand`,
                 description: `Please use one of the following subcommands: \`${add}\`, \`${remove}\`, \`${show}\``,
             })]

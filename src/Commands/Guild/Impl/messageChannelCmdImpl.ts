@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -58,7 +58,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         await sendChannel.send({
             content: messageContent.substr(0, 2000),
         });
-        const emb = new MessageEmbed({
+        const emb = new Embed({
             title: `Message send`,
             fields: [
                 { name: `target`, value: sendChannel.toString() },

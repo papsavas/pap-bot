@@ -1,9 +1,9 @@
 import {
     BaseCommandInteraction,
     ButtonInteraction,
-    Client, Guild,
+    Client, Embed, Guild,
     GuildBan,
-    GuildMember, Message, MessageEmbed, MessageReaction, SelectMenuInteraction,
+    GuildMember, Message, MessageReaction, SelectMenuInteraction,
     Snowflake, User, VoiceState
 } from 'discord.js';
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
@@ -165,7 +165,7 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
             case "🔖": case "📑":
                 return user.send({
                     embeds: [
-                        new MessageEmbed({
+                        new Embed({
                             author: {
                                 name: reaction.message.author.tag,
                                 icon_url: reaction.message.author.avatarURL({ format: 'png' })
@@ -179,7 +179,7 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
                             color: `#fe85a6`,
                             image: { url: reaction.message.attachments.first()?.url },
                             timestamp: new Date(),
-                        }), ...reaction.message.embeds.map(emb => new MessageEmbed(emb))
+                        }), ...reaction.message.embeds.map(emb => new Embed(emb))
                     ]
 
 

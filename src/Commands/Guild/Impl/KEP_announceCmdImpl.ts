@@ -1,5 +1,5 @@
 
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, MessageActionRow, MessageButton, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -68,7 +68,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             .map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
             .filter(r => typeof r !== "undefined");
         const newsChannel = interaction.guild.channels.cache.get(kepChannels.news as Snowflake) as TextChannel;
-        const emb = new MessageEmbed({
+        const emb = new Embed({
             author: {
                 name: interaction.user.tag,
                 iconURL: interaction.user.defaultAvatarURL

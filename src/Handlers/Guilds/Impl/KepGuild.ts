@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, Client, Collection, Embed, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import { sanitizeDiacritics, toGreek } from "greek-utils";
 import moment from "moment-timezone";
@@ -192,7 +192,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         const logChannel = message.guild.channels.cache.get(channels.logs) as TextChannel;
         return logChannel?.send({
             embeds: [
-                new MessageEmbed(
+                new Embed(
                     {
                         author: {
                             name: message.author.username,
@@ -307,14 +307,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     },
                     title: `${semester}ο Εξάμηνο`
                 }
-                const logEmbeds: MessageEmbed[] = [];
+                const logEmbeds: Embed[] = [];
                 if (added.length > 0) logEmbeds.push(
-                    new MessageEmbed(header)
+                    new Embed(header)
                         .setColor("BLUE")
                         .addFields([{ name: 'Προστέθηκαν', value: added }])
                 );
                 if (removedRoles.size > 0) logEmbeds.push(
-                    new MessageEmbed(header)
+                    new Embed(header)
                         .setColor("RED")
                         .addFields([{
                             name: 'Αφαιρέθηκαν', value: removedRoles
@@ -324,7 +324,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 );
 
                 if (logEmbeds.length === 0)
-                    logEmbeds.push(new MessageEmbed(header).setDescription("Δεν υπήρξαν αλλαγές"))
+                    logEmbeds.push(new Embed(header).setDescription("Δεν υπήρξαν αλλαγές"))
 
                 return select.reply({
                     embeds: logEmbeds,
@@ -395,7 +395,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     return appealChannel.send({
                         content: `<@${userid}>`,
                         embeds: [
-                            new MessageEmbed({
+                            new Embed({
                                 title: "Έφεση",
                                 description: `<@${userid}> Θα πρέπει να στείλετε εδώ μία φωτογραφία της ακαδημαϊκή σας ταυτότητας με εμφανή τον αριθμό μητρώου`,
                                 fields: [{
@@ -440,7 +440,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 studentCourses.sweep((v, k) => selectedCourses.some(sc => sc.role_id === k));
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed({
+                        new Embed({
                             author: {
                                 name: member.displayName,
                                 icon_url: member.user.avatarURL()
@@ -605,7 +605,7 @@ async function handleMutedMembers(guild: Guild) {
                 const member = await guild.members.fetch(mm.member_id);
                 await member?.roles?.set(mm.roles);
                 await dropMutedMember(member.id);
-                const headerEmb = new MessageEmbed({
+                const headerEmb = new Embed({
                     author: {
                         name: `CyberSocial Excluded`,
                         icon_url: `https://i.imgur.com/92vhTqK.png`
@@ -616,7 +616,7 @@ async function handleMutedMembers(guild: Guild) {
                 })
                 await (guild.channels.cache.get(channels.logs) as TextChannel).send({
                     embeds: [
-                        new MessageEmbed(headerEmb)
+                        new Embed(headerEmb)
                             .setDescription(`Unmuted ${member.toString()}`)
                     ]
                 })
@@ -679,7 +679,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
     const found = index === -1 ? undefined : content.split(' ')[index];
     if (found) {
         logChannel.send({
-            embeds: [new MessageEmbed({
+            embeds: [new Embed({
                 author: {
                     name: member.displayName ?? author.username,
                     icon_url: author.avatarURL()
