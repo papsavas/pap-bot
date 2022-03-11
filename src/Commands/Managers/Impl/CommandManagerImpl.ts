@@ -2,7 +2,7 @@ import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandDataResolvable, ApplicationCommandManager,
     ApplicationCommandResolvable,
     BaseCommandInteraction,
-    Collection, CommandInteraction, Constants, GuildApplicationCommandManager, Message, MessageEmbed, Snowflake
+    Collection, CommandInteraction, Constants, Embed, GuildApplicationCommandManager, Message, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
 import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
@@ -47,7 +47,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         if (interaction.commandName.startsWith('help'))
             return interaction.reply({
                 embeds: [
-                    new MessageEmbed({
+                    new Embed({
                         description: (interaction as CommandInteraction).options.getString('command')
                     })
                 ]
@@ -156,7 +156,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     //TODO: fix this mess
     protected async invalidSlashCommand(err: Error, interaction: BaseCommandInteraction, primaryCommandLiteral: string) {
         await submitBug(err, interaction, primaryCommandLiteral);
-        const interactionEmb = new MessageEmbed(
+        const interactionEmb = new Embed(
             {
                 author: {
                     name: `Error on Command`,
@@ -201,7 +201,7 @@ export abstract class CommandManagerImpl implements CommandManager {
         //send feedback to member
         return commandMessage.reply({
             embeds: [
-                new MessageEmbed(
+                new Embed(
                     {
                         author: {
                             name: `Error on Command`,
@@ -227,7 +227,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             return message.reply({
                 embeds:
                     [
-                        new MessageEmbed({
+                        new Embed({
                             title: providedCommand.keyword,
                             description: providedCommand.guide,
                             fields: [{ name: "Usage", value: providedCommand.usage, inline: true }],
@@ -244,7 +244,7 @@ async function submitBug(error: Error, source: Message | BaseCommandInteraction,
     const user = await source.client.users.fetch(source.member.user.id);
     return bugsChannel.send({
         embeds: [
-            new MessageEmbed({
+            new Embed({
                 author: {
                     name: source.guild?.name ?? user.username,
                     icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"

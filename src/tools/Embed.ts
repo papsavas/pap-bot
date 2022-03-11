@@ -1,10 +1,10 @@
-import { EmbedFieldData, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
+import { Embed, EmbedFieldData, EmbedOptions, Message } from "discord.js";
 
 interface paginatedEmbedOptions {
     userMessage: Message,
     targetStructure: string[],
     perPage: number,
-    headerEmbed: MessageEmbed,
+    headerEmbed: Embed,
     fieldBuilder: (resp: string, index: number, start: number) => string[],
     timeout: number,
     targetChannel?: Message['channel'],
@@ -12,7 +12,7 @@ interface paginatedEmbedOptions {
 
 interface slicedEmbedOptions {
     data: EmbedFieldData[],
-    headerEmbed: Omit<MessageEmbedOptions, "fields">,
+    headerEmbed: Omit<EmbedOptions, "fields">,
     size?: number;
 }
 
@@ -33,7 +33,7 @@ function paginatedEmbed(
         /**
          * @param {number} start The index to start from.
          */
-        const embed = new MessageEmbed(headerEmbed);
+        const embed = new Embed(headerEmbed);
         const current = targetStructure.slice(start, start + perPage);
         const descr = headerEmbed.description ? headerEmbed.description : '';
         embed.setDescription(descr + `\n\n**(__${start / perPage + 1}__/${Math.ceil(targetStructure.length / perPage)})**`);
@@ -79,12 +79,12 @@ function paginatedEmbed(
 
 function sliceToEmbeds({
     data, headerEmbed, size = 20
-}: slicedEmbedOptions): MessageEmbed[] {
+}: slicedEmbedOptions): Embed[] {
     if (size > 20) throw new Error("embed fields are 20 max");
-    const embeds = [new MessageEmbed(headerEmbed)];
+    const embeds = [new Embed(headerEmbed)];
     for (let i = 0; i < data.length; i += size) {
         if (i >= size * 9) return embeds;
-        embeds.push(new MessageEmbed().addFields(data.slice(i, i + size)));
+        embeds.push(new Embed().addFields(data.slice(i, i + size)));
     }
     return embeds;
 }
