@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Embed, Guild, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from '../../../Entities/Generic/command';
 import { guilds } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
@@ -113,7 +113,7 @@ async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[
 }
 
 function buildEmbed(guild_prefix: string, commandLiteral: string, apiResponse: string, manualResponse: string) {
-    return new MessageEmbed({
+    return new Embed({
         title: guild_prefix + commandLiteral,
         description: `Allowed for :`,
         fields: [

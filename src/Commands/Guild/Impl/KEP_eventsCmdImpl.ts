@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, Embed, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
 import { guilds } from "../../..";
@@ -186,7 +186,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     })
                 )
                     .catch(err => interaction.followUp({
-                        embeds: [new MessageEmbed({
+                        embeds: [new Embed({
                             title: "Missed event",
                             description: err.response?.data.summary ? undefined : err.toString(),
                             fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "-"}` }],

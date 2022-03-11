@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, MessageActionRow, MessageButton, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { buttons, messages } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -191,7 +191,7 @@ async function conflict(interaction: CommandInteraction, am: string): Promise<un
     })
     return interaction.editReply({
         embeds: [
-            new MessageEmbed({
+            new Embed({
                 author: {
                     name: "Εγγεγραμμένο email",
                     iconURL: "https://cdn1.vectorstock.com/i/1000x1000/80/30/conflict-resolution-icon-symbol-isolated-on-white-vector-31728030.jpg"
