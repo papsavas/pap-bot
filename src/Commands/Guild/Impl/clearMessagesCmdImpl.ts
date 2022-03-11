@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, GuildMember, Message, MessageType, PermissionFlagsBits, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -30,12 +30,12 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: numberOptionLiteral,
                     description: 'number of messages to delete',
-                    type: 'INTEGER',
+                    type: ApplicationCommandOptionType.Integer,
                     required: true
 
                 }
@@ -43,18 +43,18 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const number = interaction.options.getInteger(numberOptionLiteral, true);
         const member = interaction.member as GuildMember;
 
-        if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+        if (member.permissions.has(PermissionFlagsBits.ManageMessages)) {
 
             const delMessages = await (interaction.channel as TextChannel).bulkDelete(number);
             let descr = '';
             [...delMessages.values()].reverse().map(msg => {
 
                 try {
-                    if (!msg.content.startsWith('$clear') && msg.type !== 'APPLICATION_COMMAND')
+                    if (!msg.content.startsWith('$clear') && msg.type !== MessageType.ChatInputCommand)
                         descr += `**${msg.author.username}**: ${msg.content}\n`;
                 } catch (err) {
                     descr += `**${msg.author.username}**: ???\n`;
@@ -80,7 +80,7 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
         if (isNaN(number))
             return Promise.reject(new Error(`You need to provide a number between 1-100`));
 
-        if (member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES))
+        if (member.permissions.has(PermissionFlagsBits.ManageMessages))
             return (channel as TextChannel).bulkDelete(number)
                 .then(delMessages => {
                     let descr = '';
