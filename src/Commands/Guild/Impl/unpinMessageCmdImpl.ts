@@ -1,4 +1,4 @@
-import { Collection, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
+import { Collection, ContextMenuInteraction, Embed, Message, MessageApplicationCommandData, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -37,7 +37,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         const message = await interaction.channel.messages.fetch(msgId);
         if (!message?.pinned)
             return interaction.reply({
-                embeds: [new MessageEmbed({ description: `[message](${message.url}) is not pinned 🙂` })],
+                embeds: [new Embed({ description: `[message](${message.url}) is not pinned 🙂` })],
                 ephemeral: true
             })
         else if (!message?.pinnable)
@@ -50,7 +50,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
             .then((unpinned) => {
                 interaction.reply({
                     embeds: [
-                        new MessageEmbed({
+                        new Embed({
                             author: {
                                 name: interaction.user.username,
                                 iconURL: interaction.user.avatarURL()

@@ -19,24 +19,25 @@ import { KepGuild } from './Handlers/Guilds/Impl/KepGuild';
 import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
 
-export let bugsChannel: TextChannel;
-export let logsChannel: TextChannel;
-let testChannel: TextChannel;
+export { bugsChannel, logsChannel, inDevelopment, guilds, dmHandler, globalCommandHandler, globalCommandsIDs };
 
-export const inDevelopment: boolean = process.env.NODE_ENV !== 'production';
+let bugsChannel: TextChannel;
+let logsChannel: TextChannel;
+
+const inDevelopment: boolean = process.env.NODE_ENV !== 'production';
 
 console.log(`inDevelopment is ${inDevelopment}`);
-export const guilds: Guilds = new Collection<Snowflake, GenericGuild>();
-export let dmHandler: DmHandler;
-export let globalCommandHandler: GlobalCommandHandler;
-export let globalCommandsIDs: Snowflake[];
+const guilds: Guilds = new Collection<Snowflake, GenericGuild>();
+let dmHandler: DmHandler;
+let globalCommandHandler: GlobalCommandHandler;
+let globalCommandsIDs: Snowflake[];
 
 if (inDevelopment)
     require('dotenv').config({ path: require('find-config')('.env') })  //load env variables
 
 console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
-export const PAP = new Client({
+const PAP = new Client({
     partials: [
         'MESSAGE',
         'CHANNEL',

@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, Message, MessageEmbed, Snowflake } from "discord.js";
+import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Embed, EmbedFieldData, Message, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
@@ -83,7 +83,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 
 }
 
-function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
+function generateEmbeds(request: Message | CommandInteraction): Embed[] {
     const courses = (guilds.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guilds.get(kepGuildId) as KepGuild).events
         //trim blanks
@@ -93,12 +93,12 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
 
     if (!courses || courses.size === 0)
         return [
-            new MessageEmbed({ description: "Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις" })
+            new Embed({ description: "Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις" })
         ]
 
     if (events.length === 0)
         return [
-            new MessageEmbed({ description: "Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων" })
+            new Embed({ description: "Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων" })
         ]
 
     //filter events by student's selected courses
@@ -117,13 +117,13 @@ function generateEmbeds(request: Message | CommandInteraction): MessageEmbed[] {
 
     if (uniqueStudentEvents.size === 0)
         return [
-            new MessageEmbed()
+            new Embed()
                 .setDescription("Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις")
         ]
 
-    const embeds = new Map<number, MessageEmbed>();
+    const embeds = new Map<number, Embed>();
     [1, 2, 3, 4, 5]
-        .forEach(d => embeds.set(d, new MessageEmbed({
+        .forEach(d => embeds.set(d, new Embed({
             author: {
                 name: moment().day(d).format('dddd'),
                 icon_url: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/512/calendar-icon.png"

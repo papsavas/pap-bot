@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -46,7 +46,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         const member = interaction.member as GuildMember;
         return channel.send({
             embeds: [
-                new MessageEmbed(
+                new Embed(
                     {
                         title: `Vote`,
                         color: '#D8F612',
@@ -80,7 +80,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         const commandMsg = message;
         return (commandMsg.channel as TextChannel).send({
             embeds: [
-                new MessageEmbed(
+                new Embed(
                     {
                         title: `Ψηφίστε`,
                         color: '#D8F612',

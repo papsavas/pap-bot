@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, Embed, Message, Snowflake, TextChannel } from "discord.js";
 import moment from "moment-timezone";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -74,7 +74,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         await saveMutedMember(member.id, unmuteAt, provoker_id, roles, reason);
         await member.disableCommunicationUntil(unmuteAt.toDate(), reason);
         const logs = interaction.guild.channels.cache.get(kepChannels.logs) as TextChannel;
-        const headerEmb = new MessageEmbed({
+        const headerEmb = new Embed({
             author: {
                 name: `CyberSocial Excluded`,
                 icon_url: `https://i.imgur.com/92vhTqK.png`
@@ -85,7 +85,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         })
         await logs.send({
             embeds: [
-                new MessageEmbed(headerEmb)
+                new Embed(headerEmb)
                     .setDescription(`${interaction.user.toString()}  Muted  ${member.toString()}  for ${amount} hours\nReason: \`${reason ?? "-"}\``)
                     .addField("Muted until", moment(unmuteAt).format("LLL"))
             ]
@@ -96,7 +96,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
                 await dropMutedMember(member.id);
                 await logs.send({
                     embeds: [
-                        new MessageEmbed(headerEmb)
+                        new Embed(headerEmb)
                             .setDescription(`Unmuted ${member.toString()}`)
                     ]
                 })

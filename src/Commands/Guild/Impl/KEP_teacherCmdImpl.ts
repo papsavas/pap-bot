@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandData, Collection, CommandInteraction, Embed, Message, MessageAttachment, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Teacher } from "../../../Entities/KEP/Teacher";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -132,7 +132,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                     .then(() =>
                         interaction.editReply({
                             embeds: [
-                                new MessageEmbed({
+                                new Embed({
                                     author: {
                                         name: interaction.user.username,
                                         icon_url: interaction.user.avatarURL()
