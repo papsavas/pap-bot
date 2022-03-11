@@ -1,5 +1,8 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissionData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
+import {
+    ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandOptionType,
+    ApplicationCommandPermissionData, ApplicationCommandPermissionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, PermissionFlagsBits, Snowflake
+} from "discord.js";
 import { guilds } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { dropCommandPerms, fetchCommandID, overrideCommandPerms } from "../../../Queries/Generic/Commands";
@@ -36,17 +39,17 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: lockLiteral,
                     description: `Lock a command`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: cmdOptionLiteral,
                             description: 'command name to override perms',
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true,
                             choices: guilds.get(guild_id).commandManager.commands
                                 .map(cmd => ({
@@ -57,33 +60,33 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
                         {
                             name: 'role1',
                             description: 'allowed role',
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             required: true,
                         },
 
                         {
                             name: 'role2',
                             description: 'allowed role',
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             required: false
                         },
 
                         {
                             name: 'role3',
                             description: 'allowed role',
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             required: false
                         },
                         {
                             name: 'role4',
                             description: 'allowed role',
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             required: false
                         },
                         {
                             name: 'role5',
                             description: 'allowed role',
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             required: false
                         },
                     ]
@@ -91,12 +94,12 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
                 {
                     name: unlockLiteral,
                     description: `Unlock a command`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: cmdOptionLiteral,
                             description: 'command name to unlock',
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true,
                             choices: guilds.get(guild_id).commandManager.commands
                                 .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
@@ -106,9 +109,9 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.reply({
                 content: `\`MANAGE_GUILD\` permissions required`,
                 ephemeral: true
@@ -142,7 +145,7 @@ export class commandPermsCmdImpl extends AbstractGuildCommand implements command
             //override perms for interaction
             allowedPerms = [...new Set(roleKeys)].map(roleID => ({
                 id: roleID,
-                type: 'ROLE',
+                type: ApplicationCommandPermissionType.Role,
                 permission: true
             }));
             await editCommand(defaultPermission, allowedPerms);
