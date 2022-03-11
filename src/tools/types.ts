@@ -6,5 +6,7 @@ type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<P
 
 //TODO: RequireAtLeastOneOf<T,Keys>
 
-export { AtLeast, AtLeastOne, RequireAtLeastOne };
+type FromValues<T> = T[keyof T]
+
+export { AtLeast, AtLeastOne, RequireAtLeastOne, FromValues }
 
