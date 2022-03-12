@@ -1,4 +1,4 @@
-import { ClientEvents, Message } from "discord.js";
+import { ChannelType, ClientEvents, Message } from "discord.js";
 import { dmHandler, guilds, PAP } from "../..";
 import { creatorID } from '../../../bot.config.json';
 
@@ -25,16 +25,16 @@ const execute = async (message: Message) => {
         return
 
     switch (message.channel.type) {
-        case 'DM':
+        case ChannelType.DM:
             dmHandler.onMessage(message)
                 .catch(console.error);
             break;
 
-        case 'GUILD_TEXT':
-        case 'GUILD_PRIVATE_THREAD':
-        case 'GUILD_PUBLIC_THREAD':
-        case 'GUILD_NEWS':
-        case 'GUILD_NEWS_THREAD': {
+        case ChannelType.GuildText:
+        case ChannelType.GuildPrivateThread:
+        case ChannelType.GuildPublicThread:
+        case ChannelType.GuildNews:
+        case ChannelType.GuildNewsThread: {
             guilds.get(message.guild.id)
                 ?.onMessage(message)
                 .catch(console.error);

@@ -6,18 +6,18 @@ import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guilds
 const name: keyof ClientEvents = "interactionCreate";
 
 const execute = async (interaction: Interaction) => {
-    if (interaction.isApplicationCommand()) {
+    if (interaction.isCommand()) {
         if (globalCommandsIDs.includes(interaction.commandId)) {
-            globalCommandHandler.onSlashCommand(interaction)
+            globalCommandHandler.onCommand(interaction)
                 .catch(console.error);
         }
         else if (interaction.guildId) {
             guilds.get(interaction.guildId)
-                ?.onSlashCommand(interaction)
+                ?.onCommand(interaction)
                 .catch(console.error);
         }
-        else if (interaction.channel.type === "DM") {
-            dmHandler.onSlashCommand(interaction)
+        else if (interaction.channel.isDM()) {
+            dmHandler.onCommand(interaction)
                 .catch(console.error);
         }
         else {
@@ -44,7 +44,7 @@ const execute = async (interaction: Interaction) => {
                 ?.onSelectMenu(interaction)
                 .catch(console.error);
         }
-        else if (interaction.channel.type === "DM") {
+        else if (interaction.channel.isDM()) {
             dmHandler.onSelectMenu(interaction)
                 .catch(console.error);
             console.log('dm select received');
@@ -59,7 +59,7 @@ const execute = async (interaction: Interaction) => {
                     title: `Untracked Interaction`,
                     description: `received untracked interaction in ${interaction.guild.name}`,
                     fields: [
-                        { name: `Type`, value: interaction.type },
+                        { name: `Type`, value: interaction.type.toString() },
                         { name: `Channel`, value: interaction.channel.toString() },
                         { name: `Interaction ID`, value: interaction.id }
                     ]
