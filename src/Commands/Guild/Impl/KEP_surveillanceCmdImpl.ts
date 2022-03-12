@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
 import { roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -26,10 +26,10 @@ export class KEP_surveillanceCmdImpl extends AbstractGuildCommand implements KEP
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT'
+            type: ApplicationCommandType.ChatInput
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true });
         const member = await interaction.guild.members.fetch(interaction.user.id);
         const role = await interaction.guild.roles.fetch(roles.overseer);

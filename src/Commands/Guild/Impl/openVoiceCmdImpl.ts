@@ -1,5 +1,5 @@
 import { APIRole } from "discord-api-types";
-import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Role, Snowflake, User } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, GuildMember, Message, PermissionFlagsBits, Role, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -25,18 +25,18 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: 'mentionable',
                     description: 'Member or Role to unlock your voice for',
-                    type: 'MENTIONABLE',
+                    type: ApplicationCommandOptionType.Mentionable,
                     required: true
                 }
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         try {
             await interaction.deferReply({ ephemeral: true });
             const requestMember = interaction.guild.members.cache.get(interaction.user.id);
@@ -44,13 +44,13 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
                 return interaction.editReply(`You must be in a voice channel to use this command`);
             const mentionable = interaction.options.getMentionable('mentionable', true);
             const voiceChannel = requestMember.voice.channel;
-            if (!voiceChannel.permissionsFor(requestMember).has('MANAGE_CHANNELS'))
+            if (!voiceChannel.permissionsFor(requestMember).has(PermissionFlagsBits.ManageChannels))
                 return interaction.editReply(`You do not have manage permissions for this channel`);
             await voiceChannel.permissionOverwrites.edit(
                 (mentionable as Role | APIRole)?.id ?? (mentionable as User | GuildMember)?.id, {
-                CONNECT: true,
-                SPEAK: true,
-                STREAM: true
+                Connect: true,
+                Speak: true,
+                Stream: true
             })
             return interaction.editReply(`Channel ${voiceChannel.toString()} is now unlocked for ${mentionable.toString()}`)
         }

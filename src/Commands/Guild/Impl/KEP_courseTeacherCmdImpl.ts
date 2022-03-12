@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, CommandInteraction, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchCourses, fetchTeacherCourses, linkTeacherToCourse, unlinkTeacherFromCourse } from "../../../Queries/KEP/Course";
@@ -29,23 +29,23 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: linkLiteral,
                     description: "Συνδέει ένα μάθημα με καθηγητ@",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: codeLiteral,
                             description: "Ο κωδικός του μαθήματος",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: usernameLiteral,
                             description: "Το username καθηγητ@",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         }
                     ]
@@ -53,18 +53,18 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
                 {
                     name: unlinkLiteral,
                     description: "Αποσυνδέει καθηγητ@ από ένα μάθημα",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: codeLiteral,
                             description: "Ο κωδικός του μαθήματος",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: usernameLiteral,
                             description: "Το username καθηγητ@",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         }
                     ]
@@ -73,14 +73,14 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
                 {
                     name: listLiteral,
                     description: `Εμφανίζει καταχωρημένες διδασκαλίες`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                 }
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has("MANAGE_GUILD"))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
@@ -90,7 +90,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
 
     }
     async execute(message: Message, { arg1, arg2, arg3 }: commandLiteral): Promise<unknown> {
-        if (!message.member.permissions.has("MANAGE_GUILD"))
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageGuild))
             return message.reply("`MANAGE_GUILD` permissions required")
         return handleRequest(message, arg1, arg2, arg3, this.usage);
     }

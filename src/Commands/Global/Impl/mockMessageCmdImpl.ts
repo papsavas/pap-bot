@@ -31,12 +31,12 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: textOptionLiteral,
                     description: 'text to mock',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 }
             ]

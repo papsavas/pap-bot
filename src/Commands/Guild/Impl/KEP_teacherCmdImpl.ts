@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Embed, Message, MessageAttachment, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Embed, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Teacher } from "../../../Entities/KEP/Teacher";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -40,41 +40,41 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: createLiteral,
                     description: `Δημιουργεί νέο καθηγητ@`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: usernameLiteral,
                             description: `Αναγνωριστικό καθηγητ@`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: fullNameLiteral,
                             description: `Ονοματεπώνυμο Καθηγητ@`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: phoneNumberLiteral,
                             description: `Τηλέφωνο Επικοινωνίας`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: pictureUrlLiteral,
                             description: `Link Φωτογραφίας`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: false
                         },
                         {
                             name: websiteLiteral,
                             description: `Προσωπική Ιστοσελίδα`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: false
                         }
                     ]
@@ -82,12 +82,12 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                 {
                     name: deleteLiteral,
                     description: `Διαγραφή Καθηγητ@`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: usernameLiteral,
                             description: `Αναγνωριστικό Καθηγητ@`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
 
@@ -97,15 +97,15 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                 {
                     name: listLiteral,
                     description: `Εμφανίζει το καταχωρημένο Ακαδημαϊκό Προσωπικό`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                 }
             ]
 
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has("MANAGE_GUILD"))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
@@ -139,9 +139,10 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                                     },
                                     title: "Επιτυχής Δημιουργία Καθηγητ@",
 
-                                }).addFields(Object.entries(teacher)
+                                }).addFields(...Object.entries(teacher)
                                     .filter(([key, value]) => !!value)
-                                    .map(([key, value]) => ({ name: key, value })))
+                                    .map(([key, value]) => ({ name: key, value }))
+                                )
                             ]
                         })
                     )

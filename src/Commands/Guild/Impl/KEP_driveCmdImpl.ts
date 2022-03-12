@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import { drive as driveLink } from "../../../../values/KEP/info.json";
@@ -37,16 +37,16 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [{
                 name: registerLiteral,
                 description: `Enables Dai Archive for ${defaultHours} hours`,
-                type: "SUB_COMMAND",
+                type: ApplicationCommandOptionType.Subcommand,
                 options: [
                     {
                         name: "duration",
                         description: `Διάρκεια Πρόσβασης σε ώρες (default: ${defaultHours} ώρες)`,
-                        type: "INTEGER",
+                        type: ApplicationCommandOptionType.Integer,
                         choices: [3, 6, 12].map(i => ({ name: `${i} ώρες`, value: i })),
                         required: false
                     }
@@ -55,7 +55,7 @@ export class KEP_driveCmdImpl extends AbstractGuildCommand implements KEP_driveC
             }]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true });
         const subCommand = interaction.options.getSubcommand();
         const inputHours = interaction.options.getInteger("duration");
