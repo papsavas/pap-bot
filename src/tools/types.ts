@@ -8,5 +8,13 @@ type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<P
 
 type FromValues<T> = T[keyof T]
 
-export { AtLeast, AtLeastOne, RequireAtLeastOne, FromValues }
+type Only<T, U> = {
+    [P in keyof T]: T[P];
+} & {
+        [P in keyof U]?: never;
+    };
+
+type Either<T, U> = Only<T, U> | Only<U, T>;
+
+export { AtLeast, AtLeastOne, RequireAtLeastOne, FromValues, Either };
 
