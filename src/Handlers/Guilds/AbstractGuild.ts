@@ -1,11 +1,9 @@
 import {
-    BaseCommandInteraction,
-    ButtonInteraction,
-    Client, Embed, Guild,
-    GuildBan,
-    GuildMember, Message, MessageReaction, SelectMenuInteraction,
+    ButtonInteraction, ChannelType, Client, Colors, CommandInteraction, Embed, Guild,
+    GuildBan, GuildMember, Message, MessageReaction, PermissionFlagsBits, SelectMenuInteraction,
     Snowflake, User, VoiceState
 } from 'discord.js';
+import { OverwriteType } from 'discord.js/node_modules/discord-api-types/v9';
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
@@ -102,8 +100,8 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
         return Promise.resolve(`member ${newMember.displayName} updated`);
     }
 
-    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
-        return this.commandManager.onSlashCommand(interaction);
+    onCommand(interaction: CommandInteraction): Promise<unknown> {
+        return this.commandManager.onCommand(interaction);
     }
 
     onButton(interaction: ButtonInteraction): Promise<unknown> {
@@ -173,15 +171,15 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
                         new Embed({
                             author: {
                                 name: reaction.message.author.tag,
-                                icon_url: reaction.message.author.avatarURL({ format: 'png' })
+                                icon_url: reaction.message.author.avatarURL({ extension: 'png' })
                             },
                             thumbnail: {
-                                url: reaction.message.guild.iconURL({ format: 'png', size: 256 })
+                                url: reaction.message.guild.iconURL({ extension: 'png', size: 256 })
                             },
                             title: `🔖 Message Bookmark`,
                             description: `from ${reaction.message.channel.toString()} [${reaction.message.guild.name}]\n
 [${reaction.message.content.length > 1 ? reaction.message.content.substr(0, 500) + "..." : `Jump`}](${reaction.message.url})`,
-                            color: `#fe85a6`,
+                            color: Colors.LuminousVividPink,
                             image: { url: reaction.message.attachments.first()?.url },
                             timestamp: new Date(),
                         }), ...reaction.message.embeds.map(emb => new Embed(emb))
@@ -205,7 +203,7 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
 
     async onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState): Promise<unknown> {
         const clientMember = newState.guild.members.cache.get(newState.client.user.id);
-        if (!clientMember.permissions.has('ADMINISTRATOR'))
+        if (!clientMember.permissions.has(PermissionFlagsBits.Administrator))
             return
         const member = newState.member;
         const [joined, left] = [
@@ -222,24 +220,24 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
                         parent: categoryId,
                         permissionOverwrites: [{
                             id: member.id,
-                            type: 'member',
+                            type: OverwriteType.Member,
                             allow: [
-                                'VIEW_CHANNEL',
-                                'CONNECT',
-                                'SPEAK',
-                                'STREAM',
-                                'MOVE_MEMBERS',
-                                'MUTE_MEMBERS',
-                                'MANAGE_CHANNELS'
+                                PermissionFlagsBits.ViewChannel,
+                                PermissionFlagsBits.Connect,
+                                PermissionFlagsBits.Speak,
+                                PermissionFlagsBits.Stream,
+                                PermissionFlagsBits.MoveMembers,
+                                PermissionFlagsBits.MuteMembers,
+                                PermissionFlagsBits.ManageChannels
                             ]
                         },
                         {
                             id: member.guild.id,
-                            type: 'role',
-                            deny: ['CONNECT']
+                            type: OverwriteType.Role,
+                            deny: [PermissionFlagsBits.Connect]
                         }
                         ],
-                        type: "GUILD_VOICE",
+                        type: ChannelType.GuildVoice,
                         position: newState.channel.position + 1,
                         reason: "self create private channel"
                     }

@@ -1,5 +1,5 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, Snowflake
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, ApplicationCommandPermissionType, Collection, Snowflake
 } from 'discord.js';
 import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
@@ -58,7 +58,7 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
             const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id))
                 .map(res => ({
                     id: res.role_id,
-                    type: 'ROLE',
+                    type: ApplicationCommandPermissionType.Role,
                     permission: true
                 }))
             const defaultPerm = (defaultPermission: boolean) => cmd.edit({
