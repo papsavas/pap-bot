@@ -1,4 +1,4 @@
-import { ActionRow, ApplicationCommandData, ButtonComponent, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, Collection, CommandInteraction, ComponentType, Message, Snowflake } from "discord.js";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { tictactoeCmd } from "../Interf/tictactoeCmd";
@@ -10,17 +10,17 @@ const emtpyBoard: ActionRow[] = ["11", "21", "31"]
             new ButtonComponent()
                 .setCustomId(v)
                 .setLabel('+')
-                .setStyle("SECONDARY"),
+                .setStyle(ButtonStyle.Secondary),
 
             new ButtonComponent()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 1}`)
                 .setLabel('+')
-                .setStyle("SECONDARY"),
+                .setStyle(ButtonStyle.Secondary),
 
             new ButtonComponent()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 2}`)
                 .setLabel('+')
-                .setStyle("SECONDARY")
+                .setStyle(ButtonStyle.Secondary)
         ));
 
 
@@ -100,7 +100,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         const collector = msg.createMessageComponentCollector(
             {
                 time: 120000,
-                componentType: "BUTTON"
+                componentType: ComponentType.Button
 
             }
         )
@@ -117,19 +117,19 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 const basePlayedButton = new ButtonComponent({
                     customId: id,
                     disabled: true,
-                    style: "PRIMARY"
+                    style: ButtonStyle.Primary
                 })
                 const userPlayedButton = new ButtonComponent(basePlayedButton)
-                    .setStyle("SUCCESS")
-                    .setEmoji("❌");
+                    .setStyle(ButtonStyle.Success)
+                    .setEmoji({ name: "❌" });
 
                 const opponentPlayedButton = new ButtonComponent(basePlayedButton)
-                    .setStyle("PRIMARY")
-                    .setEmoji("⭕");
+                    .setStyle(ButtonStyle.Primary)
+                    .setEmoji({ name: "⭕" });
 
                 const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRow()
                     .addComponents(
-                        ar.components.map(b =>
+                        ...ar.components.map(b =>
                             b.customId === id ?
                                 buttonInteraction.user.id === user.id ?
                                     userPlayedButton : opponentPlayedButton
@@ -161,7 +161,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
                         components: (await msg.fetch()).components.map(ar => new ActionRow()
                             .addComponents(
-                                ar.components.map(b =>
+                                ...ar.components.map(b =>
                                     b.setDisabled(true)
                                 ))
                         )
@@ -172,7 +172,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
                         components: (await msg.fetch()).components.map(ar => new ActionRow()
                             .addComponents(
-                                ar.components.map(b =>
+                                ...ar.components.map(b =>
                                     b.setDisabled(true)
                                 ))
                         )
