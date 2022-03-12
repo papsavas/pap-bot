@@ -1,8 +1,9 @@
 import {
     ApplicationCommand, ApplicationCommandData, ApplicationCommandDataResolvable, ApplicationCommandManager,
+    ApplicationCommandOptionType,
     ApplicationCommandResolvable,
-    BaseCommandInteraction,
-    Collection, CommandInteraction, Constants, Embed, GuildApplicationCommandManager, Message, Snowflake
+    ApplicationCommandType, ChatInputCommandInteraction,
+    Collection, Colors, CommandInteraction, Embed, GuildApplicationCommandManager, Message, RESTJSONErrorCodes, Snowflake
 } from "discord.js";
 import { prefix as defaultPrefix } from "../../../../bot.config.json";
 import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
@@ -39,13 +40,13 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
 
-    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
+    onCommand(interaction: CommandInteraction): Promise<unknown> {
         //TODO: fetch command to access "usage"
         if (interaction.commandName.startsWith('help'))
             return interaction.reply({
                 embeds: [
                     new Embed({
-                        description: (interaction as CommandInteraction).options.getString('command')
+                        description: (interaction as ChatInputCommandInteraction).options.getString('command')
                     })
                 ]
                 , ephemeral: true
@@ -85,7 +86,7 @@ export abstract class CommandManagerImpl implements CommandManager {
             }
             return commandMessage.react(emote)
                 .then(reaction => reaction.users.remove(reaction.client.user.id))
-                .catch(err => err.code === Constants.APIErrors.UNKNOWN_MESSAGE ? '' : new Error(err));
+                .catch(err => err.code === RESTJSONErrorCodes.UnknownMessage ? '' : new Error(err));
         }
 
         else if (['help', 'h'].includes(candidateCommand.primaryCommand))
@@ -155,7 +156,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 
     //TODO: fix this mess
-    protected async invalidSlashCommand(err: Error, interaction: BaseCommandInteraction, primaryCommandLiteral: string) {
+    protected async invalidSlashCommand(err: Error, interaction: CommandInteraction, primaryCommandLiteral: string) {
         await submitBug(err, interaction, primaryCommandLiteral);
         const interactionEmb = new Embed(
             {
@@ -165,7 +166,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                 },
                 title: interaction.commandName,
                 fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
-                color: 'RED'
+                color: Colors.Red
             })
 
         //send feedback to member
@@ -212,7 +213,7 @@ export abstract class CommandManagerImpl implements CommandManager {
                         description: '**usage:** ' + prefix + commandImpl.usage,
                         fields: [{ name: `Specified error  💥`, value: `• ${err}` }],
                         footer: { text: commandImpl.aliases.toString() },
-                        color: "RED"
+                        color: Colors.Red
                     })
             ]
         }
@@ -241,7 +242,7 @@ export abstract class CommandManagerImpl implements CommandManager {
     }
 }
 
-async function submitBug(error: Error, source: Message | BaseCommandInteraction, commandName: string) {
+async function submitBug(error: Error, source: Message | CommandInteraction, commandName: string) {
     const user = await source.client.users.fetch(source.member.user.id);
     return bugsChannel.send({
         embeds: [
@@ -251,15 +252,15 @@ async function submitBug(error: Error, source: Message | BaseCommandInteraction,
                     icon_url: "https://icon-library.com/images/error-icon-transparent/error-icon-transparent-13.jpg"
                 },
                 thumbnail: {
-                    url: source.guild?.iconURL({ format: "png", size: 256 }) ??
-                        user.avatarURL({ format: "webp", size: 256 }),
+                    url: source.guild?.iconURL({ extension: "png", size: 256 }) ??
+                        user.avatarURL({ extension: "webp", size: 256 }),
                 },
                 title: commandName,
                 description: error.message,
                 fields: [
                     { name: "Caused by", value: source instanceof Message ? source.url : source.id, inline: true }
                 ],
-                color: "DARK_RED",
+                color: Colors.DarkRed,
                 timestamp: new Date()
             })
         ]

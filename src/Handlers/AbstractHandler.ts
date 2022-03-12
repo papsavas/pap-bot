@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, ButtonInteraction, CacheType, Client, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
+import { ButtonInteraction, CacheType, Client, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from "discord.js";
 import GenericHandler from "./GenericHandler";
 
 export default abstract class AbstractHandler implements GenericHandler {
@@ -10,7 +10,7 @@ export default abstract class AbstractHandler implements GenericHandler {
     onReady(client: Client): Promise<unknown> {
         return Promise.resolve(`Handler for ${this.#entity} Ready`);
     }
-    abstract onSlashCommand(interaction: BaseCommandInteraction<CacheType>): Promise<unknown>;
+    abstract onCommand(interaction: CommandInteraction<CacheType>): Promise<unknown>;
     abstract onButton(interaction: ButtonInteraction<CacheType>): Promise<unknown>;
     abstract onSelectMenu(interaction: SelectMenuInteraction<CacheType>): Promise<unknown>;
     abstract onMessage(message: Message<boolean>): Promise<unknown>;

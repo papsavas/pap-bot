@@ -18,7 +18,7 @@ import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
 import { FromValues } from './tools/types';
 
-export { bugsChannel, logsChannel, inDevelopment, guilds, dmHandler, globalCommandHandler, globalCommandsIDs };
+export { bugsChannel, logsChannel, inDevelopment, guilds, dmHandler, globalCommandHandler, globalCommandsIDs, PAP };
 
 let bugsChannel: TextChannel;
 let logsChannel: TextChannel;

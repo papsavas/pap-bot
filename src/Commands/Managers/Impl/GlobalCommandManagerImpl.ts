@@ -5,8 +5,6 @@ import { GlobalCommandManager } from "../Interf/GlobalCommandManager";
 import { CommandManagerImpl } from "./CommandManagerImpl";
 
 export class GlobalCommandManagerImpl extends CommandManagerImpl implements GlobalCommandManager {
-
-
     declare readonly commands: GenericGlobalCommand[]
     constructor(globalCommands: GenericGlobalCommand[]) {
         super(globalCommands);
