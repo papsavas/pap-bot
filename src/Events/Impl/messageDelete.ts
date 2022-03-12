@@ -1,4 +1,4 @@
-import { ClientEvents, Message, PartialMessage } from "discord.js";
+import { ChannelType, ClientEvents, Message, PartialMessage } from "discord.js";
 import { dmHandler, guilds } from "../..";
 
 
@@ -11,16 +11,16 @@ const execute = async (deletedMessage: Message<boolean> | PartialMessage) => {
         return
 
     switch (deletedMessage.channel.type) {
-        case 'DM':
+        case ChannelType.DM:
             dmHandler.onMessageDelete(deletedMessage as Message)
                 .catch(console.error);
             break;
 
-        case 'GUILD_TEXT':
-        case 'GUILD_PRIVATE_THREAD':
-        case 'GUILD_PUBLIC_THREAD':
-        case 'GUILD_NEWS':
-        case 'GUILD_NEWS_THREAD':
+        case ChannelType.GuildText:
+        case ChannelType.GuildPrivateThread:
+        case ChannelType.GuildPublicThread:
+        case ChannelType.GuildNews:
+        case ChannelType.GuildNewsThread:
             guilds.get(deletedMessage.guild?.id)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(console.error);
