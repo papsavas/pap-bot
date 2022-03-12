@@ -1,30 +1,30 @@
-import { ApplicationCommandData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
+import { ActionRow, ApplicationCommandData, ButtonComponent, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { tictactoeCmd } from "../Interf/tictactoeCmd";
 
 const opponentLiteral: ApplicationCommandData['name'] = "opponent";
-const emtpyBoard: MessageActionRow[] = ["11", "21", "31"]
-    .map(v => new MessageActionRow()
+const emtpyBoard: ActionRow[] = ["11", "21", "31"]
+    .map(v => new ActionRow()
         .addComponents(
-            new MessageButton()
+            new ButtonComponent()
                 .setCustomId(v)
                 .setLabel('+')
                 .setStyle("SECONDARY"),
 
-            new MessageButton()
+            new ButtonComponent()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 1}`)
                 .setLabel('+')
                 .setStyle("SECONDARY"),
 
-            new MessageButton()
+            new ButtonComponent()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 2}`)
                 .setLabel('+')
                 .setStyle("SECONDARY")
         ));
 
 
-const isWin = (board: MessageButton[][]) => {
+const isWin = (board: ButtonComponent[][]) => {
     //Check each row
     for (let i = 0; i < 3; i++) {
         if (board[i][0].style == board[i][1].style && board[i][1].style == board[i][2].style && board[i][0].disabled) {
@@ -71,12 +71,12 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: opponentLiteral,
                     description: `play against`,
-                    type: "USER",
+                    type: ApplicationCommandOptionType.User,
                     required: true
                 }
             ]
@@ -114,20 +114,20 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
             if (buttonInteraction.isButton()) {
                 const id = buttonInteraction.customId;
-                const basePlayedButton = new MessageButton({
+                const basePlayedButton = new ButtonComponent({
                     customId: id,
                     disabled: true,
                     style: "PRIMARY"
                 })
-                const userPlayedButton = new MessageButton(basePlayedButton)
+                const userPlayedButton = new ButtonComponent(basePlayedButton)
                     .setStyle("SUCCESS")
                     .setEmoji("❌");
 
-                const opponentPlayedButton = new MessageButton(basePlayedButton)
+                const opponentPlayedButton = new ButtonComponent(basePlayedButton)
                     .setStyle("PRIMARY")
                     .setEmoji("⭕");
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new MessageActionRow()
+                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRow()
                     .addComponents(
                         ar.components.map(b =>
                             b.customId === id ?
@@ -143,10 +143,10 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
                 turn = turn === user.id ? opponent.id : user.id;
 
-                const buttons: MessageButton[][] = [];
+                const buttons: ButtonComponent[][] = [];
                 updatedBoard.forEach((ar, i) => {
                     buttons.push([]);
-                    buttons[i].push(...ar.components as MessageButton[]);
+                    buttons[i].push(...ar.components as ButtonComponent[]);
                 });
                 if (isWin(buttons)) collector.stop('win');
             }
@@ -159,7 +159,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 case 'win':
                     await msg.edit({
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
-                        components: (await msg.fetch()).components.map(ar => new MessageActionRow()
+                        components: (await msg.fetch()).components.map(ar => new ActionRow()
                             .addComponents(
                                 ar.components.map(b =>
                                     b.setDisabled(true)
@@ -170,7 +170,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new MessageActionRow()
+                        components: (await msg.fetch()).components.map(ar => new ActionRow()
                             .addComponents(
                                 ar.components.map(b =>
                                     b.setDisabled(true)

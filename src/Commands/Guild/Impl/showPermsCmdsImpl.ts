@@ -1,7 +1,7 @@
 /**
  * @deprecated due to Discord Permissions v2
  */
-import { ApplicationCommandOptionData, ApplicationCommandPermissions, ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Guild, Message, MessageEmbed, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandPermissions, ChatInputApplicationCommandData, Collection, CommandInteraction, Guild, Message, MessageEmbed, RESTJSONErrorCodes, Snowflake } from 'discord.js';
 import { commandLiteral } from '../../../Entities/Generic/command';
 import { guilds } from "../../../index";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
@@ -36,12 +36,12 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: cmdOptionLiteral,
                     description: 'permissions for command',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                     choices: guilds.get(guild_id).commandManager.commands
                         .map(cmd => ({ name: cmd.keyword, value: cmd.keyword }))
@@ -99,7 +99,7 @@ async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[
     try {
         apiPerms = await guild.commands.permissions.fetch({ command: command_id })
     } catch (err) {
-        if (err.code === Constants.APIErrors['UNKNOWN_APPLICATION_COMMAND_PERMISSIONS'])
+        if (err.code === RESTJSONErrorCodes.UnknownApplicationCommandPermissions)
             apiPerms = [];
         else
             console.log(err);

@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, Collection, CommandInteraction, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
 import * as i from "../../../../values/KEP/info.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -31,26 +31,26 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: infoLiteral,
                     description: "Επιλέγετε ένα από τα εμφανιζόμενα",
-                    type: "STRING",
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                     choices: i.values.map(i => ({ name: i.name, value: i.name }))
                 },
                 {
                     name: targetLiteral,
                     description: "Χρήστης που απευθύνεται η πληροφορία",
-                    type: "USER",
+                    type: ApplicationCommandOptionType.User,
                     required: false
                 }
             ]
         }
     }
 
-    interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const i = interaction.options.getString(infoLiteral, true);
         const user = interaction.options.getUser(targetLiteral, false);
         return interaction.reply({

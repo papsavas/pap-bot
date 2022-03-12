@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { adminUsers, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -32,28 +32,28 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: onLiteral,
                     description: "Enables ADMIN permission",
-                    type: "SUB_COMMAND"
+                    type: ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: offLiteral,
                     description: "Disables ADMIN permission",
-                    type: "SUB_COMMAND"
+                    type: ApplicationCommandOptionType.Subcommand
                 }
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true })
         if (!adminUsers.includes(interaction.user.id))
             return interaction.editReply(`Δεν είστε διαχειριστής`);
         const role = interaction.guild.roles.cache.get(kepRoles.admin);
         if (interaction.options.getSubcommand(true) === onLiteral)
-            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")
+            return role?.setPermissions(PermissionFlagsBits.Administrator, "interaction switch")
                 .then(() => interaction.editReply(`admin perms enabled`))
         else if (interaction.options.getSubcommand(true) === offLiteral)
             return role?.setPermissions(0n, "interaction switch")
@@ -70,15 +70,15 @@ export class KEP_adminCmdImpl extends AbstractGuildCommand implements KEP_adminC
             });
         const role = guild.roles.cache.get(kepRoles.admin)
         if (arg1 === onLiteral)
-            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "command switch")
+            return role?.setPermissions(PermissionFlagsBits.Administrator, "command switch")
         else if (arg1 === offLiteral)
-            return role?.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "command switch")
+            return role?.setPermissions(PermissionFlagsBits.Administrator, "command switch")
 
         else {
             const role = guild.roles.cache.get(kepRoles.admin)
-            return role.permissions.has(Permissions.FLAGS.ADMINISTRATOR) ?
+            return role.permissions.has(PermissionFlagsBits.Administrator) ?
                 role.setPermissions(0n, "interaction switch") :
-                role.setPermissions(Permissions.FLAGS.ADMINISTRATOR, "interaction switch")
+                role.setPermissions(PermissionFlagsBits.Administrator, "interaction switch")
         }
     }
 

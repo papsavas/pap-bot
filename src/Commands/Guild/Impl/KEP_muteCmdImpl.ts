@@ -1,4 +1,4 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Embed, Message, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Colors, Embed, Message, Snowflake, TextChannel } from "discord.js";
 import moment from "moment-timezone";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -22,39 +22,43 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
         cmd.id = await fetchCommandID(cmd.keyword);
         return cmd;
     }
+
     readonly aliases = this.mergeAliases
         (
             ["mute", "sks"], this.keyword
         );
+
+
     getCommandData(guild_id: Snowflake): ApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            //TODO: make this ContextUser
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: "user",
                     description: "User to mute",
-                    type: "USER",
+                    type: ApplicationCommandOptionType.User,
                     required: true
                 },
                 {
                     name: "amount",
                     description: "Amount of time (hours)",
-                    type: "INTEGER",
+                    type: ApplicationCommandOptionType.Integer,
                     required: true,
                     choices: [1, 2, 6, 12, 24].map(x => ({ name: `${x}h`, value: x }))
                 },
                 {
                     name: "reason",
                     description: "Reason for muting",
-                    type: "STRING",
+                    type: ApplicationCommandOptionType.String,
                     required: false
                 }
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const user = interaction.options.getUser("user", true);
         const member = await interaction.guild.members.fetch(user.id);
         if (member.roles.cache.has(kepRoles.muted))
@@ -80,16 +84,18 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
                 icon_url: `https://i.imgur.com/92vhTqK.png`
             },
             title: `Mute Logs`,
-            color: "DARKER_GREY",
+            color: Colors.DarkerGrey,
             footer: { text: `Execution Number: 1662` },
         })
+
         await logs.send({
             embeds: [
                 new Embed(headerEmb)
                     .setDescription(`${interaction.user.toString()}  Muted  ${member.toString()}  for ${amount} hours\nReason: \`${reason ?? "-"}\``)
-                    .addField("Muted until", moment(unmuteAt).format("LLL"))
+                    .addFields({ name: "Muted until", value: moment(unmuteAt).format("LLL") })
             ]
         })
+
         scheduleTask(unmuteAt, async () => {
             if (!!await findMutedMember(member.id)) {
                 await member.roles.set(roles);
