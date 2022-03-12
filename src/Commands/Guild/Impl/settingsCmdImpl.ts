@@ -1,4 +1,4 @@
-import { ApplicationCommandData, BaseCommandInteraction, ButtonInteraction, Collection, CommandInteraction, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageActionRow, MessageButton, MessageComponentInteraction, Permissions, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, PermissionFlagsBits, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guilds } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -28,23 +28,23 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: nsfwLiteral,
                     description: "Enables/Disables nsfw responses",
-                    type: "SUB_COMMAND"
+                    type: ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: lobbyLiteral,
                     description: "Sets the voice lobby channel",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: voiceOptLiteral,
                             description: "VC acting as lobby",
-                            type: "CHANNEL",
-                            channelTypes: ["GUILD_VOICE"],
+                            type: ApplicationCommandOptionType.Channel,
+                            channelTypes: [ChannelType.GuildVoice],
                             required: true
                         }
                     ]
@@ -52,12 +52,12 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
                 {
                     name: prefixLiteral,
                     description: "Displays-sets bot prefix",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: newPrefixOptLiteral,
                             description: 'new prefix',
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: false
                         }
                     ]
@@ -66,7 +66,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const subcommand = interaction.options.getSubcommand(true);
         await interaction.deferReply({ ephemeral: true });
         const args = {};
@@ -90,11 +90,11 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
     private coreHandler = async (
         subcommand: string,
-        source: BaseCommandInteraction | Message,
+        source: ChatInputCommandInteraction | Message,
         args: { [key: string]: string | GuildChannel } = {}
     ) => {
         const member = await source.guild.members.fetch(source.member.user.id);
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return this.respond(source, { content: "`MANAGE_GUILD` permissions needed", ephemeral: true });
         switch (subcommand) {
             case nsfwLiteral:
@@ -120,7 +120,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
     }
 
     private prefixHandler = async (
-        source: BaseCommandInteraction | Message,
+        source: ChatInputCommandInteraction | Message,
         respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         newPrefix?: string
     ) => {
@@ -128,7 +128,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         if (!!newPrefix) {
             const member = source.member instanceof GuildMember ?
                 source.member : await source.guild.members.fetch(source.member.user.id);
-            if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+            if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
                 return respond({ content: "`MANAGE_GUILD` permissions required", ephemeral: true });
             const oldSettings = await fetchGuildSettings(source.guildId);
             const newSettings = ({ ...oldSettings, 'prefix': newPrefix });
@@ -140,14 +140,14 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
     }
 
     private lobbyHandler = async (
-        source: BaseCommandInteraction | Message,
+        source: ChatInputCommandInteraction | Message,
         respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
         voice: GuildChannel
     ) => {
 
-        if (!(await source.guild.members.fetch(source.member.user.id)).permissions.has('MANAGE_GUILD'))
+        if (!(await source.guild.members.fetch(source.member.user.id)).permissions.has(PermissionFlagsBits.ManageGuild))
             return respond({ content: "`MANAGE_GUILD` permissions required" })
-        if (voice.type !== "GUILD_VOICE") {
+        if (!voice.isVoice()) {
             return respond({ content: "Please provide a voice channel" });
         }
         await setVoiceLobby(source.guildId, voice.id);
@@ -155,11 +155,11 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
     }
 
     private nsfwHandler = async (
-        source: BaseCommandInteraction | Message,
+        source: ChatInputCommandInteraction | Message,
         respond: (res: ReplyMessageOptions | InteractionReplyOptions) => Promise<unknown>,
     ) => {
         const member = await source.guild.members.fetch(source.member.user.id);
-        const perm = Permissions.FLAGS.MANAGE_GUILD;
+        const perm = PermissionFlagsBits.ManageGuild;
         if (!member.permissions.has(perm))
             return respond({
                 content: `\`MANAGE_GUILD\` Permissions required`,
@@ -168,21 +168,21 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         //TODO: Fix behavior, after update collector returns an error if time ends
         const oldSettings = await fetchGuildSettings(source.guildId);
 
-        const row = new MessageActionRow()
+        const row = new ActionRow()
             .addComponents(
-                new MessageButton({
-                    "customId": "off",
-                    "label": "SFW responses",
-                    "style": "PRIMARY"
+                new ButtonComponent({
+                    customId: "off",
+                    label: "SFW responses",
+                    style: ButtonStyle.Primary
                 })
-                    .setEmoji("👼"),
+                    .setEmoji({ name: "👼" }),
 
-                new MessageButton({
-                    "customId": "on",
-                    "label": "NSFW responses",
-                    "style": "DANGER",
+                new ButtonComponent({
+                    customId: "on",
+                    label: "NSFW responses",
+                    style: ButtonStyle.Danger,
                 })
-                    .setEmoji("🔞")
+                    .setEmoji({ name: "🔞" })
             );
 
         await respond({

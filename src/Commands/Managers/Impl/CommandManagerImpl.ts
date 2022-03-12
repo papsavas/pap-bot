@@ -25,12 +25,12 @@ export abstract class CommandManagerImpl implements CommandManager {
         this.helpCommandData = {
             name: `help_${commands[0].type.toString().toLowerCase()}`,
             description: `[${commands[0].type.toString()}] displays support for a certain command`,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: `command`,
                     description: `the specified command`,
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     choices: commands.map(cmd => ({
                         name: cmd.keyword,
                         value: cmd.guide?.substring(0, 99) ?? 'context app'

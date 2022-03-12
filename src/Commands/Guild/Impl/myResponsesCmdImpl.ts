@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, Embed, Message, Snowflake } from "discord.js";
 import Profanity from "profanity-js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -38,17 +38,17 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: add,
                     description: `Add a response`,
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: response,
                             description: 'your response',
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         }
                     ]
@@ -56,12 +56,12 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
                 {
                     name: remove,
                     description: `Remove a response`,
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "index",
                             description: 'the index of the shown response',
-                            type: 'INTEGER',
+                            type: ApplicationCommandOptionType.Integer,
                             required: true
 
                         }
@@ -70,13 +70,13 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
                 {
                     name: show,
                     description: `Show all responses`,
-                    type: "SUB_COMMAND"
+                    type: ApplicationCommandOptionType.Subcommand
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
         await interaction.deferReply({ ephemeral: true });
         const subcommand = interaction.options.getSubcommand(true);
         const resp = interaction.options.getString(response);
@@ -107,7 +107,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
         return [new Embed({
             title: `Wrong syntax [subcommand]`,
             description: '**usage:** ' + usage,
-            color: "RED"
+            color: Colors.Red
         })]
     switch (subcommand?.toLowerCase()) {
         case add: {
@@ -116,14 +116,14 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
                 return [new Embed({
                     title: `Wrong syntax [response]`,
                     description: '**usage:** ' + usage,
-                    color: "RED"
+                    color: Colors.Red
                 })]
             if (await memberResponsesCount(member_id, guild_id) > 20)
                 return [
                     new Embed({
                         title: "Quantity Limit",
                         description: `You can only have 20 responses per guild`,
-                        color: "RED"
+                        color: Colors.Red
                     })
                 ]
             const swears = await loadSwearWords();
@@ -149,7 +149,7 @@ async function embedResponse(request: CommandInteraction | Message, subcommand: 
                 return [new Embed({
                     title: `Wrong syntax [index]`,
                     description: '**usage:** ' + usage,
-                    color: "RED"
+                    color: Colors.Red
                 })]
             const res = await removeMemberResponse(guild_id, member_id, index);
             return [new Embed({
