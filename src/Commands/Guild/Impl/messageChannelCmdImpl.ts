@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Embed, Message, PermissionFlagsBits, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -31,27 +31,27 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: channelOptionLiteral,
                     description: 'targeted channel',
-                    type: 'CHANNEL',
+                    type: ApplicationCommandOptionType.Channel,
                     required: true
                 },
                 {
                     name: msgOptionLiteral,
                     description: 'the message',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.reply(`\`MANAGE_GUILD\` permissions required`);
         const sendChannel = interaction.options.getChannel(channelOptionLiteral, true) as TextChannel;
         const messageContent = interaction.options.getString(msgOptionLiteral, true);
@@ -75,7 +75,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
 
     async execute(message: Message, { args2 }: commandLiteral) {
         const { guild, mentions, member } = message;
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return message.reply(`\`MANAGE_GUILD\` permissions required`);
         const sendChannel = mentions.channels.first();
         if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())

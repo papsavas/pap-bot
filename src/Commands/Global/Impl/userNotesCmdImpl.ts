@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { UserNote } from '../../../Entities/Generic/userNote';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -34,69 +34,69 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: "add",
                     description: "add a note",
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "note",
                             description: "your note",
                             required: true,
-                            type: 'STRING'
+                            type: ApplicationCommandOptionType.String
                         }
                     ]
                 },
                 {
                     name: "edit",
                     description: "edit note",
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "old_note",
                             description: "the note you want to edit",
                             required: true,
-                            type: 'STRING'
+                            type: ApplicationCommandOptionType.String
                         },
                         {
                             name: "new_note",
                             description: "your edited note",
                             required: true,
-                            type: 'STRING'
+                            type: ApplicationCommandOptionType.String
                         }
                     ]
                 },
                 {
                     name: "remove",
                     description: "remove a note",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "note",
                             description: "the note you want to remove",
                             required: true,
-                            type: "STRING"
+                            type: ApplicationCommandOptionType.String
                         }
                     ]
                 },
                 {
                     name: "show",
                     description: "show your notes",
-                    type: 'SUB_COMMAND'
+                    type: ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: "clear",
                     description: "clear all your notes",
-                    type: 'SUB_COMMAND'
+                    type: ApplicationCommandOptionType.Subcommand
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        if (interaction.channel.type !== "DM")
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
+        if (!interaction.channel.isDM())
             return interaction.reply({
                 content: `For security reasons, please use this command in DMs`,
                 ephemeral: true
@@ -151,7 +151,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     async execute(message: Message, { arg1, args2 }: commandLiteral) {
         const { author } = message
-        if (message.channel.type !== "DM")
+        if (!message.channel.isDM())
             return message.reply({
                 content: `For security reasons, please use this command in DMs`
             })

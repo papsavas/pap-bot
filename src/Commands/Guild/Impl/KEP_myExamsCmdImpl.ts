@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, EmbedFieldData, InteractionReplyOptions, Message, ReplyMessageOptions, RESTJSONErrorCodes, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
@@ -15,6 +15,8 @@ import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myExamsCmd } from "../Interf/KEP_myExamsCmd";
 
 moment.locale('el');
+
+//TODO: cleanup
 
 const fieldBuilder = ((ev: calendar_v3.Schema$Event): EmbedFieldData => ({
     name: `• 📅 ${moment(ev.start.dateTime).format('LL')}, ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
@@ -43,11 +45,11 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         return handleRequest(interaction);
     }
 
@@ -59,18 +61,19 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
 
 }
 
-function handleRequest(request: CommandInteraction | Message) {
-    const user = request.type === "APPLICATION_COMMAND" ?
-        (request as CommandInteraction).user :
-        (request as Message).author;
+function handleRequest(request: ChatInputCommandInteraction | Message) {
+    const user = request instanceof ChatInputCommandInteraction ?
+        request.user :
+        request.author;
     const courses = (guilds.get(kepGuildId) as KepGuild).students.get(user.id)?.courses;
     const events = (guilds.get(kepGuildId) as KepGuild).events
         .filter(ev => ev.summary?.startsWith(examsPrefix));
 
 
-    const responseBuilder = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
-        { content: response, ephemeral: true } :
-        { content: response };
+    const responseBuilder = (response: string): ReplyMessageOptions | InteractionReplyOptions =>
+        request instanceof ChatInputCommandInteraction ?
+            { content: response, ephemeral: true } :
+            { content: response };
 
     if (!courses || courses.size === 0)
         return request.reply(responseBuilder('Δεν έχετε επιλέξει μαθήματα'));
@@ -109,15 +112,15 @@ function handleRequest(request: CommandInteraction | Message) {
     user.send({ embeds: responseEmbeds })
         .then(msg => {
             msg.react("🗑");
-            if (request.type === "APPLICATION_COMMAND")
+            if (request instanceof CommandInteraction)
                 request.reply(responseBuilder(`Σας το έστειλα στα DMs`))
-            else if (request.type === "DEFAULT")
+            else
                 request.react('👌')
         })
         .catch(async err => {
-            if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                if (request.type === "APPLICATION_COMMAND") {
-                    const interaction = request as CommandInteraction;
+            if (err.code === RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
+                if (request instanceof ChatInputCommandInteraction) {
+                    const interaction = request;
                     const resp: InteractionReplyOptions = {
                         content: `Τα DMs σας ειναι κλειστά, το αποστέλλω εδώ`,
                         embeds: responseEmbeds,
@@ -127,7 +130,7 @@ function handleRequest(request: CommandInteraction | Message) {
                         interaction.followUp(resp) :
                         interaction.reply(resp)
                 }
-                else if (request.type === "DEFAULT") {
+                else {
                     const emoji = "📨";
                     const msg = await request.reply(`Έχετε κλειστά DMs. Εαν θέλετε να το στείλω εδώ, πατήστε το ${emoji}`);
                     await msg.react(emoji);

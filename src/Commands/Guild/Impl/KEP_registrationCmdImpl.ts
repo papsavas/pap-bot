@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, Message, MessageActionRow, MessageButton, Snowflake, TextChannel } from "discord.js";
+import { ActionRow, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, Embed, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { buttons, messages } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -32,21 +32,23 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
         (
             [], this.keyword,
         );
+
+    //TODO: make this ModalInteraction    
     getCommandData(guild_id: Snowflake): ChatInputApplicationCommandData {
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: registerName,
                     description: "σας αποστέλλει με email τον κωδικό επαλήθευσης",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: email,
                             description: "το ακαδημαϊκό σας email",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true,
                         }
                     ]
@@ -54,12 +56,12 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                 {
                     name: verifyName,
                     description: "επαληθεύει το κωδικό αποστολής σας",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: password,
                             description: "ο κωδικός επαλήθευσής σας",
-                            type: "INTEGER",
+                            type: ApplicationCommandOptionType.Integer,
                             required: true,
                         }
                     ]
@@ -67,7 +69,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const registeredMember = await fetchStudent({ member_id: interaction.user.id });
         if (registeredMember?.blocked) {
             const member = await interaction.guild.members.fetch(interaction.user.id);
@@ -82,8 +84,8 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                         iconURL: interaction.user.avatarURL()
                     },
                     title: "Απόπειρα εγγραφής αποκλεισμένου χρήστη",
-                    color: "DARK_RED",
-                    timestamp: new Date(),
+                    color: Colors.DarkRed,
+                    timestamp: new Date().toISOString(),
                     fields: [
                         { name: "Αριθμός μητρωου", value: registeredMember.am },
                         { name: "ID Προηγούμενου Λογαριασμού", value: registeredMember.member_id },
@@ -184,9 +186,9 @@ ${pswd}\n
 }
 
 async function conflict(interaction: CommandInteraction, am: string): Promise<unknown> {
-    const appealBtn = new MessageButton({
+    const appealBtn = new ButtonComponent({
         customId: `${buttons.appealId}_${am}_${interaction.user.id}`,
-        style: "PRIMARY",
+        style: ButtonStyle.Primary,
         label: buttons.appealLabel
     })
     return interaction.editReply({
@@ -198,10 +200,10 @@ async function conflict(interaction: CommandInteraction, am: string): Promise<un
                 },
                 title: am,
                 description: messages.appeal,
-                color: "RED",
+                color: Colors.Red,
                 timestamp: new Date()
             })
         ],
-        components: [new MessageActionRow().addComponents(appealBtn)]
+        components: [new ActionRow().addComponents(appealBtn)]
     })
 }

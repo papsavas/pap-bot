@@ -1,4 +1,5 @@
-import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, Snowflake } from "discord.js";
+import { OverwriteType } from "discord-api-types";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
 import { guilds } from "../../..";
 import { categories, guildId, roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -31,29 +32,29 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: createLiteral,
                     description: `Δημιουργεί ένα νέο μάθημα`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: codeLiteral,
                             description: `Κωδικός μαθήματος`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: nameLiteral,
                             description: `Όνομα μαθήματος (κεφαλαία)`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: semesterLiteral,
                             description: `Εξάμηνο μαθήματος (9 για διδακτικη)`,
-                            type: 'NUMBER',
+                            type: ApplicationCommandOptionType.Integer,
                             required: true
                         }
                     ]
@@ -61,12 +62,12 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 {
                     name: deleteLiteral,
                     description: `Διαγράφει ένα υπάρχον μάθημα`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: codeLiteral,
                             description: `Κωδικός μαθήματος`,
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
 
@@ -75,14 +76,14 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 {
                     name: listLiteral,
                     description: `Εμφανίζει όλα τα καταχωρημένα μαθήματα`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                 }
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has("MANAGE_GUILD"))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.reply("`MANAGE_GUILD` permissions required")
         const subCmd = interaction.options.getSubcommand(true);
         await interaction.deferReply({ ephemeral: false });
@@ -131,28 +132,28 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                         permissionOverwrites: [
                             {
                                 id: roles.mod,
-                                allow: ['MANAGE_MESSAGES', 'MANAGE_CHANNELS'],
-                                type: 'role'
+                                allow: [PermissionFlagsBits.ManageMessages, PermissionFlagsBits.ManageChannels],
+                                type: OverwriteType.Role
                             },
                             {
                                 id: roles.pro,
-                                allow: ['MENTION_EVERYONE'],
-                                type: 'role'
+                                allow: [PermissionFlagsBits.MentionEveryone],
+                                type: OverwriteType.Role
                             },
                             {
                                 id: roles.overseer,
-                                allow: ['VIEW_CHANNEL'],
-                                type: 'role'
+                                allow: [PermissionFlagsBits.ViewChannel],
+                                type: OverwriteType.Role
                             },
                             {
                                 id: courseRole.id,
-                                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
-                                type: 'role'
+                                allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages],
+                                type: OverwriteType.Role
                             },
                             {
                                 id: guildId,
-                                deny: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
-                                type: 'role'
+                                deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages],
+                                type: OverwriteType.Role
                             }
                         ]
                     })
@@ -205,7 +206,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
 
     }
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        if (!message.member.permissions.has("MANAGE_GUILD"))
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageGuild))
             return message.reply("`MANAGE_GUILD` permissions required")
         return message.reply(`Παρακαλώ χρησιμοποιείστε Slash Command \`/${this.usage}\``)
     }

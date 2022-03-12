@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Constants, Embed, EmbedFieldData, Message, Snowflake } from "discord.js";
+import { ApplicationCommandType, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, EmbedFieldData, Message, RESTJSONErrorCodes, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
@@ -39,7 +39,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
         }
     }
 
@@ -53,7 +53,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
                 content: "Απεστάλη με DM"
             }))
             .catch(err =>
-                err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
+                err.code === RESTJSONErrorCodes.CannotSendMessagesToThisUser ?
                     interaction.reply({
                         content: "Έχετε κλειστά DMs",
                         ephemeral: true,
@@ -70,7 +70,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
             .then(() => message.reply({
                 content: "Απεστάλη με DM"
             })).catch(err =>
-                err.code === Constants.APIErrors.CANNOT_MESSAGE_USER ?
+                err.code === RESTJSONErrorCodes.CannotSendMessagesToThisUser ?
                     message.reply({
                         content: "Έχετε κλειστά DMs. Δεν θα αποσταλεί σε κοινή θεα. Χρησιμοποιείστε slash command για να το δείτε μόνο εσείς"
                     })

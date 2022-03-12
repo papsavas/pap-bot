@@ -16,7 +16,7 @@
 			"id: Collection<Snowflake, Snowflake> = new Collection(null);\nreadonly keyword = ``;\nreaonly guide = ``;\nreadonly usage = `${this.keyword}`;\n private constructor() {super()}",
 			"static async init(): Promise<$4>{\nconst cmd = new $3();\ncmd.id = await fetchCommandID(cmd.keyword);\nreturn cmd;\n}",
 			"readonly aliases = this.addKeywordToAliases\n(\n[],this.keyword\n);",
-			"getCommandData(guild_id: Snowflake): ApplicationCommandData { return {\nname: this.keyword,\ndescription: this.guide,\ntype: 'CHAT_INPUT'\n}\n}",
+			"getCommandData(guild_id: Snowflake): ApplicationCommandData { return {\nname: this.keyword,\ndescription: this.guide,\ntype: ApplicationCommandType.\n}\n}",
 			"async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {\n\n}",
 			"async execute(message: Message, { }: commandLiteral): Promise<unknown> {\n\n}",
 			"}"
