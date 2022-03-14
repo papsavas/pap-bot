@@ -1,5 +1,5 @@
-import fs from 'fs'
 import { google } from 'googleapis'
+import * as fs from 'node:fs'
 import readline from 'readline'
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets'
 
