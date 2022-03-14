@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, Embed, GuildMember, Message, PermissionFlagsBits, PermissionResolvable, RESTJSONErrorCodes, Snowflake
+    ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, GuildMember, Message, PermissionFlagsBits, PermissionResolvable, RESTJSONErrorCodes, Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -64,7 +64,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
         const user = interaction.options.getUser(userOptionLiteral, true);
         const messageContent = interaction.options.getString(messageOptionLiteral, true);
-        const sendEmb = new Embed({
+        const sendEmb = new EmbedBuilder({
             author: {
                 name: "from: " + interaction.guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
@@ -103,7 +103,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         if (!text && !attachments)
             throw new Error('Cannot send empty message');
 
-        const sendEmb = new Embed({
+        const sendEmb = new EmbedBuilder({
             author: {
                 name: "from: " + guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,

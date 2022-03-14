@@ -1,4 +1,4 @@
-import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, PermissionFlagsBits, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, PermissionFlagsBits, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guilds } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -170,14 +170,14 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
         const row = new ActionRow()
             .addComponents(
-                new ButtonComponent({
+                new ButtonBuilder({
                     customId: "off",
                     label: "SFW responses",
                     style: ButtonStyle.Primary
                 })
                     .setEmoji({ name: "👼" }),
 
-                new ButtonComponent({
+                new ButtonBuilder({
                     customId: "on",
                     label: "NSFW responses",
                     style: ButtonStyle.Danger,

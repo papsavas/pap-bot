@@ -69,7 +69,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         const student = await findStudent(am ?? user);
         const data = student ?
             await fetchStudentData(student, await interaction.guild.members.fetch(student.member_id)) :
-            [new Embed({
+            [new EmbedBuilder({
                 title: `Δεν βρέθηκε εγγραφή`,
                 fields: [{ name: "Είσοδος:", value: user?.toString() ?? am }]
             })];
@@ -92,7 +92,7 @@ const findStudent = (id: amType | User) =>
 
 async function fetchStudentData(student: Student, member: GuildMember): Promise<Embed[]> {
     return [
-        new Embed({
+        new EmbedBuilder({
             author: {
                 name: member.user.username,
                 iconURL: member.user.avatarURL()

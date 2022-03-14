@@ -1,5 +1,5 @@
-import { EmbedBuilder } from '@discordjs/builders';
-import { ActionRow, ButtonComponent, ButtonInteraction, ButtonStyle, ChannelType, Client, Collection, Colors, Embed, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageReaction, MessageType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+
+import { ActionRow, ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageReaction, MessageType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import { sanitizeDiacritics, toGreek } from "greek-utils";
 import moment from "moment-timezone";
@@ -315,14 +315,14 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     },
                     title: `${semester}ο Εξάμηνο`
                 }
-                const logEmbeds: Embed[] = [];
+                const logEmbeds: EmbedBuilder[] = [];
                 if (added.length > 0) logEmbeds.push(
-                    new Embed(header)
+                    new EmbedBuilder(header)
                         .setColor(Colors.Blue)
                         .addFields({ name: 'Προστέθηκαν', value: added })
                 );
                 if (removedRoles.size > 0) logEmbeds.push(
-                    new Embed(header)
+                    new EmbedBuilder(header)
                         .setColor(Colors.Red)
                         .addFields({
                             name: 'Αφαιρέθηκαν', value: removedRoles
@@ -332,7 +332,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 );
 
                 if (logEmbeds.length === 0)
-                    logEmbeds.push(new Embed(header).setDescription("Δεν υπήρξαν αλλαγές"))
+                    logEmbeds.push(new EmbedBuilder(header).setDescription("Δεν υπήρξαν αλλαγές"))
 
                 return select.reply({
                     embeds: logEmbeds,
@@ -455,7 +455,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 studentCourses.sweep((v, k) => selectedCourses.some(sc => sc.role_id === k));
                 return interaction.reply({
                     embeds: [
-                        new Embed({
+                        new EmbedBuilder({
                             author: {
                                 name: member.displayName,
                                 icon_url: member.user.avatarURL()
@@ -490,14 +490,15 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     case buttons.focusSus: {
                         return message.edit({
                             content: `<@&${roles.mod}> **Requires Attention**`,
-                            embeds: message.embeds.map(e => e.setColor(Colors.Red)),
+                            embeds: message.embeds.map(e => new EmbedBuilder(e).setColor(Colors.Red)),
                             components: [
-                                new ActionRow().setComponents(
-                                    new ButtonComponent(susWarnBtn), new ButtonComponent(susFocusBtn).setDisabled(), new ButtonComponent(susResolvedBtn), new ButtonComponent(susDeleteBtn).setDisabled(),
+                                new ActionRowBuilder().setComponents(
+                                    new ButtonBuilder(susWarnBtn), new ButtonBuilder(susFocusBtn).setDisabled(),
+                                    new ButtonBuilder(susResolvedBtn), new ButtonBuilder(susDeleteBtn).setDisabled(),
                                     //include jump button
                                     message.components[0].components.find(c => !c.customId)
                                 ),
-                                new ActionRow().setComponents(new ButtonComponent(susSurveillanceBtn))
+                                new ActionRowBuilder().setComponents(new ButtonBuilder(susSurveillanceBtn))
                             ],
                             allowedMentions: { parse: ["roles"] }
                         })
@@ -620,7 +621,7 @@ async function handleMutedMembers(guild: Guild) {
                 const member = await guild.members.fetch(mm.member_id);
                 await member?.roles?.set(mm.roles);
                 await dropMutedMember(member.id);
-                const headerEmb = new Embed({
+                const headerEmb = new EmbedBuilder({
                     author: {
                         name: `CyberSocial Excluded`,
                         icon_url: `https://i.imgur.com/92vhTqK.png`
@@ -631,7 +632,7 @@ async function handleMutedMembers(guild: Guild) {
                 })
                 await (guild.channels.cache.get(channels.logs) as TextChannel).send({
                     embeds: [
-                        new Embed(headerEmb)
+                        new EmbedBuilder(headerEmb)
                             .setDescription(`Unmuted ${member.toString()}`)
                     ]
                 })
@@ -642,38 +643,38 @@ async function handleMutedMembers(guild: Guild) {
 
 const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
 
-const susWarnBtn = new ButtonComponent({
+const susWarnBtn = new ButtonBuilder({
     customId: warnSus,
     style: ButtonStyle.Primary,
     label: "Warn",
     emoji: { name: "⚠" }
 })
-const susFocusBtn = new ButtonComponent({
+const susFocusBtn = new ButtonBuilder({
     customId: focusSus,
     style: ButtonStyle.Danger,
     emoji: { name: "🎯" },
     label: "Focus",
 });
-const susResolvedBtn = new ButtonComponent({
+const susResolvedBtn = new ButtonBuilder({
     customId: resolvedSus,
     style: ButtonStyle.Success,
     emoji: { name: "✅" },
     label: "Resolved",
 })
-const susDeleteBtn = new ButtonComponent({
+const susDeleteBtn = new ButtonBuilder({
     customId: deleteSus,
     style: ButtonStyle.Secondary,
     emoji: { name: "🗑" },
     label: "Delete"
 })
 
-const susJumpBtn = (url: string) => new ButtonComponent({
+const susJumpBtn = (url: string) => new ButtonBuilder({
     style: ButtonStyle.Link,
     url,
     label: "Jump",
 })
 
-const susSurveillanceBtn = new ButtonComponent({
+const susSurveillanceBtn = new ButtonBuilder({
     customId: surveillanceSus,
     style: ButtonStyle.Primary,
     emoji: { name: "🚨" },
@@ -691,7 +692,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
     const found = index === -1 ? undefined : content.split(' ')[index];
     if (found) {
         logChannel.send({
-            embeds: [new Embed({
+            embeds: [new EmbedBuilder({
                 author: {
                     name: member.displayName ?? author.username,
                     icon_url: author.avatarURL()
@@ -710,7 +711,7 @@ function scanContent({ content, author, member, channel, url, attachments }: Mes
             components: [
                 new ActionRow().addComponents(
                     ...[susWarnBtn, susFocusBtn, susResolvedBtn, susDeleteBtn, susJumpBtn(url)]
-                        .map(source => new ButtonComponent(source))
+                        .map(source => new ButtonBuilder(source))
                 ),
                 new ActionRow().addComponents(susSurveillanceBtn)
             ],

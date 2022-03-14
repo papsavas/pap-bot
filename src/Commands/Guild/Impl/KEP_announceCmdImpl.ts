@@ -1,5 +1,5 @@
 
-import { ActionRow, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Embed, Message, Snowflake, TextChannel } from "discord.js";
+import { ActionRow, ApplicationCommandOptionType, ApplicationCommandType, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -68,7 +68,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             .map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
             .filter(r => typeof r !== "undefined");
         const newsChannel = interaction.guild.channels.cache.get(kepChannels.news as Snowflake) as TextChannel;
-        const emb = new Embed({
+        const emb = new EmbedBuilder({
             author: {
                 name: interaction.user.tag,
                 iconURL: interaction.user.defaultAvatarURL
@@ -88,11 +88,11 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
         const modChannel = interaction.guild.channels.cache.get(kepChannels.mods as Snowflake) as TextChannel;
         const approveLiteral = 'approve';
-        const approveBtn = new ButtonComponent()
+        const approveBtn = new ButtonBuilder()
             .setCustomId(approveLiteral)
             .setEmoji({ name: '✅' })
             .setStyle(ButtonStyle.Success);
-        const rejectBtn = new ButtonComponent()
+        const rejectBtn = new ButtonBuilder()
             .setCustomId('reject')
             .setEmoji({ name: '❌' })
             .setStyle(ButtonStyle.Danger);

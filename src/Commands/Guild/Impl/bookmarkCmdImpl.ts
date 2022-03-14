@@ -1,4 +1,4 @@
-import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, Embed, Message, MessageApplicationCommandData, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, Snowflake, User } from "discord.js";
+import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, Message, MessageApplicationCommandData, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -65,7 +65,7 @@ export class bookmarkCmdImpl extends AbstractGuildCommand implements bookmarkCmd
 function messageUser(user: User, message: Message) {
     return user.send({
         embeds: [
-            new Embed({
+            new EmbedBuilder({
                 author: {
                     name: message.author.tag,
                     icon_url: message.author.avatarURL({ extension: 'png' })
@@ -79,7 +79,7 @@ function messageUser(user: User, message: Message) {
                 color: Colors.Fuchsia,
                 image: { url: message.attachments.first()?.url },
                 timestamp: new Date(),
-            }), ...message.embeds.map(emb => new Embed(emb))
+            }), ...message.embeds.map(emb => new EmbedBuilder(emb))
         ]
     })
 }

@@ -1,4 +1,4 @@
-import { ActionRow, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, Embed, Message, Snowflake, TextChannel } from "discord.js";
+import { ActionRow, ApplicationCommandOptionType, ApplicationCommandType, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { buttons, messages } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -186,14 +186,14 @@ ${pswd}\n
 }
 
 async function conflict(interaction: CommandInteraction, am: string): Promise<unknown> {
-    const appealBtn = new ButtonComponent({
+    const appealBtn = new ButtonBuilder({
         customId: `${buttons.appealId}_${am}_${interaction.user.id}`,
         style: ButtonStyle.Primary,
         label: buttons.appealLabel
     })
     return interaction.editReply({
         embeds: [
-            new Embed({
+            new EmbedBuilder({
                 author: {
                     name: "Εγγεγραμμένο email",
                     iconURL: "https://cdn1.vectorstock.com/i/1000x1000/80/30/conflict-resolution-icon-symbol-isolated-on-white-vector-31728030.jpg"
