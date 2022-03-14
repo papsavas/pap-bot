@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "discord-api-types": "^0.18.1",
-    "discord.js": "^13.6.0",
+    "discord.js": "^14.0.0-dev.1646914074.dcd4797",
     "find-config": "^1.0.0",
     "firebase": "^8.3.3",
     "firebase-admin": "^9.6.0",
