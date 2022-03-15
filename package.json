@@ -27,7 +27,7 @@
     "firebase-admin": "^9.6.0",
     "googleapis": "^73.0.0",
     "greek-utils": "^1.3.0",
-    "knex": "^0.95.4",
+    "knex": "^1.0.4",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "node": "^16.14.0",
