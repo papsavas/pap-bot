@@ -269,8 +269,8 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
         this.#settings.prefix = newPrefix;
     }
 
-    patchVoiceLobbySetting(v: Snowflake): void {
-        this.#settings.voice_lobby = v;
+    patchVoiceLobbySetting(vId: Snowflake): void {
+        this.#settings.voice_lobby = vId;
     }
 
     fetchCommands() {

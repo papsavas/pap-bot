@@ -4,6 +4,9 @@ import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/Ge
 import { CommandOptions } from "../../Entities/Generic/command";
 import { CommandPermission } from "../../Entities/Generic/commandPermission";
 
+/**
+ * @deprecated due to Discord Permissions v2
+ */
 async function overrideCommandPerms(guild_id: Snowflake, command_id: Snowflake, roleIDs: Snowflake[]): Promise<CommandPermission[]> {
     await deleteBatch(commandPermsTable,
         {
@@ -22,14 +25,23 @@ async function dropGuildCommands(guild_id: Snowflake) {
     return deleteBatch(commandsTable, { guild_id });
 }
 
+/**
+ * @deprecated due to Discord Permissions v2
+ */
 async function dropCommandPerms(command_id: Snowflake, guild_id: Snowflake) {
     return deleteBatch(commandPermsTable, { guild_id, command_id });
 }
 
+/**
+ * @deprecated due to Discord Permissions v2
+ */
 async function dropAllCommandPerms(guild_id: Snowflake) {
     return deleteBatch(commandPermsTable, { guild_id });
 }
 
+/**
+ * @deprecated due to Discord Permissions v2
+ */
 function fetchCommandPerms(guild_id: Snowflake, command_id: Snowflake): Promise<CommandPermission[]> {
     return findAll(commandPermsTable,
         {
