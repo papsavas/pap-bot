@@ -15,7 +15,6 @@ import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl
 import { PinMessageCmdImpl } from '../../Commands/Guild/Impl/pinMessageCmdImpl';
 import { PollCmdImpl } from "../../Commands/Guild/Impl/pollCmdImpl";
 import { settingsCmdImpl } from '../../Commands/Guild/Impl/settingsCmdImpl';
-import { ShowPermsCmdsImpl } from "../../Commands/Guild/Impl/showPermsCmdsImpl";
 import { UnpinMessageCmdImpl } from '../../Commands/Guild/Impl/unpinMessageCmdImpl';
 import { GuildCommandManager } from "../../Commands/Managers/Interf/GuildCommandManager";
 import { GuildSettings } from "../../Entities/Generic/guildSettings";
@@ -28,9 +27,6 @@ import { randomArrayValue } from "../../tools/randomArrayValue";
 import AbstractHandler from '../AbstractHandler';
 import { openVoiceCmdImpl } from './../../Commands/Guild/Impl/openVoiceCmdImpl';
 import { GenericGuild } from "./GenericGuild";
-
-
-
 
 export abstract class AbstractGuild extends AbstractHandler implements GenericGuild {
 
@@ -48,9 +44,9 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
-        ShowPermsCmdsImpl,
         myResponsesCmdImpl, bookmarkCmdImpl,
-        PinMessageCmdImpl, UnpinMessageCmdImpl, openVoiceCmdImpl, settingsCmdImpl
+        PinMessageCmdImpl, UnpinMessageCmdImpl,
+        openVoiceCmdImpl, settingsCmdImpl
     ].map(cmd => cmd.init())
 
     commandManager: GuildCommandManager = null;
