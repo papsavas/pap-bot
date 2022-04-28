@@ -47,6 +47,8 @@ export class ShowPermsCmdsImpl extends AbstractGuildCommand implements showPerms
         }
     }
 
+    //TODO: merge executions
+
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
         const commandLiteral = interaction.options.getString(cmdOptionLiteral, true);
         const command_id: Snowflake = (await fetchCommandID(commandLiteral, interaction.guildId)).firstKey();

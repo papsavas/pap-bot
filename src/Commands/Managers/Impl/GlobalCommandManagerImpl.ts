@@ -35,10 +35,4 @@ export class GlobalCommandManagerImpl extends CommandManagerImpl implements Glob
             )
         );
     }
-
-    async clearCommands(commandManager: ApplicationCommandManager): Promise<unknown> {
-        if (commandManager instanceof GuildApplicationCommandManager)
-            await dropAllCommandPerms(commandManager.guild.id).catch(console.error);
-        return commandManager.set([]);
-    }
 }

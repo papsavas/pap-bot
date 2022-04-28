@@ -45,11 +45,13 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
 
     async updateCommands(commandManager: ApplicationCommandManager) {
         const newCommands = await super.updateCommands(commandManager);
-        await this.syncPermissions(commandManager, newCommands);
         console.log(`___DONE_SYNCING_PERMS___`);
         return newCommands;
     }
 
+    /**
+     * @deprecated
+     */
     private async syncPermissions(
         commandManager: ApplicationCommandManager,
         commands: Collection<Snowflake, ApplicationCommand<{}>>
@@ -81,7 +83,5 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         }
     }
 
-    async clearCommands(commandManager: ApplicationCommandManager) {
-        return commandManager.set([]);
-    }
+
 }

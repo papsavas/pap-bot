@@ -1,3 +1,7 @@
+/**
+ * @deprecated due to Discord Permissions v2
+ */
+
 
 import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandPermissionData, Collection, CommandInteraction, Message, Permissions, Snowflake } from "discord.js";
 import { guilds } from "../../..";

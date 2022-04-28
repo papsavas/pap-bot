@@ -9,7 +9,6 @@ import {
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";
-import { commandPermsCmdImpl } from '../../Commands/Guild/Impl/commandPermsCmdImpl';
 import { EditMessageCmdImpl } from "../../Commands/Guild/Impl/editMessageCmdImpl";
 import { MessageChannelCmdImpl } from "../../Commands/Guild/Impl/messageChannelCmdImpl";
 import { myResponsesCmdImpl } from "../../Commands/Guild/Impl/myResponsesCmdImpl";
@@ -49,7 +48,7 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
     protected _genericCommands: Promise<GenericGuildCommand>[] = [
         PollCmdImpl,
         MessageChannelCmdImpl, ClearMessagesCmdImpl, EditMessageCmdImpl,
-        commandPermsCmdImpl, ShowPermsCmdsImpl,
+        ShowPermsCmdsImpl,
         myResponsesCmdImpl, bookmarkCmdImpl,
         PinMessageCmdImpl, UnpinMessageCmdImpl, openVoiceCmdImpl, settingsCmdImpl
     ].map(cmd => cmd.init())
