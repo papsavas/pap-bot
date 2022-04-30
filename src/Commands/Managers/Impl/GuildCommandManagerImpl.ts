@@ -50,8 +50,8 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
     }
 
     /**
-     * @deprecated
-     */
+    * @deprecated due to Discord Permissions v2
+    */
     private async syncPermissions(
         commandManager: ApplicationCommandManager,
         commands: Collection<Snowflake, ApplicationCommand<{}>>
