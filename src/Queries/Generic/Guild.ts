@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
-import { prefix as defaultPrefix } from "../../../bot.config.json";
-import { guildSettingsTable, guildTable } from "../../../values/generic/DB.json";
+const { prefix: defaultPrefix } = (await import("../../../bot.config.json", { assert: { type: 'json' } })).default;
+const { guildSettingsTable, guildTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
 import { deleteBatch, saveBatch } from "../../DB/GenericCRUD";
 
 async function saveGuild(guild: Guild): Promise<void> {

@@ -1,7 +1,4 @@
 import { ClientEvents } from "discord.js";
-import { Guilds } from "../Entities/Generic/Guilds";
-import { DmHandler } from "../Handlers/DMs/GenericDm";
-import { GlobalCommandHandler } from "../Handlers/Global/GlobalCommandHandler";
 import GenericEvent from "./GenericEvent";
 
 export default abstract class AbstractEvent implements GenericEvent {

@@ -4,7 +4,8 @@ import { randomUUID } from "node:crypto";
 import TableBuilder = Knex.TableBuilder;
 
 if (process.env.NODE_ENV !== 'production')
-    require('dotenv').config({ path: require('find-config')('.env') })
+    (await import('dotenv'))
+        .config({ path: (await import('find-config')).read('.env') })  //load env variables
 class AbstractRepository {
     knex: Knex<any, unknown[]>;
     constructor() {

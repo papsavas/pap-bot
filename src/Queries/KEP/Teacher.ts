@@ -1,4 +1,7 @@
-import { courseTable, teacherTable, teacher_courseTable } from "../../../values/generic/DB.json";
+const {
+    courseTable, teacherTable, teacher_courseTable
+} = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
+
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 import { RequireAtLeastOne } from "../../tools/types";

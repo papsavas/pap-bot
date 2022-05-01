@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
 import moment, { Moment } from "moment-timezone";
 import 'moment/locale/el';
-import { drivePermsTable } from "../../../values/generic/DB.json";
+const { drivePermsTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { DrivePermission } from "../../Entities/KEP/Drive";
 moment.locale('el');

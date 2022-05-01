@@ -2,9 +2,9 @@
 import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Collection, Colors, ComponentType, EmbedBuilder, GuildMember, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
-import { guilds } from "../../..";
-import { guildId } from "../../../../values/KEP/IDs.json";
-import { examsPrefix, lecturePrefix } from "../../../../values/KEP/literals.json";
+const { guilds } = await import('../../../Inventory/guilds');
+const { guildId } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
+const { examsPrefix, lecturePrefix } = (await import("../../../../values/KEP/literals.json", { assert: { type: 'json' } })).default;
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";

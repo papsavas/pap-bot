@@ -1,10 +1,10 @@
-import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, PermissionFlagsBits, ReplyMessageOptions, Snowflake } from "discord.js";
-import { guilds } from "../../..";
+import { ApplicationCommandData, ButtonInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, ReplyMessageOptions, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchGuildSettings, setVoiceLobby, updateGuildSettings } from "../../../Queries/Generic/GuildSettings";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { settingsCmd } from "../Interf/settingsCmd";
+const { guilds } = await import('../../../Inventory/guilds');
 
 const [nsfwLiteral, lobbyLiteral, prefixLiteral] = ["nsfw", "voice-lobby", "prefix"];
 const [voiceOptLiteral, newPrefixOptLiteral] = ["voice_channel", "new_prefix"]

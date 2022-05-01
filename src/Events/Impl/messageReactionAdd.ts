@@ -27,5 +27,6 @@ const execute = async (reaction: MessageReaction | PartialMessageReaction, user:
             break;
     }
 }
+}
 
 export default { name, execute }

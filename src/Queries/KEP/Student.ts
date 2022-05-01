@@ -1,5 +1,5 @@
 import { Collection, Snowflake } from "discord.js";
-import { pendingStudentTable, studentTable } from "../../../values/generic/DB.json";
+const { pendingStudentTable, studentTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { PendingStudent, Student } from "../../Entities/KEP/Student";

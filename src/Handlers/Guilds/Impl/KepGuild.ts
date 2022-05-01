@@ -1,12 +1,8 @@
-import { ButtonInteraction, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, MessageType, OverwriteType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, ThreadAutoArchiveDuration, User } from 'discord.js';
+import { ButtonInteraction, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import urlRegex from 'url-regex';
-import { inDevelopment } from '../../..';
-import { categories, channels, roles } from "../../../../values/KEP/IDs.json";
-import { buttons, examsPrefix } from "../../../../values/KEP/literals.json";
-import { channels as WOAPchannels } from "../../../../values/WOAP/IDs.json";
 import { KEP_adminCmdImpl } from '../../../Commands/Guild/Impl/KEP_adminCmdImpl';
 import { KEP_courseCmdImpl } from '../../../Commands/Guild/Impl/KEP_courseCmdImpl';
 import { KEP_courseTeacherCmdImpl } from '../../../Commands/Guild/Impl/KEP_courseTeacherCmdImpl';
@@ -34,6 +30,9 @@ import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
+const { categories, channels, roles } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
+const { buttons, examsPrefix } = (await import("../../../../values/KEP/literals.json", { assert: { type: 'json' } })).default;
+const { channels: WOAPchannels } = (await import("../../../../values/WOAP/IDs.json", { assert: { type: 'json' } })).default;
 moment.tz("Europe/Athens");
 
 
@@ -120,7 +119,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         handleExaminedChannels(this.courses, this.events, this.guild.channels);
         handleActiveDrivePermissions();
         handleMutedMembers(this.guild);
-        if (!inDevelopment) await dropAllPendingStudents();
+        if (process.env.NODE_ENV === "production") await dropAllPendingStudents();
         return Promise.resolve('KEP Loaded');
     }
 

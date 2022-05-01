@@ -2,9 +2,9 @@ import { APIEmbedField, ApplicationCommandType, ChatInputApplicationCommandData,
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
-import { guilds } from "../../..";
-import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
-import { lecturePrefix } from "../../../../values/KEP/literals.json";
+const { guilds } = await import('../../../Inventory/guilds');
+const { guildId: kepGuildId } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
+const { lecturePrefix } = (await import("../../../../values/KEP/literals.json", { assert: { type: 'json' } })).default;
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Course } from "../../../Entities/KEP/Course";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";

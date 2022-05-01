@@ -1,4 +1,4 @@
-import { keywordsTable } from "../../../values/generic/DB.json";
+const { keywordsTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
 import { deleteBatch, findAll, saveBatch } from "../../DB/GenericCRUD";
 
 async function fetchKeywords(): Promise<string[]> {

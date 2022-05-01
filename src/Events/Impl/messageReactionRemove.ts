@@ -25,7 +25,8 @@ const execute = async (reaction: MessageReaction | PartialMessageReaction, user:
                     u as User,
                 ).catch(console.error);
             break;
-    };
+    }
+};
 }
 
 export default { name, execute }

@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { userNotesTable } from "../../../values/generic/DB.json";
+const { userNotesTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
 import { deleteBatch, findAll, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { UserNote } from "../../Entities/Generic/userNote";
 

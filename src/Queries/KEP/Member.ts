@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 import moment, { Moment } from "moment-timezone";
-import { mutedMemberTable } from "../../../values/generic/DB.json";
+const { mutedMemberTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { MutedMember } from "../../Entities/KEP/Member";
 moment.locale("el");

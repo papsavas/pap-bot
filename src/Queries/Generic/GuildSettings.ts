@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { guilds } from "../../../src/index";
+const { guilds } = await import('../../Inventory/guilds');
 import { findOne, updateAll } from "../../DB/GenericCRUD";
 import { GuildSettings } from "../../Entities/Generic/guildSettings";
 

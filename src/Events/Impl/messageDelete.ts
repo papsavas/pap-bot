@@ -27,5 +27,6 @@ const execute = async (deletedMessage: Message<boolean> | PartialMessage) => {
             break;
     }
 }
+}
 
 export default { name, execute }

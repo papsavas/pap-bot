@@ -1,7 +1,7 @@
 import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
 import moment from "moment-timezone";
 import 'moment/locale/el';
-import { drive as driveLink } from "../../../../values/KEP/info.json";
+const { drive: driveLink } = (await import("../../../../values/KEP/info.json", { assert: { type: 'json' } })).default;
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { dropDrivePermission, fetchDrivePermissions, findDrivePerm, saveDrivePermission } from "../../../Queries/KEP/Drive";

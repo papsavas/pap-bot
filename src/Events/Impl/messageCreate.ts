@@ -1,12 +1,12 @@
 import { ChannelType, ClientEvents, Message } from "discord.js";
-import { dmHandler, guilds, PAP } from "../..";
+import { dmHandler, guilds } from "../..";
 import { creatorID } from '../../../bot.config.json';
 
 const name: keyof ClientEvents = 'messageCreate';
 const execute = async (message: Message) => {
     if (message.author.id === creatorID && message.content.startsWith('eval'))
         try {
-            const Discord = require('discord.js');
+            const Discord = await import('discord.js');
             return eval(message.cleanContent
                 .substring('eval'.length + 1)
                 .replace(/(\r\n|\n|\r)/gm, "") //remove all line breaks
@@ -21,7 +21,7 @@ const execute = async (message: Message) => {
                 .catch(internalErr => console.log(internalErr));
         }
 
-    if (message.author.id === PAP.user.id)
+    if (message.author.id === (await import('../../index')).PAP.user.id)
         return
 
     switch (message.channel.type) {

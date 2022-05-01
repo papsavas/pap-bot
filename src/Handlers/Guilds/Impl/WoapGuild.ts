@@ -9,7 +9,7 @@ export class WoapGuild extends AbstractGuild implements GenericGuild {
         super(id);
     }
 
-    static async init(guild_id: Snowflake): Promise<GenericGuild> {
+    static async init(guild_id: Snowflake): Promise<WoapGuild> {
         const guild = new WoapGuild(guild_id);
         guild.specifiedCommands = specifiedCommands;
         guild.commandManager = new GuildCommandManagerImpl(

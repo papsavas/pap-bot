@@ -1,12 +1,12 @@
 import { ServiceAccount } from "firebase-admin/lib/credential";
 
-const firebase = require("firebase");
-require("firebase/firestore");
-const admin = require('firebase-admin');
+const firebase = await import("firebase/firestore");
+const admin = await import('firebase-admin');
 const FieldValue = admin.firestore.FieldValue;
 
 if (process.env.NODE_ENV !== 'production')
-    require('dotenv').config({ path: require('find-config')('.env') })
+    (await import('dotenv'))
+        .config({ path: (await import('find-config')).read('.env') })  //load env variables
 
 const serviceAccount: ServiceAccount =
 {

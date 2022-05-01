@@ -3,19 +3,22 @@
   "version": "2.0.0",
   "description": "PAPbot",
   "main": "src/index.ts",
+  "type": "module",
   "engines": {
     "node": "18.x"
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/src/index.js",
-    "launch": "npm run timezone && ts-node src/index.ts",
+    "start": "node --experimental-json-modules --es-module-specifier-resolution=node dist/src/index.js",
+    "launch": "set NODE_ENV='development'&& npm run build && npm run timezone && npm run start",
     "timezone": "set TZ='Europe/Athens'",
-    "dev": "set NODE_ENV='development' && npm run launch",
+    "dev": "set NODE_ENV='development' && npm run start",
     "prod": "set NODE_ENV='production1' && npm run launch",
     "production": "set NODE_ENV='production' && npm run launch",
     "test": "jest --passWithNoTests",
-    "devtest": "tsc -p tsconfig.test.json && npm test"
+    "dev-test": "tsc -p tsconfig.test.json && npm test",
+    "dev-update-commands": "set NODE_ENV='development' && ts-node src/Scripts/Commands/update.ts",
+    "prod-update-commands": "set NODE_ENV='production' && node dist/src/Scripts/Commands/update.js"
   },
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
@@ -30,8 +33,8 @@
     "knex": "^2.0.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
-    "node": "^16.14.0",
-    "npm": "^8.5.5",
+    "node": "^16.15.0",
+    "npm": "^8.8.0",
     "pg": "^8.7.3",
     "profanity-js": "^0.1.2",
     "readline": "^1.3.0",
@@ -41,6 +44,7 @@
     "url-regex": "^5.0.0"
   },
   "devDependencies": {
+    "@types/find-config": "^1.0.1",
     "@types/greek-utils": "^1.2.0",
     "@types/jest": "^28.1.1",
     "@types/lodash": "^4.14.179",

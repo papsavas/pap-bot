@@ -1,5 +1,5 @@
 import { Collection, Snowflake } from "discord.js";
-import { commandPermsTable, commandsTable } from "../../../values/generic/DB.json";
+const { commandPermsTable, commandsTable } = await import("../../../values/generic/DB.json", { assert: { type: 'json' } });
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { CommandOptions } from "../../Entities/Generic/command";
 import { CommandPermission } from "../../Entities/Generic/commandPermission";

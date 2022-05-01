@@ -1,5 +1,6 @@
 import moment from "moment";
-import { exams as examSheetURL } from "../../../values/KEP/info.json";
+const { exams: examSheetURL } = (await import("../../../values/KEP/info.json", { assert: { type: 'json' } })).default;
+
 import { CourseEvent } from "../../Entities/KEP/Course";
 import { fetchSheet, SheetResponse } from "../../tools/Google/GSheets";
 export { fetchCourseEvents };

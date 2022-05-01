@@ -1,6 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ChatInputCommandInteraction, Collection, Message, OverwriteType, PermissionFlagsBits, Snowflake } from "discord.js";
-import { guilds } from "../../..";
-import { categories, guildId, roles } from "../../../../values/KEP/IDs.json";
+import { ApplicationCommandData, AttachmentBuilder, ChatInputCommandInteraction, Collection, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Course, semesterRegex } from "../../../Entities/KEP/Course";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
@@ -8,6 +6,8 @@ import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { addCourse, dropCourse, fetchCourses } from "../../../Queries/KEP/Course";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_courseCmd } from "../Interf/KEP_courseCmd";
+const { guilds } = await import('../../../Inventory/guilds');
+const { categories, guildId, roles } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
 
 const [createLiteral, deleteLiteral, listLiteral] = ["create", "delete", "list"];
 const [codeLiteral, nameLiteral, semesterLiteral] = ["code", "name", "semester"];

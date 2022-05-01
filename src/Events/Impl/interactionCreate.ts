@@ -1,12 +1,14 @@
-import { ChannelType, ClientEvents, EmbedBuilder, Interaction } from "discord.js";
-import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guilds } from "../..";
-
-
+import { ClientEvents, EmbedBuilder, Interaction } from "discord.js";
+import { bugsChannel } from '../../index';
+const { dmHandler } = await import('../../Inventory/DMs');
+const { globalCommandHandler } = await import('../../Inventory/globalCommandHandler');
+const { globalCommandsIDs } = await import('../../Inventory/globalCommandHandler')
 
 const name: keyof ClientEvents = "interactionCreate";
 
 const execute = async (interaction: Interaction) => {
-    if (interaction.isCommand()) {
+    const { guilds } = await import('../../Inventory/guilds');
+    if (interaction.isApplicationCommand()) {
         if (globalCommandsIDs.includes(interaction.commandId)) {
             globalCommandHandler.onCommand(interaction)
                 .catch(console.error);

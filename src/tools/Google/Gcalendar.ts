@@ -4,7 +4,8 @@ import { Gauth } from './Gauth';
 export { fetchCalendarEvents, insertCalendarEvent };
 
 if (process.env.NODE_ENV !== 'production')
-    require('dotenv').config({ path: require('find-config')('.env') })
+    (await import('dotenv'))
+        .config({ path: (await import('find-config')).read('.env') })  //load env variables
 
 const SCOPES = [
     'https://www.googleapis.com/auth/calendar',

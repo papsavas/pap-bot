@@ -5,9 +5,10 @@ import {
     ApplicationCommandType, ChatInputCommandInteraction,
     Collection, Colors, CommandInteraction, EmbedBuilder, GuildApplicationCommandManager, Message, RESTJSONErrorCodes, Snowflake
 } from "discord.js";
-import { prefix as defaultPrefix } from "../../../../bot.config.json";
+const { prefix: defaultPrefix } = (await import("../../../../bot.config.json", { assert: { type: 'json' } })).default;
 import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
-import { bugsChannel, guilds } from "../../../index";
+import { bugsChannel } from "../../../index";
+const { guilds } = await import('../../../Inventory/guilds');
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
 import { CommandManager } from "../Interf/CommandManager";
