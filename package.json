@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node --experimental-json-modules --es-module-specifier-resolution=node dist/src/index.js",
+    "start": "node --trace-warnings --experimental-json-modules --es-module-specifier-resolution=node dist/src/index.js",
     "launch": "set NODE_ENV='development'&& npm run build && npm run timezone && npm run start",
     "timezone": "set TZ='Europe/Athens'",
     "dev": "set NODE_ENV='development' && npm run start",
@@ -17,7 +17,7 @@
     "production": "set NODE_ENV='production' && npm run launch",
     "test": "jest --passWithNoTests",
     "dev-test": "tsc -p tsconfig.test.json && npm test",
-    "dev-update-commands": "set NODE_ENV='development' && ts-node src/Scripts/Commands/update.ts",
+    "dev-update-commands": "set NODE_ENV='development'&& npm run build && npm run timezone && node --experimental-json-modules --es-module-specifier-resolution=node dist/src/Scripts/Commands/update.js",
     "prod-update-commands": "set NODE_ENV='production' && node dist/src/Scripts/Commands/update.js"
   },
   "author": "Papageorgiadis Savvas",
@@ -33,7 +33,7 @@
     "knex": "^2.0.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
-    "node": "^16.15.0",
+    "node": "^18.0.0",
     "npm": "^8.8.0",
     "pg": "^8.7.3",
     "profanity-js": "^0.1.2",

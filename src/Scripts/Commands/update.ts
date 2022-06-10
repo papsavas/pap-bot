@@ -9,11 +9,11 @@ if (guildId && PAP.guilds.cache.has(guildId)) {
     const { guilds } = await import('../../Inventory/guilds');
     const g = guilds.get(guildId);
     console.log(`updating ${g.guild.name} (/) commands...`);
-    g.commandManager.updateCommands(g.guild.commands);
+    await g.commandManager.updateCommands(g.guild.commands);
 }
 else if (!guildId) {
     console.log('updating global (/) commands...');
     const { globalCommandHandler } = await import('../../Inventory/globalCommandHandler');
-    globalCommandHandler.commandManager.updateCommands(PAP.application.commands);
+    await globalCommandHandler.commandManager.updateCommands(PAP.application.commands);
 }
 else throw new Error('invalid guild id');
