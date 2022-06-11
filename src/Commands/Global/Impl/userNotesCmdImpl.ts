@@ -96,7 +96,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<any> {
-        if (interaction.channel.type !== "DM")
+        if (!interaction.channel.guild)
             return interaction.reply({
                 content: `For security reasons, please use this command in DMs`,
                 ephemeral: true

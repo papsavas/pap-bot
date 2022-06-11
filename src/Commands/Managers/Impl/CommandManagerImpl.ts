@@ -16,9 +16,6 @@ export abstract class CommandManagerImpl implements CommandManager {
     protected readonly helpCommandData: ApplicationCommandData;
     abstract fetchCommandData(commands: GenericCommand[]): ApplicationCommandData[];
     abstract saveCommandData(commands: Collection<Snowflake, ApplicationCommand>): Promise<unknown>;
-    abstract clearCommands(
-        commandManager: ApplicationCommandManager | GuildApplicationCommandManager
-    ): Promise<unknown>;
 
     constructor(commands: GenericCommand[]) {
         this.commands = commands;
@@ -125,6 +122,10 @@ export abstract class CommandManagerImpl implements CommandManager {
         }
         console.log(`---${this.commands[0].type} commands updated---`);
         return newCommands;
+    }
+
+    async clearCommands(commandManager: ApplicationCommandManager) {
+        return commandManager.set([]);
     }
 
     async registerCommand(commandManager: ApplicationCommandManager, command: ApplicationCommandDataResolvable) {

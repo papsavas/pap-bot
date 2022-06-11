@@ -20,11 +20,11 @@ export abstract class AbstractCommand implements GenericCommand {
     ) =>
         source instanceof BaseCommandInteraction ?
             source.replied ?
-                source.followUp(response) :
+                source.followUp(response as InteractionReplyOptions) :
                 source.deferred ?
                     source.editReply(response) :
-                    source.reply(response) :
-            source.reply(response)
+                    source.reply(response as InteractionReplyOptions) :
+            source.reply(response as ReplyMessageOptions)
 
     matchAliases(possibleCommand: string): boolean {
         return this.aliases

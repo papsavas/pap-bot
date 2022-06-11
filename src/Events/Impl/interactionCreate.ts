@@ -16,7 +16,7 @@ const execute = async (interaction: Interaction) => {
                 ?.onSlashCommand(interaction)
                 .catch(console.error);
         }
-        else if (interaction.channel.type === "DM") {
+        else if (!interaction.channel.guild) {
             dmHandler.onSlashCommand(interaction)
                 .catch(console.error);
         }
@@ -44,7 +44,7 @@ const execute = async (interaction: Interaction) => {
                 ?.onSelectMenu(interaction)
                 .catch(console.error);
         }
-        else if (interaction.channel.type === "DM") {
+        else if (!interaction.channel.guild) {
             dmHandler.onSelectMenu(interaction)
                 .catch(console.error);
             console.log('dm select received');
