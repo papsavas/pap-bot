@@ -1,4 +1,3 @@
-import { APIRole } from "discord-api-types";
 import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, Role, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -47,7 +46,7 @@ export class openVoiceCmdImpl extends AbstractGuildCommand implements openVoiceC
             if (!voiceChannel.permissionsFor(requestMember).has('MANAGE_CHANNELS'))
                 return interaction.editReply(`You do not have manage permissions for this channel`);
             await voiceChannel.permissionOverwrites.edit(
-                (mentionable as Role | APIRole)?.id ?? (mentionable as User | GuildMember)?.id, {
+                (mentionable as Role)?.id ?? (mentionable as User | GuildMember)?.id, {
                 CONNECT: true,
                 SPEAK: true,
                 STREAM: true
