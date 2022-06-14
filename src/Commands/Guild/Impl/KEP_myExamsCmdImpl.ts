@@ -48,101 +48,93 @@ export class KEP_myExamsCmdImpl extends AbstractGuildCommand implements KEP_myEx
     }
 
     async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
-        return handleRequest(interaction);
+        return this.handleRequest(interaction);
     }
 
     async execute(message: Message, { }: commandLiteral): Promise<unknown> {
-        return handleRequest(message);
+        return this.handleRequest(message);
     }
 
+    handleRequest(request: CommandInteraction | Message) {
+        const user = request.type === "APPLICATION_COMMAND" ?
+            (request as CommandInteraction).user :
+            (request as Message).author;
+        const courses = (guilds.get(kepGuildId) as KepGuild).students.get(user.id)?.courses;
+        const events = (guilds.get(kepGuildId) as KepGuild).events
+            .filter(ev => ev.summary?.startsWith(examsPrefix));
 
+        if (!courses || courses.size === 0)
+            return this.respond(request, { content: `Δεν έχετε επιλέξει μαθήματα` });
 
-}
+        if (events.length === 0)
+            return this.respond(request, { content: `Δεν βρέθηκαν προγραμματισμένα μαθήματα` });
 
-function handleRequest(request: CommandInteraction | Message) {
-    const user = request.type === "APPLICATION_COMMAND" ?
-        (request as CommandInteraction).user :
-        (request as Message).author;
-    const courses = (guilds.get(kepGuildId) as KepGuild).students.get(user.id)?.courses;
-    const events = (guilds.get(kepGuildId) as KepGuild).events
-        .filter(ev => ev.summary?.startsWith(examsPrefix));
-
-
-    const responseBuilder = (response: string): ReplyMessageOptions | InteractionReplyOptions => request.type === "APPLICATION_COMMAND" ?
-        { content: response, ephemeral: true } :
-        { content: response };
-
-    if (!courses || courses.size === 0)
-        return request.reply(responseBuilder('Δεν έχετε επιλέξει μαθήματα'));
-
-    if (events.length === 0)
-        return request.reply(responseBuilder('Δεν βρέθηκαν προγραμματισμένα μαθήματα'));
-
-    const studentCourseEvents = events
-        .map(ev => ({
-            ...ev,
-            summary: ev.summary.replace(examsPrefix, '')
-                .trimStart()
-                .trimEnd()
-        })
-        )
-        .filter(ev => courses
-            .find(c => textSimilarity(
-                c.name,
-                ev.summary
-            ) > 0.85
+        const studentCourseEvents = events
+            .map(ev => ({
+                ...ev,
+                summary: ev.summary.replace(examsPrefix, '')
+                    .trimStart()
+                    .trimEnd()
+            })
             )
-        )
-    if (studentCourseEvents.length === 0)
-        return request.reply(responseBuilder('Δεν βρέθηκαν προγραμματισμένα μαθήματα'));
+            .filter(ev => courses
+                .find(c => textSimilarity(
+                    c.name,
+                    ev.summary
+                ) > 0.85
+                )
+            )
+        if (studentCourseEvents.length === 0)
+            return this.respond(request, { content: `Δεν βρέθηκαν προγραμματισμένα μαθήματα` });
 
-    const [first, last] = [studentCourseEvents[0], studentCourseEvents[studentCourseEvents.length - 1]]
-        .map(ev => moment(ev.start.dateTime).format('LL'));
-    const responseEmbeds = sliceToEmbeds({
-        data: studentCourseEvents.map(fieldBuilder),
-        headerEmbed: {
-            title: `MyExams`,
-            description: `Η εξεταστική σας ξεκινάει **${first}** και ολοκληρώνεται **${last}**`
-        }
-    })
-
-    user.send({ embeds: responseEmbeds })
-        .then(msg => {
-            msg.react("🗑");
-            if (request.type === "APPLICATION_COMMAND")
-                request.reply(responseBuilder(`Σας το έστειλα στα DMs`))
-            else if (request.type === "DEFAULT")
-                request.react('👌')
-        })
-        .catch(async err => {
-            if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                if (request.type === "APPLICATION_COMMAND") {
-                    const interaction = request as CommandInteraction;
-                    const resp: InteractionReplyOptions = {
-                        content: `Τα DMs σας ειναι κλειστά, το αποστέλλω εδώ`,
-                        embeds: responseEmbeds,
-                        ephemeral: true
-                    }
-                    return interaction.replied ?
-                        interaction.followUp(resp) :
-                        interaction.reply(resp)
-                }
-                else if (request.type === "DEFAULT") {
-                    const emoji = "📨";
-                    const msg = await request.reply(`Έχετε κλειστά DMs. Εαν θέλετε να το στείλω εδώ, πατήστε το ${emoji}`);
-                    await msg.react(emoji);
-                    await msg.react("🗑️");
-                    const collected = await msg.awaitReactions({
-                        filter: (reaction, user) => ['🗑️', '🗑', emoji].includes(reaction.emoji.name) && !user.bot,
-                        time: 10000,
-                        max: 1
-                    });
-                    if (collected.first().emoji.name === emoji)
-                        await request.reply({ embeds: responseEmbeds });
-                    await msg.delete(); //delete prompt either way
-                }
+        const [first, last] = [studentCourseEvents[0], studentCourseEvents[studentCourseEvents.length - 1]]
+            .map(ev => moment(ev.start.dateTime).format('LL'));
+        const responseEmbeds = sliceToEmbeds({
+            data: studentCourseEvents.map(fieldBuilder),
+            headerEmbed: {
+                title: `MyExams`,
+                description: `Η εξεταστική σας ξεκινάει **${first}** και ολοκληρώνεται **${last}**`
             }
-            else
-                throw err;
         })
+
+        user.send({ embeds: responseEmbeds })
+            .then(msg => {
+                msg.react("🗑");
+                if (request.type === "APPLICATION_COMMAND")
+                    this.respond(request, { content: `Σας το έστειλα στα DMs` });
+                else if (request.type === "DEFAULT")
+                    request.react('👌')
+            })
+            .catch(async err => {
+                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
+                    if (request.type === "APPLICATION_COMMAND") {
+                        const interaction = request as CommandInteraction;
+                        const resp: InteractionReplyOptions = {
+                            content: `Τα DMs σας ειναι κλειστά, το αποστέλλω εδώ`,
+                            embeds: responseEmbeds,
+                            ephemeral: true
+                        }
+                        return interaction.replied ?
+                            interaction.followUp(resp) :
+                            interaction.reply(resp)
+                    }
+                    else if (request.type === "DEFAULT") {
+                        const emoji = "📨";
+                        const msg = await request.reply(`Έχετε κλειστά DMs. Εαν θέλετε να το στείλω εδώ, πατήστε το ${emoji}`);
+                        await msg.react(emoji);
+                        await msg.react("🗑️");
+                        const collected = await msg.awaitReactions({
+                            filter: (reaction, user) => ['🗑️', '🗑', emoji].includes(reaction.emoji.name) && !user.bot,
+                            time: 10000,
+                            max: 1
+                        });
+                        if (collected.first().emoji.name === emoji)
+                            await request.reply({ embeds: responseEmbeds });
+                        await msg.delete(); //delete prompt either way
+                    }
+                }
+                else
+                    throw err;
+            })
+    }
 }
