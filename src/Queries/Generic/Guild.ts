@@ -1,19 +1,18 @@
 import { Guild } from "discord.js";
-const { prefix: defaultPrefix } = (await import("../../../bot.config.json", { assert: { type: 'json' } })).default;
-const { guildSettingsTable, guildTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
+import * as config from "../../../bot.config.json" assert { type: "json" };
+import * as DB from "../../../values/generic/DB.json" assert { type: "json" };
 import { deleteBatch, saveBatch } from "../../DB/GenericCRUD";
 
 async function saveGuild(guild: Guild): Promise<void> {
-    await saveBatch(guildTable, [{ "guild_id": guild.id }]);
-    await saveBatch(guildSettingsTable, [{
-        "prefix": defaultPrefix,
+    await saveBatch(DB.guildTable, [{ "guild_id": guild.id }]);
+    await saveBatch(DB.guildSettingsTable, [{
+        "prefix": config.prefix,
         "guild_id": guild.id
-
     }])
 }
 
 async function dropGuild(guild: Guild): Promise<number> {
-    return deleteBatch(guildTable, { "guild_id": guild.id }); //cascades the rest
+    return deleteBatch(DB.guildTable, { "guild_id": guild.id }); //cascades the rest
 }
 
 export { dropGuild, saveGuild };
