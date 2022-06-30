@@ -128,13 +128,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Message): Promise<unknown> {
-        if ([
-            categories.etos1, categories.etos2,
-            categories.etos3, categories.etos4,
-            categories.etos4_2, categories.didaktiki,
-            categories.sxolh
-        ].includes((message.channel as GuildChannel).parentId))
-            scanContent(message, this.#keywords, this.#contentScanChannel);
         switch (message.channel.id) { //channels
             case channels.registration: {
                 if (message.deletable) await message.delete();
@@ -673,6 +666,9 @@ const susSurveillanceBtn = new MessageButton({
 
 })
 
+/**
+ * @deprecated due to Discord Automod 
+ * */
 function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
     const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
     const index = normalize(content).split(' ').findIndex(c =>
