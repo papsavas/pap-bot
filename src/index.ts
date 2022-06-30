@@ -14,7 +14,7 @@ import { DmHandler } from './Handlers/DMs/GenericDm';
 import { GlobalCommandHandler } from './Handlers/Global/GlobalCommandHandler';
 import { GlobalCommandHandlerImpl } from './Handlers/Global/GlobalCommandHandlerImpl';
 import { GenericGuild } from "./Handlers/Guilds/GenericGuild";
-import { DefaultGuild } from "./Handlers/Guilds/Impl/DefaultGuild";
+import DefaultGuild from "./Handlers/Guilds/Impl/DefaultGuild";
 import { KepGuild } from './Handlers/Guilds/Impl/KepGuild';
 import { WoapGuild } from './Handlers/Guilds/Impl/WoapGuild';
 import { fetchGlobalCommandIds } from './Queries/Generic/Commands';
