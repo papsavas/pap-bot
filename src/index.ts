@@ -1,4 +1,6 @@
-import { Client, GuildChannelManager, Partials, TextChannel } from 'discord.js';
+import {
+    Client, Constants, TextChannel
+} from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,10 +11,10 @@ const { channels: botGuildChannels } = (await import("../values/PAP/IDs.json", {
 export let bugsChannel: TextChannel;
 export let logsChannel: TextChannel;
 
-if (!process.env.NODE_ENV || process.env.NODE_ENV === "development")
-    (await import('dotenv'))
-        .config({ path: (await import('find-config')).read('.env') })  //load env variables
-
+if (process.env.NODE_ENV !== "production") {
+    const dotenv = await import("dotenv");
+    dotenv.config({ debug: true });
+}
 console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
 const PAP = new Client({
@@ -40,27 +42,9 @@ const PAP = new Client({
     }
 });
 
-
 await PAP.login(process.env.BOT_TOKEN)
     .then(r => console.log(`logged in `))
     .catch(err => console.log(`ERROR ON LOGIN: \n${err}`));
-
-PAP.on('ready', async () => {
-    try {
-        PAP.user.setActivity('over you', { type: ActivityType.Watching });
-        const PAPGuildChannels: GuildChannelManager = (await PAP.guilds.cache.get(botGuildID).fetch()).channels;
-        const initLogs = PAPGuildChannels.cache.get(botGuildChannels.init_logs) as TextChannel;
-        bugsChannel = PAPGuildChannels.cache.get(botGuildChannels.bugs) as TextChannel;
-        logsChannel = PAPGuildChannels.cache.get(botGuildChannels.logs) as TextChannel;
-        console.log('smooth init');
-
-    } catch (err) {
-        console.log('READY ERROR');
-        console.log(err);
-    }
-
-    console.log(`___ Initiated ___`);
-});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
