@@ -22,9 +22,6 @@ const execute = async (interaction: Interaction) => {
             dmHandler.onCommand(interaction)
                 .catch(console.error);
         }
-        else {
-            console.log(`unspecified interaction channel type\n${interaction.toJSON()}`)
-        }
     }
 
     else if (interaction.isButton()) {

@@ -1,13 +1,13 @@
-import { APIEmbedField, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, RESTJSONErrorCodes, Snowflake } from "discord.js";
+import { APIEmbedField, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, RESTJSONErrorCodes, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
 import urlRegex from "url-regex";
-const { guilds } = await import('../../../Inventory/guilds');
-const { guildId: kepGuildId } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
-const { examsPrefix } = (await import("../../../../values/KEP/literals.json", { assert: { type: 'json' } })).default;
+import { guildId as kepGuildId } from "../../../../values/KEP/IDs.json";
+import { examsPrefix } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
+import { guilds } from "../../../Inventory/guilds";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { textSimilarity } from "../../../tools/cmptxt";
 import { sliceToEmbeds } from "../../../tools/Embed";
