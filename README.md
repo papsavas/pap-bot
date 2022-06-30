@@ -2,7 +2,7 @@
 A discord bot that help us manage our University server
 
 - Written in [Typescript](https://www.typescriptlang.org) with [Discord.js](https://github.com/discordjs/discord.js)
-- Running on [Heroku](https://www.heroku.com)
+- Deployed on [Heroku](https://www.heroku.com)
 
 ### Tools
 - Google API (Gmail, Drive, Calendar, Sheets)
