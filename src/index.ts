@@ -1,5 +1,5 @@
 import {
-    Client, Constants, TextChannel
+    Client, Constants
 } from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -7,9 +7,6 @@ import { fileURLToPath } from 'node:url';
 import GenericEvent from './Events/GenericEvent';
 const { guildID: botGuildID } = (await import("../bot.config.json", { assert: { type: 'json' } })).default;
 const { channels: botGuildChannels } = (await import("../values/PAP/IDs.json", { assert: { type: 'json' } })).default;
-
-export let bugsChannel: TextChannel;
-export let logsChannel: TextChannel;
 
 if (process.env.NODE_ENV !== "production") {
     const dotenv = await import("dotenv");
