@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import * as config from "../../../../bot.config.json" assert { type: 'json' };
 import { argDigits, commandLiteral, ToArgsxType, ToArgxType } from "../../../Entities/Generic/command";
-import { bugsChannel } from "../../../index";
+import channels from "../../../Inventory/channels";
 import { guilds } from "../../../Inventory/guilds";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { GenericCommand } from "../../GenericCommand";
@@ -246,7 +246,7 @@ export abstract class CommandManagerImpl implements CommandManager {
 
 async function submitBug(error: Error, source: Message | CommandInteraction, commandName: string) {
     const user = await source.client.users.fetch(source.member.user.id);
-    return bugsChannel.send({
+    return channels.bugsChannel.send({
         embeds: [
             new EmbedBuilder({
                 author: {
