@@ -1,4 +1,4 @@
-import * as dbLiterals from '../../../values/generic/DB.json';
+import * as dbLiterals from '../../../values/generic/DB.json' assert { type: 'json' };
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { Teacher } from "../../Entities/KEP/Teacher";
 import { RequireAtLeastOne } from "../../tools/types";

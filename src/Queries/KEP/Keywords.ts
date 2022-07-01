@@ -1,4 +1,4 @@
-import * as dbLiterals from '../../../values/generic/DB.json';
+import * as dbLiterals from '../../../values/generic/DB.json' assert { type: 'json' };
 import { deleteBatch, findAll, saveBatch } from "../../DB/GenericCRUD";
 const { keywordsTable } = dbLiterals;
 

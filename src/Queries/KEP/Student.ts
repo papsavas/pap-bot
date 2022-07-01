@@ -1,5 +1,5 @@
 import { Collection, Snowflake } from "discord.js";
-import * as dbLiterals from '../../../values/generic/DB.json';
+import * as dbLiterals from '../../../values/generic/DB.json' assert { type: 'json' };
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { PendingStudent, Student } from "../../Entities/KEP/Student";
