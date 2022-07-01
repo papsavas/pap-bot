@@ -33,8 +33,10 @@ import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
+const { sanitizeDiacritics, toGreek } = greekUtils;
 const { categories, channels, roles } = kepIds;
 const { buttons, examsPrefix } = literals;
+const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
 const { channels: WOAPchannels } = woapIds;
 moment.tz("Europe/Athens");
 
