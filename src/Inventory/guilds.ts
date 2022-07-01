@@ -1,7 +1,7 @@
 import { Collection, Snowflake } from "discord.js";
 import { PAP } from "..";
-import * as kepIds from "../../values/KEP/IDs.json";
-import * as woapIds from "../../values/WOAP/IDs.json";
+import * as kepIds from "../../values/KEP/IDs.json" assert { type: 'json' };
+import * as woapIds from "../../values/WOAP/IDs.json" assert { type: 'json' };
 import { Guilds } from "../Entities/Generic/Guilds";
 import { GenericGuild } from "../Handlers/Guilds/GenericGuild";
 import DefaultGuild from "../Handlers/Guilds/Impl/DefaultGuild";

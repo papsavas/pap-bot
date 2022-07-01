@@ -1,7 +1,7 @@
 import { ClientEvents, GuildChannelManager, TextChannel } from "discord.js";
 import { PAP } from "../..";
-import * as config from "../../../bot.config.json";
-import * as guildIds from "../../../values/PAP/IDs.json";
+import * as config from "../../../bot.config.json" assert { type: 'json' };
+import * as guildIds from "../../../values/PAP/IDs.json" assert { type: 'json' };
 import channels from "../../Inventory/Channels";
 
 const name: keyof ClientEvents = "ready";
