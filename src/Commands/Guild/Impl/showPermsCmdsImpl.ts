@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandPermissions, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, EmbedBuilder, Guild, Message, RESTJSONErrorCodes, Snowflake } from 'discord.js';
 import { commandLiteral } from '../../../Entities/Generic/command';
-const { guilds } = await import('../../../Inventory/guilds');
+import { guilds } from "../../../Inventory/guilds";
 import { fetchCommandID, fetchCommandPerms } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { showPermsCmd } from "../Interf/showPermsCmd";

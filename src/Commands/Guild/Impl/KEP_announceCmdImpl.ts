@@ -1,10 +1,11 @@
 
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
-import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
+import { ChatInputApplicationCommandData, Collection, Message, Snowflake, TextChannel } from "discord.js";
+import * as kepIds from "../../../../values/KEP/IDs.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { AbstractGuildCommand } from '../AbstractGuildCommand';
 import { KEP_announceCmd } from "../Interf/KEP_announceCmd";
+const { channels: kepChannels } = kepIds;
 
 const contentLiteral = `content`
 export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_announceCmd {

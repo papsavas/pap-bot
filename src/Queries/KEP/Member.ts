@@ -1,8 +1,9 @@
 import { Snowflake } from "discord.js";
 import moment, { Moment } from "moment-timezone";
-const { mutedMemberTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
+import * as dbLiterals from '../../../values/generic/DB.json';
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { MutedMember } from "../../Entities/KEP/Member";
+const { mutedMemberTable } = dbLiterals;
 moment.locale("el");
 moment.tz("Europe/Athens");
 
@@ -29,3 +30,4 @@ function findMutedMember(member_id: Snowflake) {
 }
 
 export { saveMutedMember, dropMutedMember, fetchMutedMembers, findMutedMember };
+

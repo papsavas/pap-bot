@@ -1,7 +1,8 @@
 import { Snowflake } from "discord.js";
-const { userNotesTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
+import * as dbLiterals from '../../../values/generic/DB.json';
 import { deleteBatch, findAll, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { UserNote } from "../../Entities/Generic/userNote";
+const { userNotesTable } = dbLiterals;
 
 async function addNote(user_id: Snowflake, note: string): Promise<UserNote[]> {
     return saveBatch(userNotesTable, [
@@ -45,3 +46,4 @@ async function fetchAllNotes(user_id: Snowflake): Promise<UserNote[]> {
 }
 
 export { addNote, editNote, deleteNote, clearNotes, fetchAllNotes };
+

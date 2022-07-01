@@ -2,17 +2,19 @@
 import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Collection, Colors, ComponentType, EmbedBuilder, GuildMember, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
-const { guilds } = await import('../../../Inventory/guilds');
-const { guildId } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
-const { examsPrefix, lecturePrefix } = (await import("../../../../values/KEP/literals.json", { assert: { type: 'json' } })).default;
+import * as kepIds from "../../../../values/KEP/IDs.json" assert { type: 'json' };
+import * as literals from "../../../../values/KEP/literals.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
+import { guilds } from "../../../Inventory/guilds";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchCourseEvents } from "../../../Queries/KEP/GSheets";
 import { fetchCalendarEvents, insertCalendarEvent } from "../../../tools/Google/Gcalendar";
 import { snooze } from "../../../tools/scheduler";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_eventsCmd } from "../Interf/KEP_eventsCmd";
+const { guildId } = kepIds;
+const { examsPrefix, lecturePrefix } = literals;
 
 const refreshLiteral = "refresh";
 const registerLiteral = "register";

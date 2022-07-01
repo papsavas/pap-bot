@@ -1,12 +1,13 @@
 import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Colors, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
 import moment from "moment-timezone";
-const { channels: kepChannels, roles: kepRoles } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
+import * as kepIds from "../../../../values/KEP/IDs.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { dropMutedMember, findMutedMember, saveMutedMember } from "../../../Queries/KEP/Member";
 import { scheduleTask } from "../../../tools/scheduler";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_muteCmd } from "../Interf/KEP_muteCmd";
+const { channels: kepChannels, roles: kepRoles } = kepIds;
 moment.locale("el");
 moment.tz("Europe/Athens");
 

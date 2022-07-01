@@ -2,15 +2,18 @@ import { APIEmbedField, ApplicationCommandType, ChatInputApplicationCommandData,
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
-const { guilds } = await import('../../../Inventory/guilds');
-const { guildId: kepGuildId } = (await import("../../../../values/KEP/IDs.json", { assert: { type: 'json' } })).default;
-const { lecturePrefix } = (await import("../../../../values/KEP/literals.json", { assert: { type: 'json' } })).default;
+import * as kepIds from "../../../../values/KEP/IDs.json" assert { type: 'json' };
+import * as literals from "../../../../values/KEP/literals.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Course } from "../../../Entities/KEP/Course";
 import { KepGuild } from "../../../Handlers/Guilds/Impl/KepGuild";
+import { guilds } from "../../../Inventory/guilds";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_myScheduleCmd } from "../Interf/KEP_myScheduleCmd";
+const { guildId: kepGuildId } = kepIds;
+const { lecturePrefix } = literals;
+
 
 moment.locale('el');
 

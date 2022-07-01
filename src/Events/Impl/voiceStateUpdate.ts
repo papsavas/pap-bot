@@ -1,9 +1,9 @@
 import { ClientEvents, VoiceState } from "discord.js";
+import { guilds } from "../../Inventory/guilds";
 
 const name: keyof ClientEvents = "voiceStateUpdate";
 
 const execute = async (oldState: VoiceState, newState: VoiceState) => {
-    const { guilds } = await import('../../Inventory/guilds');
     guilds.get(newState.guild.id)
         ?.onVoiceStateUpdate(oldState, newState)
         .catch(console.error);

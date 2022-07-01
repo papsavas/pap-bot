@@ -1,6 +1,8 @@
 import { ClientEvents, Guild } from "discord.js";
+import * as config from "../../../bot.config.json" assert { type: 'json' };
 import { logsChannel } from "../../index";
-const { guildID: botGuildID } = (await import('../../../bot.config.json', { assert: { type: 'json' } })).default;
+
+const { guildID: botGuildID } = config;
 
 const name: keyof ClientEvents = "guildUnavailable";
 

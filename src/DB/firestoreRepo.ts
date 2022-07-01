@@ -1,7 +1,7 @@
 import { ServiceAccount } from "firebase-admin/lib/credential";
 
-const firebase = await import("firebase/firestore");
-const admin = await import('firebase-admin');
+import admin from "firebase-admin";
+
 const FieldValue = admin.firestore.FieldValue;
 
 if (process.env.NODE_ENV !== 'production')

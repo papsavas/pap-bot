@@ -3,7 +3,7 @@ import { argv } from "process";
 const guildId = argv[2];
 
 if (guildId) {
-    const { guilds } = await import('../../Inventory/guilds');
+    const { guilds } = await import("../../Inventory/guilds");
     const g = guilds.get(guildId);
     console.log(`clearing ${g.guild.name} (/) commands...`);
     g.commandManager.clearCommands(g.guild.commands);

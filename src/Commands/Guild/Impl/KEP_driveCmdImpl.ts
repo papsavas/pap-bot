@@ -1,7 +1,7 @@
 import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
 import moment from "moment-timezone";
 import 'moment/locale/el';
-const { drive: driveLink } = (await import("../../../../values/KEP/info.json", { assert: { type: 'json' } })).default;
+import * as kepIds from "../../../../values/KEP/info.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { dropDrivePermission, fetchDrivePermissions, findDrivePerm, saveDrivePermission } from "../../../Queries/KEP/Drive";
@@ -10,6 +10,7 @@ import { addDrivePermission, deleteDrivePermission } from "../../../tools/Google
 import { scheduleTask } from "../../../tools/scheduler";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_driveCmd } from "../Interf/KEP_driveCmd";
+const { drive: driveLink } = kepIds;
 moment.locale('el');
 moment.tz("Europe/Athens")
 

@@ -1,9 +1,10 @@
 import { Collection, Snowflake } from "discord.js";
-const { pendingStudentTable, studentTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
+import * as dbLiterals from '../../../values/generic/DB.json';
 import { deleteBatch, findAll, findOne, saveBatch, updateAll } from "../../DB/GenericCRUD";
 import { Course } from "../../Entities/KEP/Course";
 import { PendingStudent, Student } from "../../Entities/KEP/Student";
 import { RequireAtLeastOne } from "../../tools/types";
+const { pendingStudentTable, studentTable } = dbLiterals;
 
 async function fetchStudent(
     clause: RequireAtLeastOne<Student>,

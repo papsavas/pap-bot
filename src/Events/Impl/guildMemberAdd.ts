@@ -1,9 +1,9 @@
 import { ClientEvents, GuildMember } from "discord.js";
+import { guilds } from "../../Inventory/guilds";
 
 const name: keyof ClientEvents = "guildMemberAdd";
 
 const execute = async (member: GuildMember) => {
-    const { guilds } = await import('../../Inventory/guilds');
     guilds.get(member.guild.id)
         ?.onGuildMemberAdd(member)
         .catch(console.error);

@@ -1,9 +1,10 @@
 import { Snowflake } from "discord.js";
 import moment, { Moment } from "moment-timezone";
 import 'moment/locale/el';
-const { drivePermsTable } = (await import("../../../values/generic/DB.json", { assert: { type: 'json' } })).default;
+import * as dbLiterals from '../../../values/generic/DB.json';
 import { deleteBatch, findAll, findOne, saveBatch } from "../../DB/GenericCRUD";
 import { DrivePermission } from "../../Entities/KEP/Drive";
+const { drivePermsTable } = dbLiterals;
 moment.locale('el');
 moment.tz("Europe/Athens");
 
@@ -33,3 +34,4 @@ function fetchDrivePermissions(member_id?: Snowflake) {
 }
 
 export { findDrivePerm, saveDrivePermission, dropDrivePermission, fetchDrivePermissions };
+

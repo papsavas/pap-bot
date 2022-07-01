@@ -1,10 +1,11 @@
 import { ClientEvents, Guild } from "discord.js";
 import DefaultGuild from "../../Handlers/Guilds/Impl/DefaultGuild";
+import { guilds } from "../../Inventory/guilds";
 import { saveGuild } from "../../Queries/Generic/Guild";
 
 const name: keyof ClientEvents = "guildCreate";
 const execute = async (guild: Guild) => {
-    const { guilds } = await import('../../Inventory/guilds');
+
     console.log(`joined ${guild.name} guild`);
     try {
         await saveGuild(guild) //required before init

@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
-const { guilds } = await import('../../Inventory/guilds');
 import { findOne, updateAll } from "../../DB/GenericCRUD";
 import { GuildSettings } from "../../Entities/Generic/guildSettings";
+import { guilds } from "../../Inventory/guilds";
 
 async function fetchGuildSettings(guildID: Snowflake): Promise<GuildSettings> {
     return findOne('guild_settings', { 'guild_id': guildID }) as Promise<GuildSettings>;

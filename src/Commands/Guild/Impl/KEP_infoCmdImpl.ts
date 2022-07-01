@@ -1,9 +1,10 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
-import * as i from "../../../../values/KEP/info.json";
+import { ApplicationCommandData, ApplicationCommandOptionData, Collection, Message, Snowflake } from "discord.js";
+import * as info from "../../../../values/KEP/info.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
 import { KEP_infoCmd } from "../Interf/KEP_infoCmd";
+;
 
 const infoLiteral: ApplicationCommandOptionData['name'] = "πληροφορια";
 const targetLiteral: ApplicationCommandOptionData['name'] = "target"
@@ -38,7 +39,7 @@ export class KEP_infoCmdImpl extends AbstractGuildCommand implements KEP_infoCmd
                     description: "Επιλέγετε ένα από τα εμφανιζόμενα",
                     type: ApplicationCommandOptionType.String,
                     required: true,
-                    choices: i.values.map(i => ({ name: i.name, value: i.name }))
+                    choices: info.values.map(i => ({ name: i.name, value: i.name }))
                 },
                 {
                     name: targetLiteral,
@@ -77,26 +78,26 @@ function fetchInfo(query: string): string {
         case "προγραμμα_εξεταστικης":
         case "programma_exetastikis":
         case "programma_eksetastikis":
-            return i.exams;
+            return info.exams;
 
         case "πρόγραμμα_διδασκαλίας":
         case "προγραμμα_διδασκαλιας":
         case "programma_didaskalias":
         case "programma_didaskalias":
-            return i.schedule;
+            return info.schedule;
 
         case "πρόγραμμα_σπουδών":
         case "προγραμμα_σπουδων":
         case "programma_spoudwn":
-            return i.curriculum;
+            return info.curriculum;
 
         case "drive": case "gdrive":
         case "daiarchive": case "dai_archive":
         case "archive":
-            return i.drive;
+            return info.drive;
 
         case "faq": case "f.a.q":
-            return i.faq
+            return info.faq
 
         case "ακαδημαϊκό_ημερολόγιο":
         case "ακαδημαικο_ημερολογιο":
@@ -104,12 +105,12 @@ function fetchInfo(query: string): string {
         case "ημερολόγιο":
         case "ημερολογιο":
         case "hmerologio":
-            return i.calendar;
+            return info.calendar;
 
         case "bible":
         case "βιβλος":
         case "βίβλος":
-            return i.bible;
+            return info.bible;
 
         default:
             return `Δεν βρέθηκε \`${query}\``

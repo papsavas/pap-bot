@@ -1,9 +1,9 @@
 import { ClientEvents, GuildMember, PartialGuildMember } from "discord.js";
+import { guilds } from "../../Inventory/guilds";
 
 const name: keyof ClientEvents = "guildMemberUpdate";
 
 const execute = async (oldMember: GuildMember | PartialGuildMember, newMember: GuildMember) => {
-    const { guilds } = await import('../../Inventory/guilds');
     guilds.get(newMember.guild.id)
         ?.onGuildMemberUpdate(
             oldMember.partial ? await oldMember.fetch() : oldMember as GuildMember,

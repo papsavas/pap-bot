@@ -6,7 +6,7 @@ const guildId = argv[2];
 if (guildId && PAP.guilds.cache.has(guildId)) {
     //while (!guilds.get(guildId).guild)
     //  setTimeout(() => { `${new Date().toISOString()} -> ${guilds.size}` }, 4000);
-    const { guilds } = await import('../../Inventory/guilds');
+    const { guilds } = await import("../../Inventory/guilds");
     const g = guilds.get(guildId);
     console.log(`updating ${g.guild.name} (/) commands...`);
     await g.commandManager.updateCommands(g.guild.commands);
