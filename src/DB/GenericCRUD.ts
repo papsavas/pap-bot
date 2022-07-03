@@ -1,6 +1,6 @@
 
 import knex, { Knex } from "knex";
-import { v4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import TableBuilder = Knex.TableBuilder;
 
 if (process.env.NODE_ENV !== 'production')
@@ -77,7 +77,7 @@ class AbstractRepository {
     async addRows(tableName: string, rows: any[], returning?: string, size?: number) {
         if (await this.knex.schema.hasColumn(tableName, "uuid"))
             for (let row of rows)
-                Object.assign(row, { "uuid": v4() });
+                Object.assign(row, { "uuid": randomUUID() });
         return this.knex.batchInsert(tableName, rows, size)
             .returning(returning);
     }
