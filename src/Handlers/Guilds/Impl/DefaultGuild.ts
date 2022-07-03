@@ -3,7 +3,7 @@ import { GuildCommandManagerImpl } from '../../../Commands/Managers/Impl/GuildCo
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
 
-export class DefaultGuild extends AbstractGuild implements GenericGuild {
+export default class DefaultGuild extends AbstractGuild implements GenericGuild {
     private constructor(id: Snowflake) {
         super(id);
     }

@@ -1,6 +1,6 @@
 import { ClientEvents, Guild } from "discord.js";
 import { guilds, PAP } from "../..";
-import { DefaultGuild } from "../../Handlers/Guilds/Impl/DefaultGuild";
+import DefaultGuild from "../../Handlers/Guilds/Impl/DefaultGuild";
 import { saveGuild } from "../../Queries/Generic/Guild";
 
 const name: keyof ClientEvents = "guildCreate";
