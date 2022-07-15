@@ -20,7 +20,7 @@
   "author": "Papageorgiadis Savvas",
   "license": "ISC",
   "dependencies": {
-    "discord-api-types": "^0.35.0",
+    "discord-api-types": "^0.36.2",
     "discord.js": "^13.8.1",
     "find-config": "^1.0.0",
     "firebase": "^9.6.8",
