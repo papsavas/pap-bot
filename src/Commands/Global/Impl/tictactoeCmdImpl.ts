@@ -1,23 +1,23 @@
-import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, Collection, CommandInteraction, ComponentType, Message, Snowflake } from "discord.js";
+import { ActionRow, ActionRowBuilder, ActionRowData, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, Collection, CommandInteraction, ComponentType, Message, MessageActionRowComponentData, Snowflake } from "discord.js";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { tictactoeCmd } from "../Interf/tictactoeCmd";
 
 const opponentLiteral: ApplicationCommandData['name'] = "opponent";
-const emtpyBoard: ActionRow[] = ["11", "21", "31"]
-    .map(v => new ActionRow()
-        .addComponents(
-            new ButtonComponent()
+const emtpyBoard = ["11", "21", "31"]
+    .map(v => new ActionRowBuilder()
+        .setComponents(
+            new ButtonBuilder()
                 .setCustomId(v)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
 
-            new ButtonComponent()
+            new ButtonBuilder()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 1}`)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
 
-            new ButtonComponent()
+            new ButtonBuilder()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 2}`)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary)
@@ -82,7 +82,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<void> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const user = interaction.user;
         const opponent = interaction.options.getUser(opponentLiteral, true);
         if (user.id === opponent.id)
@@ -96,7 +96,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
             content: `<@!${opponent.id}> you were challenged to a battle of Tic Tac Toe by <@!${user.id}>`,
             allowedMentions: { repliedUser: false, users: [opponent.id] }
         });
-        const msg = await channel.send({ content: 'lets play', components: emtpyBoard });
+        const msg = await channel.send({ content: 'lets play', components: emtpyBoard as ActionRowBuilder<ButtonBuilder>[]});
         const collector = msg.createMessageComponentCollector(
             {
                 time: 120000,
