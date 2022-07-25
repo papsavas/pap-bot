@@ -119,21 +119,21 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                     disabled: true,
                     style: ButtonStyle.Primary
                 })
-                const userPlayedButton = new ButtonBuilder(basePlayedButton)
+                const userPlayedButton = ButtonBuilder.from(basePlayedButton)
                     .setStyle(ButtonStyle.Success)
                     .setEmoji({ name: "❌" });
 
-                const opponentPlayedButton = new ButtonBuilder(basePlayedButton)
+                const opponentPlayedButton = ButtonBuilder.from(basePlayedButton)
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji({ name: "⭕" });
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
-                    .addComponents(
+                const updatedBoard = (await msg.fetch()).components.map((ar:ActionRow<ButtonComponent>) => new ActionRowBuilder<ButtonBuilder>()
+                    .setComponents(
                         ...ar.components.map(b =>
                             b.customId === id ?
                                 buttonInteraction.user.id === user.id ?
                                     userPlayedButton : opponentPlayedButton
-                                : b
+                                : ButtonBuilder.from(b)
                         ))
                 )
 
@@ -146,7 +146,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 const buttons: ButtonComponent[][] = [];
                 updatedBoard.forEach((ar, i) => {
                     buttons.push([]);
-                    buttons[i].push(...ar.components as ButtonComponent[]);
+                    buttons[i].push(...ar.components);
                 });
                 if (isWin(buttons)) collector.stop('win');
             }
@@ -159,10 +159,10 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 case 'win':
                     await msg.edit({
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
-                        components: (await msg.fetch()).components.map(ar => new ActionRow()
-                            .addComponents(
+                        components: (await msg.fetch()).components.map((ar:ActionRow<ButtonComponent>) => new ActionRowBuilder<ButtonBuilder>()
+                            .setComponents(
                                 ...ar.components.map(b =>
-                                    b.setDisabled(true)
+                                    ButtonBuilder.from(b).setDisabled()
                                 ))
                         )
                     })
@@ -170,7 +170,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
+                        components: (await msg.fetch()).components.map((ar:ActionRow<ButtonComponent>) => new ActionRowBuilder<ButtonBuilder>()
                             .setComponents(
                                 ...ar.components.map(b =>
                                     ButtonBuilder.from(b).setDisabled()
