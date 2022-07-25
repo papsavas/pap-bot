@@ -46,7 +46,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         const member = interaction.member as GuildMember;
         return channel.send({
             embeds: [
-                new Embed(
+                new EmbedBuilder(
                     {
                         title: `Vote`,
                         color: Colors.Yellow,
@@ -80,7 +80,7 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         const commandMsg = message;
         return (commandMsg.channel as TextChannel).send({
             embeds: [
-                new Embed(
+                new EmbedBuilder(
                     {
                         title: `Ψηφίστε`,
                         color: Colors.Yellow,

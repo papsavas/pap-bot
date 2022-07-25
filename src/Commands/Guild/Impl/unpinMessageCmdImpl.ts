@@ -37,7 +37,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
         const message = await interaction.channel.messages.fetch(msgId);
         if (!message?.pinned)
             return interaction.reply({
-                embeds: [new Embed({ description: `[message](${message.url}) is not pinned 🙂` })],
+                embeds: [new EmbedBuilder({ description: `[message](${message.url}) is not pinned 🙂` })],
                 ephemeral: true
             })
         else if (!message?.pinnable)
@@ -50,7 +50,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
             .then((unpinned) => {
                 interaction.reply({
                     embeds: [
-                        new Embed({
+                        new EmbedBuilder({
                             author: {
                                 name: interaction.user.username,
                                 iconURL: interaction.user.avatarURL()

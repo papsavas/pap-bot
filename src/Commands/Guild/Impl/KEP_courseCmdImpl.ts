@@ -1,5 +1,4 @@
-import { OverwriteType } from "discord-api-types";
-import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ChatInputCommandInteraction, Collection, Message, OverwriteType, PermissionFlagsBits, Snowflake } from "discord.js";
 import { guilds } from "../../..";
 import { categories, guildId, roles } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -125,7 +124,8 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                     else
                         categoryId = categories.didaktiki;
 
-                    const courseChannel = await interaction.guild.channels.create(course.name, {
+                    const courseChannel = await interaction.guild.channels.create({
+                        name: course.name,
                         parent: categoryId,
                         topic: `Το κανάλι του μαθήματος **${course.name}**. Κοιτάτε πάντα τα  📌***pinned*** για σημαντικό υλικό`,
                         reason: "created channel for new course",
@@ -190,7 +190,7 @@ export class KEP_courseCmdImpl extends AbstractGuildCommand implements KEP_cours
                 case listLiteral: {
                     const text = JSON.stringify(await fetchCourses(), null, "\t");
                     const buffer = Buffer.from(text);
-                    const file = new MessageAttachment(buffer, new Date().toISOString() + "_Courses.json");
+                    const file = new AttachmentBuilder(buffer, {name:new Date().toISOString() + "_Courses.json"});
                     return interaction.editReply({
                         files: [file]
                     });

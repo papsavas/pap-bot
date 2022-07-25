@@ -186,14 +186,14 @@ ${pswd}\n
 }
 
 async function conflict(interaction: CommandInteraction, am: string): Promise<unknown> {
-    const appealBtn = new ButtonComponent({
+    const appealBtn = new ButtonBuilder({
         customId: `${buttons.appealId}_${am}_${interaction.user.id}`,
         style: ButtonStyle.Primary,
         label: buttons.appealLabel
     })
     return interaction.editReply({
         embeds: [
-            new Embed({
+            new EmbedBuilder({
                 author: {
                     name: "Εγγεγραμμένο email",
                     iconURL: "https://cdn1.vectorstock.com/i/1000x1000/80/30/conflict-resolution-icon-symbol-isolated-on-white-vector-31728030.jpg"
@@ -204,6 +204,6 @@ async function conflict(interaction: CommandInteraction, am: string): Promise<un
                 timestamp: new Date()
             })
         ],
-        components: [new ActionRow().addComponents(appealBtn)]
+        components: [new ActionRowBuilder().addComponents(appealBtn)]
     })
 }

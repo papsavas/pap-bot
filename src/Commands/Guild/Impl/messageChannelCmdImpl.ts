@@ -58,7 +58,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         await sendChannel.send({
             content: messageContent.substr(0, 2000),
         });
-        const emb = new Embed({
+        const emb = new EmbedBuilder({
             title: `Message send`,
             fields: [
                 { name: `target`, value: sendChannel.toString() },

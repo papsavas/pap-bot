@@ -33,7 +33,7 @@ function paginatedEmbed(
         /**
          * @param {number} start The index to start from.
          */
-        const embed = new Embed(headerEmbed);
+        const embed = new EmbedBuilder(headerEmbed);
         const current = targetStructure.slice(start, start + perPage);
         const descr = headerEmbed.description ? headerEmbed.description : '';
         embed.setDescription(descr + `\n\n**(__${start / perPage + 1}__/${Math.ceil(targetStructure.length / perPage)})**`);
@@ -81,10 +81,10 @@ function sliceToEmbeds({
     data, headerEmbed, size = 20
 }: slicedEmbedOptions): Embed[] {
     if (size > 20) throw new Error("embed fields are 20 max");
-    const embeds = [new Embed(headerEmbed)];
+    const embeds = [new EmbedBuilder(headerEmbed)];
     for (let i = 0; i < data.length; i += size) {
         if (i >= size * 9) return embeds;
-        embeds.push(new Embed().addFields(data.slice(i, i + size)));
+        embeds.push(new EmbedBuilder().addFields(data.slice(i, i + size)));
     }
     return embeds;
 }

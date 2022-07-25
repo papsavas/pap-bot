@@ -1,5 +1,6 @@
 
-import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, CommandInteraction, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, Attachment, AttachmentBuilder, BufferResolvable, ChatInputCommandInteraction, Collection, CommandInteraction, Message, PermissionFlagsBits, Snowflake } from "discord.js";
+import { Stream } from "node:stream";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchCourses, fetchTeacherCourses, linkTeacherToCourse, unlinkTeacherFromCourse } from "../../../Queries/KEP/Course";
@@ -104,11 +105,11 @@ const handleRequest = async (source: Message | CommandInteraction, action: strin
     const respondText = (res: string) => source instanceof CommandInteraction ?
         source.editReply(res) : source.reply(res);
 
-    const respondFile = (att: MessageAttachment) => source instanceof CommandInteraction ?
+    const respondFile = (att: BufferResolvable | Stream) => source instanceof CommandInteraction ?
 
         source.editReply({ files: [att] }) : source.reply({ files: [att] });
 
-    const respond = (content: string | MessageAttachment) =>
+    const respond = (content: string | BufferResolvable | Stream) =>
         typeof content === 'string' ? respondText(content) : respondFile(content);
 
     switch (action) {
@@ -132,7 +133,7 @@ async function unlink(courseCode: string, teacherUsername: string) {
     return JSON.stringify(await unlinkTeacherFromCourse(courseCode, teacherUsername))
 }
 
-async function list(): Promise<MessageAttachment> {
+async function list(): Promise<BufferResolvable | Stream> {
     const tc = await fetchTeacherCourses();
     const teachers = await fetchTeachers();
     const courses = await fetchCourses();
@@ -141,7 +142,9 @@ async function list(): Promise<MessageAttachment> {
         const course = courses.find(c => c.uuid === el.course_id);
         return `${teacher.username} (${teacher.full_name}) - ${course.name} (${course.code})`
     });
-    const buffer = Buffer.from(textArr.sort().join("\n"));
-    return new MessageAttachment(buffer, new Date().toISOString() + "_teacher_courses.txt");
+    const buffer:BufferResolvable = Buffer.from(textArr.sort().join("\n"));
+    return new AttachmentBuilder(buffer, {
+        name:new Date().toISOString() + "_teacher_courses.txt"
+    }).attachment;
 }
 

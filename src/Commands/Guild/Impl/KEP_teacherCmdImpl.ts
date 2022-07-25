@@ -132,7 +132,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
                     .then(() =>
                         interaction.editReply({
                             embeds: [
-                                new Embed({
+                                new EmbedBuilder({
                                     author: {
                                         name: interaction.user.username,
                                         icon_url: interaction.user.avatarURL()

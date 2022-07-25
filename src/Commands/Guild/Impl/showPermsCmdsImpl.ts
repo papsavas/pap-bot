@@ -113,7 +113,7 @@ async function generateResponses(guild: Guild, command_id: Snowflake): Promise<[
 }
 
 function buildEmbed(guild_prefix: string, commandLiteral: string, apiResponse: string, manualResponse: string) {
-    return new Embed({
+    return new EmbedBuilder({
         title: guild_prefix + commandLiteral,
         description: `Allowed for :`,
         fields: [
