@@ -5,7 +5,7 @@ import { tictactoeCmd } from "../Interf/tictactoeCmd";
 
 const opponentLiteral: ApplicationCommandData['name'] = "opponent";
 const emtpyBoard = ["11", "21", "31"]
-    .map(v => new ActionRowBuilder()
+    .map(v => new ActionRowBuilder<ButtonBuilder>()
         .setComponents(
             new ButtonBuilder()
                 .setCustomId(v)
@@ -96,7 +96,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
             content: `<@!${opponent.id}> you were challenged to a battle of Tic Tac Toe by <@!${user.id}>`,
             allowedMentions: { repliedUser: false, users: [opponent.id] }
         });
-        const msg = await channel.send({ content: 'lets play', components: emtpyBoard as ActionRowBuilder<ButtonBuilder>[]});
+        const msg = await channel.send({ content: 'lets play', components: emtpyBoard});
         const collector = msg.createMessageComponentCollector(
             {
                 time: 120000,
@@ -105,7 +105,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
             }
         )
         let turn = user.id;
-        collector.on("collect", async (buttonInteraction) => {
+        collector.on("collect", async (buttonInteraction) =>  {
             if (![user.id, opponent.id].includes(buttonInteraction.user.id))
                 return await buttonInteraction.reply({ content: `you were not invited for this game`, ephemeral: true });
 
@@ -114,20 +114,20 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
             if (buttonInteraction.isButton()) {
                 const id = buttonInteraction.customId;
-                const basePlayedButton = new ButtonComponent({
+                const basePlayedButton = new ButtonBuilder({
                     customId: id,
                     disabled: true,
                     style: ButtonStyle.Primary
                 })
-                const userPlayedButton = new ButtonComponent(basePlayedButton)
+                const userPlayedButton = new ButtonBuilder(basePlayedButton)
                     .setStyle(ButtonStyle.Success)
                     .setEmoji({ name: "❌" });
 
-                const opponentPlayedButton = new ButtonComponent(basePlayedButton)
+                const opponentPlayedButton = new ButtonBuilder(basePlayedButton)
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji({ name: "⭕" });
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRow()
+                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         ...ar.components.map(b =>
                             b.customId === id ?
@@ -170,10 +170,10 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new ActionRow()
-                            .addComponents(
+                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
+                            .setComponents(
                                 ...ar.components.map(b =>
-                                    b.setDisabled(true)
+                                    ButtonBuilder.from(b).setDisabled()
                                 ))
                         )
                     })
