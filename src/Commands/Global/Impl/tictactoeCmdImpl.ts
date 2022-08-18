@@ -1,23 +1,23 @@
-import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, Collection, CommandInteraction, ComponentType, Message, Snowflake } from "discord.js";
+import { ActionRow, ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, Collection, CommandInteraction, ComponentType, Message, Snowflake } from "discord.js";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { tictactoeCmd } from "../Interf/tictactoeCmd";
 
 const opponentLiteral: ApplicationCommandData['name'] = "opponent";
 const emtpyBoard: ActionRow[] = ["11", "21", "31"]
-    .map(v => new ActionRow()
+    .map(v => new ActionRowBuilder()
         .addComponents(
-            new ButtonComponent()
+            new ButtonBuilder()
                 .setCustomId(v)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
 
-            new ButtonComponent()
+            new ButtonBuilder()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 1}`)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
 
-            new ButtonComponent()
+            new ButtonBuilder()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 2}`)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary)
@@ -114,20 +114,20 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
             if (buttonInteraction.isButton()) {
                 const id = buttonInteraction.customId;
-                const basePlayedButton = new ButtonComponent({
+                const basePlayedButton = new ButtonBuilder({
                     customId: id,
                     disabled: true,
                     style: ButtonStyle.Primary
                 })
-                const userPlayedButton = new ButtonComponent(basePlayedButton)
+                const userPlayedButton = new ButtonBuilder(basePlayedButton)
                     .setStyle(ButtonStyle.Success)
                     .setEmoji({ name: "❌" });
 
-                const opponentPlayedButton = new ButtonComponent(basePlayedButton)
+                const opponentPlayedButton = new ButtonBuilder(basePlayedButton)
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji({ name: "⭕" });
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRow()
+                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRowBuilder()
                     .addComponents(
                         ...ar.components.map(b =>
                             b.customId === id ?
@@ -159,7 +159,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 case 'win':
                     await msg.edit({
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
-                        components: (await msg.fetch()).components.map(ar => new ActionRow()
+                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder()
                             .addComponents(
                                 ...ar.components.map(b =>
                                     b.setDisabled(true)
@@ -170,7 +170,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new ActionRow()
+                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder()
                             .addComponents(
                                 ...ar.components.map(b =>
                                     b.setDisabled(true)

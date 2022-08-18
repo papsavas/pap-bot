@@ -1,4 +1,4 @@
-import { ActionRow, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, PermissionFlagsBits, ReplyMessageOptions, Snowflake } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelType, ChatInputCommandInteraction, Collection, GuildChannel, GuildMember, InteractionReplyOptions, Message, MessageComponentInteraction, PermissionFlagsBits, ReplyMessageOptions, Snowflake } from "discord.js";
 import { guilds } from "../../..";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -168,16 +168,16 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         //TODO: Fix behavior, after update collector returns an error if time ends
         const oldSettings = await fetchGuildSettings(source.guildId);
 
-        const row = new ActionRow()
+        const row = new ActionRowBuilder()
             .addComponents(
-                new ButtonComponent({
+                new ButtonBuilder({
                     customId: "off",
                     label: "SFW responses",
                     style: ButtonStyle.Primary
                 })
                     .setEmoji({ name: "👼" }),
 
-                new ButtonComponent({
+                new ButtonBuilder({
                     customId: "on",
                     label: "NSFW responses",
                     style: ButtonStyle.Danger,
