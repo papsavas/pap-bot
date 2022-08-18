@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, EmbedBuilder, GuildMember, Message, PermissionFlagsBits, PermissionResolvable, RESTJSONErrorCodes, Snowflake
+    ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, GuildMember, Message, PermissionFlagsBits, PermissionResolvable, RESTJSONErrorCodes, Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';

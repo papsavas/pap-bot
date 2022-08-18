@@ -83,7 +83,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 
 }
 
-function generateEmbeds(request: Message | CommandInteraction): Embed[] {
+function generateEmbeds(request: Message | CommandInteraction): EmbedBuilder[] {
     const courses = (guilds.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guilds.get(kepGuildId) as KepGuild).events
         //trim blanks
@@ -121,7 +121,7 @@ function generateEmbeds(request: Message | CommandInteraction): Embed[] {
                 .setDescription("Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις")
         ]
 
-    const embeds = new Map<number, Embed>();
+    const embeds = new Map<number, EmbedBuilder>();
     [1, 2, 3, 4, 5]
         .forEach(d => embeds.set(d, new EmbedBuilder({
             author: {

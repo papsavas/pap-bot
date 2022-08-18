@@ -90,7 +90,7 @@ const findStudent = (id: amType | User) =>
     id instanceof User ? fetchStudent({ "member_id": (id as User).id }) : fetchStudent({ "am": id as amType });
 
 
-async function fetchStudentData(student: Student, member: GuildMember): Promise<Embed[]> {
+async function fetchStudentData(student: Student, member: GuildMember): Promise<EmbedBuilder[]> {
     return [
         new EmbedBuilder({
             author: {

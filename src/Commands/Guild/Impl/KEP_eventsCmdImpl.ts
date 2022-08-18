@@ -1,5 +1,5 @@
 
-import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Collection, Colors, ComponentType, EmbedBuilder, GuildMember, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Collection, Colors, ComponentType, EmbedBuilder, GuildMember, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
 import { guilds } from "../../..";
@@ -110,11 +110,11 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 const courseEvents = await fetchCourseEvents(field, url);
                 const text = JSON.stringify(courseEvents, null, "\t");
                 const buffer = Buffer.from(text);
-                const file = new MessageAttachment(buffer, new Date().toISOString() + "_CalendarPendingEvents.json");
+                const file = new AttachmentBuilder(buffer, { name: new Date().toISOString() + "_CalendarPendingEvents.json" });
                 await interaction.editReply({
                     content: "Is this format valid?",
                     files: [file],
-                    components: [new ActionRowBuilder({
+                    components: [new ActionRowBuilder<ButtonBuilder>({
                         components: [
                             new ButtonBuilder({
                                 customId: "yes",

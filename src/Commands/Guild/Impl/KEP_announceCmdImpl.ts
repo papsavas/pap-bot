@@ -1,5 +1,5 @@
 
-import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -101,7 +101,7 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             content: `ενημέρωση προς έγκριση`,
             embeds: [emb],
             components: [
-                new ActionRowBuilder()
+                new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(approveBtn, rejectBtn)
             ]
         });
@@ -112,14 +112,14 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             await response.update({
                 content: `Εγκρίθηκε από ${response.user.tag}`,
                 embeds: [emb],
-                components: [new ActionRowBuilder().addComponents(approveBtn.setDisabled(true))]
+                components: [new ActionRowBuilder<ButtonBuilder>().addComponents(ButtonBuilder.from(rejectBtn.setDisabled()))]
             });
         }
         else
             await response.update({
                 content: `Απορρίφθηκε από **${response.user.tag}**`,
                 embeds: [emb],
-                components: [new ActionRowBuilder().addComponents(rejectBtn.setDisabled(true))]
+                components: [new ActionRowBuilder<ButtonBuilder>().addComponents(ButtonBuilder.from(rejectBtn.setDisabled()))]
             });
 
     }

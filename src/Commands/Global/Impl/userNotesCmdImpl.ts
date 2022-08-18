@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { UserNote } from '../../../Entities/Generic/userNote';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -96,7 +96,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
     }
 
     async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
-        if (!interaction.channel.isDM())
+        if (!interaction.guildId)
             return interaction.reply({
                 content: `For security reasons, please use this command in DMs`,
                 ephemeral: true
@@ -151,7 +151,8 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     async execute(message: Message, { arg1, args2 }: commandLiteral) {
         const { author } = message
-        if (!message.channel.isDM())
+        //TODO: replace with dm channel check once fixed
+        if (!message.guildId)
             return message.reply({
                 content: `For security reasons, please use this command in DMs`
             })

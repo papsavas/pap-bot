@@ -90,7 +90,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
 
         await logs.send({
             embeds: [
-                new EmbedBuilder(headerEmb)
+                EmbedBuilder.from(headerEmb)
                     .setDescription(`${interaction.user.toString()}  Muted  ${member.toString()}  for ${amount} hours\nReason: \`${reason ?? "-"}\``)
                     .addFields({ name: "Muted until", value: moment(unmuteAt).format("LLL") })
             ]
@@ -102,7 +102,7 @@ export class KEP_muteCmdImpl extends AbstractGuildCommand implements KEP_muteCmd
                 await dropMutedMember(member.id);
                 await logs.send({
                     embeds: [
-                        new EmbedBuilder(headerEmb)
+                        EmbedBuilder.from(headerEmb)
                             .setDescription(`Unmuted ${member.toString()}`)
                     ]
                 })

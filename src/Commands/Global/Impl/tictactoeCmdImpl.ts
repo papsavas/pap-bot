@@ -5,9 +5,9 @@ import { tictactoeCmd } from "../Interf/tictactoeCmd";
 
 const opponentLiteral: ApplicationCommandData['name'] = "opponent";
 const emtpyBoard: ActionRow[] = ["11", "21", "31"]
-    .map(v => new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
+    .map(v => new ActionRowBuilder<ButtonBuilder>()
+        .setComponents(
+            new ButtonComponent()
                 .setCustomId(v)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
@@ -82,7 +82,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<void> {
+    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
         const user = interaction.user;
         const opponent = interaction.options.getUser(opponentLiteral, true);
         if (user.id === opponent.id)
@@ -119,7 +119,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                     disabled: true,
                     style: ButtonStyle.Primary
                 })
-                const userPlayedButton = new ButtonBuilder(basePlayedButton)
+                const userPlayedButton = new ButtonComponent(basePlayedButton)
                     .setStyle(ButtonStyle.Success)
                     .setEmoji({ name: "❌" });
 
@@ -127,13 +127,13 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji({ name: "⭕" });
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRowBuilder()
+                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRow()
                     .addComponents(
                         ...ar.components.map(b =>
                             b.customId === id ?
                                 buttonInteraction.user.id === user.id ?
                                     userPlayedButton : opponentPlayedButton
-                                : b
+                                : ButtonBuilder.from(b)
                         ))
                 )
 
@@ -146,7 +146,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 const buttons: ButtonComponent[][] = [];
                 updatedBoard.forEach((ar, i) => {
                     buttons.push([]);
-                    buttons[i].push(...ar.components as ButtonComponent[]);
+                    buttons[i].push(...ar.components);
                 });
                 if (isWin(buttons)) collector.stop('win');
             }
@@ -159,10 +159,10 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 case 'win':
                     await msg.edit({
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
-                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder()
+                        components: (await msg.fetch()).components.map(ar => new ActionRow()
                             .addComponents(
                                 ...ar.components.map(b =>
-                                    b.setDisabled(true)
+                                    ButtonBuilder.from(b).setDisabled()
                                 ))
                         )
                     })
@@ -170,10 +170,10 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder()
+                        components: (await msg.fetch()).components.map(ar => new ActionRow()
                             .addComponents(
                                 ...ar.components.map(b =>
-                                    b.setDisabled(true)
+                                    ButtonBuilder.from(b).setDisabled()
                                 ))
                         )
                     })

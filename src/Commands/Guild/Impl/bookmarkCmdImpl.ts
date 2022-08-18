@@ -1,4 +1,4 @@
-import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, EmbedBuilder, Message, MessageApplicationCommandData, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, Snowflake, User } from "discord.js";
+import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, Message, MessageApplicationCommandData, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -75,11 +75,11 @@ function messageUser(user: User, message: Message) {
                 },
                 title: `🔖 Message Bookmark`,
                 description: `from ${message.channel.toString()} [${message.guild.name}]\n
-[${message.content.length > 1 ? message.content.substr(0, 500) + "..." : `Jump`}](${message.url})`,
+[${message.content.length > 1 ? message.content.substring(0, 500) + "..." : `Jump`}](${message.url})`,
                 color: Colors.Fuchsia,
                 image: { url: message.attachments.first()?.url },
                 timestamp: new Date(),
-            }), ...message.embeds.map(emb => new EmbedBuilder(emb))
+            }), ...message.embeds
         ]
     })
 }

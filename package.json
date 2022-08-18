@@ -4,7 +4,7 @@
   "description": "PAPbot",
   "main": "src/index.ts",
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   },
   "scripts": {
     "build": "tsc",
