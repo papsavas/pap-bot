@@ -16,7 +16,7 @@ const execute = async (interaction: Interaction) => {
                 ?.onCommand(interaction)
                 .catch(console.error);
         }
-        else if (interaction.channel.isDM()) {
+        else if (interaction.channel.isDMBased()) {
             dmHandler.onCommand(interaction)
                 .catch(console.error);
         }
@@ -44,7 +44,7 @@ const execute = async (interaction: Interaction) => {
                 ?.onSelectMenu(interaction)
                 .catch(console.error);
         }
-        else if (interaction.channel.isDM()) {
+        else if (interaction.channel.isDMBased()) {
             dmHandler.onSelectMenu(interaction)
                 .catch(console.error);
             console.log('dm select received');

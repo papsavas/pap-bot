@@ -147,7 +147,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
 
         if (!(await source.guild.members.fetch(source.member.user.id)).permissions.has(PermissionFlagsBits.ManageGuild))
             return respond({ content: "`MANAGE_GUILD` permissions required" })
-        if (!voice.isVoice()) {
+        if (!voice.isVoiceBased()) {
             return respond({ content: "Please provide a voice channel" });
         }
         await setVoiceLobby(source.guildId, voice.id);
@@ -168,7 +168,7 @@ export class settingsCmdImpl extends AbstractGuildCommand implements settingsCmd
         //TODO: Fix behavior, after update collector returns an error if time ends
         const oldSettings = await fetchGuildSettings(source.guildId);
 
-        const row = new ActionRowBuilder()
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder({
                     customId: "off",

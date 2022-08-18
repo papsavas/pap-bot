@@ -7,7 +7,7 @@ const opponentLiteral: ApplicationCommandData['name'] = "opponent";
 const emtpyBoard: ActionRow[] = ["11", "21", "31"]
     .map(v => new ActionRowBuilder<ButtonBuilder>()
         .setComponents(
-            new ButtonComponent()
+            new ButtonBuilder()
                 .setCustomId(v)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),

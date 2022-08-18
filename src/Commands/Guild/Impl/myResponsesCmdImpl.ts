@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, Embed, EmbedBuilder, Message, Snowflake } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, EmbedBuilder, Message, Snowflake } from "discord.js";
 import Profanity from "profanity-js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -100,7 +100,7 @@ export class myResponsesCmdImpl extends AbstractGuildCommand implements myRespon
 
 }
 
-async function embedResponse(request: CommandInteraction | Message, subcommand: string, input?: string | number): Promise<Embed[]> {
+async function embedResponse(request: CommandInteraction | Message, subcommand: string, input?: string | number): Promise<EmbedBuilder[]> {
     const guild_id = request.guildId;
     const member_id = request.member.user.id;
     if (!subcommand)

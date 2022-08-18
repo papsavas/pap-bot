@@ -1,5 +1,5 @@
 
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake, TextChannel } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';

@@ -133,7 +133,7 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
     }
 
     onMessageDelete(deletedMessage: Message): Promise<unknown> {
-        return Promise.resolve(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.isText?.name}`);
+        return Promise.resolve(`deleted a message with id:${deletedMessage.id} in ${deletedMessage.channel.toString()}`);
     }
 
     async onMessageReactionAdd(reaction: MessageReaction, user: User): Promise<unknown> {
@@ -215,8 +215,8 @@ export abstract class AbstractGuild extends AbstractHandler implements GenericGu
             if (newState.channel.id === this.#settings.voice_lobby) {
                 const categoryId = newState.channel.parentId;
                 const privateChannel = await newState.guild.channels.create(
-                    `🔒 ${member.displayName}'s table`,
                     {
+                        name: `🔒 ${member.displayName}'s table`,
                         parent: categoryId,
                         permissionOverwrites: [{
                             id: member.id,

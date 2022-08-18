@@ -81,7 +81,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                 embeds: [{
                     author: {
                         name: interaction.user.username,
-                        iconURL: interaction.user.avatarURL()
+                        icon_url: interaction.user.avatarURL()
                     },
                     title: "Απόπειρα εγγραφής αποκλεισμένου χρήστη",
                     color: Colors.DarkRed,
@@ -204,6 +204,6 @@ async function conflict(interaction: CommandInteraction, am: string): Promise<un
                 timestamp: new Date()
             })
         ],
-        components: [new ActionRowBuilder().addComponents(appealBtn)]
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(appealBtn)]
     })
 }

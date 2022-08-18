@@ -1,4 +1,4 @@
-import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, Message, MessageApplicationCommandData, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, Snowflake, User } from "discord.js";
+import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, EmbedBuilder, Message, MessageApplicationCommandData, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";

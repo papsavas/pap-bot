@@ -78,7 +78,7 @@ export class MessageChannelCmdImpl extends AbstractGuildCommand implements messa
         if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return message.reply(`\`MANAGE_GUILD\` permissions required`);
         const sendChannel = mentions.channels.first();
-        if (guild.channels.cache.has(sendChannel?.id) && !!sendChannel?.isText())
+        if (guild.channels.cache.has(sendChannel?.id) && sendChannel?.isTextBased())
             return sendChannel.send(args2)
         else
             throw new Error(`Channel not found`);

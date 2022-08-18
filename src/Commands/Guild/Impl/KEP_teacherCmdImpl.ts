@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, EmbedBuilder, Message, MessageAttachment, PermissionFlagsBits, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ChatInputCommandInteraction, Collection, EmbedBuilder, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { Teacher } from "../../../Entities/KEP/Teacher";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -158,7 +158,7 @@ export class KEP_teacherCmdImpl extends AbstractGuildCommand implements KEP_teac
             case listLiteral: {
                 const text = JSON.stringify(await fetchTeachers(), null, "\t");
                 const buffer = Buffer.from(text);
-                const file = new MessageAttachment(buffer, new Date().toISOString() + "_Teachers.json");
+                const file = new AttachmentBuilder(buffer, { name: new Date().toISOString() + "_Teachers.json" });
                 return interaction.editReply({
                     files: [file]
                 });
