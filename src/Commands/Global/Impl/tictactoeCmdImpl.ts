@@ -119,15 +119,15 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                     disabled: true,
                     style: ButtonStyle.Primary
                 })
-                const userPlayedButton = new ButtonComponent(basePlayedButton)
+                const userPlayedButton = ButtonBuilder.from(basePlayedButton)
                     .setStyle(ButtonStyle.Success)
                     .setEmoji({ name: "❌" });
 
-                const opponentPlayedButton = new ButtonBuilder(basePlayedButton)
+                const opponentPlayedButton = ButtonBuilder.from(basePlayedButton)
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji({ name: "⭕" });
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRow()
+                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRowBuilder()
                     .addComponents(
                         ...ar.components.map(b =>
                             b.customId === id ?
@@ -159,7 +159,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 case 'win':
                     await msg.edit({
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
-                        components: (await msg.fetch()).components.map(ar => new ActionRow()
+                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder()
                             .addComponents(
                                 ...ar.components.map(b =>
                                     ButtonBuilder.from(b).setDisabled()
@@ -170,7 +170,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new ActionRow()
+                        components: (await msg.fetch()).components.map(ar => new ActionRowBuilder()
                             .addComponents(
                                 ...ar.components.map(b =>
                                     ButtonBuilder.from(b).setDisabled()
