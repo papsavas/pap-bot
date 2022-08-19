@@ -1,6 +1,5 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonInteraction, ButtonStyle, ChannelType, Client, Collection, Colors, ComponentType, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, MessageType, OverwriteType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, ThreadAutoArchiveDuration, User } from 'discord.js';
+import { ButtonInteraction, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, MessageType, OverwriteType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, ThreadAutoArchiveDuration, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
-import { sanitizeDiacritics, toGreek } from "greek-utils";
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import urlRegex from 'url-regex';
@@ -30,7 +29,6 @@ import { fetchKeywords } from '../../../Queries/KEP/Keywords';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
 import { banStudent, dropAllPendingStudents, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { fetchTeachers } from '../../../Queries/KEP/Teacher';
-import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchCalendarEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -90,7 +88,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         this.students = await fetchStudents();
         this.courses = await fetchCourses();
         this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
-        this.#contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
 
         //load teachers
         const tc = await fetchTeacherCourses();
@@ -128,13 +125,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
     }
 
     async onMessage(message: Message): Promise<unknown> {
-        if ([
-            categories.etos1, categories.etos2,
-            categories.etos3, categories.etos4,
-            categories.etos4_2, categories.didaktiki,
-            categories.sxolh
-        ].includes((message.channel as GuildChannel).parentId))
-            scanContent(message, this.#keywords, this.#contentScanChannel);
         switch (message.channel.id) { //channels
             case channels.registration: {
                 if (message.deletable) await message.delete();
@@ -251,18 +241,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         }
                     }
 
-                }
-
-                case channels.content_scan: {
-                    switch (reaction.emoji.name) {
-                        case '🗑': {
-                            return reaction.message.deletable ? reaction.message.delete() : null
-                        }
-
-                        case '👀': {
-                            return reaction.message.reactions.removeAll().catch()
-                        }
-                    }
                 }
 
                 default:
@@ -475,73 +453,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     ephemeral: true
                 });
             }
-
-            case channels.content_scan: {
-                await interaction.deferReply({ ephemeral: true })
-                const message = await interaction.channel.messages.fetch(interaction.message.id);
-                switch (interaction.customId) {
-
-                    case buttons.warnSus: {
-                        return interaction.editReply(`Until pop up release, warns are added manually.\n\`~warn <member_id> <reason>\` at <#${channels.skynet}>`)
-                    }
-
-                    case buttons.focusSus: {
-                        return message.edit({
-                            content: `<@&${roles.mod}> **Requires Attention**`,
-                            embeds: message.embeds.map(e => EmbedBuilder.from(e).setColor(Colors.Red)),
-                            components: [
-                                new ActionRowBuilder<ButtonBuilder>().setComponents(
-                                    ButtonBuilder.from(susWarnBtn), ButtonBuilder.from(susFocusBtn).setDisabled(), ButtonBuilder.from(susResolvedBtn), ButtonBuilder.from(susDeleteBtn).setDisabled(),
-                                    //include jump button
-                                    ButtonBuilder.from(
-                                        message.components[0].components
-                                            .find(c =>
-                                                c.type === ComponentType.Button &&
-                                                c.style === ButtonStyle.Link) as ButtonComponent
-                                    )
-                                ),
-                                new ActionRowBuilder<ButtonBuilder>().setComponents(ButtonBuilder.from(susSurveillanceBtn))
-                            ],
-                            allowedMentions: { parse: ["roles"] }
-                        })
-                            .then(() => interaction.editReply("Marked as focused"))
-
-                    }
-
-                    case buttons.resolvedSus: {
-                        return message.edit({
-                            content: `*Marked as resolved by ${interaction.member.toString()} at ${moment().tz("Europe/Athens").format("LLLL")}*`,
-                            allowedMentions: { parse: [] },
-                            embeds: message.embeds.map(e => EmbedBuilder.from(e).setColor(Colors.Green).setTitle("Resolved ✅\n" + e.title)),
-                            components: message.components
-                                .map(ar => ActionRowBuilder.from(ar).setComponents(
-                                    ar.components
-                                        .map(c => c.customId ? ButtonBuilder.from(c).setDisabled() : ButtonBuilder.from(c)) //keep link btn enabled
-                                ))
-
-                        })
-                            .then(() => interaction.editReply("Marked as Resolved"))
-                    }
-
-                    case buttons.deleteSus: {
-                        return message.delete()
-                            .then(() => interaction.editReply("Message Deleted"));
-                    }
-
-                    case buttons.surveillanceSus: {
-                        const member = await interaction.guild.members.fetch(interaction.user.id);
-                        return (member.roles.cache.has(roles.overseer) ?
-                            member.roles.remove(roles.overseer) : member.roles.add(roles.overseer))
-                            .then(() => interaction.editReply("Surveillance role toggled"))
-                    }
-
-                    default:
-                        return interaction.editReply(`No listener for button \`${interaction.customId}\``);
-                }
-            }
-
-            default:
-                return super.onButton(interaction);
         }
     }
 
@@ -629,96 +540,17 @@ async function handleMutedMembers(guild: Guild) {
                         icon_url: `https://i.imgur.com/92vhTqK.png`
                     },
                     title: `Mute Logs`,
-                    color: "DARKER_GREY",
+                    color: Colors.DarkerGrey,
                     footer: { text: `Execution Number: 1662` },
                 })
                 await (guild.channels.cache.get(channels.logs) as TextChannel).send({
                     embeds: [
-                        new EmbedBuilder(headerEmb)
+                        EmbedBuilder.from(headerEmb)
                             .setDescription(`Unmuted ${member.toString()}`)
                     ]
                 })
             }
         })
-    }
-}
-
-const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
-
-const susWarnBtn = new ButtonBuilder({
-    customId: warnSus,
-    style: ButtonStyle.Primary,
-    label: "Warn",
-    emoji: "⚠"
-})
-const susFocusBtn = new ButtonBuilder({
-    customId: focusSus,
-    style: ButtonStyle.Danger,
-    emoji: "🎯",
-    label: "Focus",
-});
-const susResolvedBtn = new ButtonBuilder({
-    customId: resolvedSus,
-    style: ButtonStyle.Success,
-    emoji: "✅",
-    label: "Resolved",
-})
-const susDeleteBtn = new ButtonBuilder({
-    customId: deleteSus,
-    style: ButtonStyle.Secondary,
-    emoji: "🗑",
-    label: "Delete"
-})
-
-const susJumpBtn = (url: string) => new ButtonBuilder({
-    style: "LINK",
-    url,
-    label: "Jump",
-})
-
-const susSurveillanceBtn = new ButtonBuilder({
-    customId: surveillanceSus,
-    style: "PRIMARY",
-    emoji: "🚨",
-    label: "Surveillance"
-
-})
-
-function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
-    const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
-    const index = normalize(content).split(' ').findIndex(c =>
-        keywords.includes(c) ||
-        keywords.some(k => c.includes(k)) ||
-        keywords.some(k => textSimilarity(c, k) > 0.9)
-    );
-    const found = index === -1 ? undefined : content.split(' ')[index];
-    if (found) {
-        logChannel.send({
-            embeds: [new EmbedBuilder({
-                author: {
-                    name: member.displayName ?? author.username,
-                    icon_url: author.avatarURL()
-                },
-                title: `Keyword Detected: "${found}"`,
-                description: `${content.replace(found, `**${found}**`)}`,
-                color: Colors.LightGrey,
-                image: { proxyURL: attachments?.first()?.proxyURL },
-                fields: [
-                    { name: "Channel", value: channel.toString(), inline: false },
-                    { name: "Member", value: member.toString(), inline: false },
-                    { name: "Member ID", value: member.id, inline: true }
-                ],
-                timestamp: new Date(),
-            })],
-            components: [
-                new ActionRowBuilder().addComponents(
-                    [susWarnBtn, susFocusBtn, susResolvedBtn, susDeleteBtn, susJumpBtn(url)]
-                        .map(source => new ButtonBuilder(source))
-                ),
-                new ActionRowBuilder().addComponents(susSurveillanceBtn)
-            ],
-        })
-            .catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }
 
