@@ -8,7 +8,6 @@
     "skipLibCheck": true,
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
