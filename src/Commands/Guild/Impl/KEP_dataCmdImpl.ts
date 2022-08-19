@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Embed, GuildMember, Message, Snowflake, User } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, EmbedBuilder, GuildMember, Message, Snowflake, User } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { amType, Student } from "../../../Entities/KEP/Student";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
@@ -69,7 +69,7 @@ export class KEP_dataCmdImpl extends AbstractGuildCommand implements KEP_dataCmd
         const student = await findStudent(am ?? user);
         const data = student ?
             await fetchStudentData(student, await interaction.guild.members.fetch(student.member_id)) :
-            [new Embed({
+            [new EmbedBuilder({
                 title: `Δεν βρέθηκε εγγραφή`,
                 fields: [{ name: "Είσοδος:", value: user?.toString() ?? am }]
             })];
@@ -90,9 +90,9 @@ const findStudent = (id: amType | User) =>
     id instanceof User ? fetchStudent({ "member_id": (id as User).id }) : fetchStudent({ "am": id as amType });
 
 
-async function fetchStudentData(student: Student, member: GuildMember): Promise<Embed[]> {
+async function fetchStudentData(student: Student, member: GuildMember): Promise<EmbedBuilder[]> {
     return [
-        new Embed({
+        new EmbedBuilder({
             author: {
                 name: member.user.username,
                 iconURL: member.user.avatarURL()

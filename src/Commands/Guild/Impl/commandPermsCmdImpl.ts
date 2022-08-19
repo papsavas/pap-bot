@@ -2,7 +2,6 @@
  * @deprecated due to Discord Permissions v2
  */
 
-
 import {
     ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandOptionType,
     ApplicationCommandPermissionData, ApplicationCommandPermissionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, PermissionFlagsBits, Snowflake

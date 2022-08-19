@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, Embed, Message, MessageEditOptions, PermissionFlagsBits, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEditOptions, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { resolveMessageURL } from '../../../tools/resolveMessageURL';
@@ -85,7 +85,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
                 this.respond(source, {
                     embeds:
                         [
-                            new Embed({
+                            new EmbedBuilder({
                                 description: `[edited message](${editedMessage.url})`
                             })
                         ]

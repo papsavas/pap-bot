@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
@@ -17,6 +18,7 @@
     "resolveJsonModule": true,
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "repo"
   ],
 }

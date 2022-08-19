@@ -1,4 +1,4 @@
-import { ActionRow, ApplicationCommandOptionType, ApplicationCommandType, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, Embed, Message, Snowflake, TextChannel } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels, roles as kepRoles } from "../../../../values/KEP/IDs.json";
 import { buttons, messages } from "../../../../values/KEP/literals.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
@@ -81,7 +81,7 @@ export class KEP_registrationCmdImpl extends AbstractGuildCommand implements KEP
                 embeds: [{
                     author: {
                         name: interaction.user.username,
-                        iconURL: interaction.user.avatarURL()
+                        icon_url: interaction.user.avatarURL()
                     },
                     title: "Απόπειρα εγγραφής αποκλεισμένου χρήστη",
                     color: Colors.DarkRed,
@@ -186,14 +186,14 @@ ${pswd}\n
 }
 
 async function conflict(interaction: CommandInteraction, am: string): Promise<unknown> {
-    const appealBtn = new ButtonComponent({
+    const appealBtn = new ButtonBuilder({
         customId: `${buttons.appealId}_${am}_${interaction.user.id}`,
         style: ButtonStyle.Primary,
         label: buttons.appealLabel
     })
     return interaction.editReply({
         embeds: [
-            new Embed({
+            new EmbedBuilder({
                 author: {
                     name: "Εγγεγραμμένο email",
                     iconURL: "https://cdn1.vectorstock.com/i/1000x1000/80/30/conflict-resolution-icon-symbol-isolated-on-white-vector-31728030.jpg"
@@ -204,6 +204,6 @@ async function conflict(interaction: CommandInteraction, am: string): Promise<un
                 timestamp: new Date()
             })
         ],
-        components: [new ActionRow().addComponents(appealBtn)]
+        components: [new ActionRowBuilder<ButtonBuilder>().addComponents(appealBtn)]
     })
 }

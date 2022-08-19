@@ -1,4 +1,4 @@
-import { ChannelType, ClientEvents, EmbedBuilder, Interaction } from "discord.js";
+import { ClientEvents, EmbedBuilder, Interaction } from "discord.js";
 import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guilds } from "../..";
 
 
@@ -17,7 +17,7 @@ const execute = async (interaction: Interaction) => {
                 .catch(console.error);
         }
         else if (interaction.channel.isDMBased()) {
-            dmHandler.onSlashCommand(interaction)
+            dmHandler.onCommand(interaction)
                 .catch(console.error);
         }
         else {

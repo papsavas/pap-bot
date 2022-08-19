@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, Embed, GuildMember, Message, PermissionFlagsBits, PermissionResolvable, RESTJSONErrorCodes, Snowflake
+    ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, GuildMember, ImageFormat, Message, PermissionResolvable, Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -64,14 +64,14 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
         const user = interaction.options.getUser(userOptionLiteral, true);
         const messageContent = interaction.options.getString(messageOptionLiteral, true);
-        const sendEmb = new Embed({
+        const sendEmb = new EmbedBuilder({
             author: {
                 name: "from: " + interaction.guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
             title: `You have a message ${user.username}`,
-            thumbnail: { url: interaction.guild.iconURL({ extension: "png", size: 128 }) },
+            thumbnail: { url: interaction.guild.iconURL({ extension: ImageFormat.PNG, size: 128 }) },
             color: Colors.Aqua,
             description: messageContent,
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
@@ -103,14 +103,14 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         if (!text && !attachments)
             throw new Error('Cannot send empty message');
 
-        const sendEmb = new Embed({
+        const sendEmb = new EmbedBuilder({
             author: {
                 name: "from: " + guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
             title: `You have a message ${user.username}`,
-            thumbnail: { url: guild.iconURL({ extension: "png", size: 128 }) },
+            thumbnail: { url: guild.iconURL({ extension: ImageFormat.PNG, size: 128 }) },
             image: { url: attachments?.first().url },
             color: Colors.Aqua,
             description: text,

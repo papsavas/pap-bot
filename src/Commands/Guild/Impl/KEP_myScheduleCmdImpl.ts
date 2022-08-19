@@ -1,4 +1,4 @@
-import { ApplicationCommandType, ChatInputApplicationCommandData, Collection, CommandInteraction, Embed, EmbedFieldData, Message, RESTJSONErrorCodes, Snowflake } from "discord.js";
+import { APIEmbedField, ApplicationCommandType, ChatInputApplicationCommandData, Collection, CommandInteraction, EmbedBuilder, Message, RESTJSONErrorCodes, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';
@@ -14,7 +14,7 @@ import { KEP_myScheduleCmd } from "../Interf/KEP_myScheduleCmd";
 
 moment.locale('el');
 
-const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): EmbedFieldData => ({
+const fieldBuilder = ((ev: calendar_v3.Schema$Event, course: Course): APIEmbedField => ({
     name: `• ${ev.summary.slice(lecturePrefix.length).trimStart() ?? "Δεν βρέθηκε όνομα"} (${course?.code ?? "Δεν βρέθηκε κωδικός"})`,
     value: `📌 ${ev.location ?? ''}  |  ⌚ ${moment(ev.start.dateTime).tz("Europe/Athens").format("kk:mm")} - ${moment(ev.end.dateTime).tz("Europe/Athens").format("kk:mm")}`,
 }));
@@ -83,7 +83,7 @@ export class KEP_myScheduleCmdImpl extends AbstractGuildCommand implements KEP_m
 
 }
 
-function generateEmbeds(request: Message | CommandInteraction): Embed[] {
+function generateEmbeds(request: Message | CommandInteraction): EmbedBuilder[] {
     const courses = (guilds.get(kepGuildId) as KepGuild).students.get(request.member.user.id)?.courses;
     const events = (guilds.get(kepGuildId) as KepGuild).events
         //trim blanks
@@ -93,12 +93,12 @@ function generateEmbeds(request: Message | CommandInteraction): Embed[] {
 
     if (!courses || courses.size === 0)
         return [
-            new Embed({ description: "Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις" })
+            new EmbedBuilder({ description: "Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις" })
         ]
 
     if (events.length === 0)
         return [
-            new Embed({ description: "Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων" })
+            new EmbedBuilder({ description: "Δεν υπάρχουν καταχωρημένες ημερομηνίες διαλέξεων" })
         ]
 
     //filter events by student's selected courses
@@ -117,13 +117,13 @@ function generateEmbeds(request: Message | CommandInteraction): Embed[] {
 
     if (uniqueStudentEvents.size === 0)
         return [
-            new Embed()
+            new EmbedBuilder()
                 .setDescription("Δεν φαίνεται να έχετε επιλεγμένα μαθήματα με προγραμματισμένες διαλέξεις")
         ]
 
-    const embeds = new Map<number, Embed>();
+    const embeds = new Map<number, EmbedBuilder>();
     [1, 2, 3, 4, 5]
-        .forEach(d => embeds.set(d, new Embed({
+        .forEach(d => embeds.set(d, new EmbedBuilder({
             author: {
                 name: moment().day(d).format('dddd'),
                 icon_url: "https://icons.iconarchive.com/icons/paomedia/small-n-flat/512/calendar-icon.png"

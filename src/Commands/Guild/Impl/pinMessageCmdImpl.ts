@@ -1,4 +1,4 @@
-import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, Embed, Message, MessageApplicationCommandData, Snowflake } from "discord.js";
+import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, EmbedBuilder, Message, MessageApplicationCommandData, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { pinMessageCmd } from "../../Guild/Interf/pinMessageCmd";
@@ -36,7 +36,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
         const message = await interaction.channel.messages.fetch(msgId);
         if (message?.pinned)
             return interaction.reply({
-                embeds: [new Embed({ description: `[message](${message.url}) already pinned 😉` })],
+                embeds: [new EmbedBuilder({ description: `[message](${message.url}) already pinned 😉` })],
                 ephemeral: true
             })
         else if (!message?.pinnable)
@@ -49,7 +49,7 @@ export class PinMessageCmdImpl extends AbstractGuildCommand implements pinMessag
             .then((pinnedMessage) => {
                 interaction.reply({
                     embeds: [
-                        new Embed({
+                        new EmbedBuilder({
                             author: {
                                 name: interaction.user.username,
                                 iconURL: interaction.user.avatarURL()
