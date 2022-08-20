@@ -24,7 +24,7 @@ const emtpyBoard: ActionRowBuilder<ButtonBuilder>[] = ["11", "21", "31"]
         ));
 
 
-const isWin = (board: ButtonComponent[][]) => {
+const isWin = (board: ButtonBuilder[][]) => {
     //Check each row
     for (let i = 0; i < 3; i++) {
         if (board[i][0].style == board[i][1].style && board[i][1].style == board[i][2].style && board[i][0].disabled) {
