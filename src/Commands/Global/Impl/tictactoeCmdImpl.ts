@@ -1,23 +1,23 @@
-import { ApplicationCommandData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, Snowflake } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonComponent, ButtonStyle, ChatInputApplicationCommandData, Collection, CommandInteraction, ComponentType, Message, Snowflake } from "discord.js";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGlobalCommand } from "../AbstractGlobalCommand";
 import { tictactoeCmd } from "../Interf/tictactoeCmd";
 
 const opponentLiteral: ApplicationCommandData['name'] = "opponent";
-const emtpyBoard: MessageActionRow[] = ["11", "21", "31"]
-    .map(v => new MessageActionRow()
+const emtpyBoard: ActionRowBuilder<ButtonBuilder>[] = ["11", "21", "31"]
+    .map(v => new ActionRowBuilder<ButtonBuilder>()
         .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId(v)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
 
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 1}`)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary),
 
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId(v[0] + `${parseInt(v[1]) + 2}`)
                 .setLabel('+')
                 .setStyle(ButtonStyle.Secondary)
@@ -107,27 +107,27 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         let turn = user.id;
         collector.on("collect", async (buttonInteraction) => {
             if (![user.id, opponent.id].includes(buttonInteraction.user.id))
-                return await buttonInteraction.reply({ content: `you were not invited for this game`, ephemeral: true });
+                return buttonInteraction.reply({ content: `you were not invited for this game`, ephemeral: true });
 
             if (turn !== buttonInteraction.user.id)
-                return await buttonInteraction.reply({ content: `It's not your turn, wait for opponent`, ephemeral: true });
+                return buttonInteraction.reply({ content: `It's not your turn, wait for opponent`, ephemeral: true });
 
             if (buttonInteraction.isButton()) {
                 const id = buttonInteraction.customId;
-                const basePlayedButton = new MessageButton({
+                const basePlayedButton = new ButtonBuilder({
                     customId: id,
                     disabled: true,
                     style: ButtonStyle.Primary
                 })
-                const userPlayedButton = new MessageButton(basePlayedButton)
-                    .setStyle("SUCCESS")
+                const userPlayedButton = ButtonBuilder.from(basePlayedButton)
+                    .setStyle(ButtonStyle.Success)
                     .setEmoji("❌");
 
                 const opponentPlayedButton = ButtonBuilder.from(basePlayedButton)
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji({ name: "⭕" });
 
-                const updatedBoard = (await msg.fetch()).components.map(ar => new MessageActionRow()
+                const updatedBoard = (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         ...ar.components.map(b =>
                             b.customId === id ?
@@ -146,7 +146,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 const buttons: ButtonComponent[][] = [];
                 updatedBoard.forEach((ar, i) => {
                     buttons.push([]);
-                    buttons[i].push(...ar.components as MessageButton[]);
+                    buttons[i].push(...ar.components);
                 });
                 if (isWin(buttons)) collector.stop('win');
             }
@@ -159,23 +159,13 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                 case 'win':
                     await msg.edit({
                         content: `**WE HAVE A WINNER!!!**\n**AND A LOSER --> <@!${turn}> <--**`,
-                        components: (await msg.fetch()).components.map(ar => new MessageActionRow()
-                            .addComponents(
-                                ar.components.map(b =>
-                                    b.setDisabled(true)
-                                ))
-                        )
+                        components: await disabledBoardComponents(msg)
                     })
                     break;
                 default:
                     await msg.edit({
                         content: `\`\`\`game ended because of ${reason}\`\`\``,
-                        components: (await msg.fetch()).components.map(ar => new MessageActionRow()
-                            .addComponents(
-                                ar.components.map(b =>
-                                    b.setDisabled(true)
-                                ))
-                        )
+                        components: await disabledBoardComponents(msg)
                     })
                     break;
             }
@@ -189,3 +179,10 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
 
 }
+
+const disabledBoardComponents = async (msg: Message) => (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
+    .addComponents(
+        ar.components.map(b =>
+            ButtonBuilder.from(b).setDisabled()
+        ))
+)

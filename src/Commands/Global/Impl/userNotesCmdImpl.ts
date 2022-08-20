@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { UserNote } from '../../../Entities/Generic/userNote';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -151,7 +151,7 @@ export class userNotesCmdImpl extends AbstractGlobalCommand implements userNotes
 
     async execute(message: Message, { arg1, args2 }: commandLiteral) {
         const { author } = message
-        if (message.channel.type !== "DM")
+        if (message.channel.type !== ChannelType.DM)
             return message.reply({
                 content: `For security reasons, please use this command in DMs`
             })
