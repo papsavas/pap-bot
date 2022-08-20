@@ -1,7 +1,7 @@
 import {
-    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, ApplicationCommandPermissionData, Collection, Snowflake
+    ApplicationCommand, ApplicationCommandData, ApplicationCommandManager, Collection, Snowflake
 } from 'discord.js';
-import { fetchCommandPerms, overrideCommands } from '../../../Queries/Generic/Commands';
+import { overrideCommands } from '../../../Queries/Generic/Commands';
 import { GenericGuildCommand } from '../../Guild/GenericGuildCommand';
 import { GuildCommandManager } from "../Interf/GuildCommandManager";
 import { CommandManagerImpl } from './CommandManagerImpl';
@@ -48,40 +48,4 @@ export class GuildCommandManagerImpl extends CommandManagerImpl implements Guild
         console.log(`___DONE_SYNCING_PERMS___`);
         return newCommands;
     }
-
-    /**
-    * @deprecated due to Discord Permissions v2
-    */
-    private async syncPermissions(
-        commandManager: ApplicationCommandManager,
-        commands: Collection<Snowflake, ApplicationCommand<{}>>
-    ) {
-        for (const cmd of commands.values()) {
-            const dbPerms: ApplicationCommandPermissionData[] = (await fetchCommandPerms(cmd.guildId, cmd.id))
-                .map(res => ({
-                    id: res.role_id,
-                    type: 'ROLE',
-                    permission: true
-                }))
-            const defaultPerm = (defaultPermission: boolean) => cmd.edit({
-                defaultPermission,
-                description: cmd.description,
-                name: cmd.name
-            })
-            if (dbPerms.length === 0)
-                // no role restrictions are applied, unlock
-                await defaultPerm(true);
-            else if (dbPerms.every(p => p.id !== cmd.guildId))
-                //disable defaultPermission
-                await defaultPerm(false);
-            await commandManager.permissions.set({
-                command: cmd.id,
-                guild: cmd.guildId,
-                permissions: dbPerms
-            })
-                .then(() => console.log(`Synced permissions for ${cmd.name} - ${cmd.guild.name}`))
-        }
-    }
-
-
 }

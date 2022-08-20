@@ -1,5 +1,5 @@
 
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
 import { channels as kepChannels } from "../../../../values/KEP/IDs.json";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -31,44 +31,44 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: contentLiteral,
                     description: `Μήνυμα προς ανακοίνωση`,
-                    type: "STRING",
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 },
                 {
                     name: `role1`,
                     description: `Ρόλος προς ειδοποίηση`,
-                    type: "ROLE",
+                    type: ApplicationCommandOptionType.Role,
                     required: false
                 },
                 {
                     name: `role2`,
                     description: `Ρόλος προς ειδοποίηση`,
-                    type: "ROLE",
+                    type: ApplicationCommandOptionType.Role,
                     required: false
                 },
                 {
                     name: `role3`,
                     description: `Ρόλος προς ειδοποίηση`,
-                    type: "ROLE",
+                    type: ApplicationCommandOptionType.Role,
                     required: false
                 }
             ]
         };
     }
 
-
-    async interactiveExecute(interaction: CommandInteraction): Promise<void> {
+    //convert to ModalInteraction
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<void> {
         const literal = (interaction.options.getString(contentLiteral, true)).substring(0, 2000);
         const roles = ["1", "2", "3"]
             .map((n, i) => interaction.options.getRole(`role${n}`, i === 0))
             .filter(r => typeof r !== "undefined");
         const newsChannel = interaction.guild.channels.cache.get(kepChannels.news as Snowflake) as TextChannel;
-        const emb = new MessageEmbed({
+        const emb = new EmbedBuilder({
             author: {
                 name: interaction.user.tag,
                 iconURL: interaction.user.defaultAvatarURL
@@ -88,20 +88,20 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
 
         const modChannel = interaction.guild.channels.cache.get(kepChannels.mods as Snowflake) as TextChannel;
         const approveLiteral = 'approve';
-        const approveBtn = new MessageButton()
+        const approveBtn = new ButtonBuilder()
             .setCustomId(approveLiteral)
-            .setEmoji('✅')
-            .setStyle('SUCCESS');
-        const rejectBtn = new MessageButton()
+            .setEmoji({ name: '✅' })
+            .setStyle(ButtonStyle.Success);
+        const rejectBtn = new ButtonBuilder()
             .setCustomId('reject')
-            .setEmoji('❌')
-            .setStyle('DANGER');
+            .setEmoji({ name: '❌' })
+            .setStyle(ButtonStyle.Danger);
 
         const modMsg = await modChannel.send({
             content: `ενημέρωση προς έγκριση`,
             embeds: [emb],
             components: [
-                new MessageActionRow()
+                new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(approveBtn, rejectBtn)
             ]
         });
@@ -112,14 +112,14 @@ export class KEP_announceCmdImpl extends AbstractGuildCommand implements KEP_ann
             await response.update({
                 content: `Εγκρίθηκε από ${response.user.tag}`,
                 embeds: [emb],
-                components: [new MessageActionRow().addComponents(approveBtn.setDisabled(true))]
+                components: [new ActionRowBuilder<ButtonBuilder>().addComponents(ButtonBuilder.from(rejectBtn.setDisabled()))]
             });
         }
         else
             await response.update({
                 content: `Απορρίφθηκε από **${response.user.tag}**`,
                 embeds: [emb],
-                components: [new MessageActionRow().addComponents(rejectBtn.setDisabled(true))]
+                components: [new ActionRowBuilder<ButtonBuilder>().addComponents(ButtonBuilder.from(rejectBtn.setDisabled()))]
             });
 
     }

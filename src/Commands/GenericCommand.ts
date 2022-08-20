@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, Collection, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
+import { Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, Snowflake } from "discord.js";
 import { commandLiteral, CommandScope } from "../Entities/Generic/command";
 export interface GenericCommand {
     /**
@@ -12,9 +12,9 @@ export interface GenericCommand {
     readonly guide: string;
     readonly usage: string;
     readonly type: CommandScope;
-    interactiveExecute(commandInteraction: BaseCommandInteraction): Promise<unknown>;
+    interactiveExecute(commandInteraction: CommandInteraction): Promise<unknown>;
     execute(receivedMessage: Message, receivedCommand: commandLiteral): Promise<unknown>;
     matchAliases(possibleCommand: string | undefined): boolean;
     respond(source: Message, response: ReplyMessageOptions): Promise<unknown>;
-    respond(source: BaseCommandInteraction, response: InteractionReplyOptions): Promise<unknown>;
+    respond(source: CommandInteraction, response: InteractionReplyOptions): Promise<unknown>;
 }

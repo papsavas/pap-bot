@@ -1,7 +1,5 @@
 import {
-    ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction,
-    Constants,
-    GuildMember, Message, MessageEmbed, PermissionResolvable, Permissions, Snowflake
+    ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, EmbedBuilder, GuildMember, ImageFormat, Message, PermissionFlagsBits, PermissionResolvable, RESTJSONErrorCodes, Snowflake
 } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
@@ -10,8 +8,8 @@ import { dmMemberCmd } from "../Interf/dmMemberCmd";
 
 
 
-const requiredPerm = Permissions.FLAGS.ADMINISTRATOR;
-const permLiteral: PermissionResolvable = 'ADMINISTRATOR';
+const requiredPerm = PermissionFlagsBits.Administrator;
+const permLiteral: PermissionResolvable = 'Administrator';
 const userOptionLiteral: ApplicationCommandOptionData['name'] = 'user';
 const messageOptionLiteral: ApplicationCommandOptionData['name'] = 'message';
 export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd {
@@ -38,25 +36,25 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: userOptionLiteral,
                     description: 'user to dm',
-                    type: 'USER',
+                    type: ApplicationCommandOptionType.User,
                     required: true
                 },
                 {
                     name: messageOptionLiteral,
                     description: 'message to user',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
 
         if (!(interaction.member as GuildMember).permissions.has(requiredPerm))
             return interaction.reply({
@@ -66,15 +64,15 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
 
         const user = interaction.options.getUser(userOptionLiteral, true);
         const messageContent = interaction.options.getString(messageOptionLiteral, true);
-        const sendEmb = new MessageEmbed({
+        const sendEmb = new EmbedBuilder({
             author: {
                 name: "from: " + interaction.guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
             title: `You have a message ${user.username}`,
-            thumbnail: { url: interaction.guild.iconURL({ format: "png", size: 128 }) },
-            color: "AQUA",
+            thumbnail: { url: interaction.guild.iconURL({ extension: ImageFormat.PNG, size: 128 }) },
+            color: Colors.Aqua,
             description: messageContent,
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
             timestamp: new Date()
@@ -86,7 +84,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 embeds: [sendEmb]
             }))
             .catch(err => {
-                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
+                if (err.code === RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                     interaction.reply(`Could not dm ${user.username}`);
                 }
             })
@@ -105,16 +103,16 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
         if (!text && !attachments)
             throw new Error('Cannot send empty message');
 
-        const sendEmb = new MessageEmbed({
+        const sendEmb = new EmbedBuilder({
             author: {
                 name: "from: " + guild.name,
                 //icon_url: `https://www.theindianwire.com/wp-content/uploads/2020/11/Google_Messages_logo.png`,
                 //https://upload.wikimedia.org/wikipedia/commons/0/05/Google_Messages_logo.svg
             },
             title: `You have a message ${user.username}`,
-            thumbnail: { url: guild.iconURL({ format: "png", size: 128 }) },
+            thumbnail: { url: guild.iconURL({ extension: ImageFormat.PNG, size: 128 }) },
             image: { url: attachments?.first().url },
-            color: "AQUA",
+            color: Colors.Aqua,
             description: text,
             //video: { url: attachments?.proxyURL}, cannot send video via rich embed
             timestamp: new Date()
@@ -125,7 +123,7 @@ export class DmMemberCmdImpl extends AbstractGuildCommand implements dmMemberCmd
                 embeds: [sendEmb]
             }))
             .catch(err => {
-                if (err.code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
+                if (err.code === RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                     throw new Error(`Could not dm ${user.username}`);
                 }
             })

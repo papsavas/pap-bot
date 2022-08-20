@@ -1,18 +1,18 @@
-import { EmbedFieldData, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
+import { APIEmbed, APIEmbedField, Embed, EmbedBuilder, Message } from "discord.js";
 
 interface paginatedEmbedOptions {
     userMessage: Message,
     targetStructure: string[],
     perPage: number,
-    headerEmbed: MessageEmbed,
+    headerEmbed: Embed,
     fieldBuilder: (resp: string, index: number, start: number) => string[],
     timeout: number,
     targetChannel?: Message['channel'],
 }
 
 interface slicedEmbedOptions {
-    data: EmbedFieldData[],
-    headerEmbed: Omit<MessageEmbedOptions, "fields">,
+    data: APIEmbedField[],
+    headerEmbed: Omit<APIEmbed, "fields">,
     size?: number;
 }
 
@@ -33,13 +33,13 @@ function paginatedEmbed(
         /**
          * @param {number} start The index to start from.
          */
-        const embed = new MessageEmbed(headerEmbed);
+        const embed = new EmbedBuilder(headerEmbed);
         const current = targetStructure.slice(start, start + perPage);
         const descr = headerEmbed.description ? headerEmbed.description : '';
         embed.setDescription(descr + `\n\n**(__${start / perPage + 1}__/${Math.ceil(targetStructure.length / perPage)})**`);
         current.forEach((resp, index) => {
             const fieldArr = fieldBuilder(resp.substring(0, 1023), index, start);
-            embed.addField(fieldArr[0], fieldArr[1]);
+            embed.addFields({ name: fieldArr[0], value: fieldArr[1] });
         });
         return embed
     }
@@ -79,12 +79,12 @@ function paginatedEmbed(
 
 function sliceToEmbeds({
     data, headerEmbed, size = 20
-}: slicedEmbedOptions): MessageEmbed[] {
+}: slicedEmbedOptions): EmbedBuilder[] {
     if (size > 20) throw new Error("embed fields are 20 max");
-    const embeds = [new MessageEmbed(headerEmbed)];
+    const embeds = [new EmbedBuilder(headerEmbed)];
     for (let i = 0; i < data.length; i += size) {
         if (i >= size * 9) return embeds;
-        embeds.push(new MessageEmbed().addFields(data.slice(i, i + size)));
+        embeds.push(new EmbedBuilder().addFields(data.slice(i, i + size)));
     }
     return embeds;
 }

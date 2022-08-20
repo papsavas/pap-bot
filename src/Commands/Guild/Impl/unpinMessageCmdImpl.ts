@@ -1,4 +1,4 @@
-import { Collection, ContextMenuInteraction, Message, MessageApplicationCommandData, MessageEmbed, Snowflake } from "discord.js";
+import { ApplicationCommandType, Collection, Colors, ContextMenuCommandInteraction, EmbedBuilder, Message, MessageApplicationCommandData, Snowflake } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -28,16 +28,16 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
     getCommandData(guild_id: Snowflake): MessageApplicationCommandData {
         return {
             name: this.keyword,
-            type: 'MESSAGE'
+            type: ApplicationCommandType.Message
         }
     }
 
-    async interactiveExecute(interaction: ContextMenuInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ContextMenuCommandInteraction): Promise<unknown> {
         const msgId = interaction.options.getMessage("message").id;
         const message = await interaction.channel.messages.fetch(msgId);
         if (!message?.pinned)
             return interaction.reply({
-                embeds: [new MessageEmbed({ description: `[message](${message.url}) is not pinned 🙂` })],
+                embeds: [new EmbedBuilder({ description: `[message](${message.url}) is not pinned 🙂` })],
                 ephemeral: true
             })
         else if (!message?.pinnable)
@@ -50,7 +50,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
             .then((unpinned) => {
                 interaction.reply({
                     embeds: [
-                        new MessageEmbed({
+                        new EmbedBuilder({
                             author: {
                                 name: interaction.user.username,
                                 iconURL: interaction.user.avatarURL()
@@ -59,7 +59,7 @@ export class UnpinMessageCmdImpl extends AbstractGuildCommand implements unpinMe
                             description: unpinned.content?.length > 0 ?
                                 `[${unpinned.content.substring(0, 100)}...](${unpinned.url})` :
                                 `[Click to jump](${unpinned.url})`,
-                            color: 'RED',
+                            color: Colors.Red,
                         })
                     ]
                 })

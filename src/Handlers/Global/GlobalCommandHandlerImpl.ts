@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, ButtonInteraction, CacheType, Message, MessageReaction, SelectMenuInteraction, User } from 'discord.js';
+import { ButtonInteraction, CacheType, CommandInteraction, Message, MessageReaction, SelectMenuInteraction, User } from 'discord.js';
 import { MockMessageCmdImpl } from '../../Commands/Global/Impl/mockMessageCmdImpl';
 import { tictactoeCmdImpl } from '../../Commands/Global/Impl/tictactoeCmdImpl';
 import { userNotesCmdImpl } from '../../Commands/Global/Impl/userNotesCmdImpl';
@@ -27,8 +27,8 @@ export class GlobalCommandHandlerImpl extends AbstractHandler implements GlobalC
         return handler;
     }
 
-    onSlashCommand(interaction: BaseCommandInteraction): Promise<unknown> {
-        return this.commandManager.onSlashCommand(interaction);
+    onCommand(interaction: CommandInteraction): Promise<unknown> {
+        return this.commandManager.onCommand(interaction);
     }
     onButton(interaction: ButtonInteraction<CacheType>): Promise<unknown> {
         throw new Error('Method not implemented.');

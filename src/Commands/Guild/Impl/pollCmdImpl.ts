@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageEmbed, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, EmbedBuilder, GuildMember, ImageFormat, Message, Snowflake, TextChannel } from "discord.js";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { AbstractGuildCommand } from "../AbstractGuildCommand";
@@ -29,31 +29,31 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: textOptionLiteral,
                     description: 'text to poll',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
         const channel = interaction.channel as TextChannel;
         const member = interaction.member as GuildMember;
         return channel.send({
             embeds: [
-                new MessageEmbed(
+                new EmbedBuilder(
                     {
                         title: `Vote`,
-                        color: '#D8F612',
+                        color: Colors.Yellow,
                         description: interaction.options.getString(textOptionLiteral, true),
                         author: {
                             name: member.displayName,
-                            icon_url: member.user.avatarURL({ format: 'png' })
+                            icon_url: member.user.avatarURL({ extension: ImageFormat.PNG })
                         },
                         //add blank
                         fields: [{
@@ -80,14 +80,14 @@ export class PollCmdImpl extends AbstractGuildCommand implements pollCmd {
         const commandMsg = message;
         return (commandMsg.channel as TextChannel).send({
             embeds: [
-                new MessageEmbed(
+                new EmbedBuilder(
                     {
                         title: `Ψηφίστε`,
-                        color: '#D8F612',
+                        color: Colors.Yellow,
                         description: args1,
                         author: {
                             name: commandMsg.member.displayName,
-                            icon_url: commandMsg.member.user.avatarURL({ format: 'png' })
+                            icon_url: commandMsg.member.user.avatarURL({ extension: ImageFormat.PNG })
                         },
                         //add blank
                         fields: [{

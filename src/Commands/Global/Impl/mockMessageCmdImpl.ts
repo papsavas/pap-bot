@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Message, Snowflake } from 'discord.js';
 import { commandLiteral } from '../../../Entities/Generic/command';
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import UpperLowerCaseSwitching from '../../../tools/upperLowerCaseSwitching';
@@ -31,19 +31,19 @@ export class MockMessageCmdImpl extends AbstractGlobalCommand implements mockMes
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: textOptionLiteral,
                     description: 'text to mock',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction): Promise<any> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<any> {
         return interaction.reply(UpperLowerCaseSwitching(interaction.options.getString(textOptionLiteral, true)));
     }
 

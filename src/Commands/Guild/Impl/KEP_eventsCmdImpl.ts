@@ -1,5 +1,5 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, GuildMember, Message, MessageActionRow, MessageAttachment, MessageButton, MessageEmbed, Snowflake } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Collection, Colors, ComponentType, EmbedBuilder, GuildMember, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import { GaxiosError } from "googleapis-common";
 import moment from "moment";
 import { guilds } from "../../..";
@@ -42,34 +42,34 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: refreshLiteral,
                     description: `Ανανεώνει τα events`,
-                    type: "SUB_COMMAND"
+                    type: ApplicationCommandOptionType.Subcommand
                 },
                 {
                     name: registerLiteral,
                     description: "Δημιουργεί events από δοσμένο Google Sheet",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: urlOption,
                             description: "Σύνδεσμος για το Google Sheet",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: fieldOption,
                             description: "Όνομα Φύλλου",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: typeOption,
                             description: "Τύπος Event",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true,
                             choices: [
                                 { name: lectureLiteral, value: lectureLiteral },
@@ -81,7 +81,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         await interaction.deferReply({ ephemeral: true, fetchReply: true });
         const subCommand = interaction.options.getSubcommand(true);
         return this.handleRequest(interaction, subCommand);
@@ -93,10 +93,10 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
 
 
 
-    async handleRequest(interaction: CommandInteraction, subcommand: string) {
+    async handleRequest(interaction: ChatInputCommandInteraction, subcommand: string) {
         const member = interaction.member instanceof GuildMember ?
             interaction.member : await interaction.guild.members.fetch(interaction.member.user.id);
-        if (!member.permissions.has("MANAGE_GUILD"))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.editReply({ content: "`MANAGE_GUILD` permissions required" });
         switch (subcommand) {
             case refreshLiteral: {
@@ -110,23 +110,23 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                 const courseEvents = await fetchCourseEvents(field, url);
                 const text = JSON.stringify(courseEvents, null, "\t");
                 const buffer = Buffer.from(text);
-                const file = new MessageAttachment(buffer, new Date().toISOString() + "_CalendarPendingEvents.json");
+                const file = new AttachmentBuilder(buffer, { name: new Date().toISOString() + "_CalendarPendingEvents.json" });
                 await interaction.editReply({
                     content: "Is this format valid?",
                     files: [file],
-                    components: [new MessageActionRow({
+                    components: [new ActionRowBuilder<ButtonBuilder>({
                         components: [
-                            new MessageButton({
+                            new ButtonBuilder({
                                 customId: "yes",
                                 label: "Yes",
-                                emoji: "✅",
-                                style: "SUCCESS"
+                                emoji: { name: "✅" },
+                                style: ButtonStyle.Success
                             }),
-                            new MessageButton({
+                            new ButtonBuilder({
                                 customId: "no",
                                 label: "No",
-                                emoji: "❌",
-                                style: "DANGER"
+                                emoji: { name: "❌" },
+                                style: ButtonStyle.Danger
                             })
                         ]
                     })]
@@ -136,7 +136,7 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     const btn = await interaction.channel.awaitMessageComponent({
                         filter: (i) =>
                             i.user.id === interaction.user.id && ['yes', 'no'].includes(i.customId),
-                        componentType: "BUTTON",
+                        componentType: ComponentType.Button,
                         time: 60000
 
                     });
@@ -186,11 +186,11 @@ export class KEP_eventsCmdImpl extends AbstractGuildCommand implements KEP_event
                     })
                 )
                     .catch(err => interaction.followUp({
-                        embeds: [new MessageEmbed({
+                        embeds: [new EmbedBuilder({
                             title: "Missed event",
                             description: err.response?.data.summary ? undefined : err.toString(),
                             fields: [{ name: "Name", value: `${(err as GaxiosError).response.data?.summary ?? "-"}` }],
-                            color: "DARK_RED"
+                            color: Colors.DarkRed
                         })],
                         ephemeral: true
                     }))

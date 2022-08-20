@@ -1,5 +1,6 @@
 
-import { ApplicationCommandData, Collection, CommandInteraction, Message, MessageAttachment, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionType, ApplicationCommandType, AttachmentBuilder, BufferResolvable, ChatInputCommandInteraction, Collection, CommandInteraction, Message, PermissionFlagsBits, Snowflake } from "discord.js";
+import { Stream } from "node:stream";
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
 import { fetchCourses, fetchTeacherCourses, linkTeacherToCourse, unlinkTeacherFromCourse } from "../../../Queries/KEP/Course";
@@ -29,23 +30,23 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: linkLiteral,
                     description: "Συνδέει ένα μάθημα με καθηγητ@",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: codeLiteral,
                             description: "Ο κωδικός του μαθήματος",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: usernameLiteral,
                             description: "Το username καθηγητ@",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         }
                     ]
@@ -53,18 +54,18 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
                 {
                     name: unlinkLiteral,
                     description: "Αποσυνδέει καθηγητ@ από ένα μάθημα",
-                    type: "SUB_COMMAND",
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: codeLiteral,
                             description: "Ο κωδικός του μαθήματος",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         },
                         {
                             name: usernameLiteral,
                             description: "Το username καθηγητ@",
-                            type: "STRING",
+                            type: ApplicationCommandOptionType.String,
                             required: true
                         }
                     ]
@@ -73,14 +74,14 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
                 {
                     name: listLiteral,
                     description: `Εμφανίζει καταχωρημένες διδασκαλίες`,
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                 }
             ]
         }
     }
-    async interactiveExecute(interaction: CommandInteraction): Promise<unknown> {
+    async interactiveExecute(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const member = await interaction.guild.members.fetch(interaction.user.id);
-        if (!member.permissions.has("MANAGE_GUILD"))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.reply("`MANAGE_GUILD` permissions required")
         await interaction.deferReply({ ephemeral: false })
         const subcommand = interaction.options.getSubcommand(true);
@@ -90,7 +91,7 @@ export class KEP_courseTeacherCmdImpl extends AbstractGuildCommand implements KE
 
     }
     async execute(message: Message, { arg1, arg2, arg3 }: commandLiteral): Promise<unknown> {
-        if (!message.member.permissions.has("MANAGE_GUILD"))
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageGuild))
             return message.reply("`MANAGE_GUILD` permissions required")
         return handleRequest(message, arg1, arg2, arg3, this.usage);
     }
@@ -104,11 +105,11 @@ const handleRequest = async (source: Message | CommandInteraction, action: strin
     const respondText = (res: string) => source instanceof CommandInteraction ?
         source.editReply(res) : source.reply(res);
 
-    const respondFile = (att: MessageAttachment) => source instanceof CommandInteraction ?
+    const respondFile = (att: BufferResolvable | Stream) => source instanceof CommandInteraction ?
 
         source.editReply({ files: [att] }) : source.reply({ files: [att] });
 
-    const respond = (content: string | MessageAttachment) =>
+    const respond = (content: string | BufferResolvable | Stream) =>
         typeof content === 'string' ? respondText(content) : respondFile(content);
 
     switch (action) {
@@ -132,7 +133,7 @@ async function unlink(courseCode: string, teacherUsername: string) {
     return JSON.stringify(await unlinkTeacherFromCourse(courseCode, teacherUsername))
 }
 
-async function list(): Promise<MessageAttachment> {
+async function list(): Promise<BufferResolvable | Stream> {
     const tc = await fetchTeacherCourses();
     const teachers = await fetchTeachers();
     const courses = await fetchCourses();
@@ -141,7 +142,9 @@ async function list(): Promise<MessageAttachment> {
         const course = courses.find(c => c.uuid === el.course_id);
         return `${teacher.username} (${teacher.full_name}) - ${course.name} (${course.code})`
     });
-    const buffer = Buffer.from(textArr.sort().join("\n"));
-    return new MessageAttachment(buffer, new Date().toISOString() + "_teacher_courses.txt");
+    const buffer: BufferResolvable = Buffer.from(textArr.sort().join("\n"));
+    return new AttachmentBuilder(buffer, {
+        name: new Date().toISOString() + "_teacher_courses.txt"
+    }).attachment;
 }
 

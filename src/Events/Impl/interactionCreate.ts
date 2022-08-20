@@ -1,4 +1,4 @@
-import { ClientEvents, Interaction, MessageEmbed } from "discord.js";
+import { ChannelType, ClientEvents, EmbedBuilder, Interaction } from "discord.js";
 import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guilds } from "../..";
 
 
@@ -6,18 +6,18 @@ import { bugsChannel, dmHandler, globalCommandHandler, globalCommandsIDs, guilds
 const name: keyof ClientEvents = "interactionCreate";
 
 const execute = async (interaction: Interaction) => {
-    if (interaction.isApplicationCommand()) {
+    if (interaction.isCommand()) {
         if (globalCommandsIDs.includes(interaction.commandId)) {
-            globalCommandHandler.onSlashCommand(interaction)
+            globalCommandHandler.onCommand(interaction)
                 .catch(console.error);
         }
-        else if (interaction.guildId) {
+        else if (interaction.channel.type === ChannelType.GuildText) {
             guilds.get(interaction.guildId)
-                ?.onSlashCommand(interaction)
+                ?.onCommand(interaction)
                 .catch(console.error);
         }
-        else if (!interaction.channel.guild) {
-            dmHandler.onSlashCommand(interaction)
+        else if (interaction.channel.isDMBased()) {
+            dmHandler.onCommand(interaction)
                 .catch(console.error);
         }
         else {
@@ -44,7 +44,7 @@ const execute = async (interaction: Interaction) => {
                 ?.onSelectMenu(interaction)
                 .catch(console.error);
         }
-        else if (!interaction.channel.guild) {
+        else if (interaction.channel.isDMBased()) {
             dmHandler.onSelectMenu(interaction)
                 .catch(console.error);
             console.log('dm select received');
@@ -55,11 +55,11 @@ const execute = async (interaction: Interaction) => {
         console.log(`unhandled interaction type in ${interaction.channel.id} channel.TYPE = ${interaction.type}`);
         await bugsChannel.send({
             embeds: [
-                new MessageEmbed({
+                new EmbedBuilder({
                     title: `Untracked Interaction`,
                     description: `received untracked interaction in ${interaction.guild.name}`,
                     fields: [
-                        { name: `Type`, value: interaction.type },
+                        { name: `Type`, value: interaction.type.toString() },
                         { name: `Channel`, value: interaction.channel.toString() },
                         { name: `Interaction ID`, value: interaction.id }
                     ]

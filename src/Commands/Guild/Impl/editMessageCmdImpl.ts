@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, ChatInputApplicationCommandData, Collection, CommandInteraction, Message, MessageEditOptions, MessageEmbed, Permissions, Snowflake, TextChannel } from 'discord.js';
+import { ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, EmbedBuilder, Message, MessageEditOptions, PermissionFlagsBits, Snowflake, TextChannel } from 'discord.js';
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from '../../../Queries/Generic/Commands';
 import { resolveMessageURL } from '../../../tools/resolveMessageURL';
@@ -34,28 +34,28 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
         return {
             name: this.keyword,
             description: this.guide,
-            type: 'CHAT_INPUT',
+            type: ApplicationCommandType.ChatInput,
             options: [
                 {
                     name: msgURLOptionLiteral,
                     description: 'the URL of the message',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 },
                 {
                     name: editedMsgOptionLiteral,
                     description: 'new message',
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     required: true
                 }
             ]
         }
     }
 
-    async interactiveExecute(interaction: CommandInteraction) {
+    async interactiveExecute(interaction: ChatInputCommandInteraction) {
         const member = await interaction.guild.members.fetch(interaction.user.id);
         await interaction.deferReply({ ephemeral: true });
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return interaction.editReply(`\`MANAGE_GUILD\` permissions required`);
         const messageURL = interaction.options.getString(msgURLOptionLiteral, true) as Snowflake;
         const newMessageContent = interaction.options.getString(editedMsgOptionLiteral, true);
@@ -65,7 +65,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
 
     async execute(message: Message, { arg1, args2 }: commandLiteral) {
         const { member } = message;
-        if (!member.permissions.has(Permissions.FLAGS.MANAGE_GUILD))
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild))
             return message.reply(`\`MANAGE_GUILD\` permissions required`);
         return this.handler(message, arg1, { content: args2 });
     }
@@ -85,7 +85,7 @@ export class EditMessageCmdImpl extends AbstractGuildCommand implements editMess
                 this.respond(source, {
                     embeds:
                         [
-                            new MessageEmbed({
+                            new EmbedBuilder({
                                 description: `[edited message](${editedMessage.url})`
                             })
                         ]

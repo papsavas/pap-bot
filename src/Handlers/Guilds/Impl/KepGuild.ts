@@ -1,6 +1,5 @@
-import { ButtonInteraction, Client, Collection, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed, MessageReaction, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, MessageType, OverwriteType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, ThreadAutoArchiveDuration, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
-import { sanitizeDiacritics, toGreek } from "greek-utils";
 import moment from "moment-timezone";
 import 'moment/locale/el';
 import urlRegex from 'url-regex';
@@ -30,7 +29,6 @@ import { fetchKeywords } from '../../../Queries/KEP/Keywords';
 import { dropMutedMember, fetchMutedMembers, findMutedMember } from '../../../Queries/KEP/Member';
 import { banStudent, dropAllPendingStudents, dropStudents, fetchStudents, unbanStudent } from '../../../Queries/KEP/Student';
 import { fetchTeachers } from '../../../Queries/KEP/Teacher';
-import { textSimilarity } from '../../../tools/cmptxt';
 import { fetchCalendarEvents } from '../../../tools/Google/Gcalendar';
 import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
@@ -90,7 +88,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         this.students = await fetchStudents();
         this.courses = await fetchCourses();
         this.logsChannel = await this.guild.channels.fetch(channels.logs) as TextChannel;
-        this.#contentScanChannel = await this.guild.channels.fetch(channels.content_scan) as TextChannel;
 
         //load teachers
         const tc = await fetchTeacherCourses();
@@ -158,7 +155,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             }
 
             case channels.feedback: {
-                if (message.type === "DEFAULT") {
+                if (message.type === MessageType.Default) {
                     await message.react('👍');
                     await message.react('👎');
                 }
@@ -166,10 +163,10 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
             }
 
             case channels.questions: {
-                return message.type === "DEFAULT" ?
+                return message.type === MessageType.Default ?
                     message.startThread({
                         name: message.id,
-                        autoArchiveDuration: "MAX",
+                        autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
                         reason: `question asked by ${message.author.tag}`
                     }) :
                     message.deletable ?
@@ -192,13 +189,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
         const logChannel = message.guild.channels.cache.get(channels.logs) as TextChannel;
         return logChannel?.send({
             embeds: [
-                new MessageEmbed(
+                new EmbedBuilder(
                     {
                         author: {
                             name: message.author.username,
-                            icon_url: message.author.avatarURL({ format: 'png' })
+                            icon_url: message.author.avatarURL({ extension: ImageFormat.PNG })
                         },
-                        color: `#ffffff`,
+                        color: Colors.White,
                         description: `**🗑️ Διεγράφη Μήνυμα από ${message.member?.toString() ?? message.author.username} στο ${message.channel.toString()}**
     *Μήνυμα:* "**${message.content}**\nMedia: ${message.attachments.first()?.proxyURL ?? '-'}"`,
                         footer: {
@@ -244,18 +241,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                         }
                     }
 
-                }
-
-                case channels.content_scan: {
-                    switch (reaction.emoji.name) {
-                        case '🗑': {
-                            return reaction.message.deletable ? reaction.message.delete() : null
-                        }
-
-                        case '👀': {
-                            return reaction.message.reactions.removeAll().catch()
-                        }
-                    }
                 }
 
                 default:
@@ -307,15 +292,15 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     },
                     title: `${semester}ο Εξάμηνο`
                 }
-                const logEmbeds: MessageEmbed[] = [];
+                const logEmbeds: EmbedBuilder[] = [];
                 if (added.length > 0) logEmbeds.push(
-                    new MessageEmbed(header)
-                        .setColor("BLUE")
+                    EmbedBuilder.from(header)
+                        .setColor(Colors.Blue)
                         .addFields([{ name: 'Προστέθηκαν', value: added }])
                 );
                 if (removedRoles.size > 0) logEmbeds.push(
-                    new MessageEmbed(header)
-                        .setColor("RED")
+                    EmbedBuilder.from(header)
+                        .setColor(Colors.Red)
                         .addFields([{
                             name: 'Αφαιρέθηκαν', value: removedRoles
                                 .map(r => `**• ${r.name}**`)
@@ -324,7 +309,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 );
 
                 if (logEmbeds.length === 0)
-                    logEmbeds.push(new MessageEmbed(header).setDescription("Δεν υπήρξαν αλλαγές"))
+                    logEmbeds.push(new EmbedBuilder(header).setDescription("Δεν υπήρξαν αλλαγές"))
 
                 return select.reply({
                     embeds: logEmbeds,
@@ -351,42 +336,48 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                             content: `Έχει ήδη δημιουργηθεί κανάλι <#${existingChannel.id}>`,
                             ephemeral: true
                         })
-                    const appealChannel = /*interaction.channel as TextChannel;*/ await interaction.guild.channels.create(channelName, {
-                        type: 'GUILD_TEXT',
+                    const appealChannel = /*interaction.channel as TextChannel;*/ await interaction.guild.channels.create({
+                        name: channelName,
+                        type: ChannelType.GuildText,
                         parent: categories.mod,
                         permissionOverwrites: [
                             {
                                 id: interaction.client.user.id,
-                                allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'ATTACH_FILES', 'EMBED_LINKS'],
-                                type: "member"
+                                allow: [
+                                    PermissionFlagsBits.ViewChannel,
+                                    PermissionFlagsBits.SendMessages,
+                                    PermissionFlagsBits.AttachFiles,
+                                    PermissionFlagsBits.EmbedLinks,
+                                ],
+                                type: OverwriteType.Member
                             },
                             {
                                 id: roles.mod,
-                                type: "role",
+                                type: OverwriteType.Role,
                                 allow: [
-                                    "VIEW_CHANNEL",
-                                    "SEND_MESSAGES",
-                                    "READ_MESSAGE_HISTORY",
-                                    "ATTACH_FILES",
-                                    "ADD_REACTIONS",
-                                    "MANAGE_CHANNELS",
-                                    "MANAGE_MESSAGES",
+                                    PermissionFlagsBits.ViewChannel,
+                                    PermissionFlagsBits.SendMessages,
+                                    PermissionFlagsBits.ReadMessageHistory,
+                                    PermissionFlagsBits.AttachFiles,
+                                    PermissionFlagsBits.AddReactions,
+                                    PermissionFlagsBits.ManageChannels,
+                                    PermissionFlagsBits.ManageMessages,
                                 ]
                             },
                             {
                                 id: userid,
-                                type: 'member',
+                                type: OverwriteType.Member,
                                 allow: [
-                                    "ATTACH_FILES",
-                                    "VIEW_CHANNEL",
-                                    "SEND_MESSAGES",
-                                    "READ_MESSAGE_HISTORY"
+                                    PermissionFlagsBits.ViewChannel,
+                                    PermissionFlagsBits.SendMessages,
+                                    PermissionFlagsBits.AttachFiles,
+                                    PermissionFlagsBits.ReadMessageHistory,
                                 ]
                             },
                             {
                                 id: interaction.guildId,
-                                type: 'role',
-                                deny: ['VIEW_CHANNEL']
+                                type: OverwriteType.Role,
+                                deny: [PermissionFlagsBits.ViewChannel]
                             }
                         ]
                     });
@@ -395,7 +386,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     return appealChannel.send({
                         content: `<@${userid}>`,
                         embeds: [
-                            new MessageEmbed({
+                            new EmbedBuilder({
                                 title: "Έφεση",
                                 description: `<@${userid}> Θα πρέπει να στείλετε εδώ μία φωτογραφία της ακαδημαϊκή σας ταυτότητας με εμφανή τον αριθμό μητρώου`,
                                 fields: [{
@@ -404,7 +395,7 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                                     inline: true
                                 }],
                                 timestamp: new Date(),
-                                color: "RANDOM"
+                                color: Colors.Red
                             })
                         ],
                         allowedMentions: {
@@ -440,13 +431,13 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                 studentCourses.sweep((v, k) => selectedCourses.some(sc => sc.role_id === k));
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed({
+                        new EmbedBuilder({
                             author: {
                                 name: member.displayName,
                                 icon_url: member.user.avatarURL()
                             },
                             title: `${semester}ο Εξάμηνο`,
-                            color: "RED",
+                            color: Colors.Red,
                             fields: [
                                 {
                                     name: 'Αφαιρέθηκαν',
@@ -462,68 +453,6 @@ export class KepGuild extends AbstractGuild implements GenericGuild {
                     ephemeral: true
                 });
             }
-
-            case channels.content_scan: {
-                await interaction.deferReply({ ephemeral: true })
-                const message = await interaction.channel.messages.fetch(interaction.message.id);
-                switch (interaction.customId) {
-
-                    case buttons.warnSus: {
-                        return interaction.editReply(`Until pop up release, warns are added manually.\n\`~warn <member_id> <reason>\` at <#${channels.skynet}>`)
-                    }
-
-                    case buttons.focusSus: {
-                        return message.edit({
-                            content: `<@&${roles.mod}> **Requires Attention**`,
-                            embeds: message.embeds.map(e => e.setColor("RED")),
-                            components: [
-                                new MessageActionRow().setComponents(
-                                    new MessageButton(susWarnBtn), new MessageButton(susFocusBtn).setDisabled(), new MessageButton(susResolvedBtn), new MessageButton(susDeleteBtn).setDisabled(),
-                                    //include jump button
-                                    message.components[0].components.find(c => !c.customId)
-                                ),
-                                new MessageActionRow().setComponents(new MessageButton(susSurveillanceBtn))
-                            ],
-                            allowedMentions: { parse: ["roles"] }
-                        })
-                            .then(() => interaction.editReply("Marked as focused"))
-
-                    }
-
-                    case buttons.resolvedSus: {
-                        return message.edit({
-                            content: `*Marked as resolved by ${interaction.member.toString()} at ${moment().tz("Europe/Athens").format("LLLL")}*`,
-                            allowedMentions: { parse: [] },
-                            embeds: message.embeds.map(e => e.setColor("GREEN").setTitle("Resolved ✅\n" + e.title)),
-                            components: message.components
-                                .map(ar => ar.setComponents(
-                                    ar.components
-                                        .map(c => c.customId ? c.setDisabled() : c) //keep link btn enabled
-                                ))
-
-                        })
-                            .then(() => interaction.editReply("Marked as Resolved"))
-                    }
-
-                    case buttons.deleteSus: {
-                        return message.delete()
-                            .then(() => interaction.editReply("Message Deleted"));
-                    }
-
-                    case buttons.surveillanceSus: {
-                        const member = await interaction.guild.members.fetch(interaction.user.id);
-                        return (member.roles.cache.has(roles.overseer) ?
-                            member.roles.remove(roles.overseer) : member.roles.add(roles.overseer))
-                            .then(() => interaction.editReply("Surveillance role toggled"))
-                    }
-
-                    default:
-                        return interaction.editReply(`No listener for button \`${interaction.customId}\``);
-                }
-            }
-
-            default:
-                return super.onButton(interaction);
         }
     }
 
@@ -568,12 +497,12 @@ function handleExaminedChannels(
                 scheduleTask(
                     ev.start.dateTime,
                     () => channel.permissionOverwrites.edit(course.role_id, {
-                        SEND_MESSAGES: false
+                        SendMessages: false
                     })
                 ).then(() => scheduleTask(
                     ev.end.dateTime,
                     () => channel.permissionOverwrites.edit(course.role_id, {
-                        SEND_MESSAGES: true
+                        SendMessages: true
                     })
                 ));
             }
@@ -605,105 +534,23 @@ async function handleMutedMembers(guild: Guild) {
                 const member = await guild.members.fetch(mm.member_id);
                 await member?.roles?.set(mm.roles);
                 await dropMutedMember(member.id);
-                const headerEmb = new MessageEmbed({
+                const headerEmb = new EmbedBuilder({
                     author: {
                         name: `CyberSocial Excluded`,
                         icon_url: `https://i.imgur.com/92vhTqK.png`
                     },
                     title: `Mute Logs`,
-                    color: "DARKER_GREY",
+                    color: Colors.DarkerGrey,
                     footer: { text: `Execution Number: 1662` },
                 })
                 await (guild.channels.cache.get(channels.logs) as TextChannel).send({
                     embeds: [
-                        new MessageEmbed(headerEmb)
+                        EmbedBuilder.from(headerEmb)
                             .setDescription(`Unmuted ${member.toString()}`)
                     ]
                 })
             }
         })
-    }
-}
-
-const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
-
-const susWarnBtn = new MessageButton({
-    customId: warnSus,
-    style: "PRIMARY",
-    label: "Warn",
-    emoji: "⚠"
-})
-const susFocusBtn = new MessageButton({
-    customId: focusSus,
-    style: "DANGER",
-    emoji: "🎯",
-    label: "Focus",
-});
-const susResolvedBtn = new MessageButton({
-    customId: resolvedSus,
-    style: "SUCCESS",
-    emoji: "✅",
-    label: "Resolved",
-})
-const susDeleteBtn = new MessageButton({
-    customId: deleteSus,
-    style: "SECONDARY",
-    emoji: "🗑",
-    label: "Delete"
-})
-
-const susJumpBtn = (url: string) => new MessageButton({
-    style: "LINK",
-    url,
-    label: "Jump",
-})
-
-const susSurveillanceBtn = new MessageButton({
-    customId: surveillanceSus,
-    style: "PRIMARY",
-    emoji: "🚨",
-    label: "Surveillance"
-
-})
-
-/**
- * @deprecated due to Discord Automod 
- * */
-function scanContent({ content, author, member, channel, url, attachments }: Message, keywords: string[], logChannel: TextChannel): void {
-    const normalize = (text: string) => sanitizeDiacritics(toGreek(text)).trim();
-    const index = normalize(content).split(' ').findIndex(c =>
-        keywords.includes(c) ||
-        keywords.some(k => c.includes(k)) ||
-        keywords.some(k => textSimilarity(c, k) > 0.9)
-    );
-    const found = index === -1 ? undefined : content.split(' ')[index];
-    if (found) {
-        logChannel.send({
-            embeds: [new MessageEmbed({
-                author: {
-                    name: member.displayName ?? author.username,
-                    icon_url: author.avatarURL()
-                },
-                title: `Keyword Detected: "${found}"`,
-                description: `${content.replace(found, `**${found}**`)}`,
-                color: "LIGHT_GREY",
-                image: { proxyURL: attachments?.first()?.proxyURL },
-                fields: [
-                    { name: "Channel", value: channel.toString(), inline: false },
-                    { name: "Member", value: member.toString(), inline: false },
-                    { name: "Member ID", value: member.id, inline: true }
-                ],
-                timestamp: new Date(),
-            })],
-            components: [
-                new MessageActionRow().addComponents(
-                    [susWarnBtn, susFocusBtn, susResolvedBtn, susDeleteBtn, susJumpBtn(url)]
-                        .map(source => new MessageButton(source))
-                ),
-                new MessageActionRow().addComponents(susSurveillanceBtn)
-            ],
-        })
-            .catch(err => console.log(`Could not message for detected keyword\n${author}: ${content} on ${url}`));
     }
 }
 
