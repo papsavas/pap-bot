@@ -27,23 +27,23 @@ const emtpyBoard: ActionRowBuilder<ButtonBuilder>[] = ["11", "21", "31"]
 const isWin = (board: ButtonBuilder[][]) => {
     //Check each row
     for (let i = 0; i < 3; i++) {
-        if (board[i][0].style == board[i][1].style && board[i][1].style == board[i][2].style && board[i][0].disabled) {
+        if (board[i][0].data.style == board[i][1].data.style && board[i][1].data.style == board[i][2].data.style && board[i][0].data.disabled) {
             return true;
         }
     }
 
     //Check each column
     for (let j = 0; j < 3; j++) {
-        if (board[0][j].style == board[1][j].style && board[1][j].style == board[2][j].style && board[0][j].disabled) {
+        if (board[0][j].data.style == board[1][j].data.style && board[1][j].data.style == board[2][j].data.style && board[0][j].data.disabled) {
             return true
         }
     }
 
     //Check the diagonals
-    if (board[0][0].style == board[1][1].style && board[1][1].style == board[2][2].style && board[0][0].disabled) {
+    if (board[0][0].data.style == board[1][1].data.style && board[1][1].data.style == board[2][2].data.style && board[0][0].data.disabled) {
         return true
     }
-    if (board[2][0].style == board[1][1].style && board[1][1].style == board[0][2].style && board[2][0].disabled) {
+    if (board[2][0].data.style == board[1][1].data.style && board[1][1].data.style == board[0][2].data.style && board[2][0].data.disabled) {
         return true
     }
 }
@@ -106,12 +106,14 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
         )
         let turn = user.id;
         collector.on("collect", async (buttonInteraction) => {
-            if (![user.id, opponent.id].includes(buttonInteraction.user.id))
-                return buttonInteraction.reply({ content: `you were not invited for this game`, ephemeral: true });
-
-            if (turn !== buttonInteraction.user.id)
-                return buttonInteraction.reply({ content: `It's not your turn, wait for opponent`, ephemeral: true });
-
+            if (![user.id, opponent.id].includes(buttonInteraction.user.id)) {
+                await buttonInteraction.reply({ content: `you were not invited for this game`, ephemeral: true });
+                return;
+            }
+            if (turn !== buttonInteraction.user.id) {
+                await buttonInteraction.reply({ content: `It's not your turn, wait for opponent`, ephemeral: true });
+                return;
+            }
             if (buttonInteraction.isButton()) {
                 const id = buttonInteraction.customId;
                 const basePlayedButton = new ButtonBuilder({
@@ -133,7 +135,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
                             b.customId === id ?
                                 buttonInteraction.user.id === user.id ?
                                     userPlayedButton : opponentPlayedButton
-                                : ButtonBuilder.from(b)
+                                : ButtonBuilder.from(b as ButtonComponent)
                         ))
                 )
 
@@ -143,7 +145,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
                 turn = turn === user.id ? opponent.id : user.id;
 
-                const buttons: ButtonComponent[][] = [];
+                const buttons: ButtonBuilder[][] = [];
                 updatedBoard.forEach((ar, i) => {
                     buttons.push([]);
                     buttons[i].push(...ar.components);
@@ -182,7 +184,7 @@ export class tictactoeCmdImpl extends AbstractGlobalCommand implements tictactoe
 
 const disabledBoardComponents = async (msg: Message) => (await msg.fetch()).components.map(ar => new ActionRowBuilder<ButtonBuilder>()
     .addComponents(
-        ar.components.map(b =>
-            ButtonBuilder.from(b).setDisabled()
+        ar.components.map((b) =>
+            ButtonBuilder.from(b as ButtonComponent).setDisabled()
         ))
 )
