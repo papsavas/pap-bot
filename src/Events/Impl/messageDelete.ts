@@ -1,6 +1,6 @@
 import { ChannelType, ClientEvents, Message, PartialMessage } from "discord.js";
-import { dmHandler, guilds } from "../..";
-
+import { dmHandler } from "../../Inventory/DMs";
+import { guilds } from "../../Inventory/guilds";
 
 const name: keyof ClientEvents = "messageDelete";
 
@@ -21,12 +21,12 @@ const execute = async (deletedMessage: Message<boolean> | PartialMessage) => {
         case ChannelType.GuildPublicThread:
         case ChannelType.GuildNews:
         case ChannelType.GuildNewsThread:
-            guilds.get(deletedMessage.guild?.id)
+            guilds.get(deletedMessage.guildId)
                 ?.onMessageDelete(deletedMessage as Message)
                 .catch(console.error);
             break;
     }
 }
-}
+
 
 export default { name, execute }

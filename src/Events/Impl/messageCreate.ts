@@ -1,6 +1,7 @@
 import { ChannelType, ClientEvents, Message } from "discord.js";
-import { dmHandler, guilds } from "../..";
 import { creatorID } from '../../../bot.config.json';
+import { dmHandler } from "../../Inventory/DMs";
+import { guilds } from "../../Inventory/guilds";
 
 const name: keyof ClientEvents = 'messageCreate';
 const execute = async (message: Message) => {
@@ -35,7 +36,7 @@ const execute = async (message: Message) => {
         case ChannelType.GuildPublicThread:
         case ChannelType.GuildNews:
         case ChannelType.GuildNewsThread: {
-            guilds.get(message.guild.id)
+            guilds.get(message.guildId)
                 ?.onMessage(message)
                 .catch(console.error);
             break;

@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, User } from 'discord.js';
+import { ButtonInteraction, ChannelType, Client, Collection, Colors, EmbedBuilder, Guild, GuildBan, GuildChannel, GuildChannelManager, GuildMember, ImageFormat, Message, MessageReaction, MessageType, OverwriteType, PermissionFlagsBits, SelectMenuInteraction, Snowflake, TextChannel, ThreadAutoArchiveDuration, User } from 'discord.js';
 import { calendar_v3 } from 'googleapis';
 import moment from "moment-timezone";
 import 'moment/locale/el';
@@ -33,10 +33,8 @@ import { deleteDrivePermission } from '../../../tools/Google/Gdrive';
 import { scheduleTask } from '../../../tools/scheduler';
 import { AbstractGuild } from "../AbstractGuild";
 import { GenericGuild } from "../GenericGuild";
-const { sanitizeDiacritics, toGreek } = greekUtils;
 const { categories, channels, roles } = kepIds;
 const { buttons, examsPrefix } = literals;
-const { warnSus, focusSus, resolvedSus, deleteSus, surveillanceSus } = buttons;
 const { channels: WOAPchannels } = woapIds;
 moment.tz("Europe/Athens");
 

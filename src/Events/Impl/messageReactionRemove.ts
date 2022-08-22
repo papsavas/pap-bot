@@ -1,5 +1,6 @@
 import { ChannelType, ClientEvents, MessageReaction, PartialMessageReaction, PartialUser, User } from "discord.js";
-import { dmHandler, guilds } from "../..";
+import { dmHandler } from "../../Inventory/DMs";
+import { guilds } from "../../Inventory/guilds";
 
 
 const name: keyof ClientEvents = "messageReactionRemove";
@@ -19,7 +20,7 @@ const execute = async (reaction: MessageReaction | PartialMessageReaction, user:
         case ChannelType.GuildPublicThread:
         case ChannelType.GuildNews:
         case ChannelType.GuildNewsThread:
-            guilds.get(reaction.message.guild?.id)
+            guilds.get(reaction.message.guildId)
                 ?.onMessageReactionRemove(
                     r as MessageReaction,
                     u as User,
@@ -27,6 +28,5 @@ const execute = async (reaction: MessageReaction | PartialMessageReaction, user:
             break;
     }
 };
-}
 
 export default { name, execute }

@@ -73,15 +73,15 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
 
     }
 
-    execute({ channel, member }: Message, { arg1 }: commandLiteral) {
+    execute({ channel, member }: Message, { arg1 }: commandLiteral): Promise<unknown> {
         const number = parseInt(arg1) == 100 ?
             100 : parseInt(arg1) == 0 ?
                 0 : parseInt(arg1) + 1;
         if (isNaN(number))
             return Promise.reject(new Error(`You need to provide a number between 1-100`));
 
-        if (member.permissions.has(PermissionFlagsBits.ManageMessages))
-            return (channel as TextChannel).bulkDelete(number)
+        return member.permissions.has(PermissionFlagsBits.ManageMessages) ?
+            (channel as TextChannel).bulkDelete(number)
                 .then(delMessages => {
                     let descr = '';
                     [...delMessages.values()].reverse().map(msg => {
@@ -101,8 +101,8 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
                     });
                 })
                 .catch()
-        else
-            return Promise.reject('Requires `MANAGE_MESSAGES` permission')
+            :
+            Promise.reject('Requires `MANAGE_MESSAGES` permission')
     }
 }
 

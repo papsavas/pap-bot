@@ -10,7 +10,7 @@ import { WoapGuild } from "../Handlers/Guilds/Impl/WoapGuild";
 const { guildId: kepGuildId } = kepIds;
 const { guildId: woapGuildId } = woapIds;
 const guilds: Guilds = new Collection<Snowflake, GenericGuild>();
-// Initializing the guilds
+// Initializing guilds
 guilds.set(kepGuildId, await KepGuild.init(kepGuildId));
 guilds.set(woapGuildId, await WoapGuild.init(woapGuildId));
 for (const guildID of PAP.guilds.cache.keys()) {

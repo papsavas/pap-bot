@@ -1,9 +1,8 @@
 import {
     ButtonInteraction, ChannelType, Client, Colors, CommandInteraction, EmbedBuilder, Guild,
-    GuildBan, GuildMember, Message, MessageReaction, PermissionFlagsBits, SelectMenuInteraction,
+    GuildBan, GuildMember, Message, MessageReaction, OverwriteType, PermissionFlagsBits, SelectMenuInteraction,
     Snowflake, User, VoiceState
 } from 'discord.js';
-import { OverwriteType } from 'discord.js/node_modules/discord-api-types/v9';
 import { GenericGuildCommand } from '../../Commands/Guild/GenericGuildCommand';
 import { bookmarkCmdImpl } from '../../Commands/Guild/Impl/bookmarkCmdImpl';
 import { ClearMessagesCmdImpl } from "../../Commands/Guild/Impl/clearMessagesCmdImpl";

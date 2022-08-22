@@ -3,7 +3,7 @@ import * as fs from 'node:fs'
 import readline from 'readline'
 import { googleCredentials, googleToken } from '../../Entities/Generic/secrets'
 
-const TOKEN_PATH = './secrets/token.json'
+const TOKEN_PATH = './repo/secrets/token.json'
 
 export function Gauth(credentials: googleCredentials, token: googleToken, scopes: string[]) {
     return authorize(credentials, token, scopes);

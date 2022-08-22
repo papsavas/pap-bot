@@ -1,4 +1,4 @@
-import { ClientEvents, Interaction } from "discord.js";
+import { ChannelType, ClientEvents, EmbedBuilder, Interaction } from "discord.js";
 import channels from "../../Inventory/channels";
 import { dmHandler } from '../../Inventory/DMs';
 import { globalCommandHandler, globalCommandsIDs } from '../../Inventory/globalCommandHandler';
@@ -7,7 +7,7 @@ import { guilds } from "../../Inventory/guilds";
 const name: keyof ClientEvents = "interactionCreate";
 
 const execute = async (interaction: Interaction) => {
-    if (interaction.isApplicationCommand()) {
+    if (interaction.isCommand()) {
         if (globalCommandsIDs.includes(interaction.commandId)) {
             globalCommandHandler.onCommand(interaction)
                 .catch(console.error);

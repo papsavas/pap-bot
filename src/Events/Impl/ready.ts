@@ -1,4 +1,4 @@
-import { ClientEvents, GuildChannelManager, TextChannel } from "discord.js";
+import { ActivityType, ClientEvents, GuildChannelManager, TextChannel } from "discord.js";
 import { PAP } from "../..";
 import * as config from "../../../bot.config.json" assert { type: 'json' };
 import * as guildIds from "../../../values/PAP/IDs.json" assert { type: 'json' };
@@ -8,7 +8,7 @@ const name: keyof ClientEvents = "ready";
 
 const execute = async () => {
     try {
-        PAP.user.setActivity('over you', { type: 'WATCHING' });
+        PAP.user.setActivity('over you', { type: ActivityType.Watching });
         const PAPGuildChannels: GuildChannelManager = (await PAP.guilds.cache.get(config.guildID).fetch()).channels;
         channels.initLogs = PAPGuildChannels.cache.get(guildIds.channels.init_logs) as TextChannel;
         channels.bugsChannel = PAPGuildChannels.cache.get(guildIds.channels.bugs) as TextChannel;

@@ -1,5 +1,5 @@
 import {
-    Client, Constants
+    Client, Events, GatewayIntentBits, Partials
 } from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -14,7 +14,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 console.log(`deployed in "${process.env.NODE_ENV}" mode\n`);
 
-const PAP = new Client({
+export const PAP = new Client({
     partials: [
         Partials.Message,
         Partials.Channel,
@@ -46,8 +46,8 @@ await PAP.login(process.env.BOT_TOKEN)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const eventFiles = readdirSync(`${__dirname}/Events/Impl`)
-    .filter(file => Object.values(Constants.Events)
-        .includes(file.split('.')[0])
+    .filter(file => Object.values(Events)
+        .includes(file.split('.')[0] as Events)
     );
 
 for (const file of eventFiles) {
