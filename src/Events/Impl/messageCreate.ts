@@ -1,5 +1,5 @@
 import { ChannelType, ClientEvents, Message } from "discord.js";
-import { creatorID } from '../../../bot.config.json';
+import { creatorID } from '../../../bot.config.json' assert { type: 'json' };
 import { dmHandler } from "../../Inventory/DMs";
 import { guilds } from "../../Inventory/guilds";
 

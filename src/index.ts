@@ -5,8 +5,6 @@ import { readdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import GenericEvent from './Events/GenericEvent';
-const { guildID: botGuildID } = (await import("../bot.config.json", { assert: { type: 'json' } })).default;
-const { channels: botGuildChannels } = (await import("../values/PAP/IDs.json", { assert: { type: 'json' } })).default;
 
 if (process.env.NODE_ENV !== "production") {
     const dotenv = await import("dotenv");
@@ -51,10 +49,12 @@ const eventFiles = readdirSync(`${__dirname}/Events/Impl`)
     );
 
 for (const file of eventFiles) {
-    const event: GenericEvent = (await import(`./Events/Impl/${file}`)).default;
-    PAP.on(event.name, async (...args) => {
-        event.execute(...args)
-            .catch(err => console.error(err))
+    (import(`./Events/Impl/${file}`)).then(({ name, execute }: GenericEvent) => {
+        console.log(name);
+        PAP.on(name, async (...args) => {
+            execute(...args)
+                .catch(err => console.error(err))
+        });
     });
 }
 
