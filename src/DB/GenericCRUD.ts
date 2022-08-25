@@ -167,8 +167,6 @@ async function updateAll(tableName: string, clause: {}, newRow: {}, returnings: 
 }
 
 /**
- * 
- * @param multitude number of rows to affect
  * @param tableName name of the table
  * @param clause which rows to affect
  * @returns number of affected rows

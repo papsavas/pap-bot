@@ -48,15 +48,15 @@ const eventFiles = readdirSync(`${__dirname}/Events/Impl`)
         .includes(file.split('.')[0] as Events)
     );
 
-for (const file of eventFiles) {
+eventFiles.forEach(file =>
     (import(`./Events/Impl/${file}`)).then(({ name, execute }: GenericEvent) => {
         console.log(name);
         PAP.on(name, async (...args) => {
             execute(...args)
                 .catch(err => console.error(err))
         });
-    });
-}
+    })
+);
 
 process.on('unhandledRejection', (reason, p) => {
     console.log(reason)
