@@ -1,4 +1,4 @@
-import { APIEmbedField, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, RESTJSONErrorCodes, Snowflake } from "discord.js";
+import { APIEmbedField, ApplicationCommandType, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, CommandInteraction, InteractionReplyOptions, Message, ReplyMessageOptions, RESTJSONErrorCodes, Snowflake } from "discord.js";
 import { calendar_v3 } from "googleapis";
 import moment from "moment";
 import 'moment/locale/el';

@@ -1,4 +1,4 @@
-import { ChatInputApplicationCommandData, Collection, CommandInteraction, Message, Snowflake, TextChannel } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputApplicationCommandData, ChatInputCommandInteraction, Collection, Colors, CommandInteraction, EmbedBuilder, Message, Snowflake, TextChannel } from "discord.js";
 import * as kepIds from "../../../../values/KEP/IDs.json" assert { type: 'json' };
 import * as literals from "../../../../values/KEP/literals.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";

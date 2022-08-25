@@ -1,4 +1,4 @@
-import { ApplicationCommandData, ApplicationCommandOptionData, Collection, Message, Snowflake } from "discord.js";
+import { ApplicationCommandData, ApplicationCommandOptionData, ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Collection, Message, Snowflake } from "discord.js";
 import * as info from "../../../../values/KEP/info.json" assert { type: 'json' };
 import { commandLiteral } from "../../../Entities/Generic/command";
 import { fetchCommandID } from "../../../Queries/Generic/Commands";
