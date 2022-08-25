@@ -82,10 +82,11 @@ export class ClearMessagesCmdImpl extends AbstractGuildCommand implements clearM
 
         return member.permissions.has(PermissionFlagsBits.ManageMessages) ?
             (channel as TextChannel).bulkDelete(number)
-                .then(delMessages => {
+                .then((delMessages): Promise<unknown> => {
                     let descr = '';
-                    [...delMessages.values()].reverse().map(msg => {
+                    [...delMessages.values()].reverse().map(async (msg: Message<boolean>) => {
                         try {
+                            if (msg.partial) msg = await msg.fetch();
                             if (!msg.content.startsWith('$clear'))
                                 descr += `**${msg.author.username}**: ${msg.content}\n`;
                         } catch (err) {
