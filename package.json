@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/src/index.js",
-    "launch": "npm run timezone && ts-node src/index.ts",
+    "launch": "npm run timezone && node dist/src/index.js",
+    "start": "npm run build && npm run launch",
     "timezone": "set TZ='Europe/Athens'",
     "dev": "set NODE_ENV='development' && npm run launch",
     "prod": "set NODE_ENV='production1' && npm run launch",
