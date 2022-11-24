@@ -1,7 +1,7 @@
 # <img src="https://i.postimg.cc/FK60gmhx/papv2-5-CROPPED.png" width=30/> PAPbot 
 A discord bot that help us manage our University server
 
-- Written in [Typescript](https://www.typescriptlang.org) with [Discord.js](https://github.com/discordjs/discord.js)
+- Written in [Typescript](https://www.typescriptlang.org) with [Discord.js](https://discordjs.dev)
 - Deployed on [Heroku](https://www.heroku.com)
 
 ### Tools
